@@ -53,6 +53,24 @@
 
 namespace NSABUtils
 {
+    void setupModelChanged( const QAbstractItemModel *model, const QObject * , const std::function< void( QObject * ) > & member, bool isExcluded /* = false*/ )
+    {
+        if ( !model )
+            return;
+
+        if ( !isExcluded )
+        {
+            QObject::connect( model, &QAbstractItemModel::dataChanged, [ = ]() { member( const_cast< QAbstractItemModel * >( model ) ); } );
+            QObject::connect( model, &QAbstractItemModel::modelReset, [ = ]() { member( const_cast< QAbstractItemModel * >( model ) ); } );
+            QObject::connect( model, &QAbstractItemModel::rowsInserted, [ = ]() { member( const_cast< QAbstractItemModel * >( model ) ); } );
+            QObject::connect( model, &QAbstractItemModel::rowsRemoved, [ = ]() { member( const_cast< QAbstractItemModel * >( model ) ); } );
+            QObject::connect( model, &QAbstractItemModel::rowsMoved, [ = ]() { member( const_cast< QAbstractItemModel * >( model ) ); } );
+            QObject::connect( model, &QAbstractItemModel::columnsInserted, [ = ]() { member( const_cast< QAbstractItemModel * >( model ) ); } );
+            QObject::connect( model, &QAbstractItemModel::columnsRemoved, [ = ]() { member( const_cast< QAbstractItemModel * >( model ) ); } );
+            QObject::connect( model, &QAbstractItemModel::columnsMoved, [ = ]() { member( const_cast< QAbstractItemModel * >( model ) ); } );
+        }
+    }
+
     void setupModelChanged( const QAbstractItemModel *model, const QObject *reciever, const char *member, bool isExcluded /* = false*/ )
     {
         if ( !model || !reciever )
@@ -109,7 +127,7 @@ namespace NSABUtils
     }
 
     template< typename T >
-    void setupWidgetChanged( QAbstractItemView *view, std::unordered_map< QObject *, bool > &handled, const QWidget *parentWidget, T member, bool isExcluded )
+    void setupWidgetChanged( QAbstractItemView *view, std::unordered_map< QObject *, bool > *handled, const QWidget *parentWidget, T member, bool isExcluded )
     {
         QAbstractItemModel *model = view->model();
         if ( !model )
@@ -118,9 +136,12 @@ namespace NSABUtils
         if ( sortModel )
             model = sortModel->sourceModel();
 
-        if ( handled.find( model ) != handled.end() )
-            return;
-        handled.insert( { model, false } );
+        if ( handled )
+        {
+            if ( handled->find( model ) != handled->end() )
+                return;
+            handled->insert( { model, false } );
+        }
 
         setupModelChanged( model, parentWidget, member, isExcluded );
     }
@@ -139,6 +160,12 @@ namespace NSABUtils
             QObject::connect( groupBox, QMetaMethod::fromSignal( &QGroupBox::clicked ), parentWidget, member );
     }
 
+    void setupWidgetChanged( QGroupBox *groupBox, const std::function< void( QObject * ) > &member, bool isExcluded )
+    {
+        if ( !isExcluded )
+            QObject::connect( groupBox, &QGroupBox::clicked, [ = ]() { member( groupBox ); } );
+    }
+
     void setupWidgetChanged( QComboBox *comboBox, const QWidget *parentWidget, const char *member, bool isExcluded )
     {
         QObject::disconnect( comboBox, SIGNAL( currentIndexChanged( int ) ), parentWidget, member );
@@ -153,6 +180,12 @@ namespace NSABUtils
             QObject::connect( comboBox, QMetaMethod::fromSignal( qOverload< int >( &QComboBox::currentIndexChanged ) ), parentWidget, member );
     }
 
+    void setupWidgetChanged( QComboBox *comboBox, const std::function< void( QObject * ) > &member, bool isExcluded )
+    {
+        if ( !isExcluded )
+            QObject::connect( comboBox, &QComboBox::currentIndexChanged, [ = ]() { member( comboBox ); } );
+    }
+
     void setupWidgetChanged( QLineEdit *lineEdit, const QWidget *parentWidget, const char *member, bool isExcluded )
     {
         if ( lineEdit->isReadOnly() )
@@ -161,6 +194,15 @@ namespace NSABUtils
         QObject::disconnect( lineEdit, SIGNAL( textChanged( const QString & ) ), parentWidget, member );
         if ( !isExcluded )
             QObject::connect( lineEdit, SIGNAL( textChanged( const QString & ) ), parentWidget, member );
+    }
+
+    void setupWidgetChanged( QLineEdit *lineEdit, const std::function< void( QObject * ) > &member, bool isExcluded )
+    {
+        if ( lineEdit->isReadOnly() )
+            return;
+
+        if ( !isExcluded )
+            QObject::connect( lineEdit, &QLineEdit::textChanged, [ = ]() { member( lineEdit ); } );
     }
 
     void setupWidgetChanged( QLineEdit *lineEdit, const QWidget *parentWidget, const QMetaMethod &member, bool isExcluded )
@@ -193,18 +235,13 @@ namespace NSABUtils
             QObject::connect( plainTextEdit, QMetaMethod::fromSignal( &QPlainTextEdit::textChanged ), parentWidget, member );
     }
 
-    void setupWidgetChanged( QSpinBox *spinBox, const QWidget *parentWidget, const char *member, bool isExcluded )
+    void setupWidgetChanged( QPlainTextEdit *plainTextEdit, const std::function< void( QObject * ) > &member, bool isExcluded )
     {
-        QObject::disconnect( spinBox, SIGNAL( valueChanged( const QString & ) ), parentWidget, member );
-        if ( !isExcluded )
-            QObject::connect( spinBox, SIGNAL( valueChanged( const QString & ) ), parentWidget, member );
-    }
+        if ( plainTextEdit->isReadOnly() )
+            return;
 
-    void setupWidgetChanged( QSpinBox *spinBox, const QWidget *parentWidget, const QMetaMethod &member, bool isExcluded )
-    {
-        QObject::disconnect( spinBox, QMetaMethod::fromSignal( qOverload< int >( &QSpinBox::valueChanged ) ), parentWidget, member );
         if ( !isExcluded )
-            QObject::connect( spinBox, QMetaMethod::fromSignal( qOverload< int >( &QSpinBox::valueChanged ) ), parentWidget, member );
+            QObject::connect( plainTextEdit, &QPlainTextEdit::textChanged, [ = ]() { member( plainTextEdit ); } );
     }
 
     void setupWidgetChanged( QTextEdit *textEdit, const QWidget *parentWidget, const char *member, bool isExcluded )
@@ -227,6 +264,35 @@ namespace NSABUtils
             QObject::connect( textEdit, QMetaMethod::fromSignal( &QTextEdit::textChanged ), parentWidget, member );
     }
 
+    void setupWidgetChanged( QTextEdit *textEdit, const std::function< void( QObject * ) > &member, bool isExcluded )
+    {
+        if ( textEdit->isReadOnly() )
+            return;
+
+        if ( !isExcluded )
+            QObject::connect( textEdit, &QTextEdit::textChanged, [ = ]() { member( textEdit ); } );
+    }
+
+    void setupWidgetChanged( QSpinBox *spinBox, const QWidget *parentWidget, const char *member, bool isExcluded )
+    {
+        QObject::disconnect( spinBox, SIGNAL( valueChanged( const QString & ) ), parentWidget, member );
+        if ( !isExcluded )
+            QObject::connect( spinBox, SIGNAL( valueChanged( const QString & ) ), parentWidget, member );
+    }
+
+    void setupWidgetChanged( QSpinBox *spinBox, const QWidget *parentWidget, const QMetaMethod &member, bool isExcluded )
+    {
+        QObject::disconnect( spinBox, QMetaMethod::fromSignal( qOverload< int >( &QSpinBox::valueChanged ) ), parentWidget, member );
+        if ( !isExcluded )
+            QObject::connect( spinBox, QMetaMethod::fromSignal( qOverload< int >( &QSpinBox::valueChanged ) ), parentWidget, member );
+    }
+
+    void setupWidgetChanged( QSpinBox *spinBox, const std::function< void( QObject * ) > &member, bool isExcluded )
+    {
+        if ( !isExcluded )
+            QObject::connect( spinBox, &QSpinBox::valueChanged, [ = ]() { member( spinBox ); } );
+    }
+
     void setupWidgetChanged( QDoubleSpinBox *doubleSpinBox, const QWidget *parentWidget, const char *member, bool isExcluded )
     {
         QObject::disconnect( doubleSpinBox, SIGNAL( valueChanged( const QString & ) ), parentWidget, member );
@@ -239,6 +305,12 @@ namespace NSABUtils
         QObject::disconnect( doubleSpinBox, QMetaMethod::fromSignal( qOverload< double >( &QDoubleSpinBox::valueChanged ) ), parentWidget, member );
         if ( !isExcluded )
             QObject::connect( doubleSpinBox, QMetaMethod::fromSignal( qOverload< double >( &QDoubleSpinBox::valueChanged ) ), parentWidget, member );
+    }
+
+    void setupWidgetChanged( QDoubleSpinBox *doubleSpinBox, const std::function< void( QObject * ) > &member, bool isExcluded )
+    {
+        if ( !isExcluded )
+            QObject::connect( doubleSpinBox, &QDoubleSpinBox::valueChanged, [ = ]() { member( doubleSpinBox ); } );
     }
 
     void setupWidgetChanged( QAbstractButton *button, const QWidget *parentWidget, const char *member, bool isExcluded )
@@ -279,6 +351,22 @@ namespace NSABUtils
         }
     }
 
+    void setupWidgetChanged( QAbstractButton *button, const std::function< void( QObject * ) > &member, bool isExcluded )
+    {
+        if ( !isExcluded )
+        {
+            QObject::connect( button, &QAbstractButton::clicked, [ = ]() { member( button ); } );
+            QObject::connect( button, &QAbstractButton::toggled, [ = ]() { member( button ); } );
+        }
+
+        auto checkBox = dynamic_cast< QCheckBox * >( button );
+        if ( button->isCheckable() || checkBox )
+        {
+            if ( !isExcluded )
+                QObject::connect( checkBox, &QCheckBox::checkStateChanged, [ = ]() { member( checkBox ); } );
+        }
+    }
+
     void setupWidgetChanged( QTimeEdit *timeEdit, const QWidget *parentWidget, const char *member, bool isExcluded )
     {
         QObject::disconnect( timeEdit, SIGNAL( timeChanged( const QTime & ) ), parentWidget, member );
@@ -291,6 +379,12 @@ namespace NSABUtils
         QObject::disconnect( timeEdit, QMetaMethod::fromSignal( &QTimeEdit::timeChanged ), parentWidget, member );
         if ( !isExcluded )
             QObject::connect( timeEdit, QMetaMethod::fromSignal( &QTimeEdit::timeChanged ), parentWidget, member );
+    }
+
+    void setupWidgetChanged( QTimeEdit *timeEdit, const std::function< void( QObject * ) > &member, bool isExcluded )
+    {
+        if ( !isExcluded )
+            QObject::connect( timeEdit, &QTimeEdit::timeChanged, [ = ]() { member( timeEdit ); } );
     }
 
     void setupWidgetChanged( QDateEdit *dateEdit, const QWidget *parentWidget, const char *member, bool isExcluded )
@@ -307,6 +401,12 @@ namespace NSABUtils
             QObject::connect( dateEdit, QMetaMethod::fromSignal( &QDateEdit::dateChanged ), parentWidget, member );
     }
 
+    void setupWidgetChanged( QDateEdit *dateEdit, const std::function< void( QObject * ) > &member, bool isExcluded )
+    {
+        if ( !isExcluded )
+            QObject::connect( dateEdit, &QDateEdit::dateChanged, [ = ]() { member( dateEdit ); } );
+    }
+
     void setupWidgetChanged( QDateTimeEdit *dateTimeEdit, const QWidget *parentWidget, const char *member, bool isExcluded )
     {
         QObject::disconnect( dateTimeEdit, SIGNAL( dateTimeChanged( const QDateTime & ) ), parentWidget, member );
@@ -321,12 +421,21 @@ namespace NSABUtils
             QObject::connect( dateTimeEdit, QMetaMethod::fromSignal( &QDateTimeEdit::dateTimeChanged ), parentWidget, member );
     }
 
-    bool excludeWidget( bool excludeAll, const std::set< QWidget * > &excludedWidgets, QWidget *widget, const QWidget *parentWidget, bool &isSkipWidget, std::unordered_map< QObject *, bool > &handled )
+    void setupWidgetChanged( QDateTimeEdit *dateTimeEdit, const std::function< void( QObject * ) > &member, bool isExcluded )
     {
-        auto pos = handled.find( widget );
-        if ( pos != handled.end() )
-            return ( *pos ).second;
-        handled.insert( { widget, false } );
+        if ( !isExcluded )
+            QObject::connect( dateTimeEdit, &QDateTimeEdit::dateTimeChanged, [ = ]() { member( dateTimeEdit ); } );
+    }
+
+    bool excludeWidget( bool excludeAll, const std::set< QWidget * > &excludedWidgets, QWidget *widget, const QWidget *parentWidget, bool &isSkipWidget, std::unordered_map< QObject *, bool > *handled )
+    {
+        if ( handled )
+        {
+            auto pos = handled->find( widget );
+            if ( pos != handled->end() )
+                return ( *pos ).second;
+            handled->insert( { widget, false } );
+        }
 
         QString className = widget->metaObject()->className();
         // qDebug() << "Testing-" << widget << "-" << className << widget->objectName();
@@ -347,7 +456,8 @@ namespace NSABUtils
         {
             isSkipWidget = true;
             // qDebug() << "|---> Skipped Widget" << widget << "-" << widget->metaObject()->className() << widget->objectName();
-            handled[ widget ] = true;
+            if ( handled )
+                ( *handled )[ widget ] = true;
             return true;
         }
 
@@ -359,8 +469,97 @@ namespace NSABUtils
         //     qDebug() << "|---> Excluded Widget" << widget << "-" << widget->metaObject()->className() << widget->objectName();
         // else
         //     qDebug() << "|---> NOT Excluded Widget" << widget << "-" << widget->metaObject()->className() << widget->objectName();
-        handled[ widget ] = isExcluded;
+        if ( handled )
+        {
+            ( *handled )[ widget ] = isExcluded;
+        }
         return isExcluded;
+    }
+
+    void setupWidgetChanged( const QWidget *parentWidget, QWidget *child, const char *member, const std::set< QWidget * > &excludedWidgets, bool excludeAll, std::unordered_map< QObject *, bool > *handled )
+    {
+        bool isSkipWidget = false;
+        bool isExcluded = excludeWidget( excludeAll, excludedWidgets, child, parentWidget, isSkipWidget, handled );
+
+        auto view = dynamic_cast< QAbstractItemView * >( child );
+        auto groupBox = dynamic_cast< QGroupBox * >( child );
+        auto comboBox = dynamic_cast< QComboBox * >( child );
+        auto lineEdit = dynamic_cast< QLineEdit * >( child );
+        auto spinBox = dynamic_cast< QSpinBox * >( child );
+        auto doubleSpinBox = dynamic_cast< QDoubleSpinBox * >( child );
+        auto timeEdit = dynamic_cast< QTimeEdit * >( child );
+        auto dateEdit = dynamic_cast< QDateEdit * >( child );
+        auto dateTimeEdit = dynamic_cast< QDateTimeEdit * >( child );
+        auto checkBox = dynamic_cast< QCheckBox * >( child );
+        auto plainTextEdit = dynamic_cast< QPlainTextEdit * >( child );
+        auto radioButton = dynamic_cast< QRadioButton * >( child );
+        auto button = dynamic_cast< QAbstractButton * >( child );
+        auto textEdit = dynamic_cast< QTextEdit * >( child );
+
+        if ( view )
+        {
+            setupWidgetChanged( view, handled, parentWidget, member, isExcluded );
+        }
+        else if ( groupBox )
+        {
+            setupWidgetChanged( groupBox, parentWidget, member, isExcluded );
+        }
+        else if ( comboBox )
+        {
+            setupWidgetChanged( comboBox, parentWidget, member, isExcluded );
+        }
+        else if ( lineEdit )
+        {
+            setupWidgetChanged( lineEdit, parentWidget, member, isExcluded );
+        }
+        else if ( plainTextEdit )
+        {
+            setupWidgetChanged( plainTextEdit, parentWidget, member, isExcluded );
+        }
+        else if ( textEdit )
+        {
+            setupWidgetChanged( textEdit, parentWidget, member, isExcluded );
+        }
+        else if ( spinBox )
+        {
+            setupWidgetChanged( spinBox, parentWidget, member, isExcluded );
+        }
+        else if ( doubleSpinBox )
+        {
+            setupWidgetChanged( doubleSpinBox, parentWidget, member, isExcluded );
+        }
+        else if ( button )
+        {
+            setupWidgetChanged( button, parentWidget, member, isExcluded );
+        }
+        else if ( checkBox )
+        {
+            setupWidgetChanged( checkBox, parentWidget, member, isExcluded );
+        }
+        else if ( radioButton )
+        {
+            setupWidgetChanged( radioButton, parentWidget, member, isExcluded );
+        }
+        else if ( timeEdit )
+        {
+            setupWidgetChanged( timeEdit, parentWidget, member, isExcluded );
+        }
+        else if ( dateEdit )
+        {
+            setupWidgetChanged( dateEdit, parentWidget, member, isExcluded );
+        }
+        else if ( dateTimeEdit )
+        {
+            setupWidgetChanged( dateTimeEdit, parentWidget, member, isExcluded );
+        }
+#ifndef QT_NO_NDEBUG
+        else if ( isSkipWidget )
+            return;
+        else
+        {
+            qDebug() << "UNHANDLED-" << child << "-" << child->metaObject()->className() << child->objectName();
+        }
+#endif
     }
 
     void setupWidgetChanged( const QWidget *parentWidget, const char *member, const std::set< QWidget * > &excludedWidgets /*= {}*/, bool excludeAll /*= false*/ )
@@ -368,188 +567,201 @@ namespace NSABUtils
         if ( !parentWidget )
             return;
 
-        QList< QWidget * > children = parentWidget->findChildren< QWidget * >();
-
         std::unordered_map< QObject *, bool > handled;
+        QList< QWidget * > children = parentWidget->findChildren< QWidget * >();
         for ( QWidget *child : children )
         {
-            bool isSkipWidget = false;
-            bool isExcluded = excludeWidget( excludeAll, excludedWidgets, child, parentWidget, isSkipWidget, handled );
-
-            auto view = dynamic_cast< QAbstractItemView * >( child );
-            auto groupBox = dynamic_cast< QGroupBox * >( child );
-            auto comboBox = dynamic_cast< QComboBox * >( child );
-            auto lineEdit = dynamic_cast< QLineEdit * >( child );
-            auto spinBox = dynamic_cast< QSpinBox * >( child );
-            auto doubleSpinBox = dynamic_cast< QDoubleSpinBox * >( child );
-            auto timeEdit = dynamic_cast< QTimeEdit * >( child );
-            auto dateEdit = dynamic_cast< QDateEdit * >( child );
-            auto dateTimeEdit = dynamic_cast< QDateTimeEdit * >( child );
-            auto checkBox = dynamic_cast< QCheckBox * >( child );
-            auto plainTextEdit = dynamic_cast< QPlainTextEdit * >( child );
-            auto radioButton = dynamic_cast< QRadioButton * >( child );
-            auto button = dynamic_cast< QAbstractButton * >( child );
-            auto textEdit = dynamic_cast< QTextEdit * >( child );
-
-            if ( view )
-            {
-                setupWidgetChanged( view, handled, parentWidget, member, isExcluded );
-            }
-            else if ( groupBox )
-            {
-                setupWidgetChanged( groupBox, parentWidget, member, isExcluded );
-            }
-            else if ( comboBox )
-            {
-                setupWidgetChanged( comboBox, parentWidget, member, isExcluded );
-            }
-            else if ( lineEdit )
-            {
-                setupWidgetChanged( lineEdit, parentWidget, member, isExcluded );
-            }
-            else if ( plainTextEdit )
-            {
-                setupWidgetChanged( plainTextEdit, parentWidget, member, isExcluded );
-            }
-            else if ( textEdit )
-            {
-                setupWidgetChanged( textEdit, parentWidget, member, isExcluded );
-            }
-            else if ( spinBox )
-            {
-                setupWidgetChanged( spinBox, parentWidget, member, isExcluded );
-            }
-            else if ( doubleSpinBox )
-            {
-                setupWidgetChanged( doubleSpinBox, parentWidget, member, isExcluded );
-            }
-            else if ( button )
-            {
-                setupWidgetChanged( button, parentWidget, member, isExcluded );
-            }
-            else if ( checkBox )
-            {
-                setupWidgetChanged( checkBox, parentWidget, member, isExcluded );
-            }
-            else if ( radioButton )
-            {
-                setupWidgetChanged( radioButton, parentWidget, member, isExcluded );
-            }
-            else if ( timeEdit )
-            {
-                setupWidgetChanged( timeEdit, parentWidget, member, isExcluded );
-            }
-            else if ( dateEdit )
-            {
-                setupWidgetChanged( dateEdit, parentWidget, member, isExcluded );
-            }
-            else if ( dateTimeEdit )
-            {
-                setupWidgetChanged( dateTimeEdit, parentWidget, member, isExcluded );
-            }
-#ifndef QT_NO_NDEBUG
-            else if ( isSkipWidget )
-                continue;
-            else
-            {
-                qDebug() << "UNHANDLED-" << child << "-" << child->metaObject()->className() << child->objectName();
-            }
-#endif
+            setupWidgetChanged( parentWidget, child, member, excludedWidgets, excludeAll, &handled );
         }
     }
 
-    void setupWidgetChanged( const QWidget *parentWidget, const QMetaMethod &member, const std::set< QWidget * > &excludeWidgets /*= {}*/, bool excludeAll /*= false*/ )
+    void setupWidgetChanged( const QWidget *parentWidget, QWidget *child, const QMetaMethod &member, const std::set< QWidget * > &excludeWidgets /*= {}*/, bool excludeAll /*= false*/, std::unordered_map< QObject *, bool > *handled )
+    {
+        bool isSkipWidget = false;
+        bool isExcluded = excludeWidget( excludeAll, excludeWidgets, child, parentWidget, isSkipWidget, handled );
+
+        auto view = dynamic_cast< QAbstractItemView * >( child );
+        auto groupBox = dynamic_cast< QGroupBox * >( child );
+        auto comboBox = dynamic_cast< QComboBox * >( child );
+        auto lineEdit = dynamic_cast< QLineEdit * >( child );
+        auto spinBox = dynamic_cast< QSpinBox * >( child );
+        auto doubleSpinBox = dynamic_cast< QDoubleSpinBox * >( child );
+        auto timeEdit = dynamic_cast< QTimeEdit * >( child );
+        auto dateEdit = dynamic_cast< QDateEdit * >( child );
+        auto dateTimeEdit = dynamic_cast< QDateTimeEdit * >( child );
+        auto checkBox = dynamic_cast< QCheckBox * >( child );
+        auto plainTextEdit = dynamic_cast< QPlainTextEdit * >( child );
+        auto radioButton = dynamic_cast< QRadioButton * >( child );
+        auto button = dynamic_cast< QAbstractButton * >( child );
+        auto textEdit = dynamic_cast< QTextEdit * >( child );
+
+        if ( view )
+        {
+            setupWidgetChanged( view, handled, parentWidget, member, isExcluded );
+        }
+        else if ( groupBox )
+        {
+            setupWidgetChanged( groupBox, parentWidget, member, isExcluded );
+        }
+        else if ( comboBox )
+        {
+            setupWidgetChanged( comboBox, parentWidget, member, isExcluded );
+        }
+        else if ( lineEdit )
+        {
+            setupWidgetChanged( lineEdit, parentWidget, member, isExcluded );
+        }
+        else if ( plainTextEdit )
+        {
+            setupWidgetChanged( plainTextEdit, parentWidget, member, isExcluded );
+        }
+        else if ( textEdit )
+        {
+            setupWidgetChanged( textEdit, parentWidget, member, isExcluded );
+        }
+        else if ( spinBox )
+        {
+            setupWidgetChanged( spinBox, parentWidget, member, isExcluded );
+        }
+        else if ( doubleSpinBox )
+        {
+            setupWidgetChanged( doubleSpinBox, parentWidget, member, isExcluded );
+        }
+        else if ( button )
+        {
+            setupWidgetChanged( button, parentWidget, member, isExcluded );
+        }
+        else if ( checkBox )
+        {
+            setupWidgetChanged( checkBox, parentWidget, member, isExcluded );
+        }
+        else if ( radioButton )
+        {
+            setupWidgetChanged( radioButton, parentWidget, member, isExcluded );
+        }
+        else if ( timeEdit )
+        {
+            setupWidgetChanged( timeEdit, parentWidget, member, isExcluded );
+        }
+        else if ( dateEdit )
+        {
+            setupWidgetChanged( dateEdit, parentWidget, member, isExcluded );
+        }
+        else if ( dateTimeEdit )
+        {
+            setupWidgetChanged( dateTimeEdit, parentWidget, member, isExcluded );
+        }
+#ifndef QT_NO_NDEBUG
+        else if ( isSkipWidget )
+            return;
+        else
+        {
+            qDebug() << "UNHANDLED-" << child << "-" << child->metaObject()->className() << child->objectName();
+        }
+#endif
+    }
+
+    void setupWidgetChanged( const QWidget *parentWidget, const QMetaMethod &member, const std::set< QWidget * > &excludedWidgets /*= {}*/, bool excludeAll /*= false*/ )
     {
         if ( !parentWidget || !member.isValid() )
             return;
 
-        auto children = parentWidget->findChildren< QWidget * >();
-
         std::unordered_map< QObject *, bool > handled;
+        auto children = parentWidget->findChildren< QWidget * >();
         for ( QWidget *child : children )
         {
-            bool isSkipWidget = false;
-            bool isExcluded = excludeWidget( excludeAll, excludeWidgets, child, parentWidget, isSkipWidget, handled );
-
-            auto view = dynamic_cast< QAbstractItemView * >( child );
-            auto groupBox = dynamic_cast< QGroupBox * >( child );
-            auto comboBox = dynamic_cast< QComboBox * >( child );
-            auto lineEdit = dynamic_cast< QLineEdit * >( child );
-            auto spinBox = dynamic_cast< QSpinBox * >( child );
-            auto doubleSpinBox = dynamic_cast< QDoubleSpinBox * >( child );
-            auto timeEdit = dynamic_cast< QTimeEdit * >( child );
-            auto dateEdit = dynamic_cast< QDateEdit * >( child );
-            auto dateTimeEdit = dynamic_cast< QDateTimeEdit * >( child );
-            auto checkBox = dynamic_cast< QCheckBox * >( child );
-            auto plainTextEdit = dynamic_cast< QPlainTextEdit * >( child );
-            auto radioButton = dynamic_cast< QRadioButton * >( child );
-            auto button = dynamic_cast< QAbstractButton * >( child );
-            auto textEdit = dynamic_cast< QTextEdit * >( child );
-
-            if ( view )
-            {
-                setupWidgetChanged( view, handled, parentWidget, member, isExcluded );
-            }
-            else if ( groupBox )
-            {
-                setupWidgetChanged( groupBox, parentWidget, member, isExcluded );
-            }
-            else if ( comboBox )
-            {
-                setupWidgetChanged( comboBox, parentWidget, member, isExcluded );
-            }
-            else if ( lineEdit )
-            {
-                setupWidgetChanged( lineEdit, parentWidget, member, isExcluded );
-            }
-            else if ( plainTextEdit )
-            {
-                setupWidgetChanged( plainTextEdit, parentWidget, member, isExcluded );
-            }
-            else if ( textEdit )
-            {
-                setupWidgetChanged( textEdit, parentWidget, member, isExcluded );
-            }
-            else if ( spinBox )
-            {
-                setupWidgetChanged( spinBox, parentWidget, member, isExcluded );
-            }
-            else if ( doubleSpinBox )
-            {
-                setupWidgetChanged( doubleSpinBox, parentWidget, member, isExcluded );
-            }
-            else if ( button )
-            {
-                setupWidgetChanged( button, parentWidget, member, isExcluded );
-            }
-            else if ( checkBox )
-            {
-                setupWidgetChanged( checkBox, parentWidget, member, isExcluded );
-            }
-            else if ( radioButton )
-            {
-                setupWidgetChanged( radioButton, parentWidget, member, isExcluded );
-            }
-            else if ( timeEdit )
-            {
-                setupWidgetChanged( timeEdit, parentWidget, member, isExcluded );
-            }
-            else if ( dateEdit )
-            {
-                setupWidgetChanged( dateEdit, parentWidget, member, isExcluded );
-            }
-            else if ( dateTimeEdit )
-            {
-                setupWidgetChanged( dateTimeEdit, parentWidget, member, isExcluded );
-            }
-#ifndef QT_NO_NDEBUG
-            else if ( isSkipWidget )
-                continue;
-            else
-            {
-                qDebug() << "UNHANDLED-" << child << "-" << child->metaObject()->className() << child->objectName();
-            }
-#endif
+            setupWidgetChanged( parentWidget, child, member, excludedWidgets, excludeAll, &handled );
         }
+    }
+
+    void setupWidgetChanged( QWidget *child, const std::function< void( QObject * ) > &member, const std::set< QWidget * > &excludedWidgets /*= {}*/, bool excludeAll /*= false*/, std::unordered_map< QObject *, bool > *handled /*= nullptr*/ )
+    {
+        if ( !child )
+            return;
+
+        auto parentWidget = child->parentWidget();
+
+        bool isSkipWidget = false;
+        bool isExcluded = excludeWidget( excludeAll, excludedWidgets, child, parentWidget, isSkipWidget, handled );
+
+        auto view = dynamic_cast< QAbstractItemView * >( child );
+        auto groupBox = dynamic_cast< QGroupBox * >( child );
+        auto comboBox = dynamic_cast< QComboBox * >( child );
+        auto lineEdit = dynamic_cast< QLineEdit * >( child );
+        auto spinBox = dynamic_cast< QSpinBox * >( child );
+        auto doubleSpinBox = dynamic_cast< QDoubleSpinBox * >( child );
+        auto timeEdit = dynamic_cast< QTimeEdit * >( child );
+        auto dateEdit = dynamic_cast< QDateEdit * >( child );
+        auto dateTimeEdit = dynamic_cast< QDateTimeEdit * >( child );
+        auto checkBox = dynamic_cast< QCheckBox * >( child );
+        auto plainTextEdit = dynamic_cast< QPlainTextEdit * >( child );
+        auto radioButton = dynamic_cast< QRadioButton * >( child );
+        auto button = dynamic_cast< QAbstractButton * >( child );
+        auto textEdit = dynamic_cast< QTextEdit * >( child );
+
+        if ( view )
+        {
+            setupWidgetChanged( view, handled, nullptr, member, isExcluded );
+        }
+        else if ( groupBox )
+        {
+            setupWidgetChanged( groupBox, member, isExcluded );
+        }
+        else if ( comboBox )
+        {
+            setupWidgetChanged( comboBox, member, isExcluded );
+        }
+        else if ( lineEdit )
+        {
+            setupWidgetChanged( lineEdit, member, isExcluded );
+        }
+        else if ( plainTextEdit )
+        {
+            setupWidgetChanged( plainTextEdit, member, isExcluded );
+        }
+        else if ( textEdit )
+        {
+            setupWidgetChanged( textEdit, member, isExcluded );
+        }
+        else if ( spinBox )
+        {
+            setupWidgetChanged( spinBox, member, isExcluded );
+        }
+        else if ( doubleSpinBox )
+        {
+            setupWidgetChanged( doubleSpinBox, member, isExcluded );
+        }
+        else if ( button )
+        {
+            setupWidgetChanged( button, member, isExcluded );
+        }
+        else if ( checkBox )
+        {
+            setupWidgetChanged( checkBox, member, isExcluded );
+        }
+        else if ( radioButton )
+        {
+            setupWidgetChanged( radioButton, member, isExcluded );
+        }
+        else if ( timeEdit )
+        {
+            setupWidgetChanged( timeEdit, member, isExcluded );
+        }
+        else if ( dateEdit )
+        {
+            setupWidgetChanged( dateEdit, member, isExcluded );
+        }
+        else if ( dateTimeEdit )
+        {
+            setupWidgetChanged( dateTimeEdit, member, isExcluded );
+        }
+#ifndef QT_NO_NDEBUG
+        else if ( isSkipWidget )
+            return;
+        else
+        {
+            qDebug() << "UNHANDLED-" << child << "-" << child->metaObject()->className() << child->objectName();
+        }
+#endif
     }
 }

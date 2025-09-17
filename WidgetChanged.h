@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 #include "SABUtilsExport.h"
+#include <unordered_map>
+#include <functional>
 
 class QWidget;
 class QObject;
@@ -38,6 +40,14 @@ namespace NSABUtils
     // for a given parent widget call/connect to the given member on the parent widget for all the child widgets of the parent
     // if the child widget is in the excluded list OR its parent is in the excluded list, then it is not connected
     // if exclude all is set, then it disconnects from all previous connections
-    SABUTILS_EXPORT void setupWidgetChanged( const QWidget *parentWidget, const char *member, const std::set< QWidget * > &excluded = {}, bool excludeAll = false );
-    SABUTILS_EXPORT void setupWidgetChanged( const QWidget *parentWidget, const QMetaMethod &member, const std::set< QWidget * > &excluded = {}, bool excludeAll = false );
+    SABUTILS_EXPORT void setupWidgetChanged( const QWidget *parentWidget, const char *member, const std::set< QWidget * > &excludedWidgets = {}, bool excludeAll = false );
+    SABUTILS_EXPORT void setupWidgetChanged( const QWidget *parentWidget, QWidget *child, const char *member, const std::set< QWidget * > &excludedWidgets = {}, bool excludeAll = false, std::unordered_map< QObject *, bool > *handled = nullptr );
+
+    SABUTILS_EXPORT void setupWidgetChanged( const QWidget *parentWidget, const QMetaMethod &member, const std::set< QWidget * > &excludedWidgets = {}, bool excludeAll = false );
+    SABUTILS_EXPORT void setupWidgetChanged( const QWidget *parentWidget, QWidget *child, const QMetaMethod &member, const std::set< QWidget * > &excludeWidgets = {}, bool excludeAll = false, std::unordered_map< QObject *, bool > *handled = nullptr );
+
+    SABUTILS_EXPORT void setupWidgetChanged( QWidget *child, const std::function< void( QObject * ) > &member, const std::set< QWidget * > &excludedWidgets = {}, bool excludeAll = false, std::unordered_map< QObject *, bool > *handled = nullptr );
+
 }
+
+
