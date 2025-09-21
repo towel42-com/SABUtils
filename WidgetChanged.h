@@ -49,5 +49,3 @@ namespace NSABUtils
     SABUTILS_EXPORT void setupWidgetChanged( QWidget *child, const std::function< void( QObject * ) > &member, const std::set< QWidget * > &excludedWidgets = {}, bool excludeAll = false, std::unordered_map< QObject *, bool > *handled = nullptr );
 
 }
-
-

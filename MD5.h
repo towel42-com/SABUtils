@@ -45,7 +45,7 @@ namespace NSABUtils
     SABUTILS_EXPORT std::string getMd5( const std::string &data, bool isFileName = false );
 
     SABUTILS_EXPORT QByteArray getMd5( const QIcon &icon );
-    SABUTILS_EXPORT QByteArray getMd5( const QPixmap &pixmap ); // only includes image data
+    SABUTILS_EXPORT QByteArray getMd5( const QPixmap &pixmap );   // only includes image data
     SABUTILS_EXPORT QByteArray getMd5( const QImage &img );
     SABUTILS_EXPORT QByteArray getImageData( const QImage &img );
 
@@ -56,8 +56,7 @@ namespace NSABUtils
         Q_OBJECT;
 
     public:
-        CComputeMD5( const QString &fileName );;
-
+        CComputeMD5( const QString &fileName );
         void run() override;
 
     public:

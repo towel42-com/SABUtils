@@ -41,4 +41,3 @@ namespace NSABUtils
     using TCaseInsensitiveHash = std::unordered_set< QString, CCaseInsensitiveHash, CCaseInsensitiveEqual >;
 }
 #endif
-
