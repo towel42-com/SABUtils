@@ -32,8 +32,6 @@ if(WIN32)
         REQUIRED )
 endif()
 
-SET( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Modules ${CMAKE_MODULE_PATH})
-
 if( SABUTILS_DLL )
 #    message( STATUS "SAB Utils exists" )
     SET( SABUTILS_DLL ON CACHE BOOL "Build SAB Utils as a Shared Library" PARENT_SCOPE )
@@ -66,7 +64,7 @@ endif()
 
 add_definitions( -DSABUTILS_INTERNAL )
 
-include( Modules/EnableGoogleTesting.cmake )
+include( ${CMAKE_SOURCE_DIR}/T42-CMakeUtils/Modules/EnableGoogleTesting.cmake )
 
 if ( MKVUTILS )
     SET(NO_USE_MEDIAINFO_INSTALL ON)
