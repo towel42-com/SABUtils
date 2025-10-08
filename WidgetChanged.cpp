@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 #include "WidgetChanged.h"
+#include "DelayLineEdit.h"
+
 #include <QMetaMethod>
 #include <QObject>
 #include <QAbstractItemModel>
@@ -53,7 +55,7 @@
 
 namespace NSABUtils
 {
-    void setupModelChanged( const QAbstractItemModel *model, const QObject * , const std::function< void( QObject * ) > & member, bool isExcluded /* = false*/ )
+    void setupModelChanged( const QAbstractItemModel *model, const QObject *, const std::function< void( QObject * ) > &member, bool isExcluded /* = false*/ )
     {
         if ( !model )
             return;
@@ -184,6 +186,35 @@ namespace NSABUtils
     {
         if ( !isExcluded )
             QObject::connect( comboBox, &QComboBox::currentIndexChanged, [ = ]() { member( comboBox ); } );
+    }
+
+    void setupWidgetChanged( NSABUtils::CDelayLineEdit *delayLineEdit, const QWidget *parentWidget, const char *member, bool isExcluded )
+    {
+        if ( delayLineEdit->isReadOnly() )
+            return;
+
+        QObject::disconnect( delayLineEdit, SIGNAL( sigTextChangedAfterDelay( const QString & ) ), parentWidget, member );
+        if ( !isExcluded )
+            QObject::connect( delayLineEdit, SIGNAL( sigTextChangedAfterDelay( const QString & ) ), parentWidget, member );
+    }
+
+    void setupWidgetChanged( NSABUtils::CDelayLineEdit *delayLineEdit, const std::function< void( QObject * ) > &member, bool isExcluded )
+    {
+        if ( delayLineEdit->isReadOnly() )
+            return;
+
+        if ( !isExcluded )
+            QObject::connect( delayLineEdit, &NSABUtils::CDelayLineEdit::sigTextChangedAfterDelay, [ = ]() { member( delayLineEdit ); } );
+    }
+
+    void setupWidgetChanged( NSABUtils::CDelayLineEdit *delayLineEdit, const QWidget *parentWidget, const QMetaMethod &member, bool isExcluded )
+    {
+        if ( delayLineEdit->isReadOnly() )
+            return;
+
+        QObject::disconnect( delayLineEdit, QMetaMethod::fromSignal( &NSABUtils::CDelayLineEdit::sigTextChangedAfterDelay ), parentWidget, member );
+        if ( !isExcluded )
+            QObject::connect( delayLineEdit, QMetaMethod::fromSignal( &NSABUtils::CDelayLineEdit::sigTextChangedAfterDelay ), parentWidget, member );
     }
 
     void setupWidgetChanged( QLineEdit *lineEdit, const QWidget *parentWidget, const char *member, bool isExcluded )
@@ -485,6 +516,7 @@ namespace NSABUtils
         auto groupBox = dynamic_cast< QGroupBox * >( child );
         auto comboBox = dynamic_cast< QComboBox * >( child );
         auto lineEdit = dynamic_cast< QLineEdit * >( child );
+        auto delayLineEdit = dynamic_cast< NSABUtils::CDelayLineEdit * >( child );
         auto spinBox = dynamic_cast< QSpinBox * >( child );
         auto doubleSpinBox = dynamic_cast< QDoubleSpinBox * >( child );
         auto timeEdit = dynamic_cast< QTimeEdit * >( child );
@@ -507,6 +539,10 @@ namespace NSABUtils
         else if ( comboBox )
         {
             setupWidgetChanged( comboBox, parentWidget, member, isExcluded );
+        }
+        else if ( delayLineEdit )
+        {
+            setupWidgetChanged( delayLineEdit, parentWidget, member, isExcluded );
         }
         else if ( lineEdit )
         {
@@ -584,6 +620,7 @@ namespace NSABUtils
         auto groupBox = dynamic_cast< QGroupBox * >( child );
         auto comboBox = dynamic_cast< QComboBox * >( child );
         auto lineEdit = dynamic_cast< QLineEdit * >( child );
+        auto delayLineEdit = dynamic_cast< NSABUtils::CDelayLineEdit * >( child );
         auto spinBox = dynamic_cast< QSpinBox * >( child );
         auto doubleSpinBox = dynamic_cast< QDoubleSpinBox * >( child );
         auto timeEdit = dynamic_cast< QTimeEdit * >( child );
@@ -606,6 +643,10 @@ namespace NSABUtils
         else if ( comboBox )
         {
             setupWidgetChanged( comboBox, parentWidget, member, isExcluded );
+        }
+        else if ( delayLineEdit )
+        {
+            setupWidgetChanged( delayLineEdit, parentWidget, member, isExcluded );
         }
         else if ( lineEdit )
         {
@@ -688,6 +729,7 @@ namespace NSABUtils
         auto groupBox = dynamic_cast< QGroupBox * >( child );
         auto comboBox = dynamic_cast< QComboBox * >( child );
         auto lineEdit = dynamic_cast< QLineEdit * >( child );
+        auto delayLineEdit = dynamic_cast< NSABUtils::CDelayLineEdit * >( child );
         auto spinBox = dynamic_cast< QSpinBox * >( child );
         auto doubleSpinBox = dynamic_cast< QDoubleSpinBox * >( child );
         auto timeEdit = dynamic_cast< QTimeEdit * >( child );
@@ -710,6 +752,10 @@ namespace NSABUtils
         else if ( comboBox )
         {
             setupWidgetChanged( comboBox, member, isExcluded );
+        }
+        else if ( delayLineEdit )
+        {
+            setupWidgetChanged( delayLineEdit, member, isExcluded );
         }
         else if ( lineEdit )
         {
