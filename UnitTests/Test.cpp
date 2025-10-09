@@ -580,8 +580,8 @@ namespace
 #endif
 
 #ifdef WIN32
-    #define USER     QString( R"(scott.TOWEL42)" )
-    #define HOME_DIR QString( R"(C:\Users\)" ) + USER
+    #define USER     QString( R"__(scott.TOWEL42)__" )
+    #define HOME_DIR QString( R"__(C:\Users\)__" ) + USER
 
     TEST( TestUtils, DISABLED_TestWordExp )
     {
@@ -625,8 +625,8 @@ namespace
         //EXPECT_TRUE( aOK );
     }
 #elif DONTTEST
-    #define USER     QString( R"(scott)" )
-    #define HOME_DIR QString( R"(/home/)" ) + USER
+    #define USER     QString( R"__(scott)__" )
+    #define HOME_DIR QString( R"__(/home/)__" ) + USER
     TEST( TestUtils, TestWordExp )
     {
         bool aOK = false;
@@ -928,7 +928,7 @@ namespace
     {
         auto pattern = QStringLiteral( R"(\p{Sc}*(\s?\d+[.,]?\d*)\p{Sc}*)" );
         auto replacement = QStringLiteral( "$1" );
-        auto input = QStringLiteral( R"($16.32 12.19 £16.29 €18.29  €18,29)" );
+        auto input = QStringLiteral( R"__($16.32 12.19 £16.29 €18.29  €18,29)__" );
         auto result = NSABUtils::NStringUtils::regExReplace( input, pattern, replacement );
         ASSERT_TRUE( result.has_value() );
         EXPECT_EQ( QStringLiteral( "16.32 12.19 16.29 18.29  18,29" ), result.value() );
@@ -938,7 +938,7 @@ namespace
     {
         auto pattern = QStringLiteral( R"(\p{Sc}*(?<amount>\s?\d+[.,]?\d*)\p{Sc}*)" );
         auto replacement = QStringLiteral( "${amount}" );
-        auto input = QStringLiteral( R"($16.32 12.19 £16.29 €18.29  €18,29)" );
+        auto input = QStringLiteral( R"__($16.32 12.19 £16.29 €18.29  €18,29)__" );
         auto result = NSABUtils::NStringUtils::regExReplace( input, pattern, replacement );
         ASSERT_TRUE( result.has_value() );
         EXPECT_EQ( QStringLiteral( "16.32 12.19 16.29 18.29  18,29" ), result.value() );
@@ -955,7 +955,7 @@ namespace
     TEST( TestRegExReplace, TestRegExReplace_DollarSign_Precedes )
     {
         auto precedes = true;
-        auto currencySeparator = QStringLiteral( R"(\.)" );
+        auto currencySeparator = QStringLiteral( R"__(\.)__" );
         auto symbol = QString( "$" );
         if ( symbol == "$" )
             symbol = QString( "$$" );
@@ -973,7 +973,7 @@ namespace
     TEST( TestRegExReplace, TestRegExReplace_DollarSign_Follows )
     {
         auto precedes = false;
-        auto currencySeparator = R"(\.)";
+        auto currencySeparator = R"__(\.)__";
         auto symbol = QString( "$" );
         if ( symbol == "$" )
             symbol = QString( "$$" );
@@ -991,7 +991,7 @@ namespace
     TEST( TestRegExReplace, TestRegExReplace_EuroSign_Precedes )
     {
         auto precedes = true;
-        auto currencySeparator = QStringLiteral( R"(\.)" );
+        auto currencySeparator = QStringLiteral( R"__(\.)__" );
         auto symbol = QStringLiteral( "€" );
         if ( symbol == QStringLiteral( "$" ) )
             symbol = QString( "$$" );
@@ -1009,7 +1009,7 @@ namespace
     TEST( TestRegExReplace, TestRegExReplace_EuroSign_Follows )
     {
         auto precedes = false;
-        auto currencySeparator = R"(\.)";
+        auto currencySeparator = R"__(\.)__";
         auto symbol = QStringLiteral( "€" );
         if ( symbol == "$" )
             symbol = QString( "$$" );
@@ -1027,12 +1027,12 @@ namespace
     TEST( TestRegExReplace, TestRegExReplace_EntireMatch )
     {
         auto pattern = R"(^(\w+\s?)+$)";
-        auto replacement = R"("$&<<==>>$&")";
+        auto replacement = R"__("$&<<==>>$&")__";
 
-        EXPECT_EQ( R"("A Tale of Two Cities<<==>>A Tale of Two Cities")", NSABUtils::NStringUtils::regExReplace( "A Tale of Two Cities", pattern, replacement ) );
-        EXPECT_EQ( R"("The Hound of the Baskervilles<<==>>The Hound of the Baskervilles")", NSABUtils::NStringUtils::regExReplace( "The Hound of the Baskervilles", pattern, replacement ) );
-        EXPECT_EQ( R"("The Protestant Ethic and the Spirit of Capitalism<<==>>The Protestant Ethic and the Spirit of Capitalism")", NSABUtils::NStringUtils::regExReplace( "The Protestant Ethic and the Spirit of Capitalism", pattern, replacement ) );
-        EXPECT_EQ( R"("The Origin of Species<<==>>The Origin of Species")", NSABUtils::NStringUtils::regExReplace( "The Origin of Species", pattern, replacement ) );
+        EXPECT_EQ( R"__("A Tale of Two Cities<<==>>A Tale of Two Cities")__", NSABUtils::NStringUtils::regExReplace( "A Tale of Two Cities", pattern, replacement ) );
+        EXPECT_EQ( R"__("The Hound of the Baskervilles<<==>>The Hound of the Baskervilles")__", NSABUtils::NStringUtils::regExReplace( "The Hound of the Baskervilles", pattern, replacement ) );
+        EXPECT_EQ( R"__("The Protestant Ethic and the Spirit of Capitalism<<==>>The Protestant Ethic and the Spirit of Capitalism")__", NSABUtils::NStringUtils::regExReplace( "The Protestant Ethic and the Spirit of Capitalism", pattern, replacement ) );
+        EXPECT_EQ( R"__("The Origin of Species<<==>>The Origin of Species")__", NSABUtils::NStringUtils::regExReplace( "The Origin of Species", pattern, replacement ) );
     }
 }
 

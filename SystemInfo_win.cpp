@@ -342,7 +342,7 @@ namespace NSABUtils
 
                 if ( osvi.dwMajorVersion == 4 && QString::fromWCharArray( osvi.szCSDVersion ).toUpper() == "SERVICE PACK 6" )
                 {
-                    QString key = R"(HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Hotfix)";
+                    QString key = R"__(HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Hotfix)__";
                     QSettings settings( key, QSettings::NativeFormat );
                     settings.setFallbacksEnabled( false );
                     if ( settings.contains( "Q246009" ) )
@@ -418,7 +418,7 @@ namespace NSABUtils
 
     int getCPUSpeed( size_t logicalProcessorID )
     {
-        QString key = R"(HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor)";
+        QString key = R"__(HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor)__";
         QSettings settings( key, QSettings::NativeFormat );
         settings.setFallbacksEnabled( false );
         QStringList cpus = settings.childGroups();

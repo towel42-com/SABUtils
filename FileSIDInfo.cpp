@@ -19,7 +19,7 @@ namespace NSABUtils
         {
             auto winPath = pathName;
             std::replace( winPath.begin(), winPath.end(), '/', '\\' );
-            winPath = LR"(\\?\)" + winPath;
+            winPath = LR"__(\\?\)__" + winPath;
             return winPath;
         }
 

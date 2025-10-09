@@ -2668,9 +2668,9 @@ namespace NSABUtils
                     retVal += ",";
                 first = false;
                 auto curr = ii;
-                curr.replace( R"(")", R"(\")" );
+                curr.replace( R"__(")__", R"__(\")__" );
                 if ( curr.contains( "," ) )
-                    curr = QString( R"("%1")" ).arg( curr );
+                    curr = QString( R"__("%1")__" ).arg( curr );
                 retVal += curr;
             }
             return retVal;
@@ -2702,7 +2702,7 @@ namespace NSABUtils
             std::vector< QString > retVal;
             auto wordsToRemove = unimportantWords();
 
-            auto regExp = stripPunctuation ? QRegularExpression( R"(\s|\-|\:)" ) : QRegularExpression( "\\s" );
+            auto regExp = stripPunctuation ? QRegularExpression( R"__(\s|\-|\:)__" ) : QRegularExpression( "\\s" );
             auto words = string.toLower().split( regExp, TSkipEmptyParts );
             for ( auto &&ii : words )
             {

@@ -390,7 +390,7 @@ namespace NSABUtils
         SABUTILS_EXPORT bool isIPAddressNetworkPath( const QFileInfo &info )
         {
             auto path = info.absoluteFilePath();
-            if ( !path.startsWith( "//" ) && !path.startsWith( R"(\\)" ) )
+            if ( !path.startsWith( "//" ) && !path.startsWith( R"__(\\)__" ) )
                 return false;
 
             auto block = "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";

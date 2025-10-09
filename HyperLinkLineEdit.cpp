@@ -145,7 +145,7 @@ QString CHyperLinkLineEdit::text() const
 
 QString CHyperLinkLineEdit::addText( const QString &text, bool &urlFound ) const
 {
-    auto pos = text.indexOf( QRegularExpression( R"(\S)" ) );
+    auto pos = text.indexOf( QRegularExpression( R"__(\S)__" ) );
     if ( pos == -1 )
         return text;
     auto pre = text.left( pos );
@@ -156,14 +156,14 @@ QString CHyperLinkLineEdit::addText( const QString &text, bool &urlFound ) const
     isURL = isURL || remaining.startsWith( "https://" );
     if ( !isURL )
     {
-        auto match = QRegularExpression( R"(\:\d+)" ).match( remaining );
+        auto match = QRegularExpression( R"__(\:\d+)__" ).match( remaining );
         if ( match.hasMatch() && match.capturedEnd() == remaining.length() )
             isURL = true;
     }
 
     if ( isURL )
     {
-        auto retVal = QString( R"(%1<a href="%2">%2</a>)" ).arg( pre ).arg( remaining );
+        auto retVal = QString( R"__(%1<a href="%2">%2</a>)__" ).arg( pre ).arg( remaining );
         urlFound = true;
         return retVal;
     }
@@ -174,13 +174,13 @@ void CHyperLinkLineEdit::setText( const QString &text )
 {
     QString actualString;
     int prevPos = 0;
-    auto pos = text.indexOf( QRegularExpression( R"(\s)" ), prevPos );
+    auto pos = text.indexOf( QRegularExpression( R"__(\s)__" ), prevPos );
     bool urlFound = false;
     while ( pos != -1 )
     {
         actualString += addText( text.mid( prevPos, pos - prevPos ), urlFound );
         prevPos = pos;
-        pos = text.indexOf( QRegularExpression( R"(\s)" ), prevPos + 1 );
+        pos = text.indexOf( QRegularExpression( R"__(\s)__" ), prevPos + 1 );
     }
 
     actualString += addText( text.mid( prevPos ), urlFound );

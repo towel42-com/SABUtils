@@ -121,11 +121,11 @@ namespace NSABUtils
             else if ( format == EFormat::eHtml )
             {
                 oss << "\n"
-                    << R"(<table width="100%" border="1">\n)"
-                    << R"(<tr><th align="left" colspan="2">)" << title << "</th></tr>\n";
+                    << R"__(<table width="100%" border="1">\n)__"
+                    << R"__(<tr><th align="left" colspan="2">)__" << title << "</th></tr>\n";
 
                 if ( !subTitle.first.empty() )
-                    oss << R"(<tr><th align="left">)" << subTitle.first << ":</th><td>" << sBaseApplicationMemory << "</td></tr>\n";
+                    oss << R"__(<tr><th align="left">)__" << subTitle.first << ":</th><td>" << sBaseApplicationMemory << "</td></tr>\n";
             }
 
             QJsonObject data;
@@ -137,7 +137,7 @@ namespace NSABUtils
                 if ( format == EFormat::eText )
                     oss << ii.first << ": " << ii.second << "\n";
                 else if ( format == EFormat::eHtml )
-                    oss << R"(<tr><th align="left">)" << ii.first << ":</th><td>" << ii.second << "</td></tr>\n";
+                    oss << R"__(<tr><th align="left">)__" << ii.first << ":</th><td>" << ii.second << "</td></tr>\n";
 
                 data.insert( QString::fromStdString( ii.first ), QString::fromStdString( ii.second ) );
             }
@@ -169,8 +169,8 @@ namespace NSABUtils
             else if ( format == EFormat::eHtml )
             {
                 oss << "\n"
-                    << R"(<table width="100%" border="1">\n)"
-                    << R"(<tr><th align="left" colspan="2">)" << title << "s"
+                    << R"__(<table width="100%" border="1">\n)__"
+                    << R"__(<tr><th align="left" colspan="2">)__" << title << "s"
                     << "</th></tr>\n";
             }
 
@@ -188,10 +188,10 @@ namespace NSABUtils
                 }
                 else if ( format == EFormat::eHtml )
                 {
-                    oss << R"(<tr><th align="center"colspan="2">)" << title << ": " << std::to_string( ii ) << "</th></tr>\n"
-                        << R"(<tr><th>Name:</th><td>)" << currNic.fName << "</td></tr>\n"
-                        << R"(<tr><th>MAC:</th><td>)" << currNic.fMacAddr << "</td></tr>\n"
-                        << R"(<tr><th>IP:</th><td>)" << currNic.fIPAddr << "</td></tr>\n";
+                    oss << R"__(<tr><th align="center"colspan="2">)__" << title << ": " << std::to_string( ii ) << "</th></tr>\n"
+                        << R"__(<tr><th>Name:</th><td>)__" << currNic.fName << "</td></tr>\n"
+                        << R"__(<tr><th>MAC:</th><td>)__" << currNic.fMacAddr << "</td></tr>\n"
+                        << R"__(<tr><th>IP:</th><td>)__" << currNic.fIPAddr << "</td></tr>\n";
                 }
                 QJsonObject jsonNic;
                 jsonNic.insert( QString::fromStdString( title ), QString::number( ii++ ) );
