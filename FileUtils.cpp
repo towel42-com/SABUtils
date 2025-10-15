@@ -944,10 +944,9 @@ namespace NSABUtils
             while ( it.hasNext() )
             {
                 QString path = it.next();
-                QString realPath = path;
-                if ( realPath.isEmpty() )
+                if ( path.isEmpty() )
                     continue;
-                if ( ignoreInternal && ( realPath.startsWith( ":/trolltech" ) || realPath.startsWith( ":/webkit" ) || realPath.startsWith( ":/http:" ) || realPath.startsWith( ":/qt-project.org" ) || realPath.startsWith( ":/qpdf" ) ) )
+                if ( ignoreInternal && ( path.startsWith( ":/trolltech" ) || path.startsWith( ":/webkit" ) || path.startsWith( ":/http:" ) || path.startsWith( ":/qt-project.org" ) || path.startsWith( ":/qpdf" ) ) )
                     continue;
 
                 QFileInfo fi( path );
@@ -957,7 +956,7 @@ namespace NSABUtils
                 }
                 else
                 {
-                    retVal << realPath;
+                    retVal << QString( "%1: %2" ).arg( path ).arg( fi.size() );
                 }
             }
             return retVal;
