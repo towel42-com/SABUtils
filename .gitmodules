@@ -12,7 +12,7 @@
 	branch = develop
 [submodule "CMakeNuGetTools"]
 	path = CMakeNuGetTools
-	url =  https://github.com/katusk/CMakeNuGetTools.git
+	url =  https://github.com/towel42-com/CMakeNuGetTools
 	branch = master
 [submodule "MediaInfo/MediaInfoLib"]
 	path = MediaInfo/MediaInfoLib
