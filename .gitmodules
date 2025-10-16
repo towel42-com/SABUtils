@@ -1,16 +1,20 @@
 [submodule "googletest"]
 	path = googletest
-	url =  git@github.com:google/googletest.git
+	url =  https://github.com/google/googletest.git
+	branch = main
 [submodule "MediaInfo/ZenLib"]
 	path = MediaInfo/ZenLib
-	url =  git@github.com:MediaArea/ZenLib.git
+	url =  https://github.com/MediaArea/ZenLib.git
 [submodule "MediaInfo/zlib"]
 	path = MediaInfo/zlib
-	url =  git@github.com:MediaArea/zlib
+	url =  https://github.com/MediaArea/zlib
     ignore = all
+	branch = develop
 [submodule "CMakeNuGetTools"]
 	path = CMakeNuGetTools
-	url =  git@github.com:katusk/CMakeNuGetTools.git
+	url =  https://github.com/katusk/CMakeNuGetTools.git
+	branch = master
 [submodule "MediaInfo/MediaInfoLib"]
 	path = MediaInfo/MediaInfoLib
-	url =  git@github.com:towel42-com/MediaInfoLib.git
+	url =  https://github.com/towel42-com/MediaInfoLib.git
+	branch = master
