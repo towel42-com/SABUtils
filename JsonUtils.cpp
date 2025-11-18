@@ -30,35 +30,35 @@
 
 namespace NSABUtils
 {
-    void ToJson( const QStringList &value, QJsonValueRef &val )
+    void toJson( const QStringList &value, QJsonValueRef &val )
     {
         QJsonArray retVal;
         for ( auto &&ii : value )
         {
             QJsonValue curr;
-            ToJson( ii, curr );
+            toJson( ii, curr );
             retVal.append( curr );
         }
         val = retVal;
     }
 
-    void ToJson( const QStringList &value, QJsonValue &val )
+    void toJson( const QStringList &value, QJsonValue &val )
     {
         QJsonArray retVal;
         for ( auto &&ii : value )
         {
             QJsonValue curr;
-            ToJson( ii, curr );
+            toJson( ii, curr );
             retVal.append( curr );
         }
         val = retVal;
     }
 
-    void FromJson( QStringList &value, const QJsonValue &val )
+    bool fromJson( QStringList &value, const QJsonValue &val )
     {
         value.clear();
         if ( !val.isArray() )
-            return;
+            return false;
         auto array = val.toArray();
         for ( int ii = 0; ii < array.count(); ++ii )
         {
@@ -67,41 +67,44 @@ namespace NSABUtils
                 curr = curr.mid( 1, curr.length() - 2 );
             value << curr;
         }
+        return true;
     }
 
-    void FromJson( bool &value, const QJsonValue &val )
+    bool fromJson( bool &value, const QJsonValue &val )
     {
         value = false;
         if ( !val.isObject() && !val.isBool() )
-            return;
+            return false;
 
         auto realVal = val;
         if ( val.isObject() )
         {
             if ( !val.toObject().contains( "value" ) )
-                return;
+                return false;
             realVal = val.toObject()[ "value" ];
         }
         value = realVal.toBool();
+        return true;
     }
 
-    void FromJson( double &value, const QJsonValue &val )
+    bool fromJson( double &value, const QJsonValue &val )
     {
         value = 0.0;
         if ( !val.isObject() && !val.isDouble() )
-            return;
+            return false;
 
         auto realVal = val;
         if ( val.isObject() )
         {
             if ( !val.toObject().contains( "value" ) )
-                return;
+                return false;
             realVal = val.toObject()[ "value" ];
         }
         value = realVal.toDouble();
+        return true;
     }
 
-    void FromJson( QString &value, const QJsonValue &val )
+    bool fromJson( QString &value, const QJsonValue &val )
     {
         value.clear();
 
@@ -109,28 +112,29 @@ namespace NSABUtils
         if ( val.isObject() )
         {
             if ( !val.toObject().contains( "value" ) )
-                return;
+                return false;
             realVal = val.toObject()[ "value" ];
         }
         value = realVal.toString();
+        return true;
     }
 
-    void FromJson( int &value, const QJsonValue &val )
+    bool fromJson( int &value, const QJsonValue &val )
     {
         value = 0;
         if ( !val.isObject() && !val.isString() && !val.isDouble() )
-            return;
+            return false;
 
         auto realVal = val;
         if ( val.isObject() )
         {
             if ( !val.toObject().contains( "value" ) )
-                return;
+                return false;
             realVal = val.toObject()[ "value" ];
         }
 
         if ( !realVal.isString() && !realVal.isDouble() )
-            return;
+            return false;
         if ( realVal.isString() )
         {
             bool aOK;
@@ -142,5 +146,42 @@ namespace NSABUtils
         {
             value = static_cast< int >( val.toDouble() );
         }
+        return true;
+    }
+
+    bool fromJson( QStringList &value, const QJsonObject &obj, const QString &keyName )
+    {
+        auto objValue = obj[ keyName ];
+        return fromJson( value, objValue );
+    }
+
+    bool fromJson( bool &value, const QJsonObject &obj, const QString &keyName )
+    {
+        auto objValue = obj[ keyName ];
+        return fromJson( value, objValue );
+    }
+
+    bool fromJson( double &value, const QJsonObject &val, const QString &keyName )
+    {
+        auto objValue = val[ keyName ];
+        return fromJson( value, objValue );
+    }
+
+    bool fromJson( QString &value, const QJsonObject &obj, const QString &keyName )
+    {
+        auto objValue = obj[ keyName ];
+        return fromJson( value, objValue );
+    }
+
+    bool fromJson( int &value, const QJsonObject &val, const QString &keyName )
+    {
+        auto objValue = val[ keyName ];
+        return fromJson( value, objValue );
+    }
+
+    bool fromJson( std::pair< QString, QString > &value, const QJsonObject &obj, const QString &keyName )
+    {
+        auto objValue = obj[ keyName ];
+        return fromJson( value, objValue );
     }
 }
