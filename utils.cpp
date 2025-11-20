@@ -378,15 +378,12 @@ namespace NSABUtils
         auto regExpStr1 = R"((^|[^A-Z])E(?<garbage3>PISODE)?(?<episode>\d{1,4})(?!(-|(E(EPISODE)?)))";
         auto regExpStr2 = R"((^|[^A-Z])E(?<garbage1>PISODE)?(?<startEpisode>\d{1,4})(?<sep>\-)?E(?<garbage2>PISODE)?(?<endEpisode>\d{1,4}))";
 
-        //auto regExStr1 = prefixRegEx + R"((?<num>\d{1,4})(?!(-|:|(E(EPISODE)?))))";
         auto firstNum = R"((?:^|[^A-Z0-9a-z\-]))" + prefixRegEx + R"((?<%1>\d{1,4}))";   // new word/start of line followed by prefix + first num
         auto secondNum = R"((?<sep>[\-\:]))" + prefixRegEx + R"((?<endNum>\d{1,4}))";   // seperator + prefix + endNum
 
         auto regExStr = "(?:" + firstNum.arg( "startNum" ) + secondNum + ")|(?:" + firstNum.arg( "num" ) + prefixRegEx + ")";
 
         auto regEx = QRegularExpression( regExStr, QRegularExpression::CaseInsensitiveOption );
-        //auto regEx2 = QRegularExpression( regExStr2, QRegularExpression::CaseInsensitiveOption );
-        //// auto regEx2 = QRegularExpression( regExStr2, QRegularExpression::CaseInsensitiveOption );
 
         if ( aOK )
         {
