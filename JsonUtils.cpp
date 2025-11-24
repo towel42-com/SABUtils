@@ -35,8 +35,7 @@ namespace NSABUtils
         QJsonArray retVal;
         for ( auto &&ii : value )
         {
-            QJsonValue curr;
-            toJson( ii, curr );
+            auto curr = toJson( ii );
             retVal.append( curr );
         }
         return retVal;
