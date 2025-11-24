@@ -24,7 +24,7 @@ cmake_minimum_required(VERSION 3.30)
 
 SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../Modules ${CMAKE_MODULE_PATH})
 
-find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
 find_package(Deploy REQUIRED)
 
 find_package(IncludeProjectSettings REQUIRED)

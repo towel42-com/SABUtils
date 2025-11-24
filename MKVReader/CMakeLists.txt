@@ -22,10 +22,10 @@
 
 cmake_minimum_required(VERSION 3.22)
 
-find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Deploy REQUIRED)
 find_package(AddUnitTest REQUIRED)
-find_package(Qt5SrcMoc REQUIRED)
+find_package(Qt6SrcMoc REQUIRED)
 
 find_package(IncludeProjectSettings REQUIRED)
 include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
