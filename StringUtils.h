@@ -470,6 +470,10 @@ namespace NSABUtils
         SABUTILS_EXPORT bool validateQuotedPrintableString( const char *str, size_t len = std::string::npos );
         SABUTILS_EXPORT bool validateQuotedPrintableString( const std::string &str );
 
+        SABUTILS_EXPORT QString numToEnglish( int value );
+        SABUTILS_EXPORT QString replaceNumbersWithEnglish( const QString &str );
+        SABUTILS_EXPORT QString replaceRomanNumeral( const QString &str );
+
         SABUTILS_EXPORT int romanToDecimal( QString string, bool &aOK );   // only valid for roman numbers to 3999 as 4000 requires a vinculum
         SABUTILS_EXPORT bool isRomanNumeral( const QString &string, int *value = nullptr );
 
@@ -507,7 +511,7 @@ namespace NSABUtils
 
         SABUTILS_EXPORT std::string getPercentageAsString( double value );
 
-        SABUTILS_EXPORT QString removeDiacriticalCharacters( const QString &str );
+        SABUTILS_EXPORT QString replaceDiacriticalCharacters( const QString &str );
         SABUTILS_EXPORT bool isDiacriticalCharacter( const QChar &ch, QString *ascii = nullptr );
 
         SABUTILS_EXPORT bool startsOrEndsWithNumber( const QString &string, QString *number = nullptr, QString *extra = nullptr, bool *numIsPrefix = nullptr );   // number_extra or extra_number, prefix = true means the number is a prefix

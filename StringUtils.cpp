@@ -498,7 +498,8 @@ namespace NSABUtils
         std::string replaceAllNot( const std::string &inString, const std::string &notOf, char to )
         {
             std::string string = inString;
-            std::replace_if( string.begin(), string.end(), [ notOf ]( char x ) { return ( notOf.find( x ) == std::string::npos ); }, to );
+            std::replace_if(
+                string.begin(), string.end(), [ notOf ]( char x ) { return ( notOf.find( x ) == std::string::npos ); }, to );
             return string;
         }
 
@@ -2675,7 +2676,120 @@ namespace NSABUtils
             return retVal;
         }
 
-        QString removeDiacriticalCharacters( const QString &str )
+        QString numToEnglish( int value )
+        {
+            QStringList retVal;
+            if ( value < 0 )
+            {
+                retVal << "Minus";
+                value = -value;
+            }
+
+            if ( value < 20 )
+            {
+                static std::vector< QString > sValues =   //
+                    {
+                        //
+                        "Zero",   //
+                        "One",   //
+                        "Two",   //
+                        "Three",   //
+                        "Four",   //
+                        "Five",   //
+                        "Six",   //
+                        "Seven",   //
+                        "Eight",   //
+                        "Nine",   //
+                        "Ten",   //
+                        "Eleven",   //
+                        "Twelve",   //
+                        "Thirteen",   //
+                        "Fourteen",   //
+                        "Fifteen",   //
+                        "Sixteen",   //
+                        "SevenTeen",   //
+                        "Eighteen",   //
+                        "Nineteen"   //
+                    };
+                retVal << sValues[ value ];
+            }
+            else if ( value < 100 )
+            {
+                static std::vector< QString > sValues =   //
+                    {
+                        "Twenty",   //
+                        "Thirty",   //
+                        "Fourty",   //
+                        "Fifty",   //
+                        "Sixty",   //
+                        "Seventy",   //
+                        "Eighty",   //
+                        "Ninety",   //
+                    };
+
+                auto pos = ( value / 10 ) - 2;   // 10s and 20s handled above
+                retVal << sValues[ pos ];
+                if ( value % 10 )
+                {
+                    retVal << numToEnglish( value / 10 );
+                }
+            }
+            else
+            {
+                struct SLargeValues
+                {
+                    int64_t fMaxValue{ 0 };
+                    int64_t fDivider{ 0 };
+                    QString fName;
+                };
+                static std::vector< SLargeValues > sValues =   //
+                    {
+                        //
+                        { 1000, 100, "Hundred" },   //
+                        { 100000, 1000, "Thousand" },   //
+                        { 10000000, 100000, "Million" },   //
+                        { 1000000000, 10000000, "Billion" },   //
+                        { 100000000000, 1000000000, "Trillion" },   //
+                        { 10000000000000, 100000000000, "Quadrillion" },   //
+                        { 1000000000000000, 10000000000000, "Quintillion" },   //
+                        { 100000000000000000, 1000000000000000, "Sextillion" },   //
+                    };
+                for ( auto &&curr : sValues )
+                {
+                    if ( value < curr.fMaxValue )
+                    {
+                        retVal << numToEnglish( value / curr.fDivider ) << curr.fName;
+                        if ( ( value % curr.fDivider ) > 0 )
+                            retVal << numToEnglish( value % curr.fDivider );
+                        break;
+                    }
+                }
+            }
+            return retVal.join( " " );
+        }
+
+        QString replaceNumbersWithEnglish( const QString &str )
+        {
+            QRegularExpression regExp( R"((?:^|\b)?(\d+)(?:\b|$)?)" );
+
+            QString retVal = str;
+            auto ii = regExp.globalMatch( retVal );
+            while ( ii.hasNext() )
+            {
+                auto match = ii.next();
+                bool aOK = false;
+                auto value = match.captured( 1 ).toInt( &aOK, 10 );
+                if ( aOK )
+                {
+                    auto str = numToEnglish( value );
+                    retVal.replace( match.capturedStart( 1 ), match.capturedLength(), str );
+                }
+            }
+
+            return retVal;
+        }
+
+        QString replaceDiacriticalCharacters( const QString &str )
         {
             QString retVal;
             for ( auto &&ii : str )
@@ -2696,6 +2810,16 @@ namespace NSABUtils
             return retVal;
         }
 
+        QString replaceRomanNumeral( const QString &str )
+        {
+            int value;
+            if ( isRomanNumeral( str, &value ) )
+            {
+                return QString::number( value );
+            }
+            return str;
+        }
+
         std::vector< QString > getImportantWordsInOrder( const QString &string, bool stripPunctuation )
         {
             std::vector< QString > retVal;
@@ -2707,8 +2831,11 @@ namespace NSABUtils
             {
                 if ( stripPunctuation )
                 {
-                    ii = removeDiacriticalCharacters( ii );
-                    ii = ii.remove( QRegularExpression( "\\W" ) );
+                    ii = replaceDiacriticalCharacters( ii );
+                    ii = replaceRomanNumeral( ii );
+                    ii = replaceNumbersWithEnglish( ii );
+                    ii = ii.remove( QRegularExpression( R"(\W)" ) );
+                    ii = ii.toLower();
                 }
                 if ( wordsToRemove.find( ii ) != wordsToRemove.end() )
                     continue;
