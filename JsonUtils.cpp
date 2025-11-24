@@ -30,7 +30,7 @@
 
 namespace NSABUtils
 {
-    void toJson( const QStringList &value, QJsonValueRef &val )
+    QJsonValue toJson( const QStringList &value )
     {
         QJsonArray retVal;
         for ( auto &&ii : value )
@@ -39,19 +39,7 @@ namespace NSABUtils
             toJson( ii, curr );
             retVal.append( curr );
         }
-        val = retVal;
-    }
-
-    void toJson( const QStringList &value, QJsonValue &val )
-    {
-        QJsonArray retVal;
-        for ( auto &&ii : value )
-        {
-            QJsonValue curr;
-            toJson( ii, curr );
-            retVal.append( curr );
-        }
-        val = retVal;
+        return retVal;
     }
 
     bool fromJson( QStringList &value, const QJsonValue &val )

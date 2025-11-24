@@ -45,8 +45,7 @@ namespace NSABUtils
         obj = QJsonValue( value );
     }
 
-    SABUTILS_EXPORT void toJson( const QStringList &value, QJsonValue &obj );
-    SABUTILS_EXPORT void toJson( const QStringList &value, QJsonValueRef &obj );
+    SABUTILS_EXPORT QJsonValue toJson( const QStringList &value );
 
     template< typename T >
     void toJson( const std::list< T > &value, QJsonValue &obj )

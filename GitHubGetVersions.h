@@ -27,6 +27,7 @@
 #include <QObject>
 #include <QUrl>
 #include <QDateTime>
+#include <QSslError>
 #include <optional>
 #include <memory>
 
@@ -37,7 +38,6 @@ class QAuthenticator;
 class QJsonArray;
 class QSslPreSharedKeyAuthenticator;
 class QNetworkProxy;
-class QSslError;
 
 namespace NSABUtils
 {
