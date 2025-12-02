@@ -32,12 +32,12 @@ if(WIN32)
         REQUIRED )
 endif()
 
-if( SABUTILS_DLL )
-#    message( STATUS "SAB Utils exists" )
-    SET( SABUTILS_DLL ON CACHE BOOL "Build SAB Utils as a Shared Library" PARENT_SCOPE )
+if( TOWEL42_UTILS_DLL )
+#    message( STATUS "Towel42 Utils exists" )
+    SET( TOWEL42_UTILS_DLL ON CACHE BOOL "Build Towel42 Utils as a Shared Library" PARENT_SCOPE )
 else()
-#    message( STATUS "SAB Utils does not exist" )
-    SET( SABUTILS_DLL ON CACHE BOOL "Build SAB Utils as a Shared Library" )
+#    message( STATUS "Towel42 Utils does not exist" )
+    SET( TOWEL42_UTILS_DLL ON CACHE BOOL "Build Towel42 Utils as a Shared Library" )
 endif()
 
 SET( MKVUTILS OFF CACHE BOOL "Support for MKV Utilities" PARENT_SCOPE )
@@ -47,22 +47,22 @@ SET( QAXOBJECT_SUPPORT OFF CACHE BOOL "Enable QAxObject Utilities Support" PAREN
 SET( QNETWORK_SUPPORT OFF CACHE BOOL "Enable QNetwork Utilities Support" PARENT_SCOPE )
 SET( QCONCURRENT_SUPPORT OFF CACHE BOOL "Enable QConcurrent Utilities Support" PARENT_SCOPE )
 
-SET( SAB_ENABLE_TESTING OFF CACHE BOOL "Enable Testing" PARENT_SCOPE )
+SET( TOWEL42_ENABLE_TESTING OFF CACHE BOOL "Enable Testing" PARENT_SCOPE )
    
-message( STATUS "Building for DLL=${SABUTILS_DLL}" )
+message( STATUS "Building for DLL=${TOWEL42_UTILS_DLL}" )
 message( STATUS "Building MKVUTILS=${MKVUTILS}" )
 message( STATUS "Building BIFSUPPORT=${BIFSUPPORT}" )
 message( STATUS "Building GIFSUPPORT=${GIFSUPPORT}" )
 message( STATUS "Building QAXOBJECT_SUPPORT=${QAXOBJECT_SUPPORT}" )
 message( STATUS "Building QNETWORK_SUPPORT=${QNETWORK_SUPPORT}" )
 message( STATUS "Building QCONCURRENT_SUPPORT=${QCONCURRENT_SUPPORT}" )
-message( STATUS "Building SAB_ENABLE_TESTING=${SAB_ENABLE_TESTING}" )
+message( STATUS "Building TOWEL42_ENABLE_TESTING=${TOWEL42_ENABLE_TESTING}" )
 
-if ( NOT SAB_UTILS_DIR )
-    SET( SAB_UTILS_DIR ${CMAKE_CURRENT_LIST_DIR} )
+if ( NOT TOWEL42_UTILS_DIR )
+    SET( TOWEL42_UTILS_DIR ${CMAKE_CURRENT_LIST_DIR} )
 endif()
 
-add_definitions( -DSABUTILS_INTERNAL )
+add_definitions( -DTOWEL42UTILS_INTERNAL )
 
 include( ${CMAKE_SOURCE_DIR}/T42-CMakeUtils/Modules/EnableGoogleTesting.cmake )
 
@@ -75,7 +75,7 @@ if ( MKVUTILS )
 endif()
 
 
-OPTION(SAB_DEBUG_TRACE "Enable Debug Tracing to std::cout" OFF)
+OPTION(TOWEL42_DEBUG_TRACE "Enable Debug Tracing to std::cout" OFF)
 
 find_package(Qt6 COMPONENTS Concurrent Core Widgets Xml Network REQUIRED)
 IF(WIN32)
@@ -92,7 +92,7 @@ find_package(AddUnitTest REQUIRED)
 find_package(Qt6SrcMoc REQUIRED)
 
 
-set(SAB_MOC_OPTIONS "-DNON_VIS_BUILD=1")
+set(TOWEL42_MOC_OPTIONS "-DNON_VIS_BUILD=1")
 
 if ( MKVUTILS )
     set( MEDIAINFOLIB mediainfo )
@@ -122,7 +122,7 @@ if( WIN32 )
     )
 endif()
 
-if ( SABUTILS_DLL )
+if ( TOWEL42_UTILS_DLL )
     SET( LIBTYPE SHARED )
 else()
     SET( LIBTYPE STATIC )
@@ -144,7 +144,7 @@ if ( BIFSUPPORT )
     add_definitions( -DBIF_SCROLLBAR_SUPPORT=1 )
 endif()
 
-if ( SABUTILS_DLL )
+if ( TOWEL42_UTILS_DLL )
     set_target_properties( ${PROJECT_NAME} PROPERTIES 
                                 FOLDER ${FOLDER_NAME} 
                                 DEBUG_POSTFIX d
@@ -159,12 +159,12 @@ else()
     set_target_properties( ${PROJECT_NAME} PROPERTIES FOLDER ${FOLDER_NAME} )
 endif()
 
-if( SAB_ENABLE_TESTING )
+if( TOWEL42_ENABLE_TESTING )
     add_subdirectory(UnitTests)
 endif()
 
 if ( NOT TOWEL42_NO_DEPLOY_SUBMODULES )
-    if ( SABUTILS_DLL )
+    if ( TOWEL42_UTILS_DLL )
         DeployQt( ${PROJECT_NAME} . )
         DeploySystem( ${PROJECT_NAME} . )
     endif()

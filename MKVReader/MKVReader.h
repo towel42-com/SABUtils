@@ -26,7 +26,7 @@
 #include <vector>
 #include <QString>
 #include <QFile>
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NMKVReader
     {

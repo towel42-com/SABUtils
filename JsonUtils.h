@@ -23,7 +23,7 @@
 #ifndef __JSONUTILS_H
 #define __JSONUTILS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <set>
 #include <list>
@@ -31,7 +31,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     template< typename T >
     QJsonValue toJson( const T &value )
@@ -39,7 +39,7 @@ namespace NSABUtils
         return QJsonValue( value );
     }
         
-    SABUTILS_EXPORT QJsonValue toJson( const QStringList &value );
+    TOWEL42_UTILS_EXPORT QJsonValue toJson( const QStringList &value );
 
     template< typename T >
     QJsonValue toJson( const std::list< T > &value )
@@ -91,17 +91,17 @@ namespace NSABUtils
         return retVal;
     }
 
-    SABUTILS_EXPORT bool fromJson( QStringList &value, const QJsonObject &val, const QString &keyName );
-    SABUTILS_EXPORT bool fromJson( bool &value, const QJsonObject &val, const QString &keyName );
-    SABUTILS_EXPORT bool fromJson( double &value, const QJsonObject &val, const QString &keyName );
-    SABUTILS_EXPORT bool fromJson( QString &value, const QJsonObject &val, const QString &keyName );
-    SABUTILS_EXPORT bool fromJson( int &value, const QJsonObject &val, const QString &keyName );
+    TOWEL42_UTILS_EXPORT bool fromJson( QStringList &value, const QJsonObject &val, const QString &keyName );
+    TOWEL42_UTILS_EXPORT bool fromJson( bool &value, const QJsonObject &val, const QString &keyName );
+    TOWEL42_UTILS_EXPORT bool fromJson( double &value, const QJsonObject &val, const QString &keyName );
+    TOWEL42_UTILS_EXPORT bool fromJson( QString &value, const QJsonObject &val, const QString &keyName );
+    TOWEL42_UTILS_EXPORT bool fromJson( int &value, const QJsonObject &val, const QString &keyName );
 
-    SABUTILS_EXPORT bool fromJson( QStringList &value, const QJsonValue &val );
-    SABUTILS_EXPORT bool fromJson( bool &value, const QJsonValue &val );
-    SABUTILS_EXPORT bool fromJson( double &value, const QJsonValue &val );
-    SABUTILS_EXPORT bool fromJson( QString &value, const QJsonValue &val );
-    SABUTILS_EXPORT bool fromJson( int &value, const QJsonValue &val );
+    TOWEL42_UTILS_EXPORT bool fromJson( QStringList &value, const QJsonValue &val );
+    TOWEL42_UTILS_EXPORT bool fromJson( bool &value, const QJsonValue &val );
+    TOWEL42_UTILS_EXPORT bool fromJson( double &value, const QJsonValue &val );
+    TOWEL42_UTILS_EXPORT bool fromJson( QString &value, const QJsonValue &val );
+    TOWEL42_UTILS_EXPORT bool fromJson( int &value, const QJsonValue &val );
 
     template< typename T >
     bool fromJson( std::list< T > &value, const QJsonValue &val )

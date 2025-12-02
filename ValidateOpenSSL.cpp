@@ -26,7 +26,7 @@
     #include <QSslSocket>
     #include <QLibrary>
     #include <QDir>
-namespace NSABUtils
+namespace NTowel42Utils
 {
     std::pair< bool, QString > validateOpenSSL( bool requireLocal /*= true*/ )
     {

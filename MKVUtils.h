@@ -22,7 +22,7 @@
 #ifndef __MKVUTILS_H
 #define __MKVUTILS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <cstdint>
 #include <unordered_map>
@@ -39,7 +39,7 @@ namespace MediaInfoDLL
     enum class EMediaTags;
 }
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     enum class EMediaTags;
 }
@@ -47,15 +47,15 @@ namespace NSABUtils
 namespace std
 {
     template<>
-    struct hash< NSABUtils::EMediaTags >;
+    struct hash< NTowel42Utils::EMediaTags >;
 };
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     using TMediaTagMap = std::unordered_map< EMediaTags, QVariant >;
     using TMediaTagPair = std::pair< EMediaTags, QVariant >;
-    SABUTILS_EXPORT bool setMediaTags( const QString &fileName, const TMediaTagMap &tags, const QString &mkvPropEdit, QString *msg = nullptr );
-    SABUTILS_EXPORT std::vector< double > getChapterStarts( const QString &fileName, const QString &ffprobeExe, QString &msg );
+    TOWEL42_UTILS_EXPORT bool setMediaTags( const QString &fileName, const TMediaTagMap &tags, const QString &mkvPropEdit, QString *msg = nullptr );
+    TOWEL42_UTILS_EXPORT std::vector< double > getChapterStarts( const QString &fileName, const QString &ffprobeExe, QString &msg );
 }
 
 #endif

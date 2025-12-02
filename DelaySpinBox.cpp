@@ -25,7 +25,7 @@
 
 #include <QTimer>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     CDelaySpinBox::CDelaySpinBox( QWidget *parent ) :
         CDelaySpinBox( 250, parent )
@@ -83,10 +83,10 @@ namespace NSABUtils
     void CDelaySpinBox::setDelay( int delayMS )
     {
         fDelayMS = delayMS;
-        NSABUtils::updateTimer( fDelayMS, fValueChangedTimer );
-        NSABUtils::updateTimer( fDelayMS, fEditFinishedTimer );
+        NTowel42Utils::updateTimer( fDelayMS, fValueChangedTimer );
+        NTowel42Utils::updateTimer( fDelayMS, fEditFinishedTimer );
 #if QT_VERSION > QT_VERSION_CHECK( 5, 14, 0 )
-        NSABUtils::updateTimer( fDelayMS, fTextChangedTimer );
+        NTowel42Utils::updateTimer( fDelayMS, fTextChangedTimer );
 #endif
     }
 

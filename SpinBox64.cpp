@@ -33,7 +33,7 @@
 
 Q_DECLARE_METATYPE( qlonglong );
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     enum class EEmitPolicy
     {

@@ -22,7 +22,7 @@
 #ifndef __FILEBASEDCACHE_H
 #define __FILEBASEDCACHE_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QDateTime>
 #include <QFileInfo>
@@ -30,9 +30,9 @@
 #include <cstdint>
 #include <memory>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    struct SABUTILS_EXPORT SFileBasedCacheNode
+    struct TOWEL42_UTILS_EXPORT SFileBasedCacheNode
     {
         explicit SFileBasedCacheNode( const QString &path );
         explicit SFileBasedCacheNode( const QFileInfo &fileInfo );
@@ -88,7 +88,7 @@ namespace NSABUtils
         T find( const QString &path ) const { return find( QFileInfo( path ) ); }
         T find( const QFileInfo &fi ) const
         {
-            auto node = NSABUtils::SFileBasedCacheNode( fi );
+            auto node = NTowel42Utils::SFileBasedCacheNode( fi );
             auto pos = fCache.find( node );
             if ( pos == fCache.end() )
                 return {};
@@ -98,7 +98,7 @@ namespace NSABUtils
         bool contains( const QString &path, bool pathOnlySearch = false ) const { return contains( QFileInfo( path ), pathOnlySearch ); }
         bool contains( const QFileInfo &fi, bool pathOnlySearch = false ) const
         {
-            auto node = NSABUtils::SFileBasedCacheNode( fi );
+            auto node = NTowel42Utils::SFileBasedCacheNode( fi );
             node.setPathOnlySearch( pathOnlySearch );
             auto pos = fCache.find( node );
             return ( pos != fCache.end() );
@@ -112,13 +112,13 @@ namespace NSABUtils
             {
                 clear( path, true );
             }
-            fCache[ NSABUtils::SFileBasedCacheNode( path ) ] = object;
+            fCache[ NTowel42Utils::SFileBasedCacheNode( path ) ] = object;
         }
 
     private:
         void clear( const QString &path, bool pathOnlySearch )
         {
-            auto node = NSABUtils::SFileBasedCacheNode( path );
+            auto node = NTowel42Utils::SFileBasedCacheNode( path );
             node.setPathOnlySearch( pathOnlySearch );
             auto pos = fCache.find( node );
             if ( pos != fCache.end() )
@@ -131,15 +131,15 @@ namespace NSABUtils
 namespace std
 {
     template<>
-    struct hash< NSABUtils::SFileBasedCacheNode >
+    struct hash< NTowel42Utils::SFileBasedCacheNode >
     {
-        std::size_t operator()( const NSABUtils::SFileBasedCacheNode &key ) const { return key.hash(); }
+        std::size_t operator()( const NTowel42Utils::SFileBasedCacheNode &key ) const { return key.hash(); }
     };
 
     template<>
-    struct hash< const NSABUtils::SFileBasedCacheNode * >
+    struct hash< const NTowel42Utils::SFileBasedCacheNode * >
     {
-        std::size_t operator()( NSABUtils::SFileBasedCacheNode *ii ) const
+        std::size_t operator()( NTowel42Utils::SFileBasedCacheNode *ii ) const
         {
             if ( ii )
                 return ii->hash();
@@ -149,9 +149,9 @@ namespace std
     };
 
     template<>
-    struct hash< std::shared_ptr< NSABUtils::SFileBasedCacheNode > >
+    struct hash< std::shared_ptr< NTowel42Utils::SFileBasedCacheNode > >
     {
-        std::size_t operator()( std::shared_ptr< NSABUtils::SFileBasedCacheNode > ii ) const { return hash< NSABUtils::SFileBasedCacheNode * >()( ii.get() ); }
+        std::size_t operator()( std::shared_ptr< NTowel42Utils::SFileBasedCacheNode > ii ) const { return hash< NTowel42Utils::SFileBasedCacheNode * >()( ii.get() ); }
     };
 }
 

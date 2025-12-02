@@ -29,7 +29,7 @@
 #include <iterator>
 #include <tuple>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     // used to determine if container T has an const_iterator
     // usage std::enable_if< has_const_iterator< T >::value, void >

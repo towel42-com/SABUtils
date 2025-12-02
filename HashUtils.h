@@ -23,13 +23,13 @@
 #ifndef __HASHUTILS_H
 #define __HASHUTILS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QHash>
 #include <initializer_list>
 #include <functional>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     template< typename T >
     inline std::size_t HashCombine( std::size_t seed, const T &item )
@@ -91,7 +91,7 @@ namespace NSABUtils
     template< typename T1, typename T2 >
     inline std::size_t HashCombine( const std::pair< T1, T2 > &key )
     {
-        return NSABUtils::HashCombine( NSABUtils::HashCombine( 0, { key.first } ), { key.second } );
+        return NTowel42Utils::HashCombine( NTowel42Utils::HashCombine( 0, { key.first } ), { key.second } );
     }
 
     namespace
@@ -102,14 +102,14 @@ namespace NSABUtils
             static void apply( size_t &seed, Tuple const &tuple )
             {
                 HashValueImpl< Tuple, Index - 1 >::apply( seed, tuple );
-                NSABUtils::HashCombine( seed, { std::get< Index >( tuple ) } );
+                NTowel42Utils::HashCombine( seed, { std::get< Index >( tuple ) } );
             }
         };
 
         template< class Tuple >
         struct HashValueImpl< Tuple, 0 >
         {
-            static void apply( size_t &seed, Tuple const &tuple ) { NSABUtils::HashCombine( seed, { std::get< 0 >( tuple ) } ); }
+            static void apply( size_t &seed, Tuple const &tuple ) { NTowel42Utils::HashCombine( seed, { std::get< 0 >( tuple ) } ); }
         };
     }
 

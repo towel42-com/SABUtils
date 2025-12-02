@@ -26,7 +26,7 @@
 #include <QPixmap>
 #include <QIcon>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NBIF
     {

@@ -48,6 +48,6 @@ set(qtproject_QRC
 )
 
 SET( project_pub_DEPS
-     SABUtils
+     Towel42Utils
 )
 

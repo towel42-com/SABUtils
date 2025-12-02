@@ -23,7 +23,7 @@
 #ifndef __MEDIAINFO_H
 #define __MEDIAINFO_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QString>
 #include <QStringList>
@@ -42,7 +42,7 @@ namespace MediaInfoDLL
     class MediaInfo;
 }
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     enum class EStreamType
     {
@@ -59,9 +59,9 @@ namespace NSABUtils
 namespace std
 {
     template<>
-    struct hash< NSABUtils::EStreamType >
+    struct hash< NTowel42Utils::EStreamType >
     {
-        std::size_t operator()( const NSABUtils::EStreamType &ii ) const
+        std::size_t operator()( const NTowel42Utils::EStreamType &ii ) const
         {
             auto tmp = static_cast< int >( ii );
             return std::hash< int >()( tmp );
@@ -69,7 +69,7 @@ namespace std
     };
 }
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     class CFFMpegFormats;
     enum class EMediaTags
@@ -137,23 +137,23 @@ namespace NSABUtils
         eDefaultSubtitleStream,
         eLastTag
     };
-    SABUTILS_EXPORT QString displayName( EMediaTags tag );
-    SABUTILS_EXPORT EMediaTags fromDisplayName( const QString &tag );
-    SABUTILS_EXPORT QString getMKVEditName( EMediaTags tag );
-    SABUTILS_EXPORT bool isSettableTag( EMediaTags tag );
-    SABUTILS_EXPORT QString mediaInfoTagName( EMediaTags tag );
-    SABUTILS_EXPORT std::list< QString > toStringList( const std::list< EMediaTags > &keys );
+    TOWEL42_UTILS_EXPORT QString displayName( EMediaTags tag );
+    TOWEL42_UTILS_EXPORT EMediaTags fromDisplayName( const QString &tag );
+    TOWEL42_UTILS_EXPORT QString getMKVEditName( EMediaTags tag );
+    TOWEL42_UTILS_EXPORT bool isSettableTag( EMediaTags tag );
+    TOWEL42_UTILS_EXPORT QString mediaInfoTagName( EMediaTags tag );
+    TOWEL42_UTILS_EXPORT std::list< QString > toStringList( const std::list< EMediaTags > &keys );
 
-    SABUTILS_EXPORT EMediaTags fromTagName( const QString &tag );
+    TOWEL42_UTILS_EXPORT EMediaTags fromTagName( const QString &tag );
 
 }
 
 namespace std
 {
     template<>
-    struct hash< NSABUtils::EMediaTags >
+    struct hash< NTowel42Utils::EMediaTags >
     {
-        std::size_t operator()( const NSABUtils::EMediaTags &ii ) const
+        std::size_t operator()( const NTowel42Utils::EMediaTags &ii ) const
         {
             auto tmp = static_cast< int >( ii );
             return std::hash< int >()( tmp );
@@ -161,14 +161,14 @@ namespace std
     };
 }
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     enum class EMediaTags;
     using TMediaTagMap = std::unordered_map< EMediaTags, QVariant >;
 
     class CStreamData;
     class CMediaInfoImpl;
-    struct SABUTILS_EXPORT SResolutionInfo
+    struct TOWEL42_UTILS_EXPORT SResolutionInfo
     {
         std::pair< int, int > fResolution{ 0, 0 };
         bool fInterlaced{ false };
@@ -190,7 +190,7 @@ namespace NSABUtils
     private:
     };
 
-    class SABUTILS_EXPORT CMediaInfo : public QObject
+    class TOWEL42_UTILS_EXPORT CMediaInfo : public QObject
     {
         Q_OBJECT;
         friend class CMediaInfoMgr;
@@ -288,7 +288,7 @@ namespace NSABUtils
         std::shared_ptr< CMediaInfoImpl > fImpl;
     };
 
-    class SABUTILS_EXPORT CMediaInfoMgr : public QObject
+    class TOWEL42_UTILS_EXPORT CMediaInfoMgr : public QObject
     {
         CMediaInfoMgr() {}
         Q_OBJECT;

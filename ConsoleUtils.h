@@ -22,11 +22,11 @@
 #ifndef __CONSOLEUTILS_H
 #define __CONSOLEUTILS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <string>
 #include <QString>
-namespace NSABUtils
+namespace NTowel42Utils
 {
     enum class ESubSystem
     {
@@ -47,16 +47,16 @@ namespace NSABUtils
     };
 
     // windows only, not defined for linux
-    SABUTILS_EXPORT const char *toString( ESubSystem subsystem );
-    SABUTILS_EXPORT ESubSystem getSubSystemForCurrentHandle();
-    SABUTILS_EXPORT ESubSystem getSubSystemForHandle( void *handle );   // return from GetModuleHandle
+    TOWEL42_UTILS_EXPORT const char *toString( ESubSystem subsystem );
+    TOWEL42_UTILS_EXPORT ESubSystem getSubSystemForCurrentHandle();
+    TOWEL42_UTILS_EXPORT ESubSystem getSubSystemForHandle( void *handle );   // return from GetModuleHandle
 
     // returns true for linux
-    SABUTILS_EXPORT bool runningAsConsole();   // getSubSystemForCurrentHandle() == eIMAGE_SUBSYSTEM_WINDOWS_CUI
+    TOWEL42_UTILS_EXPORT bool runningAsConsole();   // getSubSystemForCurrentHandle() == eIMAGE_SUBSYSTEM_WINDOWS_CUI
 
     // does nothing for linux
-    SABUTILS_EXPORT bool attachConsole( std::string *msg = nullptr );   // returns true if successful
-    SABUTILS_EXPORT bool attachConsole( QString *msg );   // returns true if successful
+    TOWEL42_UTILS_EXPORT bool attachConsole( std::string *msg = nullptr );   // returns true if successful
+    TOWEL42_UTILS_EXPORT bool attachConsole( QString *msg );   // returns true if successful
 }
 
 #endif

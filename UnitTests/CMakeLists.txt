@@ -34,7 +34,7 @@ if ( MKVUTILS )
 endif()
 
 set( testProjectName "" )
-SAB_UNIT_TEST(Utils
+TOWEL42_UNIT_TEST(Utils
     Test.cpp
     "gmock;Qt6::Core"
     testProjectName
@@ -48,7 +48,7 @@ set_target_properties( ${testProjectName} PROPERTIES
                      )
 
 set( testProjectName "" )
-SAB_UNIT_TEST(CantorHashUtils
+TOWEL42_UNIT_TEST(CantorHashUtils
     TestCantorHash.cpp
     "gmock"
     testProjectName

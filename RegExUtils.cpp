@@ -24,7 +24,7 @@
 #include "StringUtils.h"
 #include <QRegularExpression>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NStringUtils
     {

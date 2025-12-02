@@ -77,7 +77,7 @@ QRect CGIFIOHandler::currentImageRect() const
 
 bool CGIFIOHandler::write( const QImage &image )
 {
-    NSABUtils::CGIFWriter writer( device() );
+    NTowel42Utils::CGIFWriter writer( device() );
     writer.setDither( true );
     writer.setFlipImage( false );
     writer.setBitDepth( 8 );

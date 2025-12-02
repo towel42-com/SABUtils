@@ -23,15 +23,15 @@
 #ifndef __SPINBOX64_H
 #define __SPINBOX64_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QAbstractSpinBox>
 #include "SpinBox64_StepType.h"
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     class CSpinBox64Impl;
-    class SABUTILS_EXPORT CSpinBox64 : public QAbstractSpinBox
+    class TOWEL42_UTILS_EXPORT CSpinBox64 : public QAbstractSpinBox
     {
         friend class CSpinBox64Impl;
 #if ( QT_VERSION < QT_VERSION_CHECK( 5, 12, 0 ) )

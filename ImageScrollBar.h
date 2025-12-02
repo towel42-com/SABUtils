@@ -22,11 +22,11 @@
 #ifndef __IMAGESCROLLBAR_H
 #define __IMAGESCROLLBAR_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QScrollBar>
 #include <QImage>
-namespace NSABUtils
+namespace NTowel42Utils
 {
 #ifdef BIF_SCROLLBAR_SUPPORT
     namespace NBIF
@@ -35,7 +35,7 @@ namespace NSABUtils
         class CModel;
     }
 #endif
-    class SABUTILS_EXPORT CImageScrollBar : public QScrollBar
+    class TOWEL42_UTILS_EXPORT CImageScrollBar : public QScrollBar
     {
         Q_OBJECT;
 

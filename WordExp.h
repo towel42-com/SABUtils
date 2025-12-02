@@ -22,7 +22,7 @@
 #ifndef __WORDEXP_H
 #define __WORDEXP_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <tuple>
 #include <QString>
@@ -31,9 +31,9 @@
 
 // convert a path with wildcards into absolute paths
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    class SABUTILS_EXPORT CWordExp
+    class TOWEL42_UTILS_EXPORT CWordExp
     {
         friend class CWordExpImpl;
 

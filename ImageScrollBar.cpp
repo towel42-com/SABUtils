@@ -34,7 +34,7 @@
 #include <QMouseEvent>
 #include <QStyleOption>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     CImageScrollBar::CImageScrollBar( QWidget *parent /*= 0 */ ) :
         QScrollBar( parent )

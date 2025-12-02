@@ -31,7 +31,7 @@
 #include <iterator>
 #include <tuple>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     // base implementation
     // usage value = cantorHash( lhs, rhs );

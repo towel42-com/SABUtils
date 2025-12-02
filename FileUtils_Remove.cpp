@@ -25,7 +25,7 @@
 #include <QFileInfo>
 #include <QDir>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NFileUtils
     {

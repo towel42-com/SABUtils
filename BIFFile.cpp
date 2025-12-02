@@ -30,7 +30,7 @@
 #include <QProcess>
 #include <QBuffer>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NBIF
     {

@@ -23,7 +23,7 @@
 #ifndef __MOVETOTRASH_H
 #define __MOVETOTRASH_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <string>
 #include <list>
@@ -40,11 +40,11 @@ class QDateTime;
 class QString;
 class QDir;
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NFileUtils
     {
-        struct SABUTILS_EXPORT SRecycleOptions
+        struct TOWEL42_UTILS_EXPORT SRecycleOptions
         {
             SRecycleOptions() {}
 
@@ -54,9 +54,9 @@ namespace NSABUtils
             bool fInteractive{ false };
         };
 
-        SABUTILS_EXPORT bool moveToTrash( const QFileInfo &info, QString *msg = nullptr, std::shared_ptr< SRecycleOptions > options = {} );
-        SABUTILS_EXPORT bool moveToTrash( const QString &fileName, QString *msg = nullptr, std::shared_ptr< SRecycleOptions > options = {} );
-        SABUTILS_EXPORT bool moveToTrash( const std::string &fileName, std::string *msg = nullptr, std::shared_ptr< SRecycleOptions > options = {} );
+        TOWEL42_UTILS_EXPORT bool moveToTrash( const QFileInfo &info, QString *msg = nullptr, std::shared_ptr< SRecycleOptions > options = {} );
+        TOWEL42_UTILS_EXPORT bool moveToTrash( const QString &fileName, QString *msg = nullptr, std::shared_ptr< SRecycleOptions > options = {} );
+        TOWEL42_UTILS_EXPORT bool moveToTrash( const std::string &fileName, std::string *msg = nullptr, std::shared_ptr< SRecycleOptions > options = {} );
     }
 }
 #endif

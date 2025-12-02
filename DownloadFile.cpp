@@ -39,7 +39,7 @@
 #include <QDebug>
 #include <QSslPreSharedKeyAuthenticator>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     SDownloadFileInfo::SDownloadFileInfo( const QString &name, const QUrl &url, uint64_t size ) :
         fName( name ),

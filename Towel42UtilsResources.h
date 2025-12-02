@@ -20,19 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "SABUtilsResources.h"
+#ifndef TOWEL42UTILSRESOURCES_H
+#define TOWEL42UTILSRESOURCES_H
 
-#include <QtGlobal>
+#include "Towel42UtilsExport.h"
 
-static void initResources()
+namespace NTowel42Utils
 {
-    Q_INIT_RESOURCE( SABUtils );
+    TOWEL42_UTILS_EXPORT void initResources();
 }
 
-namespace NSABUtils
-{
-    void initResources()
-    {
-        ::initResources();
-    }
-}
+#endif

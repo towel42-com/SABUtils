@@ -23,10 +23,10 @@
 #ifndef __WINDOWSERROR_H
 #define __WINDOWSERROR_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 #include <QString>
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    SABUTILS_EXPORT QString getWindowsError( int errorCode );   // returns empty string for non-windows
+    TOWEL42_UTILS_EXPORT QString getWindowsError( int errorCode );   // returns empty string for non-windows
 }
 #endif

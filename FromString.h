@@ -23,11 +23,11 @@
 #ifndef __FROMSTRING_H
 #define __FROMSTRING_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <string>
 #include <sstream>
-namespace NSABUtils
+namespace NTowel42Utils
 {
 
     template< class T >
@@ -49,20 +49,20 @@ namespace NSABUtils
         return fromString( retVal, arg.c_str() );
     }
 
-    SABUTILS_EXPORT bool fromString( long &retVal, const char *arg, int base );
-    SABUTILS_EXPORT bool fromString( long &retVal, const std::string &arg, int base );
-    SABUTILS_EXPORT bool fromString( long &retVal, const std::string &arg );
+    TOWEL42_UTILS_EXPORT bool fromString( long &retVal, const char *arg, int base );
+    TOWEL42_UTILS_EXPORT bool fromString( long &retVal, const std::string &arg, int base );
+    TOWEL42_UTILS_EXPORT bool fromString( long &retVal, const std::string &arg );
 
-    SABUTILS_EXPORT bool fromString( int &retVal, const char *arg, int base );
-    SABUTILS_EXPORT bool fromString( int &retVal, const char *arg );
-    SABUTILS_EXPORT bool fromString( int &retVal, const std::string &arg, int base );
-    SABUTILS_EXPORT bool fromString( int &retVal, const std::string &arg );
+    TOWEL42_UTILS_EXPORT bool fromString( int &retVal, const char *arg, int base );
+    TOWEL42_UTILS_EXPORT bool fromString( int &retVal, const char *arg );
+    TOWEL42_UTILS_EXPORT bool fromString( int &retVal, const std::string &arg, int base );
+    TOWEL42_UTILS_EXPORT bool fromString( int &retVal, const std::string &arg );
 
-    SABUTILS_EXPORT bool fromString( double &retVal, const std::string &arg );
-    SABUTILS_EXPORT bool fromString( double &retVal, const char *arg );
-    SABUTILS_EXPORT bool fromString( float &retVal, const std::string &arg );
-    SABUTILS_EXPORT bool fromString( float &retVal, const char *arg );
-    SABUTILS_EXPORT bool fromString( bool &retVal, const char *arg );
-    SABUTILS_EXPORT bool fromString( bool &retVal, const std::string &arg );
+    TOWEL42_UTILS_EXPORT bool fromString( double &retVal, const std::string &arg );
+    TOWEL42_UTILS_EXPORT bool fromString( double &retVal, const char *arg );
+    TOWEL42_UTILS_EXPORT bool fromString( float &retVal, const std::string &arg );
+    TOWEL42_UTILS_EXPORT bool fromString( float &retVal, const char *arg );
+    TOWEL42_UTILS_EXPORT bool fromString( bool &retVal, const char *arg );
+    TOWEL42_UTILS_EXPORT bool fromString( bool &retVal, const std::string &arg );
 }
 #endif

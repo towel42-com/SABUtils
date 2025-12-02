@@ -23,8 +23,8 @@
 #ifndef __QTUTILS_H
 #define __QTUTILS_H
 
-#include "SABUtilsExport.h"
-#include "SABUtilsFwd.h"
+#include "Towel42UtilsExport.h"
+#include "Towel42UtilsFwd.h"
 #include "nodiscard.h"
 
 class QString;
@@ -64,7 +64,7 @@ class QXmlQuery;
 #include <QTextStream>
 #include <unordered_set>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     template< typename T >
     QList< T > replaceInList( const QList< T > &inList, int xFirst, int xCount, const QList< T > &values, int xNum = -1 )
@@ -92,45 +92,45 @@ namespace NSABUtils
         return retVal;
     }
 
-    SABUTILS_EXPORT QString allFilesFilter();
-    SABUTILS_EXPORT QString defaultFileDialogDir();
+    TOWEL42_UTILS_EXPORT QString allFilesFilter();
+    TOWEL42_UTILS_EXPORT QString defaultFileDialogDir();
 
 #ifdef QT_XMLPATTERNS_LIB
-    SABUTILS_EXPORT QString getString( QXmlQuery &query, const QString &queryString, bool *aOK = nullptr );
-    SABUTILS_EXPORT QStringList getStringList( QXmlQuery &query, const QString &queryString, bool *aOK = nullptr );
-    SABUTILS_EXPORT std::set< QString > getStringSet( QXmlQuery &query, const QString &queryString, bool *aOK = nullptr );
-    SABUTILS_EXPORT int getInt( QXmlQuery &query, const QString &queryString, bool *aOK = nullptr );
-    SABUTILS_EXPORT bool getBool( QXmlQuery &query, const QString &queryString, bool defaultVal = false );
-    SABUTILS_EXPORT double getDouble( QXmlQuery &query, const QString &queryString, bool *aOK = nullptr );
-    SABUTILS_EXPORT std::list< std::pair< QString, QString > > getStringPairs( QXmlQuery &query, const QString &queryString1, const QString &queryString2, bool *aOK = nullptr );
-    SABUTILS_EXPORT std::list< std::list< QString > > getStrings( QXmlQuery &query, const QStringList &xmlPaths, bool *aOK = nullptr );
-    SABUTILS_EXPORT QString getFile( QXmlQuery &query, const QDir &relToDir, const QString &queryString, bool *aOK = nullptr );
+    TOWEL42_UTILS_EXPORT QString getString( QXmlQuery &query, const QString &queryString, bool *aOK = nullptr );
+    TOWEL42_UTILS_EXPORT QStringList getStringList( QXmlQuery &query, const QString &queryString, bool *aOK = nullptr );
+    TOWEL42_UTILS_EXPORT std::set< QString > getStringSet( QXmlQuery &query, const QString &queryString, bool *aOK = nullptr );
+    TOWEL42_UTILS_EXPORT int getInt( QXmlQuery &query, const QString &queryString, bool *aOK = nullptr );
+    TOWEL42_UTILS_EXPORT bool getBool( QXmlQuery &query, const QString &queryString, bool defaultVal = false );
+    TOWEL42_UTILS_EXPORT double getDouble( QXmlQuery &query, const QString &queryString, bool *aOK = nullptr );
+    TOWEL42_UTILS_EXPORT std::list< std::pair< QString, QString > > getStringPairs( QXmlQuery &query, const QString &queryString1, const QString &queryString2, bool *aOK = nullptr );
+    TOWEL42_UTILS_EXPORT std::list< std::list< QString > > getStrings( QXmlQuery &query, const QStringList &xmlPaths, bool *aOK = nullptr );
+    TOWEL42_UTILS_EXPORT QString getFile( QXmlQuery &query, const QDir &relToDir, const QString &queryString, bool *aOK = nullptr );
 #endif
 
-    SABUTILS_EXPORT int getInt( const QString &str, bool *aOK );
-    SABUTILS_EXPORT int getInt( const QStringView &str, bool *aOK );
-    SABUTILS_EXPORT int getInt( const QString &str );
-    SABUTILS_EXPORT int getInt( const QStringView &str );
-    SABUTILS_EXPORT int getInt( const QString &str, QXmlStreamReader &reader );
-    SABUTILS_EXPORT int getInt( const QStringView &str, QXmlStreamReader &reader );
-    SABUTILS_EXPORT int getInt( const QString &str, int defaultValue, QXmlStreamReader &reader );
-    SABUTILS_EXPORT int getInt( const QStringView &str, int defaultValue, QXmlStreamReader &reader );
+    TOWEL42_UTILS_EXPORT int getInt( const QString &str, bool *aOK );
+    TOWEL42_UTILS_EXPORT int getInt( const QStringView &str, bool *aOK );
+    TOWEL42_UTILS_EXPORT int getInt( const QString &str );
+    TOWEL42_UTILS_EXPORT int getInt( const QStringView &str );
+    TOWEL42_UTILS_EXPORT int getInt( const QString &str, QXmlStreamReader &reader );
+    TOWEL42_UTILS_EXPORT int getInt( const QStringView &str, QXmlStreamReader &reader );
+    TOWEL42_UTILS_EXPORT int getInt( const QString &str, int defaultValue, QXmlStreamReader &reader );
+    TOWEL42_UTILS_EXPORT int getInt( const QStringView &str, int defaultValue, QXmlStreamReader &reader );
 
-    SABUTILS_EXPORT double getDouble( const QString &str, bool *aOK );
-    SABUTILS_EXPORT double getDouble( const QString &str );
-    SABUTILS_EXPORT double getDouble( const QStringView &str, bool *aOK );
-    SABUTILS_EXPORT double getDouble( const QStringView &str );
-    SABUTILS_EXPORT double getDouble( const QString &str, QXmlStreamReader &reader );
-    SABUTILS_EXPORT double getDouble( const QStringView &str, QXmlStreamReader &reader );
+    TOWEL42_UTILS_EXPORT double getDouble( const QString &str, bool *aOK );
+    TOWEL42_UTILS_EXPORT double getDouble( const QString &str );
+    TOWEL42_UTILS_EXPORT double getDouble( const QStringView &str, bool *aOK );
+    TOWEL42_UTILS_EXPORT double getDouble( const QStringView &str );
+    TOWEL42_UTILS_EXPORT double getDouble( const QString &str, QXmlStreamReader &reader );
+    TOWEL42_UTILS_EXPORT double getDouble( const QStringView &str, QXmlStreamReader &reader );
 
-    SABUTILS_EXPORT bool getBool( const QString &str, bool defaultVal = false );   // default returned when string is empty
-    SABUTILS_EXPORT bool getBool( const QStringView &str, bool defaultVal = false );
+    TOWEL42_UTILS_EXPORT bool getBool( const QString &str, bool defaultVal = false );   // default returned when string is empty
+    TOWEL42_UTILS_EXPORT bool getBool( const QStringView &str, bool defaultVal = false );
 
-    SABUTILS_EXPORT QString getFile( const QString &relToDir, QXmlStreamReader &reader, QString *origFile = nullptr );
-    SABUTILS_EXPORT QString getFile( const QDir &relToDir, QXmlStreamReader &reader, QString *origFile = nullptr );
-    SABUTILS_EXPORT QString getFile( const QDir &relToDir, const QString &file );
+    TOWEL42_UTILS_EXPORT QString getFile( const QString &relToDir, QXmlStreamReader &reader, QString *origFile = nullptr );
+    TOWEL42_UTILS_EXPORT QString getFile( const QDir &relToDir, QXmlStreamReader &reader, QString *origFile = nullptr );
+    TOWEL42_UTILS_EXPORT QString getFile( const QDir &relToDir, const QString &file );
 
-    struct SABUTILS_EXPORT SDateSearchOptions
+    struct TOWEL42_UTILS_EXPORT SDateSearchOptions
     {
         SDateSearchOptions() {}
         SDateSearchOptions( bool includeHuristics, bool includeDateTimeFormat ) :
@@ -144,26 +144,26 @@ namespace NSABUtils
         bool fAllowMonthYearOnly{ false };
     };
 
-    SABUTILS_EXPORT QDateTime getDateTime( const QStringView &str, QXmlStreamReader &reader, bool optional );
-    SABUTILS_EXPORT QDateTime getDateTime( const QString &str, QXmlStreamReader &reader, bool optional );
-    SABUTILS_EXPORT QDateTime getDateTime( const QString &str );
+    TOWEL42_UTILS_EXPORT QDateTime getDateTime( const QStringView &str, QXmlStreamReader &reader, bool optional );
+    TOWEL42_UTILS_EXPORT QDateTime getDateTime( const QString &str, QXmlStreamReader &reader, bool optional );
+    TOWEL42_UTILS_EXPORT QDateTime getDateTime( const QString &str );
 
-    SABUTILS_EXPORT QDate getDate( const QString &str, const SDateSearchOptions &options = {} );
-    SABUTILS_EXPORT QTime getTime( const QString &str, const SDateSearchOptions &options = {} );
+    TOWEL42_UTILS_EXPORT QDate getDate( const QString &str, const SDateSearchOptions &options = {} );
+    TOWEL42_UTILS_EXPORT QTime getTime( const QString &str, const SDateSearchOptions &options = {} );
 
-    SABUTILS_EXPORT QStringList getDateTimeFormats();
-    SABUTILS_EXPORT QStringList getTimeFormats( const SDateSearchOptions &options = {} );
-    SABUTILS_EXPORT QStringList getHuristicDateFormats();
-    SABUTILS_EXPORT QStringList getDateFormats( const SDateSearchOptions &options = {} );
+    TOWEL42_UTILS_EXPORT QStringList getDateTimeFormats();
+    TOWEL42_UTILS_EXPORT QStringList getTimeFormats( const SDateSearchOptions &options = {} );
+    TOWEL42_UTILS_EXPORT QStringList getHuristicDateFormats();
+    TOWEL42_UTILS_EXPORT QStringList getDateFormats( const SDateSearchOptions &options = {} );
 
-    SABUTILS_EXPORT int autoSize( QTableView *table, int minWidth = -1 );   // autoSize( table, table->horizontalHeader )
-    SABUTILS_EXPORT int autoSize( QTreeView *treeView, int minWidth = -1 );   // autoSize( table, table->header )
-    SABUTILS_EXPORT int autoSize( QAbstractItemView *view, int minWidth = -1 );   // autoSize( table, table->horizontalHeader )
-    SABUTILS_EXPORT int autoSize( QAbstractItemView *view, QHeaderView *header, int minWidth = -1 );
-    SABUTILS_EXPORT int autoSize( QComboBox *comboBox, int minNumChars = -1 );
+    TOWEL42_UTILS_EXPORT int autoSize( QTableView *table, int minWidth = -1 );   // autoSize( table, table->horizontalHeader )
+    TOWEL42_UTILS_EXPORT int autoSize( QTreeView *treeView, int minWidth = -1 );   // autoSize( table, table->header )
+    TOWEL42_UTILS_EXPORT int autoSize( QAbstractItemView *view, int minWidth = -1 );   // autoSize( table, table->horizontalHeader )
+    TOWEL42_UTILS_EXPORT int autoSize( QAbstractItemView *view, QHeaderView *header, int minWidth = -1 );
+    TOWEL42_UTILS_EXPORT int autoSize( QComboBox *comboBox, int minNumChars = -1 );
 
-    SABUTILS_EXPORT QTreeWidgetItem *nextVisibleItem( QTreeWidgetItem *item );
-    SABUTILS_EXPORT void fetchMore( QAbstractItemModel *model, int maxFetches = 3 );
+    TOWEL42_UTILS_EXPORT QTreeWidgetItem *nextVisibleItem( QTreeWidgetItem *item );
+    TOWEL42_UTILS_EXPORT void fetchMore( QAbstractItemModel *model, int maxFetches = 3 );
 
     template< typename T >
     std::set< T > toSet( const QSet< T > &values )
@@ -183,16 +183,16 @@ namespace NSABUtils
         return retVal;
     }
 
-    class SABUTILS_EXPORT noCaseQStringCmp
+    class TOWEL42_UTILS_EXPORT noCaseQStringCmp
     {
     public:
         bool operator()( const QString &s1, const QString &s2 ) const { return s1.compare( s2, Qt::CaseInsensitive ) < 0; }
     };
 
-    SABUTILS_EXPORT QStringList splitLineCSV( const QString &line );
-    SABUTILS_EXPORT size_t SizeOf( const QString &str );
-    SABUTILS_EXPORT size_t SizeOf( const QDateTime &str );
-    SABUTILS_EXPORT QString fromHtmlEscaped( const QString &str );
+    TOWEL42_UTILS_EXPORT QStringList splitLineCSV( const QString &line );
+    TOWEL42_UTILS_EXPORT size_t SizeOf( const QString &str );
+    TOWEL42_UTILS_EXPORT size_t SizeOf( const QDateTime &str );
+    TOWEL42_UTILS_EXPORT QString fromHtmlEscaped( const QString &str );
 
     struct CFileInfoCaseInsensitiveHash
     {
@@ -209,27 +209,27 @@ namespace NSABUtils
         size_t operator()( const QString &lhs, const QString &rhs ) const { return QFileInfo( lhs ).absoluteFilePath().compare( QFileInfo( rhs ).absoluteFilePath(), Qt::CaseInsensitive ) == 0; }
     };
 
-    SABUTILS_EXPORT void move( QSettings &settings, const QString &subGroup, const QString &key, bool overwrite );
-    SABUTILS_EXPORT void copy( QSettings &from, QSettings &to, bool overwrite );
+    TOWEL42_UTILS_EXPORT void move( QSettings &settings, const QString &subGroup, const QString &key, bool overwrite );
+    TOWEL42_UTILS_EXPORT void copy( QSettings &from, QSettings &to, bool overwrite );
 
-    SABUTILS_EXPORT int itemCount( QAbstractItemModel *model, bool rowCountOnly, const std::pair< std::function< bool( const QVariant &path ) >, int > &excludeFunc = { {}, Qt::DisplayRole } );
-    SABUTILS_EXPORT int itemCount( const QModelIndex &idx, bool rowCountOnly, const std::pair< std::function< bool( const QVariant &path ) >, int > &excludeFunc = { {}, Qt::DisplayRole } );
+    TOWEL42_UTILS_EXPORT int itemCount( QAbstractItemModel *model, bool rowCountOnly, const std::pair< std::function< bool( const QVariant &path ) >, int > &excludeFunc = { {}, Qt::DisplayRole } );
+    TOWEL42_UTILS_EXPORT int itemCount( const QModelIndex &idx, bool rowCountOnly, const std::pair< std::function< bool( const QVariant &path ) >, int > &excludeFunc = { {}, Qt::DisplayRole } );
 
-    SABUTILS_EXPORT QStringList getHeadersForModel( QAbstractItemModel *model );
-    SABUTILS_EXPORT void writeModel( QAbstractItemModel *model, QXmlStreamWriter &writer, const QString &keyName, const QString &plauralSuffix, const std::function< void( QAbstractItemModel *model, QXmlStreamWriter &writer, const QString &keyName, int rowNum ) > &writeRow = std::function< void( QAbstractItemModel *model, QXmlStreamWriter &writer, const QString &keyName, int rowNum ) >() );
+    TOWEL42_UTILS_EXPORT QStringList getHeadersForModel( QAbstractItemModel *model );
+    TOWEL42_UTILS_EXPORT void writeModel( QAbstractItemModel *model, QXmlStreamWriter &writer, const QString &keyName, const QString &plauralSuffix, const std::function< void( QAbstractItemModel *model, QXmlStreamWriter &writer, const QString &keyName, int rowNum ) > &writeRow = std::function< void( QAbstractItemModel *model, QXmlStreamWriter &writer, const QString &keyName, int rowNum ) >() );
 
-    SABUTILS_EXPORT void expandAll( QTreeView *view );
+    TOWEL42_UTILS_EXPORT void expandAll( QTreeView *view );
 
-    SABUTILS_EXPORT void updateTimer( int delayMS, QTimer *timer );
+    TOWEL42_UTILS_EXPORT void updateTimer( int delayMS, QTimer *timer );
 
-    SABUTILS_EXPORT void deleteLayoutAndItems( QLayout *layout );
+    TOWEL42_UTILS_EXPORT void deleteLayoutAndItems( QLayout *layout );
 
-    SABUTILS_EXPORT void appendToLog( QPlainTextEdit *te, const QString &txt, std::pair< QString, bool > &previousText, QTextStream *ts = nullptr );
+    TOWEL42_UTILS_EXPORT void appendToLog( QPlainTextEdit *te, const QString &txt, std::pair< QString, bool > &previousText, QTextStream *ts = nullptr );
 
-    SABUTILS_EXPORT NODISCARD uint8_t *imageToPixels( const QImage &image );   // allocates the space, user is responsible for memory deletion using array delete
+    TOWEL42_UTILS_EXPORT NODISCARD uint8_t *imageToPixels( const QImage &image );   // allocates the space, user is responsible for memory deletion using array delete
 
-    SABUTILS_EXPORT QString getHexValue( intptr_t value );
-    SABUTILS_EXPORT QString dumpArray( const char *title, const uint8_t *arr, const uint8_t *baseArray, int size, bool asRGB = false, int colsPerRow = 20 );
+    TOWEL42_UTILS_EXPORT QString getHexValue( intptr_t value );
+    TOWEL42_UTILS_EXPORT QString dumpArray( const char *title, const uint8_t *arr, const uint8_t *baseArray, int size, bool asRGB = false, int colsPerRow = 20 );
 
     template< typename T >
     void dumpRow( int currRow, const char *title, const T *array, int width, int height, int colsPerRow, const T *baseArray, int rowOffset )
@@ -251,7 +251,7 @@ namespace NSABUtils
         qDebug().noquote().nospace() << "Row: " << currRow << " : Offset: " << offset << ":\n" << dumpArray( title, (const uint8_t *)array + offset, (const uint8_t *)baseArray, rowBytes, true, colsPerRow );
     }
 
-    SABUTILS_EXPORT void dumpImage( const char *title, const uint8_t *arr, int width, int height, const uint8_t *baseArray = nullptr );
+    TOWEL42_UTILS_EXPORT void dumpImage( const char *title, const uint8_t *arr, int width, int height, const uint8_t *baseArray = nullptr );
 
     template< template< typename > class T1, typename T2 >
     std::unordered_set< T2 > hashFromList( const T1< T2 > &values )
@@ -259,9 +259,9 @@ namespace NSABUtils
         return std::unordered_set< T2 >( { values.begin(), values.end() } );
     }
 
-    SABUTILS_EXPORT void setDPIAwarenessToMode( int &argc, char **&argv, const char *mode );
+    TOWEL42_UTILS_EXPORT void setDPIAwarenessToMode( int &argc, char **&argv, const char *mode );
 
-    SABUTILS_EXPORT QString getFirstString( const QVariant &value );
+    TOWEL42_UTILS_EXPORT QString getFirstString( const QVariant &value );
 }
 
 template< std::size_t I = 0, typename... Tp >

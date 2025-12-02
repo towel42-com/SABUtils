@@ -23,7 +23,7 @@
 #include "CollapsableGroupBox.h"
 #include <QChildEvent>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     class CCollapsableGroupBoxImpl
     {

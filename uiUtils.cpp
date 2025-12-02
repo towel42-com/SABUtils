@@ -27,13 +27,13 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     bool launchIfURLClicked( const QString &title, const QPoint &pt, const QFont &font )
     {
         int urlStart;
         int urlLength;
-        auto hasUrl = NSABUtils::isValidURL( title, &urlStart, &urlLength );
+        auto hasUrl = NTowel42Utils::isValidURL( title, &urlStart, &urlLength );
         if ( hasUrl )
         {
             auto xLoc = pt.x();

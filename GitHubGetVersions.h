@@ -23,7 +23,7 @@
 #ifndef __GITHUBGETVERSIONS_H
 #define __GITHUBGETVERSIONS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 #include <QObject>
 #include <QUrl>
 #include <QDateTime>
@@ -39,9 +39,9 @@ class QJsonArray;
 class QSslPreSharedKeyAuthenticator;
 class QNetworkProxy;
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    struct SABUTILS_EXPORT SVersion
+    struct TOWEL42_UTILS_EXPORT SVersion
     {
         SVersion() {};
         bool setVersionInfo( const QString &tagName, const QString &createdDate );
@@ -52,11 +52,11 @@ namespace NSABUtils
         QDateTime fReleaseDate;
     };
 
-    SABUTILS_EXPORT bool operator<( const SVersion &lhs, const SVersion &rhs );
-    SABUTILS_EXPORT bool operator>( const SVersion &lhs, const SVersion &rhs );
-    SABUTILS_EXPORT bool operator==( const SVersion &lhs, const SVersion &rhs );
+    TOWEL42_UTILS_EXPORT bool operator<( const SVersion &lhs, const SVersion &rhs );
+    TOWEL42_UTILS_EXPORT bool operator>( const SVersion &lhs, const SVersion &rhs );
+    TOWEL42_UTILS_EXPORT bool operator==( const SVersion &lhs, const SVersion &rhs );
 
-    struct SABUTILS_EXPORT SGitHubAsset
+    struct TOWEL42_UTILS_EXPORT SGitHubAsset
     {
         SGitHubAsset( const QJsonObject &assetInfo );
 
@@ -70,7 +70,7 @@ namespace NSABUtils
         bool fAOK{ false };
     };
 
-    struct SABUTILS_EXPORT SGitHubRelease
+    struct TOWEL42_UTILS_EXPORT SGitHubRelease
     {
         SGitHubRelease( const SGitHubRelease &rhs ) :
             fTagName( rhs.fTagName ),
@@ -101,7 +101,7 @@ namespace NSABUtils
         std::list< std::shared_ptr< SGitHubAsset > > fAssets;
     };
 
-    class SABUTILS_EXPORT CGitHubGetVersions : public QObject
+    class TOWEL42_UTILS_EXPORT CGitHubGetVersions : public QObject
     {
         Q_OBJECT;
 

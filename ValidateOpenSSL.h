@@ -21,10 +21,10 @@
 // SOFTWARE.
 
 #include <QString>
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     // if require local is true, will return false if the OpenSSL libraries are not local
-    SABUTILS_EXPORT std::pair< bool, QString > validateOpenSSL( bool requireLocal = true );
+    TOWEL42_UTILS_EXPORT std::pair< bool, QString > validateOpenSSL( bool requireLocal = true );
 }

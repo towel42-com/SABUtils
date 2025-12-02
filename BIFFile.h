@@ -23,7 +23,7 @@
 #ifndef __BIFFILE_H
 #define __BIFFILE_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QObject>
 #include <QString>
@@ -33,16 +33,16 @@
 #include <QPointer>
 #include <QAbstractListModel>
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 class QFileInfo;
 class QFile;
 class QDir;
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NBIF
     {
-        struct SABUTILS_EXPORT S32BitValue
+        struct TOWEL42_UTILS_EXPORT S32BitValue
         {
         public:
             S32BitValue();
@@ -63,7 +63,7 @@ namespace NSABUtils
             uint32_t fValue{ 0 };
         };
 
-        struct SABUTILS_EXPORT SBIFImage
+        struct TOWEL42_UTILS_EXPORT SBIFImage
         {
             SBIFImage( S32BitValue bifNum, S32BitValue offset, SBIFImage *prev );
             SBIFImage( const QString &fileName, uint32_t bifNum );
@@ -84,7 +84,7 @@ namespace NSABUtils
         };
 
         using TBIFIndex = std::vector< SBIFImage >;   // data read in of ts, pos then a pair of pos, size
-        class SABUTILS_EXPORT CFile
+        class TOWEL42_UTILS_EXPORT CFile
         {
         public:
             enum class EState

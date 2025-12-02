@@ -23,13 +23,13 @@
 #ifndef __FORCEUNBUFFEREDPROCESSMODIFIER_H
 #define __FORCEUNBUFFEREDPROCESSMODIFIER_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 #include "nodiscard.h"
 #include <QProcess>
 struct CreateProcessArguments;
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    SABUTILS_EXPORT NODISCARD QProcess::CreateProcessArgumentModifier getForceUnbufferedProcessModifier();
+    TOWEL42_UTILS_EXPORT NODISCARD QProcess::CreateProcessArgumentModifier getForceUnbufferedProcessModifier();
 }
 #endif

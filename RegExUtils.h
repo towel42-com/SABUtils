@@ -23,7 +23,7 @@
 #ifndef __REGEXUTILS_H
 #define __REGEXUTILS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 #include <string>
 #include <QString>
 #include <list>
@@ -31,36 +31,36 @@
 
 class QRegularExpression;
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NStringUtils
     {
-        SABUTILS_EXPORT bool regExEqual( const std::string &lhs, const std::string &rhs );
+        TOWEL42_UTILS_EXPORT bool regExEqual( const std::string &lhs, const std::string &rhs );
 
-        SABUTILS_EXPORT bool isExactMatchRegEx( const std::string &data, const std::string &pattern, bool nocase );
-        SABUTILS_EXPORT std::list< std::string > splitStringRegEx( const std::string &string, const std::string &regex, bool nocase = false, bool skipEmpty = false );   // split based on regex
+        TOWEL42_UTILS_EXPORT bool isExactMatchRegEx( const std::string &data, const std::string &pattern, bool nocase );
+        TOWEL42_UTILS_EXPORT std::list< std::string > splitStringRegEx( const std::string &string, const std::string &regex, bool nocase = false, bool skipEmpty = false );   // split based on regex
 
-        SABUTILS_EXPORT bool matchRegExpr( const char *s1, const char *s2 );
+        TOWEL42_UTILS_EXPORT bool matchRegExpr( const char *s1, const char *s2 );
 
-        SABUTILS_EXPORT QString encodeRegEx( const char *inString );
-        SABUTILS_EXPORT QString encodeRegEx( QString inString );
-        SABUTILS_EXPORT std::string encodeRegEx( const std::string &inString );
+        TOWEL42_UTILS_EXPORT QString encodeRegEx( const char *inString );
+        TOWEL42_UTILS_EXPORT QString encodeRegEx( QString inString );
+        TOWEL42_UTILS_EXPORT std::string encodeRegEx( const std::string &inString );
 
-        SABUTILS_EXPORT std::string addToRegEx( std::string oldRegEx, const std::string &regEx );
+        TOWEL42_UTILS_EXPORT std::string addToRegEx( std::string oldRegEx, const std::string &regEx );
 
-        SABUTILS_EXPORT bool isSpecialRegExChar( char ch, bool includeDotSlash = true );
-        SABUTILS_EXPORT bool isSpecialRegExChar( const QChar &ch, bool includeDotSlash = true );
+        TOWEL42_UTILS_EXPORT bool isSpecialRegExChar( char ch, bool includeDotSlash = true );
+        TOWEL42_UTILS_EXPORT bool isSpecialRegExChar( const QChar &ch, bool includeDotSlash = true );
 
         // used in the regExReplace and regExReplaceAll
         // $$ - is replaced with the literal $
         // $& - is replaced with with captured text
         // $N - is replaced with the Nth captured text
         // ${name} - is replaced with the named capture
-        SABUTILS_EXPORT std::optional< QString > replaceMatch( const QString &replacement, QRegularExpressionMatch &match );
+        TOWEL42_UTILS_EXPORT std::optional< QString > replaceMatch( const QString &replacement, QRegularExpressionMatch &match );
 
         // replaces all occurences of pattern in input with replacement
-        SABUTILS_EXPORT std::optional< QString > regExReplace( const QString &input, const QString &pattern, const QString &replacement );
-        SABUTILS_EXPORT std::optional< QString > regExReplace( const QString &input, const QRegularExpression &pattern, const QString &replacement );
+        TOWEL42_UTILS_EXPORT std::optional< QString > regExReplace( const QString &input, const QString &pattern, const QString &replacement );
+        TOWEL42_UTILS_EXPORT std::optional< QString > regExReplace( const QString &input, const QRegularExpression &pattern, const QString &replacement );
 
     }
 }

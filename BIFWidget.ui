@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>NSABUtils::NBIF::CWidget</class>
- <widget class="QFrame" name="NSABUtils::NBIF::CWidget">
+ <class>NTowel42Utils::NBIF::CWidget</class>
+ <widget class="QFrame" name="NTowel42Utils::NBIF::CWidget">
   <property name="geometry">
    <rect>
     <x>0</x>

@@ -23,7 +23,7 @@
 #ifndef _BIFWIDGET_H
 #define _BIFWIDGET_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QFrame>
 #include <optional>
@@ -39,7 +39,7 @@ class QMenu;
 class QToolBar;
 class QSpinBox;
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NBIF
     {
@@ -55,7 +55,7 @@ namespace NSABUtils
             eNoButtons,
         };
 
-        class SABUTILS_EXPORT CWidget : public QFrame
+        class TOWEL42_UTILS_EXPORT CWidget : public QFrame
         {
             Q_OBJECT
         public:
@@ -203,7 +203,7 @@ namespace NSABUtils
             int fGIFDelay{ -1 };
 
             std::shared_ptr< QMovie > fMovie;
-            std::unique_ptr< NSABUtils::NBIF::Ui::CWidget > fImpl;
+            std::unique_ptr< NTowel42Utils::NBIF::Ui::CWidget > fImpl;
         };
     }
 }

@@ -28,7 +28,7 @@
 #include <QJsonArray>
 #include <QJsonValue>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     QJsonValue toJson( const QStringList &value )
     {

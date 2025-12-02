@@ -23,7 +23,7 @@
 #ifndef _GIFWRITERDLG_H
 #define _GIFWRITERDLG_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 class QProgressDialog;
 class QFileInfo;
@@ -31,7 +31,7 @@ class QFileInfo;
 #include <QDialog>
 #include <memory>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NBIF
     {
@@ -42,7 +42,7 @@ namespace NSABUtils
     {
         class CGIFWriterDlg;
     }
-    class SABUTILS_EXPORT CGIFWriterDlg : public QDialog
+    class TOWEL42_UTILS_EXPORT CGIFWriterDlg : public QDialog
     {
         Q_OBJECT
     public:

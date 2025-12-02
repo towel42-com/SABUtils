@@ -23,13 +23,13 @@
 #ifndef __UIUTILS_H
 #define __UIUTILS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 class QString;
 class QPoint;
 class QFont;
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    SABUTILS_EXPORT bool launchIfURLClicked( const QString &title, const QPoint &pt, const QFont &font );
+    TOWEL42_UTILS_EXPORT bool launchIfURLClicked( const QString &title, const QPoint &pt, const QFont &font );
 }
 #endif

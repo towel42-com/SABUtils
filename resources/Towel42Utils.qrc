@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/SABUtilsResources">
+    <qresource prefix="/Towel42UtilsResources">
         <file>add.png</file>
         <file>delete.png</file>
         <file>edit.png</file>

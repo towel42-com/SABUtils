@@ -23,7 +23,7 @@
 #ifndef __COMMON_MD5_H
 #define __COMMON_MD5_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 class QByteArray;
 class QFileInfo;
@@ -36,22 +36,22 @@ class QImage;
 #include <QObject>
 #include <QFileInfo>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    SABUTILS_EXPORT QByteArray getMd5( const QByteArray &data );
-    SABUTILS_EXPORT QByteArray getMd5( const QFileInfo &fi );
-    SABUTILS_EXPORT QByteArray getMd5( const QStringList &data );
-    SABUTILS_EXPORT QByteArray getMd5( const QString &data, bool isFileName = false );
-    SABUTILS_EXPORT std::string getMd5( const std::string &data, bool isFileName = false );
+    TOWEL42_UTILS_EXPORT QByteArray getMd5( const QByteArray &data );
+    TOWEL42_UTILS_EXPORT QByteArray getMd5( const QFileInfo &fi );
+    TOWEL42_UTILS_EXPORT QByteArray getMd5( const QStringList &data );
+    TOWEL42_UTILS_EXPORT QByteArray getMd5( const QString &data, bool isFileName = false );
+    TOWEL42_UTILS_EXPORT std::string getMd5( const std::string &data, bool isFileName = false );
 
-    SABUTILS_EXPORT QByteArray getMd5( const QIcon &icon );
-    SABUTILS_EXPORT QByteArray getMd5( const QPixmap &pixmap );   // only includes image data
-    SABUTILS_EXPORT QByteArray getMd5( const QImage &img );
-    SABUTILS_EXPORT QByteArray getImageData( const QImage &img );
+    TOWEL42_UTILS_EXPORT QByteArray getMd5( const QIcon &icon );
+    TOWEL42_UTILS_EXPORT QByteArray getMd5( const QPixmap &pixmap );   // only includes image data
+    TOWEL42_UTILS_EXPORT QByteArray getMd5( const QImage &img );
+    TOWEL42_UTILS_EXPORT QByteArray getImageData( const QImage &img );
 
-    SABUTILS_EXPORT QByteArray formatMd5( const QByteArray &digest, bool isHex );
+    TOWEL42_UTILS_EXPORT QByteArray formatMd5( const QByteArray &digest, bool isHex );
 
-    class SABUTILS_EXPORT CComputeMD5 : public QObject, public QRunnable
+    class TOWEL42_UTILS_EXPORT CComputeMD5 : public QObject, public QRunnable
     {
         Q_OBJECT;
 

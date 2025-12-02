@@ -23,7 +23,7 @@
 #ifndef __BUTTONENABLER_H
 #define __BUTTONENABLER_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QObject>
 class QAbstractItemView;
@@ -31,9 +31,9 @@ class QAbstractButton;
 class QItemSelection;
 class QLineEdit;
 class QAction;
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    class SABUTILS_EXPORT CButtonEnabler : public QObject
+    class TOWEL42_UTILS_EXPORT CButtonEnabler : public QObject
     {
         Q_OBJECT;
 

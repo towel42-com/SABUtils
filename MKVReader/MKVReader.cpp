@@ -23,7 +23,7 @@
 #include "EBML.h"
 #include "ids.h"
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NMKVReader
     {

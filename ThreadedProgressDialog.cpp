@@ -26,7 +26,7 @@
 #include <QPushButton>
 #include <QApplication>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     class CThreadedProgressDialogImpl
     {

@@ -23,14 +23,14 @@
 #ifndef __FILECOMPARE_H
 #define __FILECOMPARE_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <string>
 #include <QFileDevice>
 class QFileInfo;
 class QString;
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NFileUtils
     {
@@ -44,7 +44,7 @@ namespace NSABUtils
         //   readonly
         // md5
         class CFileCompareImpl;
-        class SABUTILS_EXPORT CFileCompare
+        class TOWEL42_UTILS_EXPORT CFileCompare
         {
         public:
             CFileCompare( const std::string &lhs, const std::string &rhs );

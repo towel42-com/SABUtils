@@ -48,7 +48,7 @@ _COM_SMARTPTR_TYPEDEF( ISetupConfiguration, __uuidof( ISetupConfiguration ) );
 _COM_SMARTPTR_TYPEDEF( ISetupConfiguration2, __uuidof( ISetupConfiguration2 ) );
 //_COM_SMARTPTR_TYPEDEF(ISetupHelper, __uuidof(ISetupHelper));
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NVSInstallUtils
     {

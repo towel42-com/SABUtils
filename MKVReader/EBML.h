@@ -26,7 +26,7 @@
 #include <cstdint>
 
 class QFile;
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NMKVReader
     {

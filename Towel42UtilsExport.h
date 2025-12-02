@@ -20,21 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef SABUTILSEXPORT_H
-#define SABUTILSEXPORT_H
+#ifndef TOWEL42UTILSEXPORT_H
+#define TOWEL42UTILSEXPORT_H
 
 #if defined( WINDOWS ) || defined( WIN32 ) || defined( Q_OS_WINDOWS )
-    #ifdef SABUTILS_DLL
-        #ifdef SABUTILS_INTERNAL
-            #define SABUTILS_EXPORT __declspec( dllexport )
+    #ifdef TOWEL42_UTILS_DLL
+        #ifdef TOWEL42UTILS_INTERNAL
+            #define TOWEL42_UTILS_EXPORT __declspec( dllexport )
         #else
-            #define SABUTILS_EXPORT __declspec( dllimport )
+            #define TOWEL42_UTILS_EXPORT __declspec( dllimport )
         #endif
     #else
-        #define SABUTILS_EXPORT
+        #define TOWEL42_UTILS_EXPORT
     #endif
 #else
-    #define SABUTILS_EXPORT
+    #define TOWEL42_UTILS_EXPORT
 #endif
 
 #endif

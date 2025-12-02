@@ -35,7 +35,7 @@
 #include <QImageWriter>
 #include <QDataStream>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     QByteArray formatMd5( const QByteArray &digest, bool isHex )
     {
@@ -104,12 +104,12 @@ namespace NSABUtils
         return {};
     }
 
-    SABUTILS_EXPORT QByteArray getMd5( const QPixmap &pixMap )
+    TOWEL42_UTILS_EXPORT QByteArray getMd5( const QPixmap &pixMap )
     {
         return getMd5( pixMap.toImage() );
     }
 
-    SABUTILS_EXPORT QByteArray getMd5( const QIcon &icon )
+    TOWEL42_UTILS_EXPORT QByteArray getMd5( const QIcon &icon )
     {
         auto sizes = icon.availableSizes();
         QCryptographicHash hash( QCryptographicHash::Md5 );
@@ -121,14 +121,14 @@ namespace NSABUtils
         return formatMd5( hash.result(), false );
     }
 
-    SABUTILS_EXPORT QByteArray getMd5( const QImage &image )
+    TOWEL42_UTILS_EXPORT QByteArray getMd5( const QImage &image )
     {
         QCryptographicHash hash( QCryptographicHash::Md5 );
         hash.addData( getImageData( image ) );
         return formatMd5( hash.result(), false );
     }
 
-    SABUTILS_EXPORT QByteArray getImageData( const QImage &img )
+    TOWEL42_UTILS_EXPORT QByteArray getImageData( const QImage &img )
     {
         if ( img.isNull() )
             return {};

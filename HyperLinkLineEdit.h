@@ -24,9 +24,9 @@
 #define __HYPERLINKEDIT_H
 
 #include <QTextEdit>
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
-class SABUTILS_EXPORT CHyperLinkLineEdit : public QTextEdit
+class TOWEL42_UTILS_EXPORT CHyperLinkLineEdit : public QTextEdit
 {
     Q_OBJECT;
 

@@ -36,7 +36,7 @@
     #include <termios.h>
 #endif
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     int fromChar( char ch, int base, bool &aOK )
     {
@@ -148,7 +148,7 @@ namespace NSABUtils
         int64_t value = 0;
         for ( int64_t ii = numDigits - 1; ii >= 0; --ii )
         {
-            sumOfPowers += NSABUtils::power( rawDigits[ ii ], numDigits );
+            sumOfPowers += NTowel42Utils::power( rawDigits[ ii ], numDigits );
 
             value = ( value * base ) + rawDigits[ ii ];
         }
@@ -254,7 +254,7 @@ namespace NSABUtils
     {
         auto sum = getSumOfFactors( num, true );
         auto factors = std::vector< int64_t >( { sum.second.begin(), sum.second.end() } );
-        auto isSemiPerfect = NSABUtils::isSemiPerfect( factors, factors.size(), num );
+        auto isSemiPerfect = NTowel42Utils::isSemiPerfect( factors, factors.size(), num );
         return std::make_pair( isSemiPerfect, sum.second );
     }
 

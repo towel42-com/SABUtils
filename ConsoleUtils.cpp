@@ -33,13 +33,13 @@
     #include <qt_windows.h>
 #endif
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
 #ifdef Q_OS_WINDOWS
     ESubSystem getSubSystemForHandle( void *handle )
     {
-        auto offsetValue = NSABUtils::MarshalRead< uint32_t >( handle, 0x3C );
-        auto actualValue = NSABUtils::MarshalRead< uint16_t >( handle, offsetValue + 0x5c );
+        auto offsetValue = NTowel42Utils::MarshalRead< uint32_t >( handle, 0x3C );
+        auto actualValue = NTowel42Utils::MarshalRead< uint16_t >( handle, offsetValue + 0x5c );
         return static_cast< ESubSystem >( actualValue );
     }
 

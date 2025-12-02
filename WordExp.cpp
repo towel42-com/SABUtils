@@ -36,7 +36,7 @@
     #include <wordexp.h>
 #endif
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     CWordExp::CWordExp( const QString &pathName ) :
         fOrigPathName( pathName )

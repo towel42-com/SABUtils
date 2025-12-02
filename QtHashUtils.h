@@ -23,7 +23,7 @@
 #ifndef __QTHASHUTILS_H
 #define __QTHASHUTILS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QHash>
 #include <QFileInfo>

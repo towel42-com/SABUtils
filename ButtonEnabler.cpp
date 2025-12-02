@@ -28,7 +28,7 @@
 #include <QFile>
 #include <QAction>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     CButtonEnabler::CButtonEnabler( QAbstractItemView *view, QAbstractButton *btn, QObject *parent ) :
         QObject( parent ),

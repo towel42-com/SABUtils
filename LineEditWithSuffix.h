@@ -22,13 +22,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QLineEdit>
 class QLabel;
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    class SABUTILS_EXPORT CLineEditWithSuffix : public QLineEdit
+    class TOWEL42_UTILS_EXPORT CLineEditWithSuffix : public QLineEdit
     {
         Q_OBJECT;
 

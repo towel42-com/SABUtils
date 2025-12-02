@@ -39,7 +39,7 @@
 #include <iostream>
 #include <functional>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NFileUtils
     {

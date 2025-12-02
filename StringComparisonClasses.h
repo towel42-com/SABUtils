@@ -23,46 +23,46 @@
 #ifndef __STRINGCOMPARISONCLASSES_H
 #define __STRINGCOMPARISONCLASSES_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <string>
 #include <QString>
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NStringUtils
     {
         // Functors
         // Functor noCaseStringCmp: case-less string comparisons
-        class SABUTILS_EXPORT noCaseStringCmp
+        class TOWEL42_UTILS_EXPORT noCaseStringCmp
         {
         public:
             bool operator()( const std::string &s1, const std::string &s2 ) const;
         };
 
-        class SABUTILS_EXPORT noCaseStringEq
+        class TOWEL42_UTILS_EXPORT noCaseStringEq
         {
         public:
             bool operator()( const std::string &s1, const std::string &s2 ) const;
         };
 
-        struct SABUTILS_EXPORT noCaseStringHash
+        struct TOWEL42_UTILS_EXPORT noCaseStringHash
         {
             size_t operator()( const std::string &s ) const;
         };
 
-        class SABUTILS_EXPORT noCaseQStringCmp
+        class TOWEL42_UTILS_EXPORT noCaseQStringCmp
         {
         public:
             bool operator()( const QString &s1, const QString &s2 ) const;
         };
 
-        class SABUTILS_EXPORT noCaseQStringEq
+        class TOWEL42_UTILS_EXPORT noCaseQStringEq
         {
         public:
             bool operator()( const QString &s1, const QString &s2 ) const;
         };
 
-        struct SABUTILS_EXPORT noCaseQStringHash
+        struct TOWEL42_UTILS_EXPORT noCaseQStringHash
         {
             size_t operator()( const QString &s ) const;
         };

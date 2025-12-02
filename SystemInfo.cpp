@@ -28,7 +28,7 @@
 #include <string>
 #include <sstream>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     std::string CSystemInfo::sBaseApplicationMemory;
     CSystemInfo::CSystemInfo( bool baseInfoOnly )

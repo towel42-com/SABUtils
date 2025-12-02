@@ -24,7 +24,7 @@
 #include <QAbstractButton>
 #include <QGroupBox>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     CWidgetEnabler::CWidgetEnabler( QAbstractButton *btn, QWidget *widget, QObject *parent ) :
         CWidgetEnabler( btn, { widget }, parent )

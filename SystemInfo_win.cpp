@@ -49,7 +49,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Win32 libraries
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     bool CSystemInfo::hasSystemInfo()
     {
@@ -388,7 +388,7 @@ namespace NSABUtils
                 break;
         }
 
-        return NSABUtils::NStringUtils::trim( retVal );
+        return NTowel42Utils::NStringUtils::trim( retVal );
     }
 
     // returns version, name
@@ -526,7 +526,7 @@ namespace NSABUtils
     {
         std::optional< TQuery > initQuery()
         {
-            auto tmp = NSABUtils::initQuery( { L"\\Processor(*)\\% Processor Time", L"\\Processor(*)\\% User Time", L"\\Processor(*)\\% Privileged Time" } );
+            auto tmp = NTowel42Utils::initQuery( { L"\\Processor(*)\\% Processor Time", L"\\Processor(*)\\% User Time", L"\\Processor(*)\\% Privileged Time" } );
             if ( !tmp.has_value() )
                 return {};
             if ( tmp.value().second.size() != 3 )
@@ -594,7 +594,7 @@ namespace NSABUtils
     {
         std::optional< TQuery > initQuery()
         {
-            auto tmp = NSABUtils::initQuery( { L"\\PhysicalDisk(*)\\Disk Read Bytes/sec", L"\\PhysicalDisk(*)\\Disk Write Bytes/sec" } );
+            auto tmp = NTowel42Utils::initQuery( { L"\\PhysicalDisk(*)\\Disk Read Bytes/sec", L"\\PhysicalDisk(*)\\Disk Write Bytes/sec" } );
             if ( !tmp.has_value() )
                 return {};
             return std::make_pair( tmp.value().first, std::make_pair( tmp.value().second.front(), tmp.value().second.back() ) );

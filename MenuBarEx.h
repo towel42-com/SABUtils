@@ -23,13 +23,13 @@
 #ifndef __MENUBAREX_H
 #define __MENUBAREX_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QMenuBar>
 class QTimer;
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    class SABUTILS_EXPORT CMenuBarEx : public QMenuBar
+    class TOWEL42_UTILS_EXPORT CMenuBarEx : public QMenuBar
     {
         Q_OBJECT
     public:

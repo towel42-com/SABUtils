@@ -23,7 +23,7 @@
 #ifndef _SCROLLMESSAGEBOX_H
 #define _SCROLLMESSAGEBOX_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QDialog>
 #include <QMessageBox>
@@ -31,14 +31,14 @@
 #include <memory>
 class QAbstractButton;
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace Ui
     {
         class CScrollMessageBox;
     };
 
-    class SABUTILS_EXPORT CScrollMessageBox : public QDialog
+    class TOWEL42_UTILS_EXPORT CScrollMessageBox : public QDialog
     {
         Q_OBJECT
 

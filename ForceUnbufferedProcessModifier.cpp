@@ -26,7 +26,7 @@
 #include <QProcess>
 #include <qt_windows.h>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     QProcess::CreateProcessArgumentModifier getForceUnbufferedProcessModifier()
     {

@@ -30,7 +30,7 @@
 #include <QFontMetrics>
 #include <QEvent>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     CLineEditWithSuffix::CLineEditWithSuffix( QWidget *parent ) :
         CLineEditWithSuffix( QString(), QString(), parent )

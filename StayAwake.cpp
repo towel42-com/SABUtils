@@ -28,7 +28,7 @@
     #include <qt_windows.h>
 #endif
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     void CStayAwake::run()
     {
@@ -87,7 +87,7 @@ namespace NSABUtils
         QObject( parent )
     {
         if ( !fStayAwake )
-            fStayAwake = new NSABUtils::CStayAwake( keepScreenOn );
+            fStayAwake = new NTowel42Utils::CStayAwake( keepScreenOn );
 
         QThreadPool::globalInstance()->start( fStayAwake );
     }

@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef _SABUTILS_FFMPEGUTILS_H
-#define _SABUTILS_FFMPEGUTILS_H
+#ifndef _TOWEL42_UTILS_FFMPEGUTILS_H
+#define _TOWEL42_UTILS_FFMPEGUTILS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 #include <QStringList>
 #include <QString>
 
@@ -32,7 +32,7 @@
 #include <set>
 #include <optionaL>
 class QProgressDialog;
-namespace NSABUtils
+namespace NTowel42Utils
 {
     enum class EFormatType
     {
@@ -42,11 +42,11 @@ namespace NSABUtils
         eSubtitle,
         eImage
     };
-    SABUTILS_EXPORT QString toString( EFormatType type );
+    TOWEL42_UTILS_EXPORT QString toString( EFormatType type );
     using TFormatMap = std::unordered_map< EFormatType, std::unordered_map< QString, QStringList > >;
     using TCodecToEncoderDecoderMap = std::unordered_map< EFormatType, std::unordered_multimap< QString, QString > >;
 
-    class SABUTILS_EXPORT CFFMpegFormats
+    class TOWEL42_UTILS_EXPORT CFFMpegFormats
     {
     public:
         CFFMpegFormats();
@@ -129,8 +129,8 @@ namespace NSABUtils
         QStringList getImageEncoderExtensions( const QStringList &exclude = {} ) const;
         QStringList getImageDecoderExtensions( const QStringList &exclude = {} ) const;
 
-        QStringList getEncoderExtensions( NSABUtils::EFormatType extensionType, const QStringList &exclude = {} ) const;
-        QStringList getDecoderExtensions( NSABUtils::EFormatType extensionType, const QStringList &exclude = {} ) const;
+        QStringList getEncoderExtensions( NTowel42Utils::EFormatType extensionType, const QStringList &exclude = {} ) const;
+        QStringList getDecoderExtensions( NTowel42Utils::EFormatType extensionType, const QStringList &exclude = {} ) const;
 
         QString getPrimaryEncoderExtensionForFormat( const QString &formatName, const QStringList &exclude = {} ) const;
         QStringList getEncoderExtensionsForFormat( const QString &formatName, const QStringList &exclude = {} ) const;
@@ -170,7 +170,7 @@ namespace NSABUtils
         std::optional< QStringList > decoderFormatLoaded( const QString &formatName ) const;
 
         QStringList getExtensionsForFormat( const TFormatMap &map, const QString &formatName, const QStringList &exclude ) const;
-        QStringList getExtensions( const TFormatMap &map, NSABUtils::EFormatType extensionType, const QStringList &exclude ) const;
+        QStringList getExtensions( const TFormatMap &map, NTowel42Utils::EFormatType extensionType, const QStringList &exclude ) const;
 
         bool fLoaded{ false };
         struct SStringListPair

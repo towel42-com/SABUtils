@@ -24,14 +24,14 @@
 #include <QRunnable>
 #include <QObject>
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #ifdef Q_OS_WINDOWS
-namespace NSABUtils
+namespace NTowel42Utils
 {
     // by default QRunnable has autodelete, when its finished running it automatically deletes.
     // user can override this
-    class SABUTILS_EXPORT CStayAwake : public QRunnable
+    class TOWEL42_UTILS_EXPORT CStayAwake : public QRunnable
     {
     public:
         CStayAwake( bool keepScreenOn ) :
@@ -48,7 +48,7 @@ namespace NSABUtils
         bool fStopped{ false };
     };
 
-    class SABUTILS_EXPORT CAutoStayAwake : public QObject   // allows for delete later
+    class TOWEL42_UTILS_EXPORT CAutoStayAwake : public QObject   // allows for delete later
     {
     public:
         CAutoStayAwake( bool keepScreenOn, QObject *parent = nullptr );

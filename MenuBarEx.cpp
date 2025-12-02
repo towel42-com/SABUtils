@@ -24,7 +24,7 @@
 #include <QTimer>
 #include <QMetaMethod>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     CMenuBarEx::CMenuBarEx( QWidget *parent ) :
         QMenuBar( parent )

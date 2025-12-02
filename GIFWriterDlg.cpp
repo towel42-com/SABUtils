@@ -32,13 +32,13 @@
 
 #include "ui_GIFWriterDlg.h"
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     CGIFWriterDlg::CGIFWriterDlg( std::shared_ptr< NBIF::CFile > bifFile, int delayInMSec, QWidget *parent ) :
         QDialog( parent ),
         fImpl( new Ui::CGIFWriterDlg )
     {
-        Q_INIT_RESOURCE( SABUtils );
+        Q_INIT_RESOURCE( Towel42Utils );
         Q_INIT_RESOURCE( BIFPlayerResources );
         fImpl->setupUi( this );
 

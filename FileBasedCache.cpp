@@ -31,7 +31,7 @@
 //
 //#include "MediaInfoDLL/MediaInfoDLL_Static.h"
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     SFileBasedCacheNode::SFileBasedCacheNode( const QFileInfo &fileInfo ) :
         fFileInfo( fileInfo ),

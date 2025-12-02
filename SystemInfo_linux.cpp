@@ -31,7 +31,7 @@
 
 #include <QLocale>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     bool CSystemInfo::hasSystemInfo()
     {

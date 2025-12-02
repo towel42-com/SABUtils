@@ -23,12 +23,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QObject>
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    class SABUTILS_EXPORT CAutoWaitCursor : public QObject   // allows for delete later
+    class TOWEL42_UTILS_EXPORT CAutoWaitCursor : public QObject   // allows for delete later
     {
         Q_OBJECT;
 

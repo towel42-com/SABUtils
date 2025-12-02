@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-set(_PROJECT_NAME SABUtils)
+set(_PROJECT_NAME Towel42Utils)
 set(USE_QT TRUE)
-if ( SABUTILS_DLL )
+if ( TOWEL42_UTILS_DLL )
     set(FOLDER_NAME SharedLibs)
 else()
     set(FOLDER_NAME Libs)
@@ -78,7 +78,7 @@ set(qtproject_SRCS
     QtDumper.cpp
     QtUtils.cpp
     RegExUtils.cpp
-    SABUtilsResources.cpp
+    Towel42UtilsResources.cpp
     ScrollMessageBox.cpp
     SelectFileUrl.cpp
     SpinBox64.cpp
@@ -146,8 +146,8 @@ set(project_H
     QtUtils.h
     RevertValue.h
     RegExUtils.h
-    SABUtilsExport.h
-    SABUtilsResources.h
+    Towel42UtilsExport.h
+    Towel42UtilsResources.h
     SpinBox64_StepType.h
     StayAwake.h   
     StringComparisonClasses.h
@@ -167,7 +167,7 @@ set(qtproject_UIS
 
 
 set(qtproject_QRC
-    resources/SABUtils.qrc
+    resources/Towel42Utils.qrc
 )
 
 file(GLOB qtproject_QRC_SOURCES "resources/*")

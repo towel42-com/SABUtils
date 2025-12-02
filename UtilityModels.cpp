@@ -29,7 +29,7 @@
 #include <QTimer>
 #include <QDir>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     CMoveStringListModel::CMoveStringListModel( QObject *parent ) :
         QStringListModel( parent )
@@ -653,7 +653,7 @@ namespace NSABUtils
             msg = "Invalid Query Setup";
             return false;
         }
-        auto data = NSABUtils::getStrings( query, queryStrings );
+        auto data = NTowel42Utils::getStrings( query, queryStrings );
         for ( auto &&ii : data )
         {
             auto jj = ii.begin();
@@ -662,7 +662,7 @@ namespace NSABUtils
             for ( ; jj != ii.end() && kk != queries.end(); ++jj, ++kk )
             {
                 if ( ( *kk ).second )
-                    ( *jj ) = NSABUtils::getFile( relToDir, *jj );
+                    ( *jj ) = NTowel42Utils::getFile( relToDir, *jj );
                 currRow.push_back( *jj );
             }
             if ( clear )

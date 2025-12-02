@@ -22,14 +22,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QGroupBox>
-namespace NSABUtils
+namespace NTowel42Utils
 {
     class CCollapsableGroupBoxImpl;
 
-    class SABUTILS_EXPORT CCollapsableGroupBox : public QGroupBox
+    class TOWEL42_UTILS_EXPORT CCollapsableGroupBox : public QGroupBox
     {
         Q_OBJECT;
         Q_PROPERTY( bool collapsive READ isCollapsible WRITE setCollapsible )

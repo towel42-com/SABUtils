@@ -27,7 +27,7 @@
 #include <QString>
 #include <QFileInfo>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NFileUtils
     {
@@ -212,7 +212,7 @@ namespace NSABUtils
                     return false;
             }
 
-            return NSABUtils::getMd5( fLHS ) == NSABUtils::getMd5( fRHS );
+            return NTowel42Utils::getMd5( fLHS ) == NTowel42Utils::getMd5( fRHS );
         }
 
     }

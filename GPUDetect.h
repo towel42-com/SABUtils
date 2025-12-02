@@ -23,7 +23,7 @@
 #ifndef __GPUDETECT_H
 #define __GPUDETECT_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QString>
 #include <list>
@@ -31,9 +31,9 @@
 #include <cinttypes>
 
 class IWbemClassObject;
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    class SABUTILS_EXPORT CGPUInfo
+    class TOWEL42_UTILS_EXPORT CGPUInfo
     {
     public:
         CGPUInfo() {};
@@ -105,8 +105,8 @@ namespace NSABUtils
         QString fVideoProcessor;
     };
 
-    SABUTILS_EXPORT std::list< std::shared_ptr< CGPUInfo > > detectGPUs( QString *errorMsg = nullptr );
-    struct SABUTILS_EXPORT SGPUInfo
+    TOWEL42_UTILS_EXPORT std::list< std::shared_ptr< CGPUInfo > > detectGPUs( QString *errorMsg = nullptr );
+    struct TOWEL42_UTILS_EXPORT SGPUInfo
     {
         SGPUInfo( QString *errorMsg = nullptr );
         bool fIntel{ false };

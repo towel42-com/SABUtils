@@ -23,7 +23,7 @@
 #ifndef __GIFWRITER_H
 #define __GIFWRITER_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QImage>
 #include <QDataStream>
@@ -35,11 +35,11 @@ class QString;
 class QIODevice;
 class QProgressDialog;
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     struct SGIFPalette;
 
-    class SABUTILS_EXPORT CGIFWriter
+    class TOWEL42_UTILS_EXPORT CGIFWriter
     {
     public:
         static int kTransparentIndex;

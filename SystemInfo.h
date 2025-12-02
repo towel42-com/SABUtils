@@ -23,7 +23,7 @@
 #ifndef __SYSTEMINFO_H
 #define __SYSTEMINFO_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <unordered_map>
 #include <string>
@@ -31,7 +31,7 @@
 #include <list>
 class QJsonArray;
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     struct SNicInfo
     {
@@ -43,8 +43,8 @@ namespace NSABUtils
     namespace NCPUUtilization
     {
         using TQuery = std::pair< void *, std::tuple< void *, void *, void * > >;
-        std::optional< TQuery > SABUTILS_EXPORT initQuery();   // returns the handle to the query and the specific counter, the first needs to have free query called on it
-        void SABUTILS_EXPORT freeQuery( TQuery &query );
+        std::optional< TQuery > TOWEL42_UTILS_EXPORT initQuery();   // returns the handle to the query and the specific counter, the first needs to have free query called on it
+        void TOWEL42_UTILS_EXPORT freeQuery( TQuery &query );
 
         struct SCPUPercentTime
         {
@@ -67,16 +67,16 @@ namespace NSABUtils
             double fUserTime{ 0.0 };
             double fPrivTime{ 0.0 };
         };
-        std::unordered_map< size_t, SCPUPercentTime > SABUTILS_EXPORT getCPUCoreUtilizations( uint64_t sampleTime = 1000 );   // returns a map of logical processor id to %utilization over a 1000 msec sample
-        std::unordered_map< size_t, SCPUPercentTime > SABUTILS_EXPORT getCPUCoreUtilizations( const TQuery &query );
+        std::unordered_map< size_t, SCPUPercentTime > TOWEL42_UTILS_EXPORT getCPUCoreUtilizations( uint64_t sampleTime = 1000 );   // returns a map of logical processor id to %utilization over a 1000 msec sample
+        std::unordered_map< size_t, SCPUPercentTime > TOWEL42_UTILS_EXPORT getCPUCoreUtilizations( const TQuery &query );
     }
 
     namespace NDiskUsage
     {
         using TQuery = std::pair< void *, std::pair< void *, void * > >;
 
-        std::optional< TQuery > SABUTILS_EXPORT initQuery();   // returns the handle to the query and the specific counter, the first needs to have free query called on it
-        void SABUTILS_EXPORT freeQuery( TQuery &query );
+        std::optional< TQuery > TOWEL42_UTILS_EXPORT initQuery();   // returns the handle to the query and the specific counter, the first needs to have free query called on it
+        void TOWEL42_UTILS_EXPORT freeQuery( TQuery &query );
 
         struct SDiskTime
         {
@@ -93,10 +93,10 @@ namespace NSABUtils
             double fRead{ 0.0 };
             double fWrite{ 0.0 };
         };
-        std::unordered_map< std::wstring, SDiskTime > SABUTILS_EXPORT getDiskUtilizations( uint64_t sampleTime = 1000 );   // returns a map of disk name to the read/write bytes/sec
-        std::unordered_map< std::wstring, SDiskTime > SABUTILS_EXPORT getDiskUtilizations( const TQuery &query );
+        std::unordered_map< std::wstring, SDiskTime > TOWEL42_UTILS_EXPORT getDiskUtilizations( uint64_t sampleTime = 1000 );   // returns a map of disk name to the read/write bytes/sec
+        std::unordered_map< std::wstring, SDiskTime > TOWEL42_UTILS_EXPORT getDiskUtilizations( const TQuery &query );
     }
-    class SABUTILS_EXPORT CSystemInfo
+    class TOWEL42_UTILS_EXPORT CSystemInfo
     {
     public:
         CSystemInfo( bool baseSettings = false );

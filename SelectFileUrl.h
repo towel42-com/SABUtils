@@ -22,16 +22,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QObject>
 #include <QDesktopServices>
 class QUrl;
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     class CDelayLineEdit;
-    class SABUTILS_EXPORT CSelectFileUrl : public QObject
+    class TOWEL42_UTILS_EXPORT CSelectFileUrl : public QObject
     {
         Q_OBJECT;
 

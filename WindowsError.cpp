@@ -25,7 +25,7 @@
     #include <qt_windows.h>
 #endif
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
 #ifdef Q_OS_WINDOWS
     QString getWindowsError( int errorCode )

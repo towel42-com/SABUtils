@@ -24,7 +24,7 @@
 #include "QtUtils.h"
 #include "MediaInfo.h"
 
-#include "SABUtilsResources.h"
+#include "Towel42UtilsResources.h"
 
 #include <QObject>
 #include <QFileInfo>
@@ -35,7 +35,7 @@
 #include <QDir>
 #include <QTemporaryFile>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     bool setMediaTags( const QString &fileName, const TMediaTagMap &newTagValues, const QString &mkvPropEdit, QString *msg /*=nullptr */ )
     {
@@ -50,7 +50,7 @@ namespace NSABUtils
             return false;
         }
 
-        auto file = QFile( ":/SABUtilsResources/BlankMKVTags.xml" );
+        auto file = QFile( ":/Towel42UtilsResources/BlankMKVTags.xml" );
         if ( !file.open( QFile::ReadOnly ) )
         {
             if ( msg )
@@ -79,13 +79,13 @@ namespace NSABUtils
                     *msg = QObject::tr( "Tag %1 is invalid" ).arg( displayName( ii.first ) );
                 return false;
             }
-            stringBasedTags[ name ] = NSABUtils::getFirstString( ii.second );
+            stringBasedTags[ name ] = NTowel42Utils::getFirstString( ii.second );
         }
 
         auto newTitle = QString();
         auto pos = currentValues.find( EMediaTags::eTitle );
         if ( pos != currentValues.end() )
-            newTitle = NSABUtils::getFirstString( ( *pos ).second );
+            newTitle = NTowel42Utils::getFirstString( ( *pos ).second );
 
         if ( newTitle.isEmpty() )
             newTitle = QFileInfo( fileName ).baseName();

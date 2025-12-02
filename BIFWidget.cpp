@@ -43,13 +43,13 @@
 
 #include "ui_BIFWidget.h"
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NBIF
     {
         CWidget::CWidget( QWidget *parent ) :
             QFrame( parent ),
-            fImpl( new NSABUtils::NBIF::Ui::CWidget )
+            fImpl( new NTowel42Utils::NBIF::Ui::CWidget )
         {
             Q_INIT_RESOURCE( BIFPlayerResources );
             fImpl->setupUi( this );
@@ -145,7 +145,7 @@ namespace NSABUtils
             slotMovieStateChanged();
             if ( isValid() )
             {
-                auto labelText = tr( "Frame #: %1 Time: %2" ).arg( fMovie->currentFrameNumber() ).arg( NSABUtils::CTimeString( fMovie->currentFrameNumber() * fBIF->timePerFrame().fValue ).toString( "hh:mm:ss.zzz" ) );
+                auto labelText = tr( "Frame #: %1 Time: %2" ).arg( fMovie->currentFrameNumber() ).arg( NTowel42Utils::CTimeString( fMovie->currentFrameNumber() * fBIF->timePerFrame().fValue ).toString( "hh:mm:ss.zzz" ) );
                 if ( isPlaying() )
                     labelText += tr( "\nPlaying at %3 fps" ).arg( computeFPS(), 5, 'f', 3 );
 

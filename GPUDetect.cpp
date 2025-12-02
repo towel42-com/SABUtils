@@ -6,7 +6,7 @@
 #include <Wbemidl.h>
 #pragma comment( lib, "wbemuuid.lib" )
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     std::list< std::shared_ptr< CGPUInfo > > detectGPUs( QString *errorMsg /*= nullptr*/ )
     {
@@ -431,7 +431,7 @@ namespace NSABUtils
 
     SGPUInfo::SGPUInfo( QString *errorMsg /*= nullptr */ )
     {
-        auto gpus = NSABUtils::detectGPUs( errorMsg );
+        auto gpus = NTowel42Utils::detectGPUs( errorMsg );
         bool hasIntel = false;
         bool hasAMD = false;
         bool hasNVidia = false;

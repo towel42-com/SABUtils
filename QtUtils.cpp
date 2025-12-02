@@ -51,7 +51,7 @@
 
 #include <cstring>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     QString allFilesFilter()
     {

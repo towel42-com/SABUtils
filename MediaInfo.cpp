@@ -40,7 +40,7 @@
 
 #include "MediaInfoDLL/MediaInfoDLL_Static.h"
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     class CStreamData
     {
@@ -817,7 +817,7 @@ namespace NSABUtils
                 auto pos = retVal.find( tag );
                 if ( pos != retVal.end() )
                 {
-                    auto strValue = NSABUtils::getFirstString( ( *pos ).second );
+                    auto strValue = NTowel42Utils::getFirstString( ( *pos ).second );
                     if ( strValue.isEmpty() )
                         return;
 
@@ -1009,7 +1009,7 @@ namespace NSABUtils
             return retVal;
         }
 
-        QVariant getAllValues( NSABUtils::EStreamType whichStream, EMediaTags tag ) const
+        QVariant getAllValues( NTowel42Utils::EStreamType whichStream, EMediaTags tag ) const
         {
             auto values = findAllValues( whichStream, tag );
             auto defStreamNum = static_cast< int >( defaultStreamNum( whichStream ) );
@@ -1562,7 +1562,7 @@ namespace NSABUtils
         auto pos = tmp.find( tag );
         if ( pos == tmp.end() )
             return {};
-        return NSABUtils::getFirstString( ( *pos ).second );
+        return NTowel42Utils::getFirstString( ( *pos ).second );
     }
 
     TMediaTagMap CMediaInfo::getMediaTags( const QString &path, const std::list< EMediaTags > &tags )

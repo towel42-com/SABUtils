@@ -27,7 +27,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QStyle>
-namespace NSABUtils
+namespace NTowel42Utils
 {
 
     CScrollMessageBox::CScrollMessageBox( QWidget *parent ) :

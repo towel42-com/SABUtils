@@ -28,7 +28,7 @@
 #include <QThreadPool>
 #include "QtUtils.h"
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     CDelayLineEdit::CDelayLineEdit( QWidget *parent ) :
         CDelayLineEdit( QString(), 250, parent )
@@ -76,8 +76,8 @@ namespace NSABUtils
     void CDelayLineEdit::setDelay( int delayMS )
     {
         fDelayMS = delayMS;
-        NSABUtils::updateTimer( fDelayMS, fChangedTimer );
-        NSABUtils::updateTimer( fDelayMS, fEditedTimer );
+        NTowel42Utils::updateTimer( fDelayMS, fChangedTimer );
+        NTowel42Utils::updateTimer( fDelayMS, fEditedTimer );
     }
 
     CDelayLineEdit::~CDelayLineEdit()

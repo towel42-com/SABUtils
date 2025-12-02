@@ -11,7 +11,7 @@
 #include <sddl.h>
 #pragma comment( lib, "advapi32.lib" )
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NFileUtils
     {

@@ -32,7 +32,7 @@
 #include <QGridLayout>
 #include <QStackedLayout>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
 
     QString toString( const QSizePolicy::Policy &policy )

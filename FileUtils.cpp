@@ -53,7 +53,7 @@
 #include <cctype>
 #pragma comment( lib, "version.lib" )
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NFileUtils
     {
@@ -387,7 +387,7 @@ namespace NSABUtils
             return true;
         }
 
-        SABUTILS_EXPORT bool isIPAddressNetworkPath( const QFileInfo &info )
+        TOWEL42_UTILS_EXPORT bool isIPAddressNetworkPath( const QFileInfo &info )
         {
             auto path = info.absoluteFilePath();
             if ( !path.startsWith( "//" ) && !path.startsWith( R"__(\\)__" ) )
@@ -409,8 +409,8 @@ namespace NSABUtils
             if ( precisionOut > precisionIn )
                 return std::make_pair( inValue, 0 );
 
-            auto maxOut = NSABUtils::power( 10, precisionOut );
-            auto divBy = NSABUtils::power( 10, precisionIn - precisionOut );
+            auto maxOut = NTowel42Utils::power( 10, precisionOut );
+            auto divBy = NTowel42Utils::power( 10, precisionIn - precisionOut );
             auto half = divBy / 2;
 
             auto value = inValue;

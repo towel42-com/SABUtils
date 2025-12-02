@@ -20,24 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef __SABUTILSFWD_H
-#define __SABUTILSFWD_H
+#include "Towel42UtilsResources.h"
 
-#include "SABUtilsExport.h"
-#include <unordered_set>
-class QString;
-namespace NSABUtils
+#include <QtGlobal>
+
+static void initResources()
 {
-    struct SABUTILS_EXPORT CCaseInsensitiveHash
-    {
-        size_t operator()( const QString &str ) const;
-    };
-
-    struct SABUTILS_EXPORT CCaseInsensitiveEqual
-    {
-        size_t operator()( const QString &lhs, const QString &rhs ) const;
-    };
-
-    using TCaseInsensitiveHash = std::unordered_set< QString, CCaseInsensitiveHash, CCaseInsensitiveEqual >;
+    Q_INIT_RESOURCE( Towel42Utils );
 }
-#endif
+
+namespace NTowel42Utils
+{
+    void initResources()
+    {
+        ::initResources();
+    }
+}

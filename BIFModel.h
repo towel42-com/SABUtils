@@ -23,18 +23,18 @@
 #ifndef __BIFMODEL_H
 #define __BIFMODEL_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QAbstractListModel>
 #include <memory>
 
 class QFile;
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NBIF
     {
         class CFile;
-        class SABUTILS_EXPORT CModel : public QAbstractListModel
+        class TOWEL42_UTILS_EXPORT CModel : public QAbstractListModel
         {
             Q_OBJECT;
 

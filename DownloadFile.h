@@ -31,7 +31,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 class QNetworkReply;
 class QAuthenticator;
@@ -45,9 +45,9 @@ namespace Ui
     class CDownloadFile;
 }
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    struct SABUTILS_EXPORT SDownloadFileInfo
+    struct TOWEL42_UTILS_EXPORT SDownloadFileInfo
     {
         SDownloadFileInfo( const QString &name, const QUrl &url, uint64_t size );
         QString fName;
@@ -55,7 +55,7 @@ namespace NSABUtils
         uint64_t fSize{ 0 };
     };
 
-    class SABUTILS_EXPORT CDownloadFile : public QDialog
+    class TOWEL42_UTILS_EXPORT CDownloadFile : public QDialog
     {
         Q_OBJECT;
 

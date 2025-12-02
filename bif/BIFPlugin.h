@@ -36,7 +36,7 @@
     #endif
 #endif
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NBIF
     {

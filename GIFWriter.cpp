@@ -36,7 +36,7 @@
     #include "gif/gif-h/gif.h"
 #endif
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     struct SGIFPalette
     {
@@ -305,7 +305,7 @@ namespace NSABUtils
         auto numPixels = this->numPixels();
 
         auto quantPixels = new int32_t[ sizeof( int32_t ) * numPixels * 4 ];   // has to support more than 8 bits
-        auto imagePixels = NSABUtils::imageToPixels( fCurrImage );
+        auto imagePixels = NTowel42Utils::imageToPixels( fCurrImage );
 
         for ( int ii = 0; ii < 4 * numPixels; ++ii )
         {
@@ -392,7 +392,7 @@ namespace NSABUtils
     {
         auto numPixels = this->numPixels();
 
-        auto imagePixels = NSABUtils::imageToPixels( fCurrImage );
+        auto imagePixels = NTowel42Utils::imageToPixels( fCurrImage );
 
         auto imageLoc = imagePixels;
         auto lastLoc = prevImage;
@@ -494,7 +494,7 @@ namespace NSABUtils
         void dump() const
         {
             qDebug().noquote().nospace() << "dump: " << fBitIndex << " " << fByte << " " << fChunkIndex;
-            qDebug().noquote().nospace() << NSABUtils::dumpArray( "Palette Status", fChunk, fChunk, 256, true, 32 );
+            qDebug().noquote().nospace() << NTowel42Utils::dumpArray( "Palette Status", fChunk, fChunk, 256, true, 32 );
         }
 
         QDataStream &fDataStream;
@@ -605,7 +605,7 @@ namespace NSABUtils
         fDither( dither )
     {
         fImageWidth = image.width();
-        fTmpImage = NSABUtils::imageToPixels( image );
+        fTmpImage = NTowel42Utils::imageToPixels( image );
         int numPixels = image.width() * image.height();
 
         getChangedPixels( prevImage, fTmpImage, numPixels );
@@ -916,7 +916,7 @@ namespace NSABUtils
     QString SGIFPalette::dumpText() const
     {
         QString retVal;
-        retVal = "Red:\n" + NSABUtils::dumpArray( "Palette Red", fRed, fRed, 256, true ) + "\n" + "Blue:\n" + NSABUtils::dumpArray( "Palette Blue", fBlue, fBlue, 256, true ) + "\n" + "Green:\n" + NSABUtils::dumpArray( "Palette Green", fGreen, fGreen, 256, true ) + "\n";
+        retVal = "Red:\n" + NTowel42Utils::dumpArray( "Palette Red", fRed, fRed, 256, true ) + "\n" + "Blue:\n" + NTowel42Utils::dumpArray( "Palette Blue", fBlue, fBlue, 256, true ) + "\n" + "Green:\n" + NTowel42Utils::dumpArray( "Palette Green", fGreen, fGreen, 256, true ) + "\n";
         return retVal;
     }
 

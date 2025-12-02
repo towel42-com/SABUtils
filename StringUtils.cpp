@@ -55,7 +55,7 @@
 #include <locale>
 #include <map>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NStringUtils
     {
@@ -1775,7 +1775,7 @@ namespace NSABUtils
             // Check the provided-size prefix.
             std::string tmpString = bString.substr( 0, pos );
             size_t size;
-            NSABUtils::fromString( size, tmpString );
+            NTowel42Utils::fromString( size, tmpString );
             if ( size % 8 != 0 )
                 return bString;
             tmpString = bString.substr( pos + 2, bString.size() );
@@ -2658,7 +2658,7 @@ namespace NSABUtils
             return retVal;
         }
 
-        SABUTILS_EXPORT QString toCSV( const QStringList &data )
+        TOWEL42_UTILS_EXPORT QString toCSV( const QStringList &data )
         {
             QString retVal;
             bool first = true;
@@ -2875,14 +2875,14 @@ namespace NSABUtils
             }
         }
 
-        double SABUTILS_EXPORT cleanPercentage( double in )
+        double TOWEL42_UTILS_EXPORT cleanPercentage( double in )
         {
             auto integral = static_cast< int >( std::floor( in ) );
             auto decimal = static_cast< int >( std::floor( 100 * ( in - integral ) ) );
             return integral + 1.0 * decimal / 100.0;
         }
 
-        std::string SABUTILS_EXPORT getPercentageAsString( double value )
+        std::string TOWEL42_UTILS_EXPORT getPercentageAsString( double value )
         {
             value = cleanPercentage( value );
             std::ostringstream oss;

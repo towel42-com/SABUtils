@@ -23,7 +23,7 @@
 #ifndef __FILESIDINFO_H
 #define __FILESIDINFO_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <string>
 #include <list>
@@ -32,11 +32,11 @@
 #include <QStringList>
 class QFileInfo;
 class QString;
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NFileUtils
     {
-        struct SABUTILS_EXPORT SSIDInfo
+        struct TOWEL42_UTILS_EXPORT SSIDInfo
         {
             SSIDInfo() {}
             SSIDInfo( void *sid );
@@ -50,7 +50,7 @@ namespace NSABUtils
             std::pair< bool, std::wstring > fErrorMsg{ false, std::wstring() };
         };
 
-        class SABUTILS_EXPORT CSIDFileInfo
+        class TOWEL42_UTILS_EXPORT CSIDFileInfo
         {
         public:
             // if onlyinvalid is true, DACLs will only contained invalid SID data

@@ -24,7 +24,7 @@
 #define BIFIOHANDLER_H
 
 #include <QImageIOHandler>
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NBIF
     {

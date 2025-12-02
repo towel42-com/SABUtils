@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>NSABUtils::CGIFWriterDlg</class>
- <widget class="QDialog" name="NSABUtils::CGIFWriterDlg">
+ <class>NTowel42Utils::CGIFWriterDlg</class>
+ <widget class="QDialog" name="NTowel42Utils::CGIFWriterDlg">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -66,8 +66,8 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="resources/SABUtils.qrc">
-         <normaloff>:/SABUtilsResources/open.png</normaloff>:/SABUtilsResources/open.png</iconset>
+        <iconset resource="resources/Towel42Utils.qrc">
+         <normaloff>:/Towel42UtilsResources/open.png</normaloff>:/Towel42UtilsResources/open.png</iconset>
        </property>
       </widget>
      </item>
@@ -167,13 +167,13 @@
   <tabstop>flipImage</tabstop>
  </tabstops>
  <resources>
-  <include location="resources/SABUtils.qrc"/>
+  <include location="resources/Towel42Utils.qrc"/>
  </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>NSABUtils::CGIFWriterDlg</receiver>
+   <receiver>NTowel42Utils::CGIFWriterDlg</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -189,7 +189,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>NSABUtils::CGIFWriterDlg</receiver>
+   <receiver>NTowel42Utils::CGIFWriterDlg</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

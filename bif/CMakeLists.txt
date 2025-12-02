@@ -33,7 +33,7 @@ project( ${_PROJECT_NAME} )
 IncludeProjectSettings(QT ${USE_QT})
 
 add_definitions( -DBUILD_BIF_PLUGIN=1 )
-add_definitions( -DSABUTILS_INTERNAL )
+add_definitions( -DTOWEL42UTILS_INTERNAL )
 
 add_library(${PROJECT_NAME} SHARED
     ${_PROJECT_DEPENDENCIES} 

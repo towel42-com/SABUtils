@@ -23,7 +23,7 @@
 #ifndef __UTILITYVIEWS_H
 #define __UTILITYVIEWS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QTableWidget>
 #include <QTableView>
@@ -32,9 +32,9 @@
 
 class QAbstractButton;
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    class SABUTILS_EXPORT CTableWidgetWithSelectCommand : public QTableWidget
+    class TOWEL42_UTILS_EXPORT CTableWidgetWithSelectCommand : public QTableWidget
     {
         Q_OBJECT;
 
@@ -43,7 +43,7 @@ namespace NSABUtils
         virtual QItemSelectionModel::SelectionFlags selectionCommand( const QModelIndex &index, const QEvent *event = nullptr ) const override;
     };
 
-    class SABUTILS_EXPORT CTableViewWithSelectCommand : public QTableView
+    class TOWEL42_UTILS_EXPORT CTableViewWithSelectCommand : public QTableView
     {
         Q_OBJECT;
 
@@ -52,7 +52,7 @@ namespace NSABUtils
         virtual QItemSelectionModel::SelectionFlags selectionCommand( const QModelIndex &index, const QEvent *event = nullptr ) const override;
     };
 
-    class SABUTILS_EXPORT CNoEditDelegate : public QItemDelegate
+    class TOWEL42_UTILS_EXPORT CNoEditDelegate : public QItemDelegate
     {
         Q_OBJECT
 

@@ -23,7 +23,7 @@
 #ifndef __VSINSTALLUTILS_H
 #define __VSINSTALLUTILS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QString>
 #include <tuple>
@@ -31,12 +31,12 @@
 
 class QProcess;
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NVSInstallUtils
     {
         using TInstalledVisualStudios = std::pair< std::map< QString, QString >, QStringList >;
-        SABUTILS_EXPORT std::tuple< bool, QString, TInstalledVisualStudios > getInstalledVisualStudios();
+        TOWEL42_UTILS_EXPORT std::tuple< bool, QString, TInstalledVisualStudios > getInstalledVisualStudios();
     }
 }
 #endif

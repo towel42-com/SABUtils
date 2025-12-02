@@ -23,7 +23,7 @@
 
 #include <QFile>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NMKVReader
     {

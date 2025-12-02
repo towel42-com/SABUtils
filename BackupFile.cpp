@@ -27,7 +27,7 @@
 #include <QDateTime>
 #include <QFileInfo>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NFileUtils
     {

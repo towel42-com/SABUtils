@@ -23,7 +23,7 @@
 #include "DelayComboBox.h"
 #include "DelayLineEdit.h"
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     CDelayComboBox::CDelayComboBox( QWidget *parent /*= nullptr */ ) :
         QComboBox( parent )

@@ -23,18 +23,18 @@
 #ifndef __THREADEDPROGRESSDIALOG_H
 #define __THREADEDPROGRESSDIALOG_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QProgressDialog>
 #include <QEventLoop>
 #include <functional>
 #include <memory>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     using TVoidFunction = std::function< void() >;
     class CThreadedProgressDialogImpl;
-    class SABUTILS_EXPORT CThreadedProgressDialog : public QProgressDialog
+    class TOWEL42_UTILS_EXPORT CThreadedProgressDialog : public QProgressDialog
     {
         Q_OBJECT;
 
@@ -55,7 +55,7 @@ namespace NSABUtils
     };
 
     class CThreadedEventLoopImpl;
-    class SABUTILS_EXPORT CThreadedEventLoop : public QEventLoop
+    class TOWEL42_UTILS_EXPORT CThreadedEventLoop : public QEventLoop
     {
         Q_OBJECT;
 

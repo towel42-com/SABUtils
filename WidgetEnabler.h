@@ -23,15 +23,15 @@
 #ifndef __WIDGETENABLER_H
 #define __WIDGETENABLER_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QObject>
 #include <initializer_list>
 class QAbstractButton;
 class QGroupBox;
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    class SABUTILS_EXPORT CWidgetEnabler : public QObject
+    class TOWEL42_UTILS_EXPORT CWidgetEnabler : public QObject
     {
         Q_OBJECT;
         CWidgetEnabler( const std::pair< QAbstractButton *, QGroupBox * > &checker, const std::initializer_list< QWidget * > &widgets, QObject *parent = nullptr );

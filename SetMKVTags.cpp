@@ -33,7 +33,7 @@
 #include <QTimer>
 #include <QFileInfo>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     CSetMKVTags::CSetMKVTags( const QString &fileName, const QString &mkvPropEdit, QWidget *parent ) :
         QDialog( parent ),
@@ -56,7 +56,7 @@ namespace NSABUtils
 
     void CSetMKVTags::slotLoadTags()
     {
-        NSABUtils::CAutoWaitCursor awc;
+        NTowel42Utils::CAutoWaitCursor awc;
 
         auto mediaInfo = CMediaInfo( fImpl->fileName->text() );
         auto tags = mediaInfo.getMediaTags();
@@ -65,7 +65,7 @@ namespace NSABUtils
         for ( auto &&ii : tags )
         {
             bool isEditable = isSettableTag( ii.first );
-            auto item = new QTreeWidgetItem( QStringList() << displayName( ii.first ) + ":" << NSABUtils::getFirstString( ii.second ), static_cast< int >( ii.first ) );
+            auto item = new QTreeWidgetItem( QStringList() << displayName( ii.first ) + ":" << NTowel42Utils::getFirstString( ii.second ), static_cast< int >( ii.first ) );
             fImpl->tags->addTopLevelItem( item );
             if ( isEditable )
             {
@@ -91,7 +91,7 @@ namespace NSABUtils
 
         QString msg;
         CAutoWaitCursor awc;
-        if ( !NSABUtils::setMediaTags( fImpl->fileName->text(), tags, fMKVPropEditExe, &msg ) )
+        if ( !NTowel42Utils::setMediaTags( fImpl->fileName->text(), tags, fMKVPropEditExe, &msg ) )
         {
             QMessageBox::critical( this, tr( "Problem setting tags" ), msg, QMessageBox::Ok );
             return;

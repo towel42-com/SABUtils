@@ -27,7 +27,7 @@
 
 #include <iostream>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NFileUtils
     {

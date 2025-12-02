@@ -55,12 +55,12 @@ namespace
     TEST( TestUtils, TestListIndex )
     {
         std::list< std::string > lst = { "a", "b", "c", "d", "e" };
-        EXPECT_EQ( "a", NSABUtils::indexInList( 0, lst ) );
-        EXPECT_EQ( "b", NSABUtils::indexInList( 1, lst ) );
-        EXPECT_EQ( "c", NSABUtils::indexInList( 2, lst ) );
-        EXPECT_EQ( "d", NSABUtils::indexInList( 3, lst ) );
-        EXPECT_EQ( "e", NSABUtils::indexInList( 4, lst ) );
-        EXPECT_EQ( std::string(), NSABUtils::indexInList( 5, lst ) );
+        EXPECT_EQ( "a", NTowel42Utils::indexInList( 0, lst ) );
+        EXPECT_EQ( "b", NTowel42Utils::indexInList( 1, lst ) );
+        EXPECT_EQ( "c", NTowel42Utils::indexInList( 2, lst ) );
+        EXPECT_EQ( "d", NTowel42Utils::indexInList( 3, lst ) );
+        EXPECT_EQ( "e", NTowel42Utils::indexInList( 4, lst ) );
+        EXPECT_EQ( std::string(), NTowel42Utils::indexInList( 5, lst ) );
     }
 
     TEST( TestUtils, TestReplaceInList )
@@ -76,7 +76,7 @@ namespace
                                 << "w"
                                 << "v";
 
-        auto t3 = NSABUtils::replaceInList( tmp, 1, 2, t2, 3 );   // replaces b,c with z,y,x yeilding a, z, y, x, d, e
+        auto t3 = NTowel42Utils::replaceInList( tmp, 1, 2, t2, 3 );   // replaces b,c with z,y,x yeilding a, z, y, x, d, e
 
         EXPECT_EQ( 6, t3.length() );
         EXPECT_EQ( "a", t3[ 0 ] );
@@ -86,7 +86,7 @@ namespace
         EXPECT_EQ( "d", t3[ 4 ] );
         EXPECT_EQ( "e", t3[ 5 ] );
 
-        t3 = NSABUtils::replaceInList( tmp, 1, 6, t2, 3 );   // replaces b,c, d, e with z,y,x yeilding a, z, y, x
+        t3 = NTowel42Utils::replaceInList( tmp, 1, 6, t2, 3 );   // replaces b,c, d, e with z,y,x yeilding a, z, y, x
 
         EXPECT_EQ( 4, t3.length() );
         EXPECT_EQ( "a", t3[ 0 ] );
@@ -94,7 +94,7 @@ namespace
         EXPECT_EQ( "y", t3[ 2 ] );
         EXPECT_EQ( "x", t3[ 3 ] );
 
-        t3 = NSABUtils::replaceInList( tmp, 3, 6, t2, 5 );   // replaces d, e with z,y,x,q,v yeilding a, b, c, z, y, x, w, v
+        t3 = NTowel42Utils::replaceInList( tmp, 3, 6, t2, 5 );   // replaces d, e with z,y,x,q,v yeilding a, b, c, z, y, x, w, v
 
         EXPECT_EQ( 8, t3.length() );
         EXPECT_EQ( "a", t3[ 0 ] );
@@ -112,7 +112,7 @@ namespace
         auto tmp = std::list< std::string >{ "a", "b", "c", "d", "e" };
         auto t2 = std::list< std::string >{ "z", "y", "x", "w", "v" };
 
-        auto t3 = NSABUtils::replaceInList( tmp, 1, 2, t2, 3 );   // replaces b,c with z,y,x yeilding a, z, y, x, d, e
+        auto t3 = NTowel42Utils::replaceInList( tmp, 1, 2, t2, 3 );   // replaces b,c with z,y,x yeilding a, z, y, x, d, e
 
         EXPECT_EQ( 6, t3.size() );
         auto pos = t3.begin();
@@ -123,7 +123,7 @@ namespace
         EXPECT_EQ( "d", *pos++ );
         EXPECT_EQ( "e", *pos++ );
 
-        t3 = NSABUtils::replaceInList( tmp, 1, 6, t2, 3 );   // replaces b,c, d, e with z,y,x yeilding a, z, y, x
+        t3 = NTowel42Utils::replaceInList( tmp, 1, 6, t2, 3 );   // replaces b,c, d, e with z,y,x yeilding a, z, y, x
 
         EXPECT_EQ( 4, t3.size() );
         pos = t3.begin();
@@ -132,7 +132,7 @@ namespace
         EXPECT_EQ( "y", *pos++ );
         EXPECT_EQ( "x", *pos++ );
 
-        t3 = NSABUtils::replaceInList( tmp, 3, 6, t2, 5 );   // replaces d, e with z,y,x,q,v yeilding a, b, c, z, y, x, w, v
+        t3 = NTowel42Utils::replaceInList( tmp, 3, 6, t2, 5 );   // replaces d, e with z,y,x,q,v yeilding a, b, c, z, y, x, w, v
 
         EXPECT_EQ( 8, t3.size() );
         pos = t3.begin();
@@ -148,47 +148,47 @@ namespace
 
     TEST( TestUtils, power )
     {
-        EXPECT_DOUBLE_EQ( 100.0, NSABUtils::power( 10.0, 2.0 ) );
-        EXPECT_EQ( 100, NSABUtils::power( 10, 2 ) );
-        EXPECT_EQ( 1, NSABUtils::power( 10, 0 ) );
-        EXPECT_EQ( 99, NSABUtils::power( 99, 1 ) );
-        EXPECT_EQ( 0, NSABUtils::power( 0, 10293 ) );
-        EXPECT_EQ( 1, NSABUtils::power( 1, 999 ) );
+        EXPECT_DOUBLE_EQ( 100.0, NTowel42Utils::power( 10.0, 2.0 ) );
+        EXPECT_EQ( 100, NTowel42Utils::power( 10, 2 ) );
+        EXPECT_EQ( 1, NTowel42Utils::power( 10, 0 ) );
+        EXPECT_EQ( 99, NTowel42Utils::power( 99, 1 ) );
+        EXPECT_EQ( 0, NTowel42Utils::power( 0, 10293 ) );
+        EXPECT_EQ( 1, NTowel42Utils::power( 1, 999 ) );
     }
 
     TEST( TestUtils, fromChar )
     {
         bool aOK;
-        EXPECT_EQ( 1, NSABUtils::fromChar( '-', 16, aOK ) );
+        EXPECT_EQ( 1, NTowel42Utils::fromChar( '-', 16, aOK ) );
         EXPECT_TRUE( aOK );
 
-        EXPECT_EQ( 1, NSABUtils::fromChar( '_', 16, aOK ) );
+        EXPECT_EQ( 1, NTowel42Utils::fromChar( '_', 16, aOK ) );
         EXPECT_TRUE( aOK );
 
-        EXPECT_EQ( 0, NSABUtils::fromChar( '0' + 15, 12, aOK ) );
+        EXPECT_EQ( 0, NTowel42Utils::fromChar( '0' + 15, 12, aOK ) );
         EXPECT_FALSE( aOK );
 
-        EXPECT_EQ( 0, NSABUtils::fromChar( '0' + 11, 12, aOK ) );
+        EXPECT_EQ( 0, NTowel42Utils::fromChar( '0' + 11, 12, aOK ) );
         EXPECT_FALSE( aOK );
 
-        EXPECT_EQ( 11, NSABUtils::fromChar( 'b', 12, aOK ) );
+        EXPECT_EQ( 11, NTowel42Utils::fromChar( 'b', 12, aOK ) );
         EXPECT_TRUE( aOK );
 
         for ( int base = 2; base < 36; ++base )
         {
             for ( int jj = 0; ( jj < 9 ) && ( jj < base ); ++jj )
             {
-                EXPECT_EQ( jj, NSABUtils::fromChar( '0' + jj, base, aOK ) ) << "Failed: Char: " << (char)jj << " Base: " << base;
+                EXPECT_EQ( jj, NTowel42Utils::fromChar( '0' + jj, base, aOK ) ) << "Failed: Char: " << (char)jj << " Base: " << base;
                 EXPECT_TRUE( aOK );
             }
             for ( int jj = 'a'; jj < 'a' + ( base - 10 ); ++jj )
             {
-                EXPECT_EQ( 10 + jj - 'a', NSABUtils::fromChar( jj, base, aOK ) ) << "Failed: Char: " << (char)jj << " Base: " << base;
+                EXPECT_EQ( 10 + jj - 'a', NTowel42Utils::fromChar( jj, base, aOK ) ) << "Failed: Char: " << (char)jj << " Base: " << base;
                 EXPECT_TRUE( aOK );
             }
             for ( int jj = 'A'; jj < 'A' + ( base - 10 ); ++jj )
             {
-                EXPECT_EQ( 10 + jj - 'A', NSABUtils::fromChar( jj, base, aOK ) ) << "Failed: Char: " << (char)jj << " Base: " << base;
+                EXPECT_EQ( 10 + jj - 'A', NTowel42Utils::fromChar( jj, base, aOK ) ) << "Failed: Char: " << (char)jj << " Base: " << base;
                 EXPECT_TRUE( aOK );
             }
         }
@@ -203,9 +203,9 @@ namespace
             char tmp2 = '0' + jj;
             (void)tmp2;
             if ( jj <= 9 )
-                EXPECT_EQ( '0' + jj, NSABUtils::toChar( jj ) ) << "Failed: Value: " << jj;
+                EXPECT_EQ( '0' + jj, NTowel42Utils::toChar( jj ) ) << "Failed: Value: " << jj;
             else
-                EXPECT_EQ( 'a' + jj - 10, NSABUtils::toChar( jj ) ) << "Failed: Value: " << jj;
+                EXPECT_EQ( 'a' + jj - 10, NTowel42Utils::toChar( jj ) ) << "Failed: Value: " << jj;
         }
     }
     TEST( TestUtils, toDigits )
@@ -214,11 +214,11 @@ namespace
         size_t numDigits = 0;
         auto retVal = std::make_pair( digits, static_cast< uint32_t >( 2 ) );
         bool aOK;
-        NSABUtils::toDigits( 101, 10, retVal, numDigits, &aOK );
+        NTowel42Utils::toDigits( 101, 10, retVal, numDigits, &aOK );
         EXPECT_FALSE( aOK );
 
         retVal = std::make_pair( digits, 3 );
-        NSABUtils::toDigits( 123, 10, retVal, numDigits, &aOK );
+        NTowel42Utils::toDigits( 123, 10, retVal, numDigits, &aOK );
         EXPECT_TRUE( aOK );
         EXPECT_EQ( 3, numDigits );
         EXPECT_EQ( 3, digits[ 0 ] );
@@ -226,7 +226,7 @@ namespace
         EXPECT_EQ( 1, digits[ 2 ] );
 
         retVal = std::make_pair( digits, 10 );
-        NSABUtils::toDigits( 1234567890, 10, retVal, numDigits, &aOK );
+        NTowel42Utils::toDigits( 1234567890, 10, retVal, numDigits, &aOK );
         EXPECT_TRUE( aOK );
         ASSERT_EQ( 10, numDigits );
         EXPECT_EQ( 0, digits[ 0 ] );
@@ -243,40 +243,40 @@ namespace
 
     TEST( TestUtils, toString )
     {
-        EXPECT_EQ( "a", NSABUtils::toString( 10, 16 ) );
-        EXPECT_EQ( "ff", NSABUtils::toString( 255, 16 ) );
-        EXPECT_EQ( "1234567890", NSABUtils::toString( 1234567890, 10 ) );
+        EXPECT_EQ( "a", NTowel42Utils::toString( 10, 16 ) );
+        EXPECT_EQ( "ff", NTowel42Utils::toString( 255, 16 ) );
+        EXPECT_EQ( "1234567890", NTowel42Utils::toString( 1234567890, 10 ) );
     }
 
     TEST( TestUtils, fromString )
     {
-        EXPECT_EQ( 10, NSABUtils::fromString( "a", 16 ) );
-        EXPECT_EQ( 255, NSABUtils::fromString( "ff", 16 ) );
-        EXPECT_EQ( 1234567890, NSABUtils::fromString( "1234567890", 10 ) );
+        EXPECT_EQ( 10, NTowel42Utils::fromString( "a", 16 ) );
+        EXPECT_EQ( 255, NTowel42Utils::fromString( "ff", 16 ) );
+        EXPECT_EQ( 1234567890, NTowel42Utils::fromString( "1234567890", 10 ) );
     }
 
     TEST( TestUtils, computeFactors )
     {
-        EXPECT_EQ( std::list< int64_t >( { 1, 2, 7, 14 } ), NSABUtils::computeFactors( 14 ) );
-        EXPECT_EQ( std::list< int64_t >( { 1, 3, 7, 21 } ), NSABUtils::computeFactors( 21 ) );
-        EXPECT_EQ( std::list< int64_t >( { 1, 2, 4, 5, 8, 10, 20, 25, 40, 50, 100, 200 } ), NSABUtils::computeFactors( 200 ) );
-        EXPECT_EQ( std::list< int64_t >( { 1, 3, 5, 15, 823, 2469, 4115, 12345 } ), NSABUtils::computeFactors( 12345 ) );
+        EXPECT_EQ( std::list< int64_t >( { 1, 2, 7, 14 } ), NTowel42Utils::computeFactors( 14 ) );
+        EXPECT_EQ( std::list< int64_t >( { 1, 3, 7, 21 } ), NTowel42Utils::computeFactors( 21 ) );
+        EXPECT_EQ( std::list< int64_t >( { 1, 2, 4, 5, 8, 10, 20, 25, 40, 50, 100, 200 } ), NTowel42Utils::computeFactors( 200 ) );
+        EXPECT_EQ( std::list< int64_t >( { 1, 3, 5, 15, 823, 2469, 4115, 12345 } ), NTowel42Utils::computeFactors( 12345 ) );
     }
 
     TEST( TestUtils, computePrimeFactors )
     {
-        EXPECT_EQ( std::list< int64_t >( { 2, 7 } ), NSABUtils::computePrimeFactors( 14 ) );
-        EXPECT_EQ( std::list< int64_t >( { 3, 7 } ), NSABUtils::computePrimeFactors( 21 ) );
-        EXPECT_EQ( std::list< int64_t >( { 2, 2, 2, 5, 5 } ), NSABUtils::computePrimeFactors( 200 ) );
-        EXPECT_EQ( std::list< int64_t >( { 3, 5, 823 } ), NSABUtils::computePrimeFactors( 12345 ) );
+        EXPECT_EQ( std::list< int64_t >( { 2, 7 } ), NTowel42Utils::computePrimeFactors( 14 ) );
+        EXPECT_EQ( std::list< int64_t >( { 3, 7 } ), NTowel42Utils::computePrimeFactors( 21 ) );
+        EXPECT_EQ( std::list< int64_t >( { 2, 2, 2, 5, 5 } ), NTowel42Utils::computePrimeFactors( 200 ) );
+        EXPECT_EQ( std::list< int64_t >( { 3, 5, 823 } ), NTowel42Utils::computePrimeFactors( 12345 ) );
     }
 
     TEST( TestUtils, getSumOfFactors )
     {
-        EXPECT_EQ( std::make_pair( (int64_t)10, std::list< int64_t >( { 1, 2, 7 } ) ), NSABUtils::getSumOfFactors( 14, true ) );
-        EXPECT_EQ( std::make_pair( (int64_t)11, std::list< int64_t >( { 1, 3, 7 } ) ), NSABUtils::getSumOfFactors( 21, true ) );
-        EXPECT_EQ( std::make_pair( (int64_t)265, std::list< int64_t >( { 1, 2, 4, 5, 8, 10, 20, 25, 40, 50, 100 } ) ), NSABUtils::getSumOfFactors( 200, true ) );
-        EXPECT_EQ( std::make_pair( (int64_t)7431, std::list< int64_t >( { 1, 3, 5, 15, 823, 2469, 4115 } ) ), NSABUtils::getSumOfFactors( 12345, true ) );
+        EXPECT_EQ( std::make_pair( (int64_t)10, std::list< int64_t >( { 1, 2, 7 } ) ), NTowel42Utils::getSumOfFactors( 14, true ) );
+        EXPECT_EQ( std::make_pair( (int64_t)11, std::list< int64_t >( { 1, 3, 7 } ) ), NTowel42Utils::getSumOfFactors( 21, true ) );
+        EXPECT_EQ( std::make_pair( (int64_t)265, std::list< int64_t >( { 1, 2, 4, 5, 8, 10, 20, 25, 40, 50, 100 } ) ), NTowel42Utils::getSumOfFactors( 200, true ) );
+        EXPECT_EQ( std::make_pair( (int64_t)7431, std::list< int64_t >( { 1, 3, 5, 15, 823, 2469, 4115 } ) ), NTowel42Utils::getSumOfFactors( 12345, true ) );
     }
 
     TEST( TestUtils, isNarcissistic )
@@ -288,23 +288,23 @@ namespace
         {
             for ( auto &&jj : ii.second )
             {
-                auto decValue = NSABUtils::fromString( jj, ii.first );
-                EXPECT_TRUE( NSABUtils::isNarcissistic( decValue, ii.first, aOK ) ) << "base=" << ii.first << " Number: " << jj << "(" << decValue << ")";
+                auto decValue = NTowel42Utils::fromString( jj, ii.first );
+                EXPECT_TRUE( NTowel42Utils::isNarcissistic( decValue, ii.first, aOK ) ) << "base=" << ii.first << " Number: " << jj << "(" << decValue << ")";
                 EXPECT_TRUE( aOK );
             }
         }
     }
     TEST( TestUtils, isSemiPerfect )
     {
-        EXPECT_EQ( std::make_pair( false, std::list< int64_t >( { 1, 2, 7 } ) ), NSABUtils::isSemiPerfect( 14 ) );
-        EXPECT_EQ( std::make_pair( false, std::list< int64_t >( { 1, 3, 7 } ) ), NSABUtils::isSemiPerfect( 21 ) );
-        EXPECT_EQ( std::make_pair( true, std::list< int64_t >( { 1, 2, 4, 5, 8, 10, 20, 25, 40, 50, 100 } ) ), NSABUtils::isSemiPerfect( 200 ) );
-        EXPECT_EQ( std::make_pair( false, std::list< int64_t >( { 1, 3, 5, 15, 823, 2469, 4115 } ) ), NSABUtils::isSemiPerfect( 12345 ) );
+        EXPECT_EQ( std::make_pair( false, std::list< int64_t >( { 1, 2, 7 } ) ), NTowel42Utils::isSemiPerfect( 14 ) );
+        EXPECT_EQ( std::make_pair( false, std::list< int64_t >( { 1, 3, 7 } ) ), NTowel42Utils::isSemiPerfect( 21 ) );
+        EXPECT_EQ( std::make_pair( true, std::list< int64_t >( { 1, 2, 4, 5, 8, 10, 20, 25, 40, 50, 100 } ) ), NTowel42Utils::isSemiPerfect( 200 ) );
+        EXPECT_EQ( std::make_pair( false, std::list< int64_t >( { 1, 3, 5, 15, 823, 2469, 4115 } ) ), NTowel42Utils::isSemiPerfect( 12345 ) );
 
         std::vector< int64_t > numbers = { 6, 12, 18, 20, 24, 28, 30, 36, 40, 42, 48, 54, 56, 60, 66, 72, 78, 80, 84, 88, 90, 96, 100, 102, 104, 108, 112, 114, 120, 126, 132, 138, 140, 144, 150, 156, 160, 162, 168, 174, 176, 180, 186, 192, 196, 198, 200, 204, 208, 210, 216, 220, 222, 224, 228, 234, 240, 246, 252, 258, 260, 264, 272, 304, 350 };
         for ( auto &&ii : numbers )
         {
-            EXPECT_EQ( true, NSABUtils::isSemiPerfect( ii ).first );
+            EXPECT_EQ( true, NTowel42Utils::isSemiPerfect( ii ).first );
         }
     }
 
@@ -318,7 +318,7 @@ namespace
         };
         for ( auto &&ii : numbers )
         {
-            EXPECT_EQ( true, NSABUtils::isPerfect( ii ).first );
+            EXPECT_EQ( true, NTowel42Utils::isPerfect( ii ).first );
         }
     }
 
@@ -327,7 +327,7 @@ namespace
         std::vector< int64_t > numbers = { 12, 18, 20, 24, 30, 36, 40, 42, 48, 54, 56, 60, 66, 70, 72, 78, 80, 84, 88, 90, 96, 100, 102, 104, 108, 112, 114, 120, 126, 132, 138, 140, 144, 150, 156, 160, 162, 168, 174, 176, 180, 186, 192, 196, 198, 200, 204, 208, 210, 216, 220, 222, 224, 228, 234, 240, 246, 252, 258, 260, 264, 270 };
         for ( auto &&ii : numbers )
         {
-            EXPECT_EQ( true, NSABUtils::isAbundant( ii ).first );
+            EXPECT_EQ( true, NTowel42Utils::isAbundant( ii ).first );
         }
     }
 
@@ -335,23 +335,23 @@ namespace
     {
         std::vector< int64_t > numbers = { -12, -18, 20, 24, 30, 36, 40, 42 };
 
-        EXPECT_EQ( "    -12, -18, 20, 24, 30\n    36, 40, 42", NSABUtils::getNumberListString( numbers, 10 ) );
-        EXPECT_EQ( "    -14(=-12), -22(=-18), 24(=20), 30(=24), 36(=30)\n    44(=36), 50(=40), 52(=42)", NSABUtils::getNumberListString( numbers, 8 ) );
+        EXPECT_EQ( "    -12, -18, 20, 24, 30\n    36, 40, 42", NTowel42Utils::getNumberListString( numbers, 10 ) );
+        EXPECT_EQ( "    -14(=-12), -22(=-18), 24(=20), 30(=24), 36(=30)\n    44(=36), 50(=40), 52(=42)", NTowel42Utils::getNumberListString( numbers, 8 ) );
     }
 
 #if __cplusplus > 201703L
     TEST( TestUtils, findLargestIndexInBitSet )
     {
-        EXPECT_EQ( -99, NSABUtils::findLargestIndexInBitSet( std::bitset< 16 >() ).value_or( -99 ) );
-        EXPECT_EQ( 7, NSABUtils::findLargestIndexInBitSet( std::bitset< 16 >( 255 ) ).value_or( -99 ) );
-        EXPECT_EQ( 15, NSABUtils::findLargestIndexInBitSet( std::bitset< 16 >( 32768 ) ).value_or( -99 ) );
+        EXPECT_EQ( -99, NTowel42Utils::findLargestIndexInBitSet( std::bitset< 16 >() ).value_or( -99 ) );
+        EXPECT_EQ( 7, NTowel42Utils::findLargestIndexInBitSet( std::bitset< 16 >( 255 ) ).value_or( -99 ) );
+        EXPECT_EQ( 15, NTowel42Utils::findLargestIndexInBitSet( std::bitset< 16 >( 32768 ) ).value_or( -99 ) );
     }
 
     TEST( TestUtils, findSmallestIndexInBitSet )
     {
-        EXPECT_EQ( -99, NSABUtils::findSmallestIndexInBitSet( std::bitset< 16 >() ).value_or( -99 ) );
-        EXPECT_EQ( 0, NSABUtils::findSmallestIndexInBitSet( std::bitset< 16 >( 255 ) ).value_or( -99 ) );
-        EXPECT_EQ( 15, NSABUtils::findSmallestIndexInBitSet( std::bitset< 16 >( 32768 ) ).value_or( -99 ) );
+        EXPECT_EQ( -99, NTowel42Utils::findSmallestIndexInBitSet( std::bitset< 16 >() ).value_or( -99 ) );
+        EXPECT_EQ( 0, NTowel42Utils::findSmallestIndexInBitSet( std::bitset< 16 >( 255 ) ).value_or( -99 ) );
+        EXPECT_EQ( 15, NTowel42Utils::findSmallestIndexInBitSet( std::bitset< 16 >( 32768 ) ).value_or( -99 ) );
     }
 
     TEST( TestUtils, TestCombinationalString )
@@ -364,7 +364,7 @@ namespace
     TEST( TestUtils, TestCombinational )
     {
         std::vector< int > arr = { 1, 2, 3, 4, 5, 6, 7 };
-        auto combinations = NSABUtils::allCombinations( arr, 5 );
+        auto combinations = NTowel42Utils::allCombinations( arr, 5 );
         EXPECT_EQ( 21, combinations.size() );
         auto ii = 0;
         EXPECT_EQ( std::vector< int >( { 1, 2, 3, 4, 5 } ), combinations[ ii++ ] );
@@ -399,7 +399,7 @@ namespace
     {
         std::vector< std::list< int > > arr = { { 1 }, { 2, 3 }, { 4, 5 }, { 6, 7 }, { 8, 9, 10 } };
 
-        auto products = NSABUtils::cartiseanProduct( arr );
+        auto products = NTowel42Utils::cartiseanProduct( arr );
         ASSERT_EQ( 24, products.size() );
         auto ii = 0;
         EXPECT_EQ( std::vector< int >( { 1, 2, 4, 6, 8 } ), products[ ii++ ] );
@@ -439,7 +439,7 @@ namespace
     {
         std::vector< std::list< int > > arr = { { 1, 2 }, { 3, 4 }, { 5, 6 }, { 7 }, { 8, 9, 10 } };
 
-        auto products = NSABUtils::cartiseanProduct( arr );
+        auto products = NTowel42Utils::cartiseanProduct( arr );
         ASSERT_EQ( 24, products.size() );
         auto ii = 0;
         EXPECT_EQ( std::vector< int >( { 1, 3, 5, 7, 8 } ), products[ ii++ ] );
@@ -479,7 +479,7 @@ namespace
     {
         std::vector< std::list< int > > arr = { { 1 }, { 1, 3 }, { 4, 5 }, { 6, 7 }, { 8, 9, 10 } };
 
-        auto products = NSABUtils::cartiseanProduct( arr );
+        auto products = NTowel42Utils::cartiseanProduct( arr );
         ASSERT_EQ( 24, products.size() );
         auto ii = 0;
         EXPECT_EQ( std::vector< int >( { 1, 1, 4, 6, 8 } ), products[ ii++ ] );
@@ -524,7 +524,7 @@ namespace
             return std::find( curr.begin(), curr.end(), obj ) == curr.end();
         };
 
-        auto products = NSABUtils::cartiseanProduct( arr, func );
+        auto products = NTowel42Utils::cartiseanProduct( arr, func );
         ASSERT_EQ( 12, products.size() );
         auto ii = 0;
         EXPECT_EQ( std::vector< int >( { 1, 3, 4, 6, 8 } ), products[ ii++ ] );
@@ -549,7 +549,7 @@ namespace
     {
         auto arr = std::vector< int >( { 0, 1, 2, 3 } );
 
-        auto products = NSABUtils::allCombinations( arr, 2 );
+        auto products = NTowel42Utils::allCombinations( arr, 2 );
 
         // (0,1) (0,2) (0,3) (1,2) (1,3) (2,3)
         EXPECT_EQ( 6, products.size() ) << products;
@@ -564,7 +564,7 @@ namespace
 
         EXPECT_EQ( std::vector< int >( { 2, 3 } ), products[ ii++ ] );
 
-        products = NSABUtils::allCombinations( arr, 3 );
+        products = NTowel42Utils::allCombinations( arr, 3 );
         EXPECT_EQ( 4, products.size() ) << products;
         ii = 0;
         EXPECT_EQ( std::vector< int >( { 0, 1, 2 } ), products[ ii++ ] );
@@ -572,7 +572,7 @@ namespace
         EXPECT_EQ( std::vector< int >( { 0, 2, 3 } ), products[ ii++ ] );
         EXPECT_EQ( std::vector< int >( { 1, 2, 3 } ), products[ ii++ ] );
 
-        products = NSABUtils::allCombinations( arr, 4 );
+        products = NTowel42Utils::allCombinations( arr, 4 );
         EXPECT_EQ( 1, products.size() ) << products;
         ii = 0;
         EXPECT_EQ( std::vector< int >( { 0, 1, 2, 3 } ), products[ ii++ ] );
@@ -585,7 +585,7 @@ namespace
 
     TEST( TestUtils, DISABLED_TestWordExp )
     {
-        using namespace NSABUtils;
+        using namespace NTowel42Utils;
         GTEST_SKIP() << "Skipping CWordExp testing";
 
         ASSERT_EQ( USER, CWordExp::getUserName() );
@@ -669,83 +669,83 @@ namespace
     {
         qputenv( "FOOBAR", "ENVVAR" );
         std::set< QString > envVars;
-        EXPECT_EQ( "ENVVAR", NSABUtils::NFileUtils::expandEnvVars( "$FOOBAR", &envVars ) );
+        EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "$FOOBAR", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "fooENVVAR/bar", NSABUtils::NFileUtils::expandEnvVars( "foo$FOOBAR/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
-        EXPECT_EQ( "FOOBAR", *envVars.begin() );
-
-        EXPECT_EQ( "ENVVAR", NSABUtils::NFileUtils::expandEnvVars( "\\$FOOBAR", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
-        EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "fooENVVAR/bar", NSABUtils::NFileUtils::expandEnvVars( "foo\\$FOOBAR/bar", &envVars ) );
+        EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo$FOOBAR/bar", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
 
-        EXPECT_EQ( "ENVVAR", NSABUtils::NFileUtils::expandEnvVars( "\\$(FOOBAR)", &envVars ) );
+        EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "\\$FOOBAR", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "fooENVVAR/bar", NSABUtils::NFileUtils::expandEnvVars( "foo\\$\\(FOOBAR\\)/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
-        EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "ENVVAR", NSABUtils::NFileUtils::expandEnvVars( "\\$\\(FOOBAR\\)", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
-        EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "fooENVVAR/bar", NSABUtils::NFileUtils::expandEnvVars( "foo\\$\\(FOOBAR\\)/bar", &envVars ) );
+        EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo\\$FOOBAR/bar", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
 
-        EXPECT_EQ( "ENVVAR", NSABUtils::NFileUtils::expandEnvVars( "${FOOBAR}", &envVars ) );
+        EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "\\$(FOOBAR)", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "fooENVVAR/bar", NSABUtils::NFileUtils::expandEnvVars( "foo$\\{FOOBAR\\}/bar", &envVars ) );
+        EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo\\$\\(FOOBAR\\)/bar", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "ENVVAR", NSABUtils::NFileUtils::expandEnvVars( "$\\{FOOBAR\\}", &envVars ) );
+        EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "\\$\\(FOOBAR\\)", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "fooENVVAR/bar", NSABUtils::NFileUtils::expandEnvVars( "foo$\\{FOOBAR\\}/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
-        EXPECT_EQ( "FOOBAR", *envVars.begin() );
-
-        EXPECT_EQ( "ENVVAR", NSABUtils::NFileUtils::expandEnvVars( "%FOOBAR%", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
-        EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "fooENVVAR/bar", NSABUtils::NFileUtils::expandEnvVars( "foo%FOOBAR%/bar", &envVars ) );
+        EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo\\$\\(FOOBAR\\)/bar", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
 
-        EXPECT_EQ( "ENVVAR", NSABUtils::NFileUtils::expandEnvVars( "\\%FOOBAR\\%", &envVars ) );
+        EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "${FOOBAR}", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "fooENVVAR/bar", NSABUtils::NFileUtils::expandEnvVars( "foo\\%FOOBAR\\%/bar", &envVars ) );
+        EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo$\\{FOOBAR\\}/bar", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
-
-        EXPECT_EQ( "ENVVAR", NSABUtils::NFileUtils::expandEnvVars( "\\%(FOOBAR)\\%", &envVars ) );
+        EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "$\\{FOOBAR\\}", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "fooENVVAR/bar", NSABUtils::NFileUtils::expandEnvVars( "foo\\%\\(FOOBAR\\)\\%/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
-        EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "ENVVAR", NSABUtils::NFileUtils::expandEnvVars( "\\%\\(FOOBAR\\)\\%", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
-        EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "fooENVVAR/bar", NSABUtils::NFileUtils::expandEnvVars( "foo\\%\\(FOOBAR\\)\\%/bar", &envVars ) );
+        EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo$\\{FOOBAR\\}/bar", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
 
-        EXPECT_EQ( "ENVVAR", NSABUtils::NFileUtils::expandEnvVars( "%{FOOBAR}%", &envVars ) );
+        EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "%FOOBAR%", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "fooENVVAR/bar", NSABUtils::NFileUtils::expandEnvVars( "foo%\\{FOOBAR\\}%/bar", &envVars ) );
+        EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo%FOOBAR%/bar", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "ENVVAR", NSABUtils::NFileUtils::expandEnvVars( "%\\{FOOBAR\\}%", &envVars ) );
+
+        EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "\\%FOOBAR\\%", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
-        EXPECT_EQ( "fooENVVAR/bar", NSABUtils::NFileUtils::expandEnvVars( "foo%\\{FOOBAR\\}%/bar", &envVars ) );
+        EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo\\%FOOBAR\\%/bar", &envVars ) );
+        EXPECT_EQ( 1, envVars.size() );
+        EXPECT_EQ( "FOOBAR", *envVars.begin() );
+
+        EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "\\%(FOOBAR)\\%", &envVars ) );
+        EXPECT_EQ( 1, envVars.size() );
+        EXPECT_EQ( "FOOBAR", *envVars.begin() );
+        EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo\\%\\(FOOBAR\\)\\%/bar", &envVars ) );
+        EXPECT_EQ( 1, envVars.size() );
+        EXPECT_EQ( "FOOBAR", *envVars.begin() );
+        EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "\\%\\(FOOBAR\\)\\%", &envVars ) );
+        EXPECT_EQ( 1, envVars.size() );
+        EXPECT_EQ( "FOOBAR", *envVars.begin() );
+        EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo\\%\\(FOOBAR\\)\\%/bar", &envVars ) );
+        EXPECT_EQ( 1, envVars.size() );
+        EXPECT_EQ( "FOOBAR", *envVars.begin() );
+
+        EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "%{FOOBAR}%", &envVars ) );
+        EXPECT_EQ( 1, envVars.size() );
+        EXPECT_EQ( "FOOBAR", *envVars.begin() );
+        EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo%\\{FOOBAR\\}%/bar", &envVars ) );
+        EXPECT_EQ( 1, envVars.size() );
+        EXPECT_EQ( "FOOBAR", *envVars.begin() );
+        EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "%\\{FOOBAR\\}%", &envVars ) );
+        EXPECT_EQ( 1, envVars.size() );
+        EXPECT_EQ( "FOOBAR", *envVars.begin() );
+        EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo%\\{FOOBAR\\}%/bar", &envVars ) );
         EXPECT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
     }
@@ -755,57 +755,57 @@ namespace
         qputenv( "HOME", "/home/sbloom" );
         qputenv( "BAR", "bar" );
 
-        EXPECT_EQ( "${HOME}/foo/bar", NSABUtils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME" }, true ) );
-        EXPECT_EQ( "${HOME}/foo/${BAR}", NSABUtils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME", "BAR" }, true ) );
+        EXPECT_EQ( "${HOME}/foo/bar", NTowel42Utils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME" }, true ) );
+        EXPECT_EQ( "${HOME}/foo/${BAR}", NTowel42Utils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME", "BAR" }, true ) );
 
 #ifdef WIN32
-        EXPECT_EQ( "%HOME%/foo/bar", NSABUtils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME" } ) );
-        EXPECT_EQ( "%HOME%/foo/%BAR%", NSABUtils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME", "BAR" } ) );
+        EXPECT_EQ( "%HOME%/foo/bar", NTowel42Utils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME" } ) );
+        EXPECT_EQ( "%HOME%/foo/%BAR%", NTowel42Utils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME", "BAR" } ) );
 #else
-        EXPECT_EQ( "${HOME}/foo/bar", NSABUtils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME" } ) );
-        EXPECT_EQ( "${HOME}/foo/${BAR}", NSABUtils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME", "BAR" } ) );
+        EXPECT_EQ( "${HOME}/foo/bar", NTowel42Utils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME" } ) );
+        EXPECT_EQ( "${HOME}/foo/${BAR}", NTowel42Utils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME", "BAR" } ) );
 #endif
     }
 
     TEST( TestUtils, TestByteSizeString )
     {
         // base 1000
-        EXPECT_EQ( QString( "324.579KB" ), NSABUtils::NFileUtils::byteSizeString( 324579, true, false, 3U ) );
-        EXPECT_EQ( QString( "324.58KB" ), NSABUtils::NFileUtils::byteSizeString( 324579, true, false, 2U ) );
-        EXPECT_EQ( QString( "324.6KB" ), NSABUtils::NFileUtils::byteSizeString( 324579, true, false, 1U ) );
-        EXPECT_EQ( QString( "325KB" ), NSABUtils::NFileUtils::byteSizeString( 324579, true, false, 0U ) );
-        EXPECT_EQ( QString( "1KB" ), NSABUtils::NFileUtils::byteSizeString( 1000, true, false, 0U ) );
+        EXPECT_EQ( QString( "324.579KB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, false, 3U ) );
+        EXPECT_EQ( QString( "324.58KB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, false, 2U ) );
+        EXPECT_EQ( QString( "324.6KB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, false, 1U ) );
+        EXPECT_EQ( QString( "325KB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, false, 0U ) );
+        EXPECT_EQ( QString( "1KB" ), NTowel42Utils::NFileUtils::byteSizeString( 1000, true, false, 0U ) );
 
         // base 1024
-        EXPECT_EQ( QString( "316.995KiB" ), NSABUtils::NFileUtils::byteSizeString( 324579, true, true, 3U ) );
-        EXPECT_EQ( QString( "317KiB" ), NSABUtils::NFileUtils::byteSizeString( 324579, true, true, 2U ) );
-        EXPECT_EQ( QString( "317KiB" ), NSABUtils::NFileUtils::byteSizeString( 324579, true, true, 1U ) );
-        EXPECT_EQ( QString( "317KiB" ), NSABUtils::NFileUtils::byteSizeString( 324579, true, true, 0U ) );
-        EXPECT_EQ( QString( "1KiB" ), NSABUtils::NFileUtils::byteSizeString( 1024, true, true, 0U ) );
+        EXPECT_EQ( QString( "316.995KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, true, 3U ) );
+        EXPECT_EQ( QString( "317KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, true, 2U ) );
+        EXPECT_EQ( QString( "317KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, true, 1U ) );
+        EXPECT_EQ( QString( "317KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, true, 0U ) );
+        EXPECT_EQ( QString( "1KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 1024, true, true, 0U ) );
     }
 
     TEST( TestUtils, TestTimeFromMSecs )
     {
-        EXPECT_EQ( QTime( 0, 0, 1, 1 ), NSABUtils::msecsToTime( 1001 ) );
+        EXPECT_EQ( QTime( 0, 0, 1, 1 ), NTowel42Utils::msecsToTime( 1001 ) );
         EXPECT_EQ( QTime( 0, 0, 1, 1 ), QTime::fromMSecsSinceStartOfDay( 1001 ) );
     }
 
     TEST( TestUtils, TestTimeString )
     {
-        EXPECT_EQ( QString( "00:00:00:01.001 (1 seconds)" ), NSABUtils::CTimeString( 1001 ).toString( false ) );
-        EXPECT_EQ( QString( "01.001 (1 seconds)" ), NSABUtils::CTimeString( 1001 ).toString() );
+        EXPECT_EQ( QString( "00:00:00:01.001 (1 seconds)" ), NTowel42Utils::CTimeString( 1001 ).toString( false ) );
+        EXPECT_EQ( QString( "01.001 (1 seconds)" ), NTowel42Utils::CTimeString( 1001 ).toString() );
 
-        EXPECT_EQ( QString( "00:00:00:00.001001 (0 seconds)" ), NSABUtils::CTimeString( std::chrono::microseconds( 1001 ) ).toString( false ) );
-        EXPECT_EQ( QString( "00.001001 (0 seconds)" ), NSABUtils::CTimeString( std::chrono::microseconds( 1001 ) ).toString() );
+        EXPECT_EQ( QString( "00:00:00:00.001001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 1001 ) ).toString( false ) );
+        EXPECT_EQ( QString( "00.001001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 1001 ) ).toString() );
 
-        EXPECT_EQ( QString( "00:00:00:00.000001 (0 seconds)" ), NSABUtils::CTimeString( std::chrono::nanoseconds( 1001 ) ).toString( false ) );
-        EXPECT_EQ( QString( "00.000001 (0 seconds)" ), NSABUtils::CTimeString( std::chrono::nanoseconds( 1001 ) ).toString() );
+        EXPECT_EQ( QString( "00:00:00:00.000001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::nanoseconds( 1001 ) ).toString( false ) );
+        EXPECT_EQ( QString( "00.000001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::nanoseconds( 1001 ) ).toString() );
 
-        EXPECT_EQ( QString( "639815:08:56:40.001001 (55,280,048,200 seconds)" ), NSABUtils::CTimeString( std::chrono::microseconds( 55280048200001001 ) ).toString( false ) );
-        EXPECT_EQ( QString( "639815:08:56:40.001001 (55,280,048,200 seconds)" ), NSABUtils::CTimeString( std::chrono::microseconds( 55280048200001001 ) ).toString() );
+        EXPECT_EQ( QString( "639815:08:56:40.001001 (55,280,048,200 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 55280048200001001 ) ).toString( false ) );
+        EXPECT_EQ( QString( "639815:08:56:40.001001 (55,280,048,200 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 55280048200001001 ) ).toString() );
 
-        EXPECT_EQ( QString( "00:00:09:12.800482 (552 seconds)" ), NSABUtils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString( false ) );
-        EXPECT_EQ( QString( "09:12.800482 (552 seconds)" ), NSABUtils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString() );
+        EXPECT_EQ( QString( "00:00:09:12.800482 (552 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString( false ) );
+        EXPECT_EQ( QString( "09:12.800482 (552 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString() );
     }
 
     TEST( TestUtils, Help )
@@ -847,21 +847,21 @@ namespace
     {
         auto source = std::list< int >( { 1, 2, 3, 6, 10, 22, 23, 24, 50 } );
 
-        auto grouped = NSABUtils::group( source );
+        auto grouped = NTowel42Utils::group( source );
         ASSERT_EQ( 5, grouped.size() );
 
         source.pop_back();
-        grouped = NSABUtils::group( source );
+        grouped = NTowel42Utils::group( source );
         ASSERT_EQ( 4, grouped.size() );
 
         source.push_front( -1 );
-        grouped = NSABUtils::group( source );
+        grouped = NTowel42Utils::group( source );
         ASSERT_EQ( 5, grouped.size() );
     }
 
     TEST( TestUtils, TestIntsFromString )
     {
-        auto ints = NSABUtils::intsFromString( "1 2 3" );
+        auto ints = NTowel42Utils::intsFromString( "1 2 3" );
         ASSERT_EQ( 3, ints.size() );
 
         auto ii = ints.begin();
@@ -870,7 +870,7 @@ namespace
         EXPECT_EQ( 3, *ii++ );
         EXPECT_EQ( ints.end(), ii );
 
-        ints = NSABUtils::intsFromString( "3 2 1", {}, false );
+        ints = NTowel42Utils::intsFromString( "3 2 1", {}, false );
         ASSERT_EQ( 3, ints.size() );
 
         ii = ints.begin();
@@ -879,7 +879,7 @@ namespace
         EXPECT_EQ( 1, *ii++ );
         EXPECT_EQ( ints.end(), ii );
 
-        ints = NSABUtils::intsFromString( "3-1", {}, false );
+        ints = NTowel42Utils::intsFromString( "3-1", {}, false );
         ASSERT_EQ( 3, ints.size() );
 
         ii = ints.begin();
@@ -888,7 +888,7 @@ namespace
         EXPECT_EQ( 1, *ii++ );
         EXPECT_EQ( ints.end(), ii );
 
-        ints = NSABUtils::intsFromString( "1-3", {}, false );
+        ints = NTowel42Utils::intsFromString( "1-3", {}, false );
         ASSERT_EQ( 3, ints.size() );
 
         ii = ints.begin();
@@ -897,7 +897,7 @@ namespace
         EXPECT_EQ( 3, *ii++ );
         EXPECT_EQ( ints.end(), ii );
 
-        ints = NSABUtils::intsFromString( "E1 E2 E3", QString( R"((E|Episode\s*)?)" ), false );
+        ints = NTowel42Utils::intsFromString( "E1 E2 E3", QString( R"((E|Episode\s*)?)" ), false );
         ASSERT_EQ( 3, ints.size() );
 
         ii = ints.begin();
@@ -906,7 +906,7 @@ namespace
         EXPECT_EQ( 3, *ii++ );
         EXPECT_EQ( ints.end(), ii );
 
-        ints = NSABUtils::intsFromString( "E1-E3", QString( R"((E|Episode\s*)?)" ), false );
+        ints = NTowel42Utils::intsFromString( "E1-E3", QString( R"((E|Episode\s*)?)" ), false );
         ASSERT_EQ( 3, ints.size() );
 
         ii = ints.begin();
@@ -915,7 +915,7 @@ namespace
         EXPECT_EQ( 3, *ii++ );
         EXPECT_EQ( ints.end(), ii );
 
-        ints = NSABUtils::intsFromString( "E1E3", QString( R"((E|Episode\s*)?)" ), false );
+        ints = NTowel42Utils::intsFromString( "E1E3", QString( R"((E|Episode\s*)?)" ), false );
         ASSERT_EQ( 2, ints.size() );
 
         ii = ints.begin();
@@ -929,7 +929,7 @@ namespace
         auto pattern = QStringLiteral( R"(\p{Sc}*(\s?\d+[.,]?\d*)\p{Sc}*)" );
         auto replacement = QStringLiteral( "$1" );
         auto input = QStringLiteral( R"__($16.32 12.19 £16.29 €18.29  €18,29)__" );
-        auto result = NSABUtils::NStringUtils::regExReplace( input, pattern, replacement );
+        auto result = NTowel42Utils::NStringUtils::regExReplace( input, pattern, replacement );
         ASSERT_TRUE( result.has_value() );
         EXPECT_EQ( QStringLiteral( "16.32 12.19 16.29 18.29  18,29" ), result.value() );
     }
@@ -939,7 +939,7 @@ namespace
         auto pattern = QStringLiteral( R"(\p{Sc}*(?<amount>\s?\d+[.,]?\d*)\p{Sc}*)" );
         auto replacement = QStringLiteral( "${amount}" );
         auto input = QStringLiteral( R"__($16.32 12.19 £16.29 €18.29  €18,29)__" );
-        auto result = NSABUtils::NStringUtils::regExReplace( input, pattern, replacement );
+        auto result = NTowel42Utils::NStringUtils::regExReplace( input, pattern, replacement );
         ASSERT_TRUE( result.has_value() );
         EXPECT_EQ( QStringLiteral( "16.32 12.19 16.29 18.29  18,29" ), result.value() );
     }
@@ -964,10 +964,10 @@ namespace
         QString replacement;
         std::tie( pattern, replacement ) = getDollarSignReplacePattern( currencySeparator, precedes, symbol );
 
-        EXPECT_EQ( QStringLiteral( "$ 16.35" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "16.35" ), pattern, replacement ) );
-        EXPECT_EQ( QStringLiteral( "$ 19.72" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "19.72" ), pattern, replacement ) );
-        EXPECT_EQ( QStringLiteral( "$ 1234" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "1234" ), pattern, replacement ) );
-        EXPECT_EQ( QStringLiteral( "$ 0.99" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "0.99" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "$ 16.35" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "16.35" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "$ 19.72" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "19.72" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "$ 1234" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "1234" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "$ 0.99" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "0.99" ), pattern, replacement ) );
     }
 
     TEST( TestRegExReplace, TestRegExReplace_DollarSign_Follows )
@@ -982,10 +982,10 @@ namespace
         QString replacement;
         std::tie( pattern, replacement ) = getDollarSignReplacePattern( currencySeparator, precedes, symbol );
 
-        EXPECT_EQ( QStringLiteral( "16.35 $" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "16.35" ), pattern, replacement ) );
-        EXPECT_EQ( QStringLiteral( "19.72 $" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "19.72" ), pattern, replacement ) );
-        EXPECT_EQ( QStringLiteral( "1234 $" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "1234" ), pattern, replacement ) );
-        EXPECT_EQ( QStringLiteral( "0.99 $" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "0.99" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "16.35 $" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "16.35" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "19.72 $" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "19.72" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "1234 $" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "1234" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "0.99 $" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "0.99" ), pattern, replacement ) );
     }
 
     TEST( TestRegExReplace, TestRegExReplace_EuroSign_Precedes )
@@ -1000,10 +1000,10 @@ namespace
         QString replacement;
         std::tie( pattern, replacement ) = getDollarSignReplacePattern( currencySeparator, precedes, symbol );
 
-        EXPECT_EQ( QStringLiteral( "€ 16.35" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "16.35" ), pattern, replacement ) );
-        EXPECT_EQ( QStringLiteral( "€ 19.72" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "19.72" ), pattern, replacement ) );
-        EXPECT_EQ( QStringLiteral( "€ 1234" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "1234" ), pattern, replacement ) );
-        EXPECT_EQ( QStringLiteral( "€ 0.99" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "0.99" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "€ 16.35" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "16.35" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "€ 19.72" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "19.72" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "€ 1234" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "1234" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "€ 0.99" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "0.99" ), pattern, replacement ) );
     }
 
     TEST( TestRegExReplace, TestRegExReplace_EuroSign_Follows )
@@ -1018,10 +1018,10 @@ namespace
         QString replacement;
         std::tie( pattern, replacement ) = getDollarSignReplacePattern( currencySeparator, precedes, symbol );
 
-        EXPECT_EQ( QStringLiteral( "16.35 €" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "16.35" ), pattern, replacement ) );
-        EXPECT_EQ( QStringLiteral( "19.72 €" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "19.72" ), pattern, replacement ) );
-        EXPECT_EQ( QStringLiteral( "1234 €" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "1234" ), pattern, replacement ) );
-        EXPECT_EQ( QStringLiteral( "0.99 €" ), NSABUtils::NStringUtils::regExReplace( QStringLiteral( "0.99" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "16.35 €" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "16.35" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "19.72 €" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "19.72" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "1234 €" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "1234" ), pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( "0.99 €" ), NTowel42Utils::NStringUtils::regExReplace( QStringLiteral( "0.99" ), pattern, replacement ) );
     }
 
     TEST( TestRegExReplace, TestRegExReplace_EntireMatch )
@@ -1029,10 +1029,10 @@ namespace
         auto pattern = R"(^(\w+\s?)+$)";
         auto replacement = R"__("$&<<==>>$&")__";
 
-        EXPECT_EQ( R"__("A Tale of Two Cities<<==>>A Tale of Two Cities")__", NSABUtils::NStringUtils::regExReplace( "A Tale of Two Cities", pattern, replacement ) );
-        EXPECT_EQ( R"__("The Hound of the Baskervilles<<==>>The Hound of the Baskervilles")__", NSABUtils::NStringUtils::regExReplace( "The Hound of the Baskervilles", pattern, replacement ) );
-        EXPECT_EQ( R"__("The Protestant Ethic and the Spirit of Capitalism<<==>>The Protestant Ethic and the Spirit of Capitalism")__", NSABUtils::NStringUtils::regExReplace( "The Protestant Ethic and the Spirit of Capitalism", pattern, replacement ) );
-        EXPECT_EQ( R"__("The Origin of Species<<==>>The Origin of Species")__", NSABUtils::NStringUtils::regExReplace( "The Origin of Species", pattern, replacement ) );
+        EXPECT_EQ( R"__("A Tale of Two Cities<<==>>A Tale of Two Cities")__", NTowel42Utils::NStringUtils::regExReplace( "A Tale of Two Cities", pattern, replacement ) );
+        EXPECT_EQ( R"__("The Hound of the Baskervilles<<==>>The Hound of the Baskervilles")__", NTowel42Utils::NStringUtils::regExReplace( "The Hound of the Baskervilles", pattern, replacement ) );
+        EXPECT_EQ( R"__("The Protestant Ethic and the Spirit of Capitalism<<==>>The Protestant Ethic and the Spirit of Capitalism")__", NTowel42Utils::NStringUtils::regExReplace( "The Protestant Ethic and the Spirit of Capitalism", pattern, replacement ) );
+        EXPECT_EQ( R"__("The Origin of Species<<==>>The Origin of Species")__", NTowel42Utils::NStringUtils::regExReplace( "The Origin of Species", pattern, replacement ) );
     }
 }
 

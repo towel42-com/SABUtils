@@ -23,7 +23,7 @@
 #ifndef __UTILS_H
 #define __UTILS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <cinttypes>
 #include <cstdarg>
@@ -102,20 +102,20 @@ std::ostream &operator<<( std::ostream &oss, const std::list< std::vector< T > >
     return oss;
 }
 
-SABUTILS_EXPORT inline std::ostream &sabsabDebugStreamInternal()
+TOWEL42_UTILS_EXPORT inline std::ostream &t42DebugStreamInternal()
 {
     return std::cout;
 }
-#undef sabDebugStream
-#if defined( SAB_DEBUG_TRACE )
-    #define sabDebugStream sabsabDebugStreamInternal
+#undef t42DebugStream
+#if defined( TOWEL42_DEBUG_TRACE )
+    #define t42DebugStream t42DebugStreamInternal
 #else
-    #define sabDebugStream \
+    #define t42DebugStream \
         while ( false ) \
-        sabsabDebugStreamInternal
+            t42DebugStreamInternal
 #endif
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     template< typename T >
     T indexInList( std::size_t index, const std::list< T > &list )
@@ -162,14 +162,14 @@ namespace NSABUtils
         return retVal;
     }
 
-    SABUTILS_EXPORT int fromChar( char ch, int base, bool &aOK );
-    SABUTILS_EXPORT char toChar( int value );
+    TOWEL42_UTILS_EXPORT int fromChar( char ch, int base, bool &aOK );
+    TOWEL42_UTILS_EXPORT char toChar( int value );
 
-    SABUTILS_EXPORT void toDigits( int64_t val, int base, std::pair< int8_t *, uint32_t > &retVal, size_t &numDigits, bool *aOK = nullptr );
-    SABUTILS_EXPORT std::string toString( int64_t val, int base );
-    SABUTILS_EXPORT int64_t fromString( const std::string &str, int base );
+    TOWEL42_UTILS_EXPORT void toDigits( int64_t val, int base, std::pair< int8_t *, uint32_t > &retVal, size_t &numDigits, bool *aOK = nullptr );
+    TOWEL42_UTILS_EXPORT std::string toString( int64_t val, int base );
+    TOWEL42_UTILS_EXPORT int64_t fromString( const std::string &str, int base );
 
-    SABUTILS_EXPORT QString secsToString( quint64 seconds );
+    TOWEL42_UTILS_EXPORT QString secsToString( quint64 seconds );
 
     template< typename U, typename V >
     constexpr auto durationDiff( const U &lhs, const V &rhs ) -> typename std::common_type< U, V >::type
@@ -178,10 +178,10 @@ namespace NSABUtils
         return Common( lhs ) - Common( rhs );
     }
 
-    SABUTILS_EXPORT QTime msecsToTime( uint64_t msecs );
+    TOWEL42_UTILS_EXPORT QTime msecsToTime( uint64_t msecs );
 
     template< typename T = std::chrono::microseconds >
-    class SABUTILS_EXPORT CTimeString
+    class TOWEL42_UTILS_EXPORT CTimeString
     {
     public:
         using TDays = std::chrono::duration< int, std::ratio< 3600 * 24 > >;
@@ -282,17 +282,17 @@ namespace NSABUtils
         bool fMicroSecondsAvailable{ false };
     };
 
-    SABUTILS_EXPORT std::list< int64_t > computeFactors( int64_t num, bool properFactors = false );
-    SABUTILS_EXPORT std::list< int64_t > computePrimeFactors( int64_t num );
+    TOWEL42_UTILS_EXPORT std::list< int64_t > computeFactors( int64_t num, bool properFactors = false );
+    TOWEL42_UTILS_EXPORT std::list< int64_t > computePrimeFactors( int64_t num );
 
-    SABUTILS_EXPORT bool isNarcissistic( int64_t val, int base, bool &aOK );
+    TOWEL42_UTILS_EXPORT bool isNarcissistic( int64_t val, int base, bool &aOK );
     // return Value, the list of factors since the factors are often needed
-    SABUTILS_EXPORT std::pair< int64_t, std::list< int64_t > > getSumOfFactors( int64_t curr, bool properFactors );
-    SABUTILS_EXPORT std::pair< bool, std::list< int64_t > > isSemiPerfect( int64_t num );
-    SABUTILS_EXPORT std::pair< bool, std::list< int64_t > > isPerfect( int64_t num );
-    SABUTILS_EXPORT std::pair< bool, std::list< int64_t > > isAbundant( int64_t num );
+    TOWEL42_UTILS_EXPORT std::pair< int64_t, std::list< int64_t > > getSumOfFactors( int64_t curr, bool properFactors );
+    TOWEL42_UTILS_EXPORT std::pair< bool, std::list< int64_t > > isSemiPerfect( int64_t num );
+    TOWEL42_UTILS_EXPORT std::pair< bool, std::list< int64_t > > isPerfect( int64_t num );
+    TOWEL42_UTILS_EXPORT std::pair< bool, std::list< int64_t > > isAbundant( int64_t num );
 
-    SABUTILS_EXPORT bool isSemiPerfect( const std::vector< int64_t > &numbers, size_t n, int64_t num );
+    TOWEL42_UTILS_EXPORT bool isSemiPerfect( const std::vector< int64_t > &numbers, size_t n, int64_t num );
 
     template< typename T >
     std::string getNumberListString( const T &numbers, int base )
@@ -314,7 +314,7 @@ namespace NSABUtils
                 oss << "    ";
             first = false;
 
-            oss << NSABUtils::toString( currVal, base );
+            oss << NTowel42Utils::toString( currVal, base );
             if ( base != 10 )
                 oss << "(=" << currVal << ")";
             ii++;
@@ -399,20 +399,20 @@ namespace NSABUtils
     std::vector< std::vector< T > > allCombinations( const std::vector< T > &arr, size_t r, const std::pair< bool, size_t > &report = std::make_pair( false, 1 ) )
     {
         std::vector< std::vector< T > > combinations;
-        NSABUtils::allCombinations< T >(
+        NTowel42Utils::allCombinations< T >(
             arr, r,
             [ &combinations, &report = std::as_const( report ) ]( const std::vector< T > &sub )
             {
                 combinations.push_back( sub );
                 if ( report.first && ( ( combinations.size() % report.second ) == 0 ) )
-                    sabDebugStream() << "Generating combination: " << combinations.size() << "\n";
+                    t42DebugStream() << "Generating combination: " << combinations.size() << "\n";
             } );
         return combinations;
     }
 #endif
 
-    SABUTILS_EXPORT long double factorial( int64_t num );
-    SABUTILS_EXPORT uint64_t numCombinations( int64_t numPossible, int64_t numSelections );
+    TOWEL42_UTILS_EXPORT long double factorial( int64_t num );
+    TOWEL42_UTILS_EXPORT uint64_t numCombinations( int64_t numPossible, int64_t numSelections );
 
     template< typename T >
     std::vector< std::vector< T > > addVectorElementToSets( const std::vector< std::vector< T > > &currentSets, const std::list< T > &rhs, const std::function< bool( const std::vector< T > &curr, const T &obj ) > &addToResult = std::function< bool( const std::vector< T > &curr, const T &obj ) >() )
@@ -483,9 +483,9 @@ namespace NSABUtils
     template< typename T >
     std::list< T > replaceInList( const std::list< T > &inList, int xFirst, int xCount, const std::list< T > &values, int xNum = -1 )
     {
-        auto prefix = NSABUtils::mid( inList, 0, xFirst );
-        auto mid = NSABUtils::mid( values, 0, xNum );
-        auto suffix = NSABUtils::mid( inList, xFirst + xCount );
+        auto prefix = NTowel42Utils::mid( inList, 0, xFirst );
+        auto mid = NTowel42Utils::mid( values, 0, xNum );
+        auto suffix = NTowel42Utils::mid( inList, xFirst + xCount );
 
         auto lRetVal = std::list< T >( { prefix.first, prefix.second } ) + mid + suffix;   //( { prefix.first, prefix.second } );
         return lRetVal;
@@ -501,12 +501,12 @@ namespace NSABUtils
         return retVal;
     }
 
-    SABUTILS_EXPORT char GetChar();
-    SABUTILS_EXPORT int waitForPrompt( int returnCode, const char *prompt = nullptr );   // uses GetChar above
-    SABUTILS_EXPORT QString getLastError();   // windows only
-    SABUTILS_EXPORT QString getLastError( int errorCode );   // windows only
+    TOWEL42_UTILS_EXPORT char GetChar();
+    TOWEL42_UTILS_EXPORT int waitForPrompt( int returnCode, const char *prompt = nullptr );   // uses GetChar above
+    TOWEL42_UTILS_EXPORT QString getLastError();   // windows only
+    TOWEL42_UTILS_EXPORT QString getLastError( int errorCode );   // windows only
 
-    SABUTILS_EXPORT bool isValidURL( const QString &url, int *start = nullptr, int *length = nullptr );
+    TOWEL42_UTILS_EXPORT bool isValidURL( const QString &url, int *start = nullptr, int *length = nullptr );
 
     template< typename T, typename = std::enable_if< std::is_integral_v< T > > >
     std::list< std::list< T > > group( const std::list< T > &inList )
@@ -537,7 +537,7 @@ namespace NSABUtils
         return retVal;
     }
 
-    SABUTILS_EXPORT std::list< int > intsFromString( const QString &string, const QString &prefixRegEx = {}, bool sort = true, bool *aOK = nullptr );
+    TOWEL42_UTILS_EXPORT std::list< int > intsFromString( const QString &string, const QString &prefixRegEx = {}, bool sort = true, bool *aOK = nullptr );
 
 }
 #endif

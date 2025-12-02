@@ -25,7 +25,7 @@
 #include <QScrollBar>
 #include <tuple>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     // 0 = OK view && idx.isValid
     // second return value is visible (idx intersetcs or is contained by the view)
@@ -64,7 +64,7 @@ namespace NSABUtils
         bool aOK = false;
         bool isVisible = false;
         std::tuple< bool, bool, bool, bool > whereIsIt;
-        std::tie( aOK, isVisible, whereIsIt ) = NSABUtils::isVisible( view, idx );
+        std::tie( aOK, isVisible, whereIsIt ) = NTowel42Utils::isVisible( view, idx );
         if ( !aOK || isVisible )
             return idx;
 
@@ -84,7 +84,7 @@ namespace NSABUtils
         {
             idx = view->indexBelow( idx );
             // qDebug() << "findFirstVisible: indexBelow" << idx << idx.data();
-            std::tie( aOK, isVisible, whereIsIt ) = NSABUtils::isVisible( view, idx );
+            std::tie( aOK, isVisible, whereIsIt ) = NTowel42Utils::isVisible( view, idx );
         }
         return idx;
     }
@@ -112,7 +112,7 @@ namespace NSABUtils
         bool aOK = false;
         bool isVisible = false;
         std::tuple< bool, bool, bool, bool > whereIsIt;
-        std::tie( aOK, isVisible, whereIsIt ) = NSABUtils::isVisible( view, initIndex );
+        std::tie( aOK, isVisible, whereIsIt ) = NTowel42Utils::isVisible( view, initIndex );
         // qDebug() << "initIndex:" << initIndex << initIndex.data() << "isExpanded:" << view->isExpanded( initIndex ) << "Num Children:" << model->rowCount( initIndex ) << "Can FetchMore:" << model->canFetchMore( initIndex )
         //     << " aOK:" << aOK
         //     << " isVisible:" << isVisible

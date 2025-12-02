@@ -23,7 +23,7 @@
 #ifndef __UTILITYMODELS_H
 #define __UTILITYMODELS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QObject>
 #include <QAbstractListModel>
@@ -41,9 +41,9 @@
 class QAbstractButton;
 class QXmlQuery;
 class QDir;
-namespace NSABUtils
+namespace NTowel42Utils
 {
-    class SABUTILS_EXPORT CMoveStringListModel : public QStringListModel
+    class TOWEL42_UTILS_EXPORT CMoveStringListModel : public QStringListModel
     {
         Q_OBJECT;
 
@@ -56,7 +56,7 @@ namespace NSABUtils
         void addRow( const QString &value );
     };
 
-    class SABUTILS_EXPORT CStringListModel : public QStringListModel
+    class TOWEL42_UTILS_EXPORT CStringListModel : public QStringListModel
     {
         Q_OBJECT;
 
@@ -71,7 +71,7 @@ namespace NSABUtils
         QString at( int ii ) const;
     };
 
-    class SABUTILS_EXPORT CStringTupleModel : public QAbstractTableModel
+    class TOWEL42_UTILS_EXPORT CStringTupleModel : public QAbstractTableModel
     {
         Q_OBJECT;
 
@@ -121,7 +121,7 @@ namespace NSABUtils
         QList< QStringList > fData;
     };
 
-    class SABUTILS_EXPORT CKeyValuePairModel : public CStringTupleModel
+    class TOWEL42_UTILS_EXPORT CKeyValuePairModel : public CStringTupleModel
     {
         Q_OBJECT;
 
@@ -142,7 +142,7 @@ namespace NSABUtils
         QList< QPair< QString, QString > > data() const;
     };
 
-    class SABUTILS_EXPORT CCheckableStringListModel : public QStringListModel
+    class TOWEL42_UTILS_EXPORT CCheckableStringListModel : public QStringListModel
     {
         Q_OBJECT
     public:
@@ -202,7 +202,7 @@ namespace NSABUtils
         std::map< QString, QString > fReverseAliasMap;
     };
 
-    class SABUTILS_EXPORT CStringFilterModel : public QSortFilterProxyModel
+    class TOWEL42_UTILS_EXPORT CStringFilterModel : public QSortFilterProxyModel
     {
         Q_OBJECT
     public:
@@ -216,7 +216,7 @@ namespace NSABUtils
         QTimer *fTimer;
     };
 
-    class SABUTILS_EXPORT CCheckableListView : public QListView
+    class TOWEL42_UTILS_EXPORT CCheckableListView : public QListView
     {
         Q_OBJECT
     public:
@@ -226,7 +226,7 @@ namespace NSABUtils
         void sigBlockFilterUpdates( bool block );
     };
 
-    class SABUTILS_EXPORT CCheckableTableView : public QTableView
+    class TOWEL42_UTILS_EXPORT CCheckableTableView : public QTableView
     {
         Q_OBJECT
     public:
@@ -236,7 +236,7 @@ namespace NSABUtils
         void sigBlockFilterUpdates( bool block );
     };
 
-    class SABUTILS_EXPORT CCheckableTreeView : public QTreeView
+    class TOWEL42_UTILS_EXPORT CCheckableTreeView : public QTreeView
     {
         Q_OBJECT
     public:

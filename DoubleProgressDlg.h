@@ -23,17 +23,17 @@
 #ifndef __DOUBLEPROGRESSDLG_H
 #define __DOUBLEPROGRESSDLG_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 class QProgressBar;
 #include <QDialog>
 #include <QElapsedTimer>
 #include <memory>
 class QTimer;
-namespace NSABUtils
+namespace NTowel42Utils
 {
     class CDoubleProgressDlgImpl;
-    class SABUTILS_EXPORT CDoubleProgressDlg : public QDialog
+    class TOWEL42_UTILS_EXPORT CDoubleProgressDlg : public QDialog
     {
         friend class CDoubleProgressDlgImpl;
         Q_OBJECT

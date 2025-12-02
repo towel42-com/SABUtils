@@ -37,7 +37,7 @@
 #include <QJsonParseError>
 #include <QCoreApplication>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
 
     CGitHubGetVersions::CGitHubGetVersions( const QByteArray &githubToken, QObject *parent /*= nullptr */ ) :
@@ -392,7 +392,7 @@ namespace NSABUtils
         return std::move( retVal );
     }
 
-    std::shared_ptr< NSABUtils::SGitHubAsset > SGitHubRelease::getAssetForOS() const
+    std::shared_ptr< NTowel42Utils::SGitHubAsset > SGitHubRelease::getAssetForOS() const
     {
         for ( auto &&ii : fAssets )
         {

@@ -36,7 +36,7 @@
     #define S_OK 0
 #endif
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
 #ifndef Q_OS_WIN
     #define S_OK 0

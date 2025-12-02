@@ -28,7 +28,7 @@
 #include <QAbstractButton>
 #include <QTimer>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     CTableWidgetWithSelectCommand::CTableWidgetWithSelectCommand( QWidget *parent ) :
         QTableWidget( parent )

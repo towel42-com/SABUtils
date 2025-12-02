@@ -22,11 +22,11 @@
 // SOFTWARE.
 
 #include "BIFIOHandler.h"
-#include "SABUtils/BIFFile.h"
+#include "T42-Utils/BIFFile.h"
 
 #include <QImage>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NBIF
     {

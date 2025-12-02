@@ -22,9 +22,9 @@
 
 #include "BIFPlugin.h"
 #include "BIFIOHandler.h"
-#include "SABUtils/BIFFile.h"
+#include "T42-Utils/BIFFile.h"
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace NBIF
     {

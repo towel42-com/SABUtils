@@ -39,7 +39,7 @@ extern Q_CORE_EXPORT int qt_ntfs_permission_lookup;
 // #define DEBUG_BACKGROUND_FILE_CHECK
 #endif
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
 
     class CBackgroundFileCheckImpl
@@ -144,7 +144,7 @@ namespace NSABUtils
             return;
         }
 
-        if ( NSABUtils::NFileUtils::isIPAddressNetworkPath( QFileInfo( fImpl->fPathName ) ) )
+        if ( NTowel42Utils::NFileUtils::isIPAddressNetworkPath( QFileInfo( fImpl->fPathName ) ) )
         {
             fImpl->fRetVal = std::make_pair( true, QString() );
             return;

@@ -30,7 +30,7 @@
 #include <string>
 #include <cctype>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     bool restIsSpace( const std::string &str, size_t sz )
     {

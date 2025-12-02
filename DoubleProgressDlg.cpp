@@ -33,7 +33,7 @@
 #include <QCoreApplication>
 #include <QProgressBar>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     const int gDefaultMinimumDuration{ 4000 };
     const int gMinWaitTime{ 50 };

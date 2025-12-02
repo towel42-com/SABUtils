@@ -22,16 +22,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QLineEdit>
 #include <QFile>
 class QTimer;
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     class CBackgroundFileCheck;
-    class SABUTILS_EXPORT CDelayLineEdit : public QLineEdit
+    class TOWEL42_UTILS_EXPORT CDelayLineEdit : public QLineEdit
     {
         Q_OBJECT;
 
@@ -84,7 +84,7 @@ namespace NSABUtils
         ELineEditStatus fStatus{ ELineEditStatus::ePending };
     };
 
-    class SABUTILS_EXPORT CPathBasedDelayLineEdit : public CDelayLineEdit
+    class TOWEL42_UTILS_EXPORT CPathBasedDelayLineEdit : public CDelayLineEdit
     {
         Q_OBJECT;
 

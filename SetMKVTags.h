@@ -23,18 +23,18 @@
 #ifndef _SETMKVTAGS_H
 #define _SETMKVTAGS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QDialog>
 #include <memory>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     namespace Ui
     {
         class CSetMKVTags;
     };
-    class SABUTILS_EXPORT CSetMKVTags : public QDialog
+    class TOWEL42_UTILS_EXPORT CSetMKVTags : public QDialog
     {
         Q_OBJECT
     public:

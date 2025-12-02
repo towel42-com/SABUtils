@@ -31,7 +31,7 @@
 
 #include <set>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
     QStringList removeFromlist( const QStringList &list, const QString &regex )
     {
@@ -544,7 +544,7 @@ namespace NSABUtils
         Q_ASSERT( validate() );
     }
 
-    QStringList CFFMpegFormats::getExtensions( const TFormatMap &map, NSABUtils::EFormatType extensionType, const QStringList &exclude ) const
+    QStringList CFFMpegFormats::getExtensions( const TFormatMap &map, NTowel42Utils::EFormatType extensionType, const QStringList &exclude ) const
     {
         auto pos = map.find( extensionType );
         if ( pos == map.end() )
@@ -560,12 +560,12 @@ namespace NSABUtils
         return std::move( removeFromlist( retVal, exclude ) );
     }
 
-    QStringList CFFMpegFormats::getEncoderExtensions( NSABUtils::EFormatType extensionType, const QStringList &exclude ) const
+    QStringList CFFMpegFormats::getEncoderExtensions( NTowel42Utils::EFormatType extensionType, const QStringList &exclude ) const
     {
         return getExtensions( fMediaEncoderFormatExtensions, extensionType, exclude );
     }
 
-    QStringList CFFMpegFormats::getDecoderExtensions( NSABUtils::EFormatType extensionType, const QStringList &exclude ) const
+    QStringList CFFMpegFormats::getDecoderExtensions( NTowel42Utils::EFormatType extensionType, const QStringList &exclude ) const
     {
         return getExtensions( fMediaDecoderFormatExtensions, extensionType, exclude );
     }
@@ -1335,15 +1335,15 @@ namespace NSABUtils
         switch ( type )
         {
             case EFormatType::eUnknown:
-                return "NSABUtils::EFormatType::eUnknown";
+                return "NTowel42Utils::EFormatType::eUnknown";
             case EFormatType::eVideo:
-                return "NSABUtils::EFormatType::eVideo";
+                return "NTowel42Utils::EFormatType::eVideo";
             case EFormatType::eAudio:
-                return "NSABUtils::EFormatType::eAudio";
+                return "NTowel42Utils::EFormatType::eAudio";
             case EFormatType::eSubtitle:
-                return "NSABUtils::EFormatType::eSubtitle";
+                return "NTowel42Utils::EFormatType::eSubtitle";
             case EFormatType::eImage:
-                return "NSABUtils::EFormatType::eImage";
+                return "NTowel42Utils::EFormatType::eImage";
         }
         return toString( EFormatType::eUnknown );
     }

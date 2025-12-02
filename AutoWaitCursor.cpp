@@ -22,7 +22,7 @@
 #include "AutoWaitCursor.h"
 #include <QApplication>
 
-namespace NSABUtils
+namespace NTowel42Utils
 {
 
     CAutoWaitCursor::CAutoWaitCursor( QObject *revertOnShowWidget ) :

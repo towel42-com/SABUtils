@@ -22,14 +22,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <QSpinBox>
 class QTimer;
-namespace NSABUtils
+namespace NTowel42Utils
 {
 
-    class SABUTILS_EXPORT CDelaySpinBox : public QSpinBox
+    class TOWEL42_UTILS_EXPORT CDelaySpinBox : public QSpinBox
     {
         Q_OBJECT;
 

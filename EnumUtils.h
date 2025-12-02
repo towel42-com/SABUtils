@@ -23,11 +23,11 @@
 #ifndef __ENUMUTILS_H
 #define __ENUMUTILS_H
 
-#include "SABUtilsExport.h"
+#include "Towel42UtilsExport.h"
 
 #include <type_traits>
 #define DECLARE_ENUM_FUNCS_LOGIC( EnumName ) \
-    SABUTILS_EXPORT inline EnumName operator&( const EnumName &lhs, const EnumName &rhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator&( const EnumName &lhs, const EnumName &rhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         IntType lhsVal = static_cast< IntType >( lhs ); \
@@ -35,7 +35,7 @@
         EnumName retVal = static_cast< EnumName >( lhsVal & rhsVal ); \
         return retVal; \
     } \
-    SABUTILS_EXPORT inline EnumName operator&=( EnumName &lhs, const EnumName &rhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator&=( EnumName &lhs, const EnumName &rhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         IntType lhsVal = static_cast< IntType >( lhs ); \
@@ -43,7 +43,7 @@
         lhs = static_cast< EnumName >( lhsVal & rhsVal ); \
         return lhs; \
     } \
-    SABUTILS_EXPORT inline EnumName operator|( const EnumName &lhs, const EnumName &rhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator|( const EnumName &lhs, const EnumName &rhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         IntType lhsVal = static_cast< IntType >( lhs ); \
@@ -51,7 +51,7 @@
         EnumName retVal = static_cast< EnumName >( lhsVal | rhsVal ); \
         return retVal; \
     } \
-    SABUTILS_EXPORT inline EnumName operator|=( EnumName &lhs, const EnumName &rhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator|=( EnumName &lhs, const EnumName &rhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         IntType lhsVal = static_cast< IntType >( lhs ); \
@@ -59,7 +59,7 @@
         lhs = static_cast< EnumName >( lhsVal | rhsVal ); \
         return lhs; \
     } \
-    SABUTILS_EXPORT inline EnumName operator^( const EnumName &lhs, const EnumName &rhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator^( const EnumName &lhs, const EnumName &rhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         IntType lhsVal = static_cast< IntType >( lhs ); \
@@ -67,7 +67,7 @@
         EnumName retVal = static_cast< EnumName >( lhsVal ^ rhsVal ); \
         return retVal; \
     } \
-    SABUTILS_EXPORT inline EnumName operator^=( EnumName &lhs, const EnumName &rhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator^=( EnumName &lhs, const EnumName &rhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         IntType lhsVal = static_cast< IntType >( lhs ); \
@@ -75,7 +75,7 @@
         lhs = static_cast< EnumName >( lhsVal ^ rhsVal ); \
         return lhs; \
     } \
-    SABUTILS_EXPORT inline EnumName operator~( const EnumName &lhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator~( const EnumName &lhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         IntType lhsVal = static_cast< IntType >( lhs ); \
@@ -84,7 +84,7 @@
     }
 
 #define DECLARE_ENUM_FUNCS_ARITHMETIC( EnumName ) \
-    SABUTILS_EXPORT inline EnumName operator-( const EnumName &lhs, const EnumName &rhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator-( const EnumName &lhs, const EnumName &rhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         IntType lhsVal = static_cast< IntType >( lhs ); \
@@ -92,14 +92,14 @@
         EnumName retVal = static_cast< EnumName >( lhsVal - rhsVal ); \
         return retVal; \
     } \
-    SABUTILS_EXPORT inline EnumName operator-( const EnumName &lhs, size_t rhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator-( const EnumName &lhs, size_t rhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         IntType lhsVal = static_cast< IntType >( lhs ); \
         EnumName retVal = static_cast< EnumName >( lhsVal - rhs ); \
         return retVal; \
     } \
-    SABUTILS_EXPORT inline EnumName operator+( const EnumName &lhs, const EnumName &rhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator+( const EnumName &lhs, const EnumName &rhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         IntType lhsVal = static_cast< IntType >( lhs ); \
@@ -107,35 +107,35 @@
         EnumName retVal = static_cast< EnumName >( lhsVal + rhsVal ); \
         return retVal; \
     } \
-    SABUTILS_EXPORT inline EnumName operator+( const EnumName &lhs, size_t rhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator+( const EnumName &lhs, size_t rhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         IntType lhsVal = static_cast< IntType >( lhs ); \
         EnumName retVal = static_cast< EnumName >( lhsVal + rhs ); \
         return retVal; \
     } \
-    SABUTILS_EXPORT inline EnumName operator++( EnumName &lhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator++( EnumName &lhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         auto val = static_cast< IntType >( lhs ); \
         lhs = static_cast< EnumName >( val + 1 ); \
         return lhs; \
     } \
-    SABUTILS_EXPORT inline EnumName operator--( EnumName &lhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator--( EnumName &lhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         auto val = static_cast< IntType >( lhs ); \
         lhs = static_cast< EnumName >( val - 1 ); \
         return lhs; \
     } \
-    SABUTILS_EXPORT inline EnumName operator++( EnumName &lhs, int n ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator++( EnumName &lhs, int n ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         auto val = static_cast< IntType >( lhs ); \
         lhs = static_cast< EnumName >( val + ( ( n != 0 ) ? n : 1 ) ); \
         return lhs; \
     } \
-    SABUTILS_EXPORT inline EnumName operator--( EnumName &lhs, int n ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator--( EnumName &lhs, int n ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         auto val = static_cast< IntType >( lhs ); \
@@ -144,28 +144,28 @@
     }
 
 #define DECLARE_ENUM_FUNCS_ARITHMETIC_ONEHOT( EnumName ) \
-    SABUTILS_EXPORT inline EnumName operator--( EnumName &lhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator--( EnumName &lhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         auto val = static_cast< IntType >( lhs ); \
         lhs = static_cast< EnumName >( val >> 1 ); \
         return lhs; \
     } \
-    SABUTILS_EXPORT inline EnumName operator++( EnumName &lhs ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator++( EnumName &lhs ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         auto val = static_cast< IntType >( lhs ); \
         lhs = static_cast< EnumName >( val << 1 ); \
         return lhs; \
     } \
-    SABUTILS_EXPORT inline EnumName operator--( EnumName &lhs, int n ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator--( EnumName &lhs, int n ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         auto val = static_cast< IntType >( lhs ); \
         lhs = static_cast< EnumName >( val >> ( ( n != 0 ) ? n : 1 ) ); \
         return lhs; \
     } \
-    SABUTILS_EXPORT inline EnumName operator++( EnumName &lhs, int n ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator++( EnumName &lhs, int n ) \
     { \
         using IntType = std::underlying_type< EnumName >::type; \
         auto val = static_cast< IntType >( lhs ); \
@@ -174,15 +174,15 @@
     }
 
 #define DECLARE_ENUM_ITERATORS( EnumName, First, Last ) \
-    SABUTILS_EXPORT inline EnumName operator*( EnumName val ) \
+    TOWEL42_UTILS_EXPORT inline EnumName operator*( EnumName val ) \
     { \
         return val; \
     } \
-    SABUTILS_EXPORT inline EnumName begin( EnumName ) \
+    TOWEL42_UTILS_EXPORT inline EnumName begin( EnumName ) \
     { \
         return First; \
     } \
-    SABUTILS_EXPORT inline EnumName end( EnumName ) \
+    TOWEL42_UTILS_EXPORT inline EnumName end( EnumName ) \
     { \
         EnumName tmp = Last; \
         return ++tmp; \
