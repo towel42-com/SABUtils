@@ -278,12 +278,12 @@ if ( QNETWORK_SUPPORT )
     )
     set(project_H
         ${project_H}
+        ValidateOpenSSL.h
     )
     set(qtproject_H
         ${qtproject_H}
         DownloadFile.h
         GitHubGetVersions.h
-        ValidateOpenSSL.h
     )
     set(QNETWORK_LIB
         Qt6::Network
