@@ -26,6 +26,13 @@
 #include <QFontMetrics>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QCoreApplication>
+#include <QGuiApplication>
+
+#ifdef Q_OS_WINDOWS
+    #include <qt_windows.h>
+    #include <shellapi.h>
+#endif
 
 namespace NTowel42Utils
 {
@@ -52,12 +59,34 @@ namespace NTowel42Utils
                     auto urlRect = fm.boundingRect( url );
                     if ( xLoc <= urlRect.width() )
                     {
-                        QDesktopServices::openUrl( url );
-                        return true;
+                        return QDesktopServices::openUrl( url );
                     }
                 }
             }
         }
         return false;
     }
+
+    std::optional< QString > openUrl( const QUrl &url )
+    {
+        QCoreApplication *application = QCoreApplication::instance();
+        if ( application && qobject_cast< QGuiApplication * >( application ) )
+        {
+            if ( QDesktopServices::openUrl( url ) )
+                return {};
+        }
+
+#ifdef Q_OS_WIN
+        auto urlPath = url.toString( QUrl::FullyEncoded );
+        auto urlPathUtf16 = reinterpret_cast< const wchar_t * >( urlPath.utf16() );
+
+        auto result = reinterpret_cast< uint64_t >( ShellExecute( nullptr, nullptr, urlPathUtf16, nullptr, nullptr, SW_SHOWNORMAL ) );
+        if ( result > 32 )
+            return {};
+        return QObject::tr( "openUrl '%1' failed (error %2)." ).arg( urlPath ).arg( result );
+#endif
+
+        return QObject::tr( "Could not open url.  Run with QGuiApplication" );
+    }
+
 }

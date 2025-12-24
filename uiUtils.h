@@ -28,8 +28,12 @@
 class QString;
 class QPoint;
 class QFont;
+class QUrl;
+#include <optional>
+
 namespace NTowel42Utils
 {
     TOWEL42_UTILS_EXPORT bool launchIfURLClicked( const QString &title, const QPoint &pt, const QFont &font );
+    TOWEL42_UTILS_EXPORT std::optional< QString > openUrl( const QUrl &url );
 }
 #endif
