@@ -45,6 +45,7 @@ namespace NTowel42Utils
         virtual ~CDoubleProgressDlg() override;
 
         int primaryValue() const;
+        int rawPrimaryValue() const;
         int primaryMin() const;
         int primaryMax() const;
         QString primaryFormat() const;
@@ -75,6 +76,7 @@ namespace NTowel42Utils
         bool autoReset() const;
 
         int value() const;
+        int rawValue() const;
         QString labelText() const { return title(); }
 
         // for progress bars, one step may have 4 sub events
@@ -107,6 +109,7 @@ namespace NTowel42Utils
         void setPrimaryProgressLabel( const QString &text );
 
         void setPrimaryValue( int value );
+        int incPrimaryValue() const;
         void setPrimaryRange( int min, int max );
         void setPrimaryMinimum( int min ) { setPrimaryRange( min, primaryMax() ); }
         void setPrimaryMaximum( int max ) { setPrimaryRange( primaryMin(), max ); }
@@ -115,8 +118,9 @@ namespace NTowel42Utils
 
         void setSecondaryProgressLabel( const QString &text );
         void setSecondaryValue( int value );
-        void setSecondaryMinimum( int min ) { setSecondaryRange( min, primaryMax() ); }
-        void setSecondaryMaximum( int max ) { setSecondaryRange( primaryMin(), max ); }
+        int incSecondaryValue() const;
+        void setSecondaryMinimum( int min ) { setSecondaryRange( min, secondaryMax() ); }
+        void setSecondaryMaximum( int max ) { setSecondaryRange( secondaryMin(), max ); }
         void setSecondaryRange( int min, int max );
         void setSecondaryFormat( const QString &format );
         void setSecondaryVisible( bool visible );

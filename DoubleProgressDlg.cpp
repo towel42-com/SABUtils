@@ -46,7 +46,7 @@ namespace NTowel42Utils
         ~CDoubleProgressDlgImpl();
 
         void updateTitleBar();
-        void updateOnSetValue( bool primValueChanged );
+        void updateOnSetValue( bool isPrimary );
 
         void setSingleProgressBarMode( bool value );
 
@@ -80,7 +80,7 @@ namespace NTowel42Utils
         std::pair< bool, QPushButton * > fCancelButton{ true, nullptr };
 
         std::unique_ptr< SBarInfo > fPrimaryBar;
-        std::unique_ptr< SBarInfo > fSecondaryBar;
+        std::shared_ptr< SBarInfo > fSecondaryBar;
 
         QShortcut *fEscapeShortcut{ nullptr };
     };
@@ -95,20 +95,43 @@ namespace NTowel42Utils
         {
         }
 
+        void setSecondaryBar( std::shared_ptr< SBarInfo > barInfo )
+        {
+            fSecondaryBar = barInfo;
+            fNeedsInit = true;
+            fEventsPerIncrement = 100;
+        }
+
+        int barMultiplier() const { return fSecondaryBar.lock() ? 100 : 1; }
         void init()
         {
-            if ( fBar )
+            if ( fBar && !fNeedsInit )
                 return;
 
-            fBar = new QProgressBar( fImpl->fDialog );
-            fBar->setRange( fRange.first, fRange.second );
+            if ( !fBar )
+                fBar = new QProgressBar( fImpl->fDialog );
+
+            fNeedsInit = false;
+            auto mult = barMultiplier();
+            fBar->setRange( mult * fRange.first, mult * fRange.second );
             fBar->setFormat( fFormat );
 
-            fLabel = new QLabel( fImpl->fDialog->tr( "Progress:" ), fImpl->fDialog );
-            fImpl->layout();
+            if ( !fLabel )
+            {
+                fLabel = new QLabel( fImpl->fDialog->tr( "Progress:" ), fImpl->fDialog );
+                fImpl->layout();
+            }
         }
 
         int value() const { return fBar ? fBar->value() : 0; }
+
+        int rawValue() const
+        {
+            if ( fSecondaryBar.lock() )
+                return fRawValue / fEventsPerIncrement;
+            return value();
+        }
+
         int min() const { return fRange.first; }
         int max() const { return fRange.second; }
         void setFormat( const QString &format )
@@ -130,15 +153,24 @@ namespace NTowel42Utils
         void setRange( int min, int max )
         {
             fRange = { min, max };
+            auto mult = barMultiplier();
             if ( fBar )
-                fBar->setRange( min, max );
+                fBar->setRange( mult * min, mult * max );
             fImpl->updateTitleBar();
+        }
+
+        int incValue( bool isPrimary )
+        {
+            setValue( rawValue() + 1, isPrimary );
+            return rawValue();
         }
 
         void setValue( int value, bool isPrimary )
         {
             init();
-            fBar->setValue( value );
+            auto mult = barMultiplier();
+            fRawValue = value * mult;
+            fBar->setValue( value * mult );
             fImpl->updateOnSetValue( isPrimary );
             fImpl->updateTitleBar();
         }
@@ -170,11 +202,38 @@ namespace NTowel42Utils
             if ( !*this )
                 return QString();
 
-            auto format = fImpl->fDialog->tr( "%1" ).arg( fBar->format().trimmed() );
+            auto format = fImpl->fDialog->tr( "%1" ).arg( fFormat.trimmed() );
 
-            format.replace( "%v", QString::number( fBar->value() / fEventsPerIncrement ) );
-            format.replace( "%m", QString::number( fBar->maximum() / fEventsPerIncrement ) );
-            format.replace( "%p", QString::number( fBar->maximum() ? ( 100 * fBar->value() / fBar->maximum() ) : 0 ) );
+            auto secBar = fSecondaryBar.lock();
+            if ( secBar )
+            {
+                auto primValue = ( fRawValue ) / fEventsPerIncrement;
+                auto max = ( fBar->maximum() ) / fEventsPerIncrement;
+                auto secValue = secBar->value();
+                auto secMax = secBar->max();
+
+                if ( secValue >= 0 )
+                {
+                    auto subPercent = static_cast< int >( ( ( secMax ) ? ( 100 * secValue / secMax ) : 0 ) / secBar->fEventsPerIncrement );
+                    auto valueStr = QObject::tr( "%1.%2" ).arg( primValue ).arg( subPercent, 2, 10, QChar( '0' ) );
+                    fBar->setValue( 100 * primValue + subPercent );
+
+                    format.replace( "%v", valueStr );
+                }
+                else
+                {
+                    format.replace( "%v", QString::number( primValue ) );
+                }
+                format.replace( "%m", QString::number( static_cast< int >( 1.0 * max * 100 / fEventsPerIncrement ) ) );
+                format.replace( "%p", QString::number( max ? ( 100*primValue / max ) : 0 ) );
+                fBar->setFormat( format );
+            }
+            else
+            {
+                format.replace( "%v", QString::number( fBar->value() / fEventsPerIncrement ) );
+                format.replace( "%m", QString::number( fBar->maximum() / fEventsPerIncrement ) );
+                format.replace( "%p", QString::number( fBar->maximum() ? ( 100 * fBar->value() / fBar->maximum() ) : 0 ) );
+            }
             return format;
         }
 
@@ -233,11 +292,19 @@ namespace NTowel42Utils
             if ( *this )
                 fLabel->setText( text );
         }
-        void setEventsPerIncrement( int value ) { fEventsPerIncrement = value; }
+        void setEventsPerIncrement( int value )
+        {
+            fEventsPerIncrement = value;
+            if ( fSecondaryBar.lock() )
+                fEventsPerIncrement *= 100;
+        }
         int eventsPerIncrement() const { return fEventsPerIncrement; }
 
     private:
+        std::weak_ptr< SBarInfo > fSecondaryBar;
+        bool fNeedsInit{ true };
         std::pair< int, int > fRange{ 0, 100 };
+        int fRawValue{ 0 };
         QProgressBar *fBar{ nullptr };
         QLabel *fLabel{ nullptr };
         QString fFormat;
@@ -299,9 +366,19 @@ namespace NTowel42Utils
         fImpl->fPrimaryBar->setValue( value, true );
     }
 
+    int CDoubleProgressDlg::incPrimaryValue() const
+    {
+        return fImpl->fPrimaryBar->incValue( true );
+    }
+
     int CDoubleProgressDlg::primaryValue() const
     {
         return fImpl->fPrimaryBar->value();
+    }
+
+    int CDoubleProgressDlg::rawPrimaryValue() const
+    {
+        return fImpl->fPrimaryBar->rawValue();
     }
 
     void CDoubleProgressDlg::setPrimaryRange( int min, int max )
@@ -338,6 +415,11 @@ namespace NTowel42Utils
     void CDoubleProgressDlg::setSecondaryValue( int value )
     {
         fImpl->fSecondaryBar->setValue( value, false );
+    }
+
+    int CDoubleProgressDlg::incSecondaryValue() const
+    {
+        return fImpl->fSecondaryBar->incValue( false );
     }
 
     int CDoubleProgressDlg::secondaryValue() const
@@ -612,6 +694,8 @@ namespace NTowel42Utils
         fPrimaryBar( new SBarInfo( this ) ),
         fSecondaryBar( new SBarInfo( this ) )
     {
+        fPrimaryBar->setSecondaryBar( fSecondaryBar );
+
         fTitle = new QLabel( title, dlg );
         fTitle->setTextFormat( Qt::TextFormat::RichText );
         fTitle->setAlignment( Qt::AlignLeft | Qt::AlignVCenter );
