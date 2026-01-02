@@ -401,6 +401,11 @@ namespace NTowel42Utils
             return false;
         }
 
+        bool isIPAddressNetworkPath( const QString &info )
+        {
+            return isIPAddressNetworkPath( QFileInfo( info ) );
+        }
+
         template< typename T >
         std::pair< T, T > correctFixedPointRemainder( T inValue, uint8_t precisionIn, uint8_t precisionOut )
         {

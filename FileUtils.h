@@ -141,6 +141,7 @@ namespace NTowel42Utils
 
         TOWEL42_UTILS_EXPORT std::optional< QList< QFileInfo > > findAllFiles( const QDir &dir, const QStringList &nameFilters, bool recursive, bool sortByName = false, QString *errorMsg = nullptr, std::function< bool( const QDir &dir ) > skipDir = {}, std::function< bool( const QFileInfo &file ) > skipFile = {} );
         TOWEL42_UTILS_EXPORT bool isIPAddressNetworkPath( const QFileInfo &info );
+        TOWEL42_UTILS_EXPORT bool isIPAddressNetworkPath( const QString &info );
 
         TOWEL42_UTILS_EXPORT std::tuple< uint16_t, uint16_t, uint16_t, uint16_t > getVersionInfoFromFile( const QString &fileName, bool &aOK );
         TOWEL42_UTILS_EXPORT std::pair< uint32_t, uint32_t > getVersionInfoFromFile32( const QString &fileName, bool &aOK );   // the 32 bit version returns 2 32 bit values, the hiword of the first is the major version, loword is the minor, hi and low of the second value is the patch
