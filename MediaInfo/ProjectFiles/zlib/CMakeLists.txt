@@ -78,6 +78,8 @@ endif()
     include_directories(${ZLIB_SOURCE_DIR})
 endif()
 
+SET( ZCONF_H ${ZLIB_SOURCE_DIR}/zconf.h )
+
 if(NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
     # If we're doing an out of source build and the user has a zconf.h
     # in their source tree...
@@ -87,13 +89,16 @@ if(NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
         message(STATUS "to 'zconf.h.included' because this file is included with zlib")
         message(STATUS "but CMake generates it automatically in the build directory.")
         file(RENAME ${ZLIB_SOURCE_DIR}/zconf.h ${ZLIB_SOURCE_DIR}/zconf.h.included)
-  endif()
+    endif()
+    if(EXISTS ${ZLIB_SOURCE_DIR}/zconf.h.included)
+        SET( ZCONF_H ${ZLIB_SOURCE_DIR}/zconf.h.included )
+    endif()
 endif()
 
 set(ZLIB_PC ${CMAKE_CURRENT_BINARY_DIR}/zlib.pc)
 configure_file( ${ZLIB_SOURCE_DIR}/zlib.pc.cmakein
 		${ZLIB_PC} @ONLY)
-configure_file(	${ZLIB_SOURCE_DIR}/zconf.h.cmakein
+configure_file(	${ZLIB_SOURCE_DIR}/zlibConfig.cmake.in
 		${CMAKE_CURRENT_BINARY_DIR}/zconf.h @ONLY)
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR})
 
@@ -104,7 +109,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR})
 
 set(ZLIB_PUBLIC_HDRS
     ${CMAKE_CURRENT_BINARY_DIR}/zconf.h
-    ${ZLIB_SOURCE_DIR}/zlib.h
+    ${ZCONF_H}
 )
 set(ZLIB_PRIVATE_HDRS
     ${ZLIB_SOURCE_DIR}/crc32.h
