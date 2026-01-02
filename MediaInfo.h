@@ -54,6 +54,8 @@ namespace NTowel42Utils
         eImage,
         eMenu
     };
+
+    QString toString( EStreamType streamType );
 }
 
 namespace std

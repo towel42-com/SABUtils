@@ -48,6 +48,10 @@ namespace NTowel42Utils
         CStreamData() {}
         CStreamData( MediaInfoDLL::MediaInfo *mediaInfo, EStreamType type, int num );
 
+        void dump();
+
+        QString streamType() const { return toString( fStreamType ); }
+        int streamNum() const { return fStreamNum; }
         void setIsDefault( bool value ) { fIsDefault = value; }
         bool isDefault() const { return fIsDefault; }
         void addData( const QString &name, const QString &value );
@@ -56,17 +60,7 @@ namespace NTowel42Utils
         QString value( const QString &key ) const;
         bool contains( const QString &key ) const;
 
-        QStringList values( const std::list< QString > &keys ) const
-        {
-            QStringList retVal;
-            for ( auto &&key : keys )
-            {
-                auto value = this->value( key );
-                retVal << std::move( value );
-            }
-
-            return retVal;
-        }
+        QStringList values( const std::list< QString > &keys ) const;
 
         size_t size() const { return fStreamData.size(); }
         std::pair< QString, QString > operator[]( size_t idx ) const { return fStreamData[ idx ]; }
@@ -138,7 +132,6 @@ namespace NTowel42Utils
         bool fIsDefault{ false };
         std::vector< std::pair< QString, QString > > fStreamData;
         std::map< QString, QString > fStreamDataMap;
-        std::map< EMediaTags, QString > fKnownTagStreamDataMap;
     };
 
     QString displayName( EMediaTags tag )
@@ -291,6 +284,29 @@ namespace NTowel42Utils
         }
     }
 
+    QString toString( EStreamType streamType )
+    {
+        switch ( streamType )
+        {
+            case EStreamType::eGeneral:
+                return "General";
+            case EStreamType::eVideo:
+                return "Video";
+            case EStreamType::eAudio:
+                return "Audio";
+            case EStreamType::eText:
+                return "Text";
+            case EStreamType::eOther:
+                return "Other";
+            case EStreamType::eImage:
+                return "Image";
+            case EStreamType::eMenu:
+                return "Menu";
+            default:
+                return "Unknown";
+        }
+    }
+
     MediaInfoDLL::stream_t getMediaInfoStreamType( EStreamType streamType )
     {
         switch ( streamType )
@@ -330,6 +346,25 @@ namespace NTowel42Utils
             auto value = QString::fromStdWString( mediaInfo->Get( whichStream, num, ii ) ).trimmed();
             addData( name, value );
         }
+    }
+
+    void CStreamData::dump()
+    {
+        qDebug().noquote().nospace() << "      Stream Type: " << toString( fStreamType );
+        qDebug().noquote().nospace() << "    Stream Number: " << fStreamNum;
+        qDebug().noquote().nospace() << "       Is Default: " << ( fIsDefault ? "Yes" : "No" );
+        qDebug().noquote().nospace() << "Stream Data Count: " << fStreamData.size();
+        qDebug().noquote().nospace() << "    Stream Data: \n"
+                                     << "================================================";
+
+        for ( std::size_t ii = 0; ii < fStreamData.size(); ++ii )
+        {
+            if ( fStreamData[ ii ].first.isEmpty() || fStreamData[ ii ].second.isEmpty() )
+                continue;
+
+            qDebug().noquote().nospace() << "    " << fStreamData[ ii ].first << ": " << fStreamData[ ii ].second;
+        }
+        qDebug().noquote().nospace() << "================================================";
     }
 
     void CStreamData::addData( const QString &name, const QString &value )
@@ -390,6 +425,18 @@ namespace NTowel42Utils
 
         auto pos = fStreamDataMap.find( key );
         return ( pos != fStreamDataMap.end() );
+    }
+
+    QStringList CStreamData::values( const std::list< QString > &keys ) const
+    {
+        QStringList retVal;
+        for ( auto &&key : keys )
+        {
+            auto value = this->value( key );
+            retVal << std::move( value );
+        }
+
+        return retVal;
     }
 
     class CMediaInfoImpl
@@ -641,19 +688,20 @@ namespace NTowel42Utils
                 if ( retVal.has_value() )
                     return retVal.value();
             }
-            if ( key == "TotalAudioBitRate" )
+            else if ( key == "TotalAudioBitRate" )
             {
                 auto retVal = getTotalAudioBitrate();
                 if ( retVal.has_value() )
                     return QString::number( retVal.value() );
             }
-            if ( key == "Duration" )
+            else if ( key == "Duration" )
             {
                 auto value = getDurationMS( whichStream, streamNum );
                 if ( value.has_value() )
                     return QString::number( value.value() );
             }
 
+            //dumpAllStreamData();
             auto stream = getStreamData( whichStream, streamNum );
             if ( !stream )
                 return {};
@@ -670,6 +718,20 @@ namespace NTowel42Utils
                 }
             }
             return value;
+        }
+
+    public:
+        void dumpAllStreamData() const
+        {
+            for ( auto &&ii : fData )
+            {
+                for ( auto &&jj : ii.second )
+                {
+                    qDebug().noquote().nospace() << jj->streamType() << " Stream: " << " Number: " << jj->streamNum();
+                    qDebug().noquote().nospace() << "================================================================";
+                    jj->dump();
+                }
+            }
         }
 
         std::optional< uint64_t > calculateBitRate( std::optional< uint64_t > numBits, std::optional< uint64_t > durationMS ) const
@@ -1144,7 +1206,14 @@ namespace NTowel42Utils
                 if ( codecType == "general" )
                     streamType = EStreamType::eGeneral;
                 else if ( codecType == "video" )
-                    streamType = EStreamType::eVideo;
+                {
+                    auto &&disposition = stream[ "disposition" ].toObject();
+                    auto isPic = disposition[ "attached_pic" ].toInt();
+                    if ( isPic != 0 )
+                        streamType = EStreamType::eImage;
+                    else
+                        streamType = EStreamType::eVideo;
+                }
                 else if ( codecType == "audio" )
                     streamType = EStreamType::eAudio;
                 else if ( codecType == "subtitle" )
@@ -1186,6 +1255,19 @@ namespace NTowel42Utils
                     }
                 }
             }
+
+            auto formatInfo = doc[ "format" ].toObject();
+            auto tags = formatInfo[ "tags" ].toObject();
+            auto dateRecorded = tags[ "DATE_RECORDED" ];
+            if ( !dateRecorded.isNull() )
+            {
+                auto streamData = this->getStreamData( EStreamType::eGeneral, -1 );
+                if ( streamData )
+                {
+                    streamData->replaceData( "DATE_RECORDED", dateRecorded.toString() );
+                }
+            }
+
             return true;
         }
 
