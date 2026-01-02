@@ -649,7 +649,7 @@ namespace NTowel42Utils
         void CFile::fetchMore()
         {
             size_t remainder = imageCount() - fLastImageLoaded;
-            int itemsToFetch = std::min( 8ULL, remainder );
+            auto itemsToFetch = std::min( 8ULL, remainder );
             if ( itemsToFetch == 0 )
                 return;
 
