@@ -22,14 +22,10 @@
 #ifndef __REVERTVALUE_H
 #define __REVERTVALUE_H
 
-#include "Towel42UtilsExport.h"
-
-#include <initializer_list>
-#include <list>
 namespace NTowel42Utils
 {
     template< typename T >
-    class TOWEL42_UTILS_EXPORT CRevertValue
+    class CRevertValue
     {
     public:
         CRevertValue( T &value ) :
