@@ -188,31 +188,31 @@ namespace NTowel42Utils
             QDialog::accept();
     }
 
-    int CGIFWriterDlg::numFramesToSave() const
+    std::size_t CGIFWriterDlg::numFramesToSave() const
     {
         return endFrame() - startFrame() + 1;
     }
 
-    void CGIFWriterDlg::setStartFrame( int startFrame )
+    void CGIFWriterDlg::setStartFrame( std::size_t startFrame )
     {
         if ( startFrame == -1 )
             return;
-        return fImpl->startFrame->setValue( startFrame );
+        return fImpl->startFrame->setValue( static_cast< int >( startFrame ) );
     }
 
-    int CGIFWriterDlg::startFrame() const
+    std::size_t CGIFWriterDlg::startFrame() const
     {
         return fImpl->startFrame->value();
     }
 
-    void CGIFWriterDlg::setEndFrame( int endFrame )
+    void CGIFWriterDlg::setEndFrame( std::size_t endFrame )
     {
         if ( endFrame == -1 )
             return;
-        return fImpl->endFrame->setValue( endFrame );
+        return fImpl->endFrame->setValue( static_cast< int >( endFrame ) );
     }
 
-    int CGIFWriterDlg::endFrame() const
+    std::size_t CGIFWriterDlg::endFrame() const
     {
         return fImpl->endFrame->value();
     }
@@ -228,16 +228,16 @@ namespace NTowel42Utils
         slotUpdateFileName();
     }
 
-    bool CGIFWriterDlg::saveToGIF( QWidget *parent, const QString &fileName, const QList< QImage > imageFiles, int startFrame, int endFrame, bool dither, bool flipImage, int loopCount, int delay, std::function< void( size_t min, size_t max ) > setRange, std::function< void( size_t curr ) > setCurr, std::function< bool() > wasCancelled )
+    bool CGIFWriterDlg::saveToGIF( QWidget *parent, const QString &fileName, const QList< QImage > imageFiles, std::size_t startFrame, std::size_t endFrame, bool dither, bool flipImage, int loopCount, int delay, std::function< void( size_t min, size_t max ) > setRange, std::function< void( size_t curr ) > setCurr, std::function< bool() > wasCancelled )
     {
         if ( imageFiles.empty() )
             return false;
 
         QList< QImage > images;
 
-        auto max = imageFiles.count();
+        std::size_t max = imageFiles.count();
         endFrame = std::max( max - 1, endFrame );
-        for ( int ii = startFrame; ii <= endFrame; ++ii )
+        for ( auto ii = startFrame; ii <= endFrame; ++ii )
         {
             auto image = imageFiles[ ii ];
             if ( image.isNull() )
@@ -258,16 +258,16 @@ namespace NTowel42Utils
         return saveToGIF( parent, fileName, imageFiles, 0, imageFiles.count() - 1, dither, flipImage, loopCount, delay, setRange, setCurr, wasCancelled );
     }
 
-    bool CGIFWriterDlg::saveToGIF( QWidget *parent, const QString &fileName, const QList< QFileInfo > imageFiles, int startFrame, int endFrame, bool dither, bool flipImage, int loopCount, int delay, std::function< void( size_t min, size_t max ) > setRange, std::function< void( size_t curr ) > setCurr, std::function< bool() > wasCancelled )
+    bool CGIFWriterDlg::saveToGIF( QWidget *parent, const QString &fileName, const QList< QFileInfo > imageFiles, std::size_t startFrame, std::size_t endFrame, bool dither, bool flipImage, int loopCount, int delay, std::function< void( size_t min, size_t max ) > setRange, std::function< void( size_t curr ) > setCurr, std::function< bool() > wasCancelled )
     {
         if ( imageFiles.empty() )
             return false;
 
         QList< QImage > images;
 
-        auto max = imageFiles.count();
+        std::size_t max = imageFiles.count();
         endFrame = std::max( max - 1, endFrame );
-        for ( int ii = startFrame; ii <= endFrame; ++ii )
+        for ( auto ii = startFrame; ii <= endFrame; ++ii )
         {
             auto fi = imageFiles[ ii ];
             auto file = QFile( fi.absoluteFilePath() );

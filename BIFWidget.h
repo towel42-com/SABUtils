@@ -94,11 +94,11 @@ namespace NTowel42Utils
             void setGIFLoopCount( int loopCount ) { fGIFLoopCount = loopCount; }
             int gifLoopCount() const { return fGIFLoopCount; }
 
-            void setGIFStartFrame( int startFrame ) { fGIFStartFrame = startFrame; }
-            int gifStartFrame() const { return fGIFStartFrame; }
+            void setGIFStartFrame( std::size_t startFrame ) { fGIFStartFrame = startFrame; }
+            std::size_t gifStartFrame() const { return fGIFStartFrame; }
 
-            void setGIFEndFrame( int endFrame ) { fGIFEndFrame = endFrame; }
-            int gifEndFrame() const { return fGIFEndFrame; }
+            void setGIFEndFrame( std::size_t endFrame ) { fGIFEndFrame = endFrame; }
+            std::size_t gifEndFrame() const { return fGIFEndFrame; }
 
             void setGIFDelay( int Delay ) { fGIFDelay = Delay; }
             int gifDelay() const { return fGIFDelay; }
@@ -198,8 +198,8 @@ namespace NTowel42Utils
             bool fGIFFlipImage{ false };
             bool fGIFDitherImage{ true };
             int fGIFLoopCount{ 0 };
-            int fGIFStartFrame{ -1 };
-            int fGIFEndFrame{ -1 };
+            std::size_t fGIFStartFrame{ static_cast< std::size_t >( -1 ) };
+            std::size_t fGIFEndFrame{ static_cast< std::size_t >( -1 ) };
             int fGIFDelay{ -1 };
 
             std::shared_ptr< QMovie > fMovie;

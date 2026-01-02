@@ -30,6 +30,7 @@
 #include <initializer_list>
 #include <optional>
 #include <memory>
+#include <cstdint>
 
 class QString;
 class QIODevice;
@@ -83,7 +84,7 @@ namespace NTowel42Utils
         static bool writeChar( uint8_t ch, QDataStream &ds );
         static bool writeInt( uint16_t value, QDataStream &ds );
         static bool writeString( const char *str, QDataStream &ds );
-        static bool writeRaw( const char *str, int len, QDataStream &ds );
+        static bool writeRaw( const char *str, std::size_t len, QDataStream &ds );
 
         static bool saveToGIF( QWidget *parent, const QString &fileName, const QList< QImage > &images, bool useNew, bool dither, bool flipImage, int loopCount, int delay, std::function< void( size_t min, size_t max ) > setRange, std::function< void( size_t curr ) > setCurr, std::function< bool() > wasCancelled );
 

@@ -52,9 +52,9 @@ namespace NTowel42Utils
 
         ~CGIFWriterDlg();
 
-        static bool saveToGIF( QWidget *parent, const QString &fileName, const QList< QFileInfo > images, int startFrame, int endFrame, bool dither, bool flipImage, int loopCount, int delay, std::function< void( size_t min, size_t max ) > setRange, std::function< void( size_t curr ) > setCurr, std::function< bool() > wasCancelled );
+        static bool saveToGIF( QWidget *parent, const QString &fileName, const QList< QFileInfo > images, std::size_t startFrame, std::size_t endFrame, bool dither, bool flipImage, int loopCount, int delay, std::function< void( size_t min, size_t max ) > setRange, std::function< void( size_t curr ) > setCurr, std::function< bool() > wasCancelled );
         static bool saveToGIF( QWidget *parent, const QString &fileName, const QList< QFileInfo > images, bool dither, bool flipImage, int loopCount, int delay, std::function< void( size_t min, size_t max ) > setRange, std::function< void( size_t curr ) > setCurr, std::function< bool() > wasCancelled );
-        static bool saveToGIF( QWidget *parent, const QString &fileName, const QList< QImage > images, int startFrame, int endFrame, bool dither, bool flipImage, int loopCount, int delay, std::function< void( size_t min, size_t max ) > setRange, std::function< void( size_t curr ) > setCurr, std::function< bool() > wasCancelled );
+        static bool saveToGIF( QWidget *parent, const QString &fileName, const QList< QImage > images, std::size_t startFrame, std::size_t endFrame, bool dither, bool flipImage, int loopCount, int delay, std::function< void( size_t min, size_t max ) > setRange, std::function< void( size_t curr ) > setCurr, std::function< bool() > wasCancelled );
         static bool saveToGIF( QWidget *parent, const QString &fileName, const QList< QImage > images, bool dither, bool flipImage, int loopCount, int delay, std::function< void( size_t min, size_t max ) > setRange, std::function< void( size_t curr ) > setCurr, std::function< bool() > wasCancelled );
 
         void setBIF( std::shared_ptr< NBIF::CFile > bifFile );
@@ -74,14 +74,14 @@ namespace NTowel42Utils
         void setLoopCount( int loopCount );
         int loopCount() const;
 
-        void setStartFrame( int startFrame );
-        int startFrame() const;
+        void setStartFrame( std::size_t startFrame );
+        std::size_t startFrame() const;
 
-        void setEndFrame( int endFrame );
-        int endFrame() const;
+        void setEndFrame( std::size_t endFrame );
+        std::size_t endFrame() const;
 
         virtual void accept() override;
-        int numFramesToSave() const;
+        std::size_t numFramesToSave() const;
 
         void setUseNew( bool useNew );
         bool useNew() const;

@@ -173,7 +173,7 @@ namespace NTowel42Utils
 
     bool CGIFWriter::writeString( const char *str, QDataStream &ds )
     {
-        uint len = qstrlen( str );
+        auto len = qstrlen( str );
         return writeRaw( str, len, ds );
     }
 
@@ -182,7 +182,7 @@ namespace NTowel42Utils
         return writeRaw( str, len, fDataStream );
     }
 
-    bool CGIFWriter::writeRaw( const char *str, int len, QDataStream &ds )
+    bool CGIFWriter::writeRaw( const char *str, std::size_t len, QDataStream &ds )
     {
         if ( !status( ds ) )
             return false;
