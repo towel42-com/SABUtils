@@ -45,9 +45,9 @@ namespace NTowel42Utils
         // useTrash -> if removing a file use the trash rather than destroy the file
         // move -> if EMoveOrCopy::eMove moves the souurce file, otherwise copies it
 
-        TOWEL42_UTILS_EXPORT bool backup( const std::string &fileName, std::string *msg = nullptr, const std::string &format = "%FN.bak", bool keepBackups = true, bool useTrash = false, EMoveOrCopy moveOrCopyFile = EMoveOrCopy::eMove );
-        TOWEL42_UTILS_EXPORT bool backup( const QFileInfo &fileInfo, QString *msg = nullptr, const QString &format = "%FN.bak", bool keepBackups = true, bool useTrash = false, EMoveOrCopy moveOrCopyFile = EMoveOrCopy::eMove );
-        TOWEL42_UTILS_EXPORT bool backup( const QString &fileName, QString *msg = nullptr, const QString &format = "%FN.bak", bool keepBackups = true, bool useTrash = false, EMoveOrCopy moveOrCopyFile = EMoveOrCopy::eMove );
+        TOWEL42_UTILS_EXPORT bool backup( const std::string &fileName, std::string *msg = nullptr, const std::string &format = "%FN.bak", bool keepBackups = true, bool useTrash = true, EMoveOrCopy moveOrCopyFile = EMoveOrCopy::eMove );
+        TOWEL42_UTILS_EXPORT bool backup( const QFileInfo &fileInfo, QString *msg = nullptr, const QString &format = "%FN.bak", bool keepBackups = true, bool useTrash = true, EMoveOrCopy moveOrCopyFile = EMoveOrCopy::eMove );
+        TOWEL42_UTILS_EXPORT bool backup( const QString &fileName, QString *msg = nullptr, const QString &format = "%FN.bak", bool keepBackups = true, bool useTrash = true, EMoveOrCopy moveOrCopyFile = EMoveOrCopy::eMove );
     }
 }
 #endif
