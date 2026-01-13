@@ -307,6 +307,24 @@ if ( QCONCURRENT_SUPPORT )
     )
 endif()
 
+IF ( ZIP_SUPPORT )
+    set(qtproject_H
+        ${qtproject_H}
+    )
+
+    SET( project_H    
+        ${project_H}
+        ZIP.h
+    )
+
+    SET( qtproject_SRCS
+        ${qtproject_SRCS}
+        ZIP.cpp
+    )
+    
+    include_directories(${Qt6CorePrivate_INCLUDE_DIRS})
+endif()
+
 SET( project_pub_DEPS
      ${MKVREADERLIB}
      ${MEDIAINFOLIB}

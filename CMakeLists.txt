@@ -46,6 +46,7 @@ SET( GIFSUPPORT OFF CACHE BOOL "Support for GIF Utilities" PARENT_SCOPE )
 SET( QAXOBJECT_SUPPORT OFF CACHE BOOL "Enable QAxObject Utilities Support" PARENT_SCOPE )
 SET( QNETWORK_SUPPORT OFF CACHE BOOL "Enable QNetwork Utilities Support" PARENT_SCOPE )
 SET( QCONCURRENT_SUPPORT OFF CACHE BOOL "Enable QConcurrent Utilities Support" PARENT_SCOPE )
+SET( ZIP_SUPPORT OFF CACHE BOOL "Enable ZIP Utilities Support" PARENT_SCOPE )
 
 SET( TOWEL42_ENABLE_TESTING OFF CACHE BOOL "Enable Testing" PARENT_SCOPE )
    
@@ -56,6 +57,7 @@ message( STATUS "Building GIFSUPPORT=${GIFSUPPORT}" )
 message( STATUS "Building QAXOBJECT_SUPPORT=${QAXOBJECT_SUPPORT}" )
 message( STATUS "Building QNETWORK_SUPPORT=${QNETWORK_SUPPORT}" )
 message( STATUS "Building QCONCURRENT_SUPPORT=${QCONCURRENT_SUPPORT}" )
+message( STATUS "Building ZIP_SUPPORT=${ZIP_SUPPORT}" )
 message( STATUS "Building TOWEL42_ENABLE_TESTING=${TOWEL42_ENABLE_TESTING}" )
 
 if ( NOT TOWEL42_UTILS_DIR )
@@ -77,7 +79,7 @@ endif()
 
 OPTION(TOWEL42_DEBUG_TRACE "Enable Debug Tracing to std::cout" OFF)
 
-find_package(Qt6 COMPONENTS Concurrent Core Widgets Xml Network REQUIRED)
+find_package(Qt6 COMPONENTS Core Concurrent Widgets Xml Network REQUIRED)
 IF(WIN32)
     find_package(Qt6 COMPONENTS AxContainer REQUIRED)
 ENDIF()
