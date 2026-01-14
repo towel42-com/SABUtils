@@ -135,6 +135,7 @@ namespace NTowel42Utils
         void setLabelText( const QString &text ) { setTitle( text ); }
 
         void reset( bool canceled );
+
     protected Q_SLOTS:
         virtual void slotForceShow();
 

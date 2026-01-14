@@ -30,8 +30,8 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QEvent>
-#include <QCoreApplication>
 #include <QProgressBar>
+#include <QApplication>
 
 namespace NTowel42Utils
 {
@@ -45,7 +45,9 @@ namespace NTowel42Utils
         CDoubleProgressDlgImpl( const QString &title, const QString &subTitle, int min, int max, CDoubleProgressDlg *dlg );
         ~CDoubleProgressDlgImpl();
 
+        int minimumWidth() const;
         void updateTitleBar();
+        void updateMinimumWidth();
         void updateOnSetValue( bool isPrimary );
 
         void setSingleProgressBarMode( bool value );
@@ -83,6 +85,8 @@ namespace NTowel42Utils
         std::shared_ptr< SBarInfo > fSecondaryBar;
 
         QShortcut *fEscapeShortcut{ nullptr };
+
+        void setStyle( QStyle *style );
     };
 
     struct SBarInfo
@@ -123,6 +127,14 @@ namespace NTowel42Utils
             }
         }
 
+        void setStyle( QStyle *style )
+        {
+            if ( fLabel && ( fLabel->style() != style ) )
+                fLabel->setStyle( style );
+            if ( fBar && ( fBar->style() != style ) )
+                fBar->setStyle( style );
+        }
+
         int value() const { return fBar ? fBar->value() : 0; }
 
         int rawValue() const
@@ -134,12 +146,19 @@ namespace NTowel42Utils
 
         int min() const { return fRange.first; }
         int max() const { return fRange.second; }
-        void setFormat( const QString &format )
+        void setFormat( const QString &format, bool updateTitle )
         {
             fFormat = format;
+            while ( !fFormat.startsWith( "    " ) )
+            {
+                fFormat = " " + fFormat;
+            }
             if ( fBar )
-                fBar->setFormat( format );
-            fImpl->updateTitleBar();
+            {
+                fBar->setFormat( fFormat );
+            }
+            if ( updateTitle )
+                fImpl->updateTitleBar();
         }
 
         QString format() const { return fFormat; }
@@ -197,7 +216,7 @@ namespace NTowel42Utils
             fImpl->updateTitleBar();
         }
 
-        QString getProgressString() const
+        QString getProgressString()
         {
             if ( !*this )
                 return QString();
@@ -214,7 +233,7 @@ namespace NTowel42Utils
 
                 if ( secBar->isVisible() && ( secValue >= 0 ) )
                 {
-                    auto subPercent = static_cast< int >( ( ( secMax ) ? ( 100 * secValue / secMax ) : 0 ) / secBar->fEventsPerIncrement );
+                    auto subPercent = static_cast< int >( ( ( secMax ) ? ( 100.0 * secValue / secMax ) : 0 ) / secBar->fEventsPerIncrement );
                     auto valueStr = QObject::tr( "%1.%2" ).arg( primValue ).arg( subPercent, 2, 10, QChar( '0' ) );
                     fBar->setValue( 100 * primValue + subPercent );
 
@@ -225,8 +244,8 @@ namespace NTowel42Utils
                     format.replace( "%v", QString::number( primValue ) );
                 }
                 format.replace( "%m", QString::number( static_cast< int >( 1.0 * max * 100 / fEventsPerIncrement ) ) );
-                format.replace( "%p", QString::number( max ? ( 100*primValue / max ) : 0 ) );
-                fBar->setFormat( format );
+                format.replace( "%p", QString::number( max ? ( 100 * primValue / max ) : 0 ) );
+                setFormat( format, false );
             }
             else
             {
@@ -267,22 +286,45 @@ namespace NTowel42Utils
             return retVal;
         }
 
-        void setGeometry( QRect totalRect )
+        int minimumWidth() const
+        {
+            if ( !*this )
+                return 0;
+
+            auto horizontalSpacing = fImpl->fDialog->style()->pixelMetric( QStyle::PM_LayoutHorizontalSpacing, nullptr, fImpl->fDialog );
+            auto tmp = fLabel->text();
+            auto labelW = fLabel->minimumSizeHint().width();
+            auto barTextWidth = fBar->fontMetrics().horizontalAdvance( fBar->format() );
+
+            // spacing in between each item, total of 4
+            // 3 items, label left, bar (50), text right;
+            // space + labelLeft + space + barTextWidth + space + bar (50) + space;
+            auto minWidth = 4 * horizontalSpacing + labelW + barTextWidth + 50;
+            return minWidth;
+        }
+
+        void setGeometry( QRect totalBarAndLabelRect )
         {
             if ( !*this )
                 return;
 
-            int horizontalSpacing = fImpl->fDialog->style()->pixelMetric( QStyle::PM_LayoutHorizontalSpacing, nullptr, fImpl->fDialog );
+            auto horizontalSpacing = fImpl->fDialog->style()->pixelMetric( QStyle::PM_LayoutHorizontalSpacing, nullptr, fImpl->fDialog );
 
-            int labelW = fLabel->minimumSizeHint().width();
-            QRect rect( totalRect );
-            rect.setWidth( labelW );
-            fLabel->setGeometry( rect );
+            auto labelW = fLabel->minimumSizeHint().width();
 
-            rect.setX( rect.x() + labelW + horizontalSpacing );
-            rect.setWidth( totalRect.width() - labelW );
+            auto labelRect = totalBarAndLabelRect;
+            labelRect.setWidth( labelW );
+            fLabel->setGeometry( labelRect );
 
-            fBar->setGeometry( rect );
+            auto barRect = totalBarAndLabelRect;
+            barRect.setX( barRect.x() + labelW + horizontalSpacing );
+            barRect.setWidth( totalBarAndLabelRect.width() - labelW );
+
+            barRect = labelRect;
+            barRect.setX( barRect.x() + labelW + horizontalSpacing );
+            barRect.setWidth( totalBarAndLabelRect.width() - labelW );
+
+            fBar->setGeometry( barRect );
         }
 
         inline void setGeometry( int x, int y, int w, int h ) { return setGeometry( QRect( x, y, w, h ) ); }
@@ -292,6 +334,15 @@ namespace NTowel42Utils
             if ( *this )
                 fLabel->setText( text );
         }
+
+        QString labelText() const
+        {
+            if ( *this )
+                return fLabel->text();
+            else
+                return {};
+        }
+
         void setEventsPerIncrement( int value )
         {
             fEventsPerIncrement = value;
@@ -399,7 +450,7 @@ namespace NTowel42Utils
 
     void CDoubleProgressDlg::setPrimaryFormat( const QString &format )
     {
-        fImpl->fPrimaryBar->setFormat( format );
+        fImpl->fPrimaryBar->setFormat( format, true );
     }
 
     QString CDoubleProgressDlg::primaryFormat() const
@@ -444,7 +495,7 @@ namespace NTowel42Utils
 
     void CDoubleProgressDlg::setSecondaryFormat( const QString &format )
     {
-        fImpl->fSecondaryBar->setFormat( format );
+        fImpl->fSecondaryBar->setFormat( format, true );
     }
 
     QString CDoubleProgressDlg::secondaryFormat() const
@@ -528,6 +579,18 @@ namespace NTowel42Utils
         fImpl->fForceTimer->stop();
         fImpl->fShownOnce = false;
         fImpl->fSetValueCalled = false;
+    }
+
+    int CDoubleProgressDlgImpl::minimumWidth() const
+    {
+        if ( !fDialog )
+            return 0;
+
+        auto primBarMinWidth = ( fPrimaryBar && fPrimaryBar->isVisible() ) ? fPrimaryBar->minimumWidth() : 0;
+        auto secBarMinWidth = ( fSecondaryBar && fSecondaryBar->isVisible() ) ? fSecondaryBar->minimumWidth() : 0;
+
+        auto maxMin = std::max( primBarMinWidth, secBarMinWidth );
+        return maxMin;
     }
 
     void CDoubleProgressDlg::setMinimumDuration( int msec )
@@ -737,6 +800,13 @@ namespace NTowel42Utils
             format += fDialog->tr( "%2" ).arg( fPrimaryBar->getProgressString() );
         }
         fDialog->setWindowTitle( format );
+        updateMinimumWidth();
+    }
+
+    void CDoubleProgressDlgImpl::updateMinimumWidth()
+    {
+        auto minWidth = minimumWidth();
+        fDialog->setMinimumWidth( minWidth );
     }
 
     void CDoubleProgressDlgImpl::updateOnSetValue( bool primValueChanged )
@@ -833,6 +903,8 @@ namespace NTowel42Utils
     {
         fSingleProgressBarMode = value;
         fSecondaryBar->setVisible( !fSingleProgressBarMode );
+        if ( !fSingleProgressBarMode )
+            fSecondaryBar->setStyle( fDialog->style() );
     }
 
     void CDoubleProgressDlgImpl::setCancelButton( QPushButton *button )
@@ -869,6 +941,12 @@ namespace NTowel42Utils
         ensureSizeIsAtLeastSizeHint();
         if ( child )
             child->show();
+    }
+
+    void CDoubleProgressDlgImpl::setStyle( QStyle *style )
+    {
+        fPrimaryBar->setStyle( style );
+        fSecondaryBar->setStyle( style );
     }
 
     void CDoubleProgressDlgImpl::layout()
@@ -922,8 +1000,8 @@ namespace NTowel42Utils
         }
 
         fTitle->setGeometry( leftMargin, additionalSpacing, fDialog->width() - leftMargin - rightMargin, labelHeight );
-        // if ( fSubTitle )
-        //     fSubTitle->setGeometry( leftMargin, additionalSpacing, fDialog->width() - leftMargin - rightMargin, labelHeight );
+
+//        qDebug() << "Dialog Size:" << fDialog->geometry();
 
         auto primGeom = QRect( leftMargin, labelHeight + verticalSpacing + additionalSpacing, fDialog->width() - leftMargin - rightMargin, primaryBarHeight.height() );
         auto secondGeom = QRect( primGeom.left(), primGeom.y() + primGeom.height() + verticalSpacing, primGeom.width(), secondaryBarHeight.height() );
