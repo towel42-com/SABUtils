@@ -89,6 +89,15 @@ namespace NTowel42Utils
         void setStyle( QStyle *style );
     };
 
+    QString formatFormat( QString format )
+    {
+        while ( !format.startsWith( "    " ) )
+        {
+            format = " " + format;
+        }
+        return format;
+    }
+
     struct SBarInfo
     {
         SBarInfo( CDoubleProgressDlgImpl *impl, int min = 0, int max = 100, const QString &format = QString( "  %v of %m (%p%)  " ) ) :
@@ -146,19 +155,14 @@ namespace NTowel42Utils
 
         int min() const { return fRange.first; }
         int max() const { return fRange.second; }
-        void setFormat( const QString &format, bool updateTitle )
+        void setFormat( const QString &format )
         {
-            fFormat = format;
-            while ( !fFormat.startsWith( "    " ) )
-            {
-                fFormat = " " + fFormat;
-            }
+            fFormat = formatFormat( format );
             if ( fBar )
             {
                 fBar->setFormat( fFormat );
             }
-            if ( updateTitle )
-                fImpl->updateTitleBar();
+            fImpl->updateTitleBar();
         }
 
         QString format() const { return fFormat; }
@@ -245,7 +249,7 @@ namespace NTowel42Utils
                 }
                 format.replace( "%m", QString::number( static_cast< int >( 1.0 * max * 100 / fEventsPerIncrement ) ) );
                 format.replace( "%p", QString::number( max ? ( 100 * primValue / max ) : 0 ) );
-                setFormat( format, false );
+                fBar->setFormat( formatFormat( format ) );
             }
             else
             {
@@ -450,7 +454,7 @@ namespace NTowel42Utils
 
     void CDoubleProgressDlg::setPrimaryFormat( const QString &format )
     {
-        fImpl->fPrimaryBar->setFormat( format, true );
+        fImpl->fPrimaryBar->setFormat( format );
     }
 
     QString CDoubleProgressDlg::primaryFormat() const
@@ -495,7 +499,7 @@ namespace NTowel42Utils
 
     void CDoubleProgressDlg::setSecondaryFormat( const QString &format )
     {
-        fImpl->fSecondaryBar->setFormat( format, true );
+        fImpl->fSecondaryBar->setFormat( format );
     }
 
     QString CDoubleProgressDlg::secondaryFormat() const
@@ -1001,7 +1005,7 @@ namespace NTowel42Utils
 
         fTitle->setGeometry( leftMargin, additionalSpacing, fDialog->width() - leftMargin - rightMargin, labelHeight );
 
-//        qDebug() << "Dialog Size:" << fDialog->geometry();
+        //        qDebug() << "Dialog Size:" << fDialog->geometry();
 
         auto primGeom = QRect( leftMargin, labelHeight + verticalSpacing + additionalSpacing, fDialog->width() - leftMargin - rightMargin, primaryBarHeight.height() );
         auto secondGeom = QRect( primGeom.left(), primGeom.y() + primGeom.height() + verticalSpacing, primGeom.width(), secondaryBarHeight.height() );
