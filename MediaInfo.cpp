@@ -103,8 +103,6 @@ namespace NTowel42Utils
                 auto lang = value( "Language" ).trimmed();
                 auto title = value( "Title" ).trimmed();
                 auto codec = value( "CodecID" ).trimmed();   // get the codec
-                if ( codec.isEmpty() || lang.isEmpty() )
-                    return false;
 
                 QStringList retVal = { title, lang, codec };
                 retVal.removeAll( QString() );
