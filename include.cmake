@@ -75,6 +75,7 @@ set(qtproject_SRCS
     MD5.cpp
     MoveToTrash.cpp
     MenuBarEx.cpp
+    ProgressBarProxyStyle.cpp
     QtDumper.cpp
     QtUtils.cpp
     RegExUtils.cpp
@@ -142,6 +143,7 @@ set(project_H
     JsonUtils.h
     MetaUtils.h
     MoveToTrash.h
+    ProgressBarProxyStyle.h
     QtDumper.h
     QtUtils.h
     RevertValue.h
