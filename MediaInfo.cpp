@@ -496,15 +496,15 @@ namespace NTowel42Utils
                     [ this ]()
                     {
                         Q_ASSERT( CMediaInfoMgr::instance() );
-                        emit CMediaInfoMgr::instance() -> sigMediaQueued( fFileName );
+                        emit CMediaInfoMgr::instance() -> mediaQueued( fFileName );
                         if ( !load() )
                         {
-                            emit CMediaInfoMgr::instance() -> sigMediaFinished( fFileName, false );
+                            emit CMediaInfoMgr::instance() -> mediaFinished( fFileName, false );
                             return;
                         }
-                        emit CMediaInfoMgr::instance() -> sigMediaFinished( fFileName, true );
+                        emit CMediaInfoMgr::instance() -> mediaFinished( fFileName, true );
                         setQueued( false );
-                        emit CMediaInfoMgr::instance() -> sigMediaLoaded( fFileName );
+                        emit CMediaInfoMgr::instance() -> mediaLoaded( fFileName );
                     } );
                 return true;
             }
@@ -1875,10 +1875,30 @@ namespace NTowel42Utils
         return CMediaInfoImpl::mediaExists( fi );
     }
 
-    void CMediaInfoMgr::slotMediaLoaded( const QString &fileName )
+    void CMediaInfoMgr::mediaLoaded( const QString &fileName )
     {
-        removeFromMediaInfoQueue( fileName );
         emit sigMediaLoaded( fileName );
+        updateStatus();
+    }
+
+    void CMediaInfoMgr::mediaQueued( const QString &fileName )
+    {
+        emit sigMediaQueued( fileName );
+        updateStatus();
+    }
+
+    void CMediaInfoMgr::mediaFinished( const QString &fileName, bool success )
+    {
+        emit sigMediaFinished( fileName, success );
+        updateStatus();
+    }
+
+    void CMediaInfoMgr::updateStatus()
+    {
+        fMutex.lock();
+        auto msg = QString( "%1 files remaining to be processed." ).arg( fQueuedMediaInfo.size() );
+        fMutex.unlock();
+        emit sigStatusMessage( msg );
     }
 
     void CMediaInfoMgr::removeFromMediaInfoQueue( const QString &fileName )

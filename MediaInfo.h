@@ -305,14 +305,19 @@ namespace NTowel42Utils
         bool isMediaCached( const QString &fileName ) const;
         bool isMediaCached( const QFileInfo &fi ) const;
 
-    public Q_SLOTS:
-        void slotMediaLoaded( const QString &fileName );
+        void mediaLoaded(const QString &fileName);
+        void mediaQueued( const QString &fileName );
+        void mediaFinished( const QString &fileName, bool success );
+
     Q_SIGNALS:
         void sigMediaLoaded( const QString &fileName );
         void sigMediaQueued( const QString &fileName );
         void sigMediaFinished( const QString &fileName, bool success );
+        void sigStatusMessage( const QString &msg );
 
     private:
+        void updateStatus();
+
         void removeFromMediaInfoQueue( const QString &fileName );
 
         QMutex fMutex;
