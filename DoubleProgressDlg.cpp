@@ -212,7 +212,7 @@ namespace NTowel42Utils
                 auto secValue = secBar->value();
                 auto secMax = secBar->max();
 
-                if ( secValue >= 0 )
+                if ( secBar->isVisible() && ( secValue >= 0 ) )
                 {
                     auto subPercent = static_cast< int >( ( ( secMax ) ? ( 100 * secValue / secMax ) : 0 ) / secBar->fEventsPerIncrement );
                     auto valueStr = QObject::tr( "%1.%2" ).arg( primValue ).arg( subPercent, 2, 10, QChar( '0' ) );
