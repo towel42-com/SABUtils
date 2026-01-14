@@ -122,9 +122,13 @@ namespace NTowel42Utils
             node.setPathOnlySearch( pathOnlySearch );
             auto pos = fCache.find( node );
             if ( pos != fCache.end() )
+            {
+                fFinishedCache.push_back( ( *pos ).second );
                 fCache.erase( pos );
+            }
         }
         std::unordered_map< SFileBasedCacheNode, T > fCache;
+        std::list< T > fFinishedCache;
     };
 }
 
