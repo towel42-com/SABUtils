@@ -45,8 +45,10 @@ namespace NTowel42Utils
             {
                 auto pb = qstyleoption_cast< const QStyleOptionProgressBar * >( opt );
                 QStyleOptionProgressBar subopt = *pb;
-                drawControl( CE_ProgressBarGroove, pb, painter, widget );
-                drawControl( CE_ProgressBarContents, pb, painter, widget );
+                auto fullRect = subopt.rect;
+                subopt.rect.setWidth( subopt.rect.width() - 6 );
+                drawControl( CE_ProgressBarGroove, &subopt, painter, widget );
+                drawControl( CE_ProgressBarContents, &subopt, painter, widget );
                 if ( pb->textVisible )
                 {
                     drawControl( CE_ProgressBarLabel, pb, painter, widget );

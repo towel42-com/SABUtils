@@ -89,15 +89,6 @@ namespace NTowel42Utils
         void setStyle( QStyle *style );
     };
 
-    QString formatFormat( QString format )
-    {
-        while ( !format.startsWith( "    " ) )
-        {
-            format = " " + format;
-        }
-        return format;
-    }
-
     struct SBarInfo
     {
         SBarInfo( CDoubleProgressDlgImpl *impl, int min = 0, int max = 100, const QString &format = QString( "  %v of %m (%p%)  " ) ) :
@@ -157,7 +148,7 @@ namespace NTowel42Utils
         int max() const { return fRange.second; }
         void setFormat( const QString &format )
         {
-            fFormat = formatFormat( format );
+            fFormat = format;
             if ( fBar )
             {
                 fBar->setFormat( fFormat );
@@ -249,7 +240,7 @@ namespace NTowel42Utils
                 }
                 format.replace( "%m", QString::number( static_cast< int >( 1.0 * max * 100 / fEventsPerIncrement ) ) );
                 format.replace( "%p", QString::number( max ? ( 100 * primValue / max ) : 0 ) );
-                fBar->setFormat( formatFormat( format ) );
+                fBar->setFormat( format );
             }
             else
             {
