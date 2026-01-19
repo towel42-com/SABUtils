@@ -1,0 +1,15 @@
+resources/add.png filter=lfs diff=lfs merge=lfs -text
+resources/edit.png filter=lfs diff=lfs merge=lfs -text
+resources/eye.png filter=lfs diff=lfs merge=lfs -text
+resources/ok.png filter=lfs diff=lfs merge=lfs -text
+resources/open.png filter=lfs diff=lfs merge=lfs -text
+resources/run.png filter=lfs diff=lfs merge=lfs -text
+resources/search.png filter=lfs diff=lfs merge=lfs -text
+resources/unknownStatus.png filter=lfs diff=lfs merge=lfs -text
+resources/delete.png filter=lfs diff=lfs merge=lfs -text
+resources/error.png filter=lfs diff=lfs merge=lfs -text
+resources/load.png filter=lfs diff=lfs merge=lfs -text
+resources/resolution.png filter=lfs diff=lfs merge=lfs -text
+QtDebugTools/OnShoreCSDbgEE filter=lfs diff=lfs merge=lfs -text
+QtDebugTools/OnShoreCSDbgEE.dll filter=lfs diff=lfs merge=lfs -text
+QtDebugTools/OnShoreCSDbgEE.zip filter=lfs diff=lfs merge=lfs -text
