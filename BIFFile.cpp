@@ -595,8 +595,6 @@ namespace NTowel42Utils
                     *numInserted = static_cast< int >( frameNum - fLastImageLoaded ) + 1;
             }
 
-            if ( frameNum >= ( fBIFFrames.size() - 1 ) )
-                int xyz = 0;
             if ( loadImageToFrame )
             {
                 while ( fLastImageLoaded <= frameNum )
