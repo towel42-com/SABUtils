@@ -374,7 +374,7 @@ namespace NTowel42Utils
 
                 if ( ( retVal.length() >= 2 ) && ( firstChar == *currQuote ) && ( lastChar == *currQuote ) )
                     return true;
-                if ( ( retVal.length() >= 3 ) && ( firstChar == *currQuote ) && ( ( lastChar == "\\" ) || ( lastChar == "/" ) ) && ( secondToLastChar == *currQuote ) )
+                if ( ( retVal.length() >= 3 ) && ( firstChar == *currQuote ) && ( ( lastChar == QStringLiteral( "\\" ) ) || ( lastChar == QStringLiteral( "/" ) ) ) && ( secondToLastChar == *currQuote ) )
                     return true;
             }
             return false;
@@ -1984,11 +1984,11 @@ namespace NTowel42Utils
             }
             if ( regExp )
             {
-                QString origHSC = QString( "%1" ).arg( hsc );
-                QString realHSC = QRegularExpression::escape( QString( "%1" ).arg( hsc ) );
+                QString origHSC = QString( "%1" ).arg( QString::fromLatin1( hsc ) );
+                QString realHSC = QRegularExpression::escape( QString( "%1" ).arg( QString::fromLatin1( hsc ) ) );
                 if ( realHSC != origHSC )
                 {
-                    realHSC = QRegularExpression::escape( QString( "\\%1" ).arg( hsc ) );
+                    realHSC = QRegularExpression::escape( QString( "\\%1" ).arg( QString::fromLatin1( hsc ) ) );
                 }
                 retVal = splitStringRegEx( pattern, realHSC.toStdString() );
 
@@ -1999,7 +1999,7 @@ namespace NTowel42Utils
                     {
                         if ( msg )
                         {
-                            *msg = QString( "Invalid sub-regular expression '%1' post splitting on the hierarchy separator: '%2' - %3(%4)" ).arg( QString::fromStdString( ii ) ).arg( hsc ).arg( regExp.errorString() ).arg( regExp.patternErrorOffset() ).toStdString();
+                            *msg = QString( "Invalid sub-regular expression '%1' post splitting on the hierarchy separator: '%2' - %3(%4)" ).arg( QString::fromStdString( ii ) ).arg( QString::fromLatin1( hsc ) ).arg( regExp.errorString() ).arg( regExp.patternErrorOffset() ).toStdString();
                             aOK = false;
                             return {};
                         }
@@ -2650,7 +2650,7 @@ namespace NTowel42Utils
             if ( email.isEmpty() )
                 return false;
 
-            auto regExpStr = R"((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))";
+            auto regExpStr = QStringLiteral( R"((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))" );
             QRegularExpression regExp( regExpStr );
             Q_ASSERT( regExp.isValid() );
             auto match = regExp.match( email );
@@ -2913,7 +2913,7 @@ namespace NTowel42Utils
 
         int romanToDecimal( QString string, bool &aOK )
         {
-            auto regExStr = "[^MDCLXVI\\s]";
+            auto regExStr = QStringLiteral( R"__([^MDCLXVI\s])__" );
             auto regEx = QRegularExpression( regExStr, QRegularExpression::CaseInsensitiveOption );
             if ( regEx.match( string ).hasMatch() )
             {
@@ -2956,7 +2956,7 @@ namespace NTowel42Utils
 
         bool isRomanNumeral( const QString &string, int *value )
         {
-            auto regExStr = "^(?=[MDCLXVI])M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})$";
+            auto regExStr = QStringLiteral( "^(?=[MDCLXVI])M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})$" );
             auto regEx = QRegularExpression( regExStr, QRegularExpression::CaseInsensitiveOption );
             if ( !regEx.match( string ).hasMatch() )
                 return false;
@@ -3018,7 +3018,7 @@ namespace NTowel42Utils
                         ii = ii.toUpper();
                     else
                         ii = ii.toLower();
-                    prevIsDashOrFirstChar = ii == "-";
+                    prevIsDashOrFirstChar = ii == QStringLiteral( "-" );
                 }
             }
             return retVal;

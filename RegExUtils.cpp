@@ -122,7 +122,7 @@ namespace NTowel42Utils
 
         QString encodeRegEx( const char *inString )
         {
-            return encodeRegEx( QString( inString ) );
+            return encodeRegEx( QString::fromLatin1( inString ) );
         }
 
         std::string encodeRegEx( const std::string &inString )

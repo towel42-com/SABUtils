@@ -336,7 +336,7 @@ namespace NTowel42Utils
 
     bool isValidURL( const QString &url, int *start, int *length )
     {
-        auto regExStr = "((([a-z]+):\\/\\/)|(www\\.))(\\.?[a-z0-9\\-ßאֱגדףפ‏üתנזוןחטץצÿ‎עהךכלםרשמûסי]{2,256})+(\\.[a-z]+)";
+        auto regExStr = QStringLiteral( R"__(((([a-z]+):\/\/)|(www\.))(\.?[a-z0-9\-ßאֱגדףפ‏üתנזוןחטץצÿ‎עהךכלםרשמûסי]{2,256})+(\.[a-z]+))__" );
         auto regEx = QRegularExpression( regExStr, QRegularExpression::CaseInsensitiveOption );
         auto match = regEx.match( url );
         if ( !match.hasMatch() )
@@ -379,7 +379,7 @@ namespace NTowel42Utils
         auto regExpStr2 = R"((^|[^A-Z])E(?<garbage1>PISODE)?(?<startEpisode>\d{1,4})(?<sep>\-)?E(?<garbage2>PISODE)?(?<endEpisode>\d{1,4}))";
 
         auto firstNum = R"((?:^|[^A-Z0-9a-z\-]))" + prefixRegEx + R"((?<%1>\d{1,4}))";   // new word/start of line followed by prefix + first num
-        auto secondNum = R"((?<sep>[\-\:]))" + prefixRegEx + R"((?<endNum>\d{1,4}))";   // seperator + prefix + endNum
+        auto secondNum = R"((?<sep>[\-\:])?)" + prefixRegEx + R"((?<endNum>\d{1,4}))";   // seperator + prefix + endNum
 
         auto regExStr = "(?:" + firstNum.arg( "startNum" ) + secondNum + ")|(?:" + firstNum.arg( "num" ) + prefixRegEx + ")";
 

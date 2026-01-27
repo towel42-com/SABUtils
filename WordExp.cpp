@@ -124,7 +124,7 @@ namespace NTowel42Utils
         {
             char szHostName[ 128 ] = "";
             if ( gethostname( szHostName, sizeof( szHostName ) - 1 ) == 0 )
-                retVal = szHostName;
+                retVal = QString::fromLatin1( szHostName );
 
             WSACleanup();
         }
@@ -282,7 +282,7 @@ namespace NTowel42Utils
         if ( envVal.isEmpty() )
             return envVar;
         else
-            return envVal;
+            return QString::fromLatin1( envVal );
     }
 
     QString replaceEnvVars( const QString &curr )

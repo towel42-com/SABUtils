@@ -86,7 +86,7 @@ namespace NTowel42Utils
                 auto pathName = getPathNameForItem( psiItem );
                 if ( !pathName.isEmpty() )
                 {
-                    pathName = QString( "%1 '%2'" ).arg( QFileInfo( pathName ).isFile() ? "file" : "directory" ).arg( pathName );
+                    pathName = QString( "%1 '%2'" ).arg( QFileInfo( pathName ).isFile() ? QStringLiteral( "file" ) : QStringLiteral( "directory" ) ).arg( pathName );
                 }
                 auto realMsg = msg;
                 realMsg.replace( "<SOURCE>", pathName );
@@ -202,12 +202,12 @@ namespace NTowel42Utils
 
         IFACEMETHODIMP CFileOpProgSinkApp::PreDeleteItem( DWORD dwFlags, IShellItem *psiItem )
         {
-            return startStatus( QString( "%1 <SOURCE>." ).arg( ( dwFlags & TSF_DELETE_RECYCLE_IF_POSSIBLE ) ? "Recycling" : "Deleting" ), psiItem );
+            return startStatus( QString( "%1 <SOURCE>." ).arg( ( dwFlags & TSF_DELETE_RECYCLE_IF_POSSIBLE ) ? QStringLiteral( "Recycling" ) : QStringLiteral( "Deleting" ) ), psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PostDeleteItem( DWORD dwFlags, IShellItem *psiItem, HRESULT hrDelete, IShellItem * /*psiNewlyCreated*/ )
         {
-            return returnFinishedStatus( hrDelete, QString( "%1 <SOURCE>." ).arg( ( dwFlags & TSF_DELETE_RECYCLE_IF_POSSIBLE ) ? "Recycled" : "Deleted" ), psiItem );
+            return returnFinishedStatus( hrDelete, QString( "%1 <SOURCE>." ).arg( ( dwFlags & TSF_DELETE_RECYCLE_IF_POSSIBLE ) ? QStringLiteral( "Recycled" ) : QStringLiteral( "Deleted" ) ), psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PreNewItem( DWORD /*dwFlags*/, IShellItem *psiDestinationFolder, PCWSTR pszNewName )

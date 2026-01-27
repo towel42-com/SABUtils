@@ -670,83 +670,83 @@ namespace
         qputenv( "FOOBAR", "ENVVAR" );
         std::set< QString > envVars;
         EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "$FOOBAR", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo$FOOBAR/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
 
         EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "\\$FOOBAR", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo\\$FOOBAR/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
 
         EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "\\$(FOOBAR)", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo\\$\\(FOOBAR\\)/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "\\$\\(FOOBAR\\)", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo\\$\\(FOOBAR\\)/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
 
         EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "${FOOBAR}", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo$\\{FOOBAR\\}/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "$\\{FOOBAR\\}", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo$\\{FOOBAR\\}/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
 
         EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "%FOOBAR%", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo%FOOBAR%/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
 
         EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "\\%FOOBAR\\%", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo\\%FOOBAR\\%/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
 
         EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "\\%(FOOBAR)\\%", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo\\%\\(FOOBAR\\)\\%/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "\\%\\(FOOBAR\\)\\%", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo\\%\\(FOOBAR\\)\\%/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
 
         EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "%{FOOBAR}%", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo%\\{FOOBAR\\}%/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "ENVVAR", NTowel42Utils::NFileUtils::expandEnvVars( "%\\{FOOBAR\\}%", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
         EXPECT_EQ( "fooENVVAR/bar", NTowel42Utils::NFileUtils::expandEnvVars( "foo%\\{FOOBAR\\}%/bar", &envVars ) );
-        EXPECT_EQ( 1, envVars.size() );
+        ASSERT_EQ( 1, envVars.size() );
         EXPECT_EQ( "FOOBAR", *envVars.begin() );
     }
 
@@ -792,20 +792,20 @@ namespace
 
     TEST( TestUtils, TestTimeString )
     {
-        EXPECT_EQ( QString( "00:00:00:01.001 (1 seconds)" ), NTowel42Utils::CTimeString( 1001 ).toString( false ) );
-        EXPECT_EQ( QString( "01.001 (1 seconds)" ), NTowel42Utils::CTimeString( 1001 ).toString() );
+        EXPECT_EQ( QString( "0:00:00:01.001 (1 seconds)" ), NTowel42Utils::CTimeString( 1001 ).toString( false ) );
+        EXPECT_EQ( QString( "1.001 (1 seconds)" ), NTowel42Utils::CTimeString( 1001 ).toString() );
 
-        EXPECT_EQ( QString( "00:00:00:00.001001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 1001 ) ).toString( false ) );
-        EXPECT_EQ( QString( "00.001001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 1001 ) ).toString() );
+        EXPECT_EQ( QString( "0:00:00:00.001001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 1001 ) ).toString( false ) );
+        EXPECT_EQ( QString( "0.001001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 1001 ) ).toString() );
 
-        EXPECT_EQ( QString( "00:00:00:00.000001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::nanoseconds( 1001 ) ).toString( false ) );
-        EXPECT_EQ( QString( "00.000001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::nanoseconds( 1001 ) ).toString() );
+        EXPECT_EQ( QString( "0:00:00:00.000001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::nanoseconds( 1001 ) ).toString( false ) );
+        EXPECT_EQ( QString( "0.000001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::nanoseconds( 1001 ) ).toString() );
 
         EXPECT_EQ( QString( "639815:08:56:40.001001 (55,280,048,200 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 55280048200001001 ) ).toString( false ) );
         EXPECT_EQ( QString( "639815:08:56:40.001001 (55,280,048,200 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 55280048200001001 ) ).toString() );
 
-        EXPECT_EQ( QString( "00:00:09:12.800482 (552 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString( false ) );
-        EXPECT_EQ( QString( "09:12.800482 (552 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString() );
+        EXPECT_EQ( QString( "0:00:09:12.800482 (552 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString( false ) );
+        EXPECT_EQ( QString( "9:12.800482 (552 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString() );
     }
 
     TEST( TestUtils, Help )
@@ -973,10 +973,10 @@ namespace
     TEST( TestRegExReplace, TestRegExReplace_DollarSign_Follows )
     {
         auto precedes = false;
-        auto currencySeparator = R"__(\.)__";
-        auto symbol = QString( "$" );
+        auto currencySeparator = QStringLiteral( R"__(\.)__" );
+        auto symbol = QStringLiteral( "$" );
         if ( symbol == "$" )
-            symbol = QString( "$$" );
+            symbol = QStringLiteral( "$$" );
 
         QString pattern;
         QString replacement;
@@ -1009,7 +1009,7 @@ namespace
     TEST( TestRegExReplace, TestRegExReplace_EuroSign_Follows )
     {
         auto precedes = false;
-        auto currencySeparator = R"__(\.)__";
+        auto currencySeparator = QStringLiteral( R"__(\.)__" );
         auto symbol = QStringLiteral( "€" );
         if ( symbol == "$" )
             symbol = QString( "$$" );
@@ -1026,13 +1026,13 @@ namespace
 
     TEST( TestRegExReplace, TestRegExReplace_EntireMatch )
     {
-        auto pattern = R"(^(\w+\s?)+$)";
-        auto replacement = R"__("$&<<==>>$&")__";
+        auto pattern = QStringLiteral( R"(^(\w+\s?)+$)" );
+        auto replacement = QStringLiteral( R"__("$&<<==>>$&")__" );
 
-        EXPECT_EQ( R"__("A Tale of Two Cities<<==>>A Tale of Two Cities")__", NTowel42Utils::NStringUtils::regExReplace( "A Tale of Two Cities", pattern, replacement ) );
-        EXPECT_EQ( R"__("The Hound of the Baskervilles<<==>>The Hound of the Baskervilles")__", NTowel42Utils::NStringUtils::regExReplace( "The Hound of the Baskervilles", pattern, replacement ) );
-        EXPECT_EQ( R"__("The Protestant Ethic and the Spirit of Capitalism<<==>>The Protestant Ethic and the Spirit of Capitalism")__", NTowel42Utils::NStringUtils::regExReplace( "The Protestant Ethic and the Spirit of Capitalism", pattern, replacement ) );
-        EXPECT_EQ( R"__("The Origin of Species<<==>>The Origin of Species")__", NTowel42Utils::NStringUtils::regExReplace( "The Origin of Species", pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( R"__("A Tale of Two Cities<<==>>A Tale of Two Cities")__" ), NTowel42Utils::NStringUtils::regExReplace( "A Tale of Two Cities", pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( R"__("The Hound of the Baskervilles<<==>>The Hound of the Baskervilles")__" ), NTowel42Utils::NStringUtils::regExReplace( "The Hound of the Baskervilles", pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( R"__("The Protestant Ethic and the Spirit of Capitalism<<==>>The Protestant Ethic and the Spirit of Capitalism")__" ), NTowel42Utils::NStringUtils::regExReplace( "The Protestant Ethic and the Spirit of Capitalism", pattern, replacement ) );
+        EXPECT_EQ( QStringLiteral( R"__("The Origin of Species<<==>>The Origin of Species")__" ), NTowel42Utils::NStringUtils::regExReplace( "The Origin of Species", pattern, replacement ) );
     }
 }
 

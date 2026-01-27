@@ -287,17 +287,12 @@ namespace NTowel42Utils
         QString expandEnvVars( const QString &fileName, std::set< QString > *envVars )
         {
             static QStringList regExStrings = {
-                "\\\\?\\$\\\\?\\((?<regex>\\w*)\\\\?\\)"   // handles $(foo) and \$\(foo\)
-                ,
-                "\\\\?\\$\\\\?\\{(?<regex>\\w*)\\\\?\\}"   // handles ${foo} and \$\{foo\}
-                ,
-                "\\\\?\\%\\\\?\\((?<regex>\\w*)\\\\?\\)\\\\?\\%"   // handles %(foo)% and \%\(foo\)\%
-                ,
-                "\\\\?\\%\\\\?\\{(?<regex>\\w*)\\\\?\\}\\\\?\\%"   // handles %foo% and \%\{foo\}\%
-                ,
-                "\\\\?\\$(?<regex>\\w*)"   // handles $foo and \$foo
-                ,
-                "\\\\?\\%(?<regex>\\w*)\\\\?\\%"   // handles %foo% and \%foo\%
+                QStringLiteral( R"__(\\?\$\\?\((?<regex>\w*)\\?\))__" ),   // handles $(foo) and \$\(foo\)
+                QStringLiteral( R"__(\\?\$\\?\{(?<regex>\w*)\\?\})__" ),   // handles ${foo} and \$\{foo\}
+                QStringLiteral( R"__(\\?\%\\?\((?<regex>\w*)\\?\)\\?\%)__" ),   // handles %(foo)% and \%\(foo\)\%
+                QStringLiteral( R"__(\\?\%\\?\{(?<regex>\w*)\\?\}\\?\%)__" ),   // handles %foo% and \%\{foo\}\%
+                QStringLiteral( R"__(\\?\$(?<regex>\w*))__" ),   // handles $foo and \$foo
+                QStringLiteral( R"__(\\?\%(?<regex>\w*)\\?\%)__" )   // handles %foo% and \%foo\%
             };
 
             if ( envVars )
@@ -319,7 +314,7 @@ namespace NTowel42Utils
                         envVars->insert( envVar );
                     auto envVarValue = qgetenv( qPrintable( envVar ) );
                     auto remaining = fileName.mid( lPos + match.capturedLength() );
-                    return prefix + envVarValue + expandEnvVars( remaining );
+                    return prefix + QString::fromLatin1( envVarValue ) + expandEnvVars( remaining );
                 }
             }
 
@@ -331,7 +326,7 @@ namespace NTowel42Utils
             auto lRetVal = xFileName;
             for ( auto &&ii : xEnvVars )
             {
-                auto lValue = qgetenv( qPrintable( ii ) );
+                auto lValue = QString::fromLatin1( qgetenv( qPrintable( ii ) ) );
 
                 auto pos = lRetVal.indexOf( lValue );
                 if ( pos != -1 )
@@ -393,7 +388,7 @@ namespace NTowel42Utils
             if ( !path.startsWith( "//" ) && !path.startsWith( R"__(\\)__" ) )
                 return false;
 
-            auto block = "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+            auto block = QStringLiteral( "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" );
             auto regExStr = QString( R"((//|\\\\)%1.%1.%1.%1(/|\\))" ).arg( block );
             auto match = QRegularExpression( regExStr ).match( path );
             if ( match.hasMatch() && match.capturedStart() == 0 )
@@ -441,7 +436,7 @@ namespace NTowel42Utils
             return std::make_pair( value, overflow );
         }
 
-        QString byteSizeString( uint64_t size, bool prettyPrint, bool byteSize, uint8_t precision, bool spaceBeforeSuffix, const QString &typeNameSuffix )
+        QString byteSizeString( uint64_t size, bool prettyPrint, bool use1024ForKSize, uint8_t precision, bool spaceBeforeSuffix, const QString &typeNameSuffix )
         {
             if ( !prettyPrint )
             {
@@ -451,7 +446,7 @@ namespace NTowel42Utils
 
             auto suffixes = std::vector< QString >( { "", "k", "M", "G", "T", "P", "E", "Z", "Y" } );
 
-            auto base = static_cast< uint64_t >( byteSize ? 1024 : 1000 );
+            auto base = static_cast< uint64_t >( use1024ForKSize ? 1024 : 1000 );
             auto suffixPos = 0U;
             while ( ( size >= ( base * base ) ) && ( suffixPos < suffixes.size() ) )
             {
@@ -475,7 +470,11 @@ namespace NTowel42Utils
             size += overflow;
 
             auto suffix = suffixes[ suffixPos ];
-            auto realSuffix = QString( "%1%2%3%4" ).arg( spaceBeforeSuffix ? " " : "" ).arg( suffix ).arg( ( !byteSize && typeNameSuffix == "B" ) ? "i" : "" ).arg( typeNameSuffix );
+            auto realSuffix = QString( "%1%2%3%4" ).arg( spaceBeforeSuffix ? QStringLiteral( " " ) : QStringLiteral( "" ) ).arg( suffix ).arg( ( use1024ForKSize && typeNameSuffix == "B" ) ? QStringLiteral( "i" ) : QStringLiteral( "" ) ).arg( typeNameSuffix );
+            if ( typeNameSuffix.isUpper() )
+                realSuffix = realSuffix.toUpper();
+            if ( ( realSuffix.length() == 3 ) && realSuffix[ 1 ] == 'I' )
+                realSuffix[ 1 ] = realSuffix[ 1 ].toLower();
 
             QLocale locale;
             auto retVal = QString( "%1%2%3" ).arg( locale.toString( static_cast< qulonglong >( size ) ) ).arg( remainder != 0 ? QString( ".%1" ).arg( remainder ) : QString() ).arg( realSuffix );
@@ -1379,7 +1378,7 @@ namespace NTowel42Utils
                 return {};
             }
 
-            if ( ( parts[ 0 ].length() == 2 ) && ( parts[ 0 ][ 1 ] == ":" ) )
+            if ( ( parts[ 0 ].length() == 2 ) && ( parts[ 0 ][ 1 ] == QStringLiteral( ":" ) ) )
             {
                 parts[ 0 ] = parts[ 0 ].toUpper() + QDir::separator();
                 if ( parts.length() == 1 )
