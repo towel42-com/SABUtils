@@ -83,7 +83,7 @@ namespace NTowel42Utils
             return getMd5( QFileInfo( data ) );
 
         QByteArray inData = data.toLatin1();
-        return getMd5( inData, false );
+        return getMd5( inData );
     }
 
     std::string getMd5( const std::string &data, bool isFileName )

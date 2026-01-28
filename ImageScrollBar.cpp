@@ -242,7 +242,7 @@ namespace NTowel42Utils
                 QBuffer buffer( &data );
                 fCurrentImage.save( &buffer, "PNG" );
 
-                auto html = QString( "<img src='data:image/png;base64, %1'><center>%2</center>" ).arg( QString( data.toBase64() ) ).arg( message() );
+                auto html = QString( "<img src='data:image/png;base64, %1'><center>%2</center>" ).arg( QString::fromUtf8( data.toBase64() ) ).arg( message() );
                 QToolTip::showText( QCursor::pos(), html, this );
             }
         }

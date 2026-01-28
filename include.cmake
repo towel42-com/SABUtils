@@ -54,10 +54,6 @@ set(project_SRCS
 set(qtproject_CPPMOC_SRCS
 )
 
-set(qtproject_H
-    ${Q_OS_HEADERS}
-)
-
 set(project_H
     CantorHash.h
     EnumUtils.h
@@ -76,6 +72,48 @@ set(project_H
 set(qtproject_UIS
 )
 
+
+if ( NOT TOWEL42_QCORE_SUPPORT )
+    if ( TOWEL42_QWIDGET_SUPPORT )
+        MESSAGE( WARNING "QWidget Support requires QtCore Support" )
+        set( TOWEL42_QCORE_SUPPORT true )
+    endif()
+    
+    if ( TOWEL42_BIFSUPPORT )
+        MESSAGE( WARNING "BIF Support requires QtCore Support" )
+        set( TOWEL42_QCORE_SUPPORT true )
+    endif()
+
+    if ( TOWEL42_QNETWORK_SUPPORT )
+        MESSAGE( WARNING "QNetwork Support requires QtCore Support" )
+        set( TOWEL42_QCORE_SUPPORT true )
+    endif()
+
+    if ( TOWEL42_MKVUTILS )
+        MESSAGE( WARNING "MKVUtils Support requires QtCore Support" )
+        set( TOWEL42_QCORE_SUPPORT true )
+    endif()
+    
+    if ( TOWEL42_GIFSUPPORT )
+        MESSAGE( WARNING "GIF Support requires QtCore Support" )
+        set( TOWEL42_QCORE_SUPPORT true )
+    endif()
+
+    if ( TOWEL42_QAXOBJECT_SUPPORT )
+        MESSAGE( WARNING "QAXObject Support requires QtCore Support" )
+        set( TOWEL42_QCORE_SUPPORT true )
+    endif()
+    
+        if ( TOWEL42_ZIP_SUPPORT )
+        MESSAGE( WARNING "ZIP Support requires QtCore Support" )
+        set( TOWEL42_QCORE_SUPPORT true )
+    endif()
+
+    if ( TOWEL42_QCONCURRENT_SUPPORT )
+        MESSAGE( WARNING "QConcurrent Support requires QtCore Support" )
+        set( TOWEL42_QCORE_SUPPORT true )
+    endif()
+endif()
 
 if ( TOWEL42_QCORE_SUPPORT )
     IF(WIN32)
@@ -119,14 +157,13 @@ if ( TOWEL42_QCORE_SUPPORT )
 
     set(qtproject_H
         ${qtproject_H}
-        ${QT_OS_HEADERS}
         BackgroundFileCheck.h
         MD5.h
         UtilityModels.h
-        StayAwake.h   
     )
     
     set(project_H
+        ${QT_OS_HEADERS}
         ${project_H}
         FFMpegFormats.h
         FileUtils.h
@@ -140,6 +177,7 @@ if ( TOWEL42_QCORE_SUPPORT )
         MetaUtils.h
         Towel42UtilsResources.h
         WordExp.h
+        StayAwake.h   
     )
 
     SET( project_pub_DEPS
@@ -157,10 +195,6 @@ if ( TOWEL42_QCORE_SUPPORT )
 endif()
 
 if ( TOWEL42_QWIDGET_SUPPORT )
-    if ( NOT TOWEL42_QCORE_SUPPORT )
-        MESSAGE( FATAL_ERROR "QWidget Support requires QtCore Support" )
-    endif()
-
     set(qtproject_SRCS
         ${qtproject_SRCS}
         AutoFetch.cpp
@@ -189,7 +223,6 @@ if ( TOWEL42_QWIDGET_SUPPORT )
     )
     set(qtproject_H
         ${qtproject_H}
-        AutoFetch.h
         AutoWaitCursor.h
         ButtonEnabler.h
         CollapsableGroupBox.h
@@ -197,7 +230,6 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         DelayComboBox.h
         DelaySpinBox.h
         DoubleProgressDlg.h
-        FileBasedCache.h
         ImageScrollBar.h
         HyperLinkLineEdit.h
         LineEditWithSuffix.h
@@ -207,15 +239,17 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         SpinBox64.h
         SpinBox64U.h
         UtilityViews.h
+        WidgetEnabler.h
     )
     set(project_H
         ${project_H}
+        FileBasedCache.h
+        AutoFetch.h
         BackupFile.h
         ProgressBarProxyStyle.h
         QtDumper.h
         SpinBox64_StepType.h
         uiUtils.h
-        WidgetEnabler.h
         WidgetChanged.h
     )
     set(qtproject_UIS
@@ -231,9 +265,6 @@ if ( TOWEL42_QWIDGET_SUPPORT )
 endif()
 
 if ( TOWEL42_BIFSUPPORT )
-    if ( NOT TOWEL42_QCORE_SUPPORT )
-        MESSAGE( FATAL_ERROR "BIF Support requires QtCore Support" )
-    endif()
     if ( NOT TOWEL42_QWIDGET_SUPPORT  )
         MESSAGE( FATAL_ERROR "BIF Support requires QWidget Support" )
     endif()
@@ -272,9 +303,6 @@ endif()
 
 
 if ( TOWEL42_GIFSUPPORT )
-    if ( NOT TOWEL42_QCORE_SUPPORT )
-        MESSAGE( FATAL_ERROR "GIF Support requires QtCore Support" )
-    endif()
     if ( NOT TOWEL42_QWIDGET_SUPPORT  )
         MESSAGE( FATAL_ERROR "GIF Support requires QWidget Support" )
     endif()
@@ -299,10 +327,6 @@ if ( TOWEL42_GIFSUPPORT )
 endif()
 
 if ( TOWEL42_MKVUTILS )
-    if ( NOT TOWEL42_QCORE_SUPPORT )
-        MESSAGE( FATAL_ERROR "MKVUtils Support requires QtCore Support" )
-    endif()
-
     set(qtproject_SRCS
         ${qtproject_SRCS}
         MKVUtils.cpp
@@ -332,9 +356,6 @@ if ( TOWEL42_MKVUTILS )
 endif()
 
 if ( TOWEL42_QAXOBJECT_SUPPORT )
-    if ( NOT TOWEL42_QCORE_SUPPORT )
-        MESSAGE( FATAL_ERROR "QAXObject Support requires QtCore Support" )
-    endif()
     set(qtproject_SRCS
         ${qtproject_SRCS}
         VSInstallUtils.cpp
@@ -353,9 +374,6 @@ if ( TOWEL42_QAXOBJECT_SUPPORT )
 endif()
 
 if ( TOWEL42_QNETWORK_SUPPORT )
-    if ( NOT TOWEL42_QCORE_SUPPORT )
-        MESSAGE( FATAL_ERROR "QNetwork Support requires QtCore Support" )
-    endif()
     set(qtproject_SRCS
         ${qtproject_SRCS}
         DownloadFile.cpp
@@ -378,9 +396,6 @@ if ( TOWEL42_QNETWORK_SUPPORT )
 endif()
 
 if ( TOWEL42_QCONCURRENT_SUPPORT )
-    if ( NOT TOWEL42_QCORE_SUPPORT )
-        MESSAGE( FATAL_ERROR "QConcurrent Support requires QtCore Support" )
-    endif()
     set(qtproject_SRCS
         ${qtproject_SRCS}
         ThreadedProgressDialog.cpp
@@ -399,9 +414,6 @@ if ( TOWEL42_QCONCURRENT_SUPPORT )
 endif()
 
 IF ( TOWEL42_ZIP_SUPPORT )
-    if ( NOT TOWEL42_QCORE_SUPPORT )
-        MESSAGE( FATAL_ERROR "Zip Support requires QtCore Support" )
-    endif()
     set(qtproject_H
         ${qtproject_H}
     )

@@ -26,7 +26,7 @@
     #include <QDateTime>
     #include <QDebug>
     #include <QRegularExpression>
-    #ifndef WIN32
+    #ifdef WIN32
         #include <qt_windows.h>
     #else
         #include <termios.h>

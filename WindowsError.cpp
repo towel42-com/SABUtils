@@ -81,14 +81,14 @@ namespace NTowel42Utils
 #endif()
 
 #ifdef TOWEL42_QCORE_SUPPORT
-    QString getWindowsErrorStd()
+    QString getWindowsError()
     {
-        return QString::fromStdString( getWindowsErrorStd() );
+        return QString::fromStdWString( getWindowsErrorStd() );
     }
 
-    QString getWindowsErrorStd( int errorID )
+    QString getWindowsError( int errorID )
     {
-        return QString::fromStdString( getWindowsErrorStd( errorID ) );
+        return QString::fromStdWString( getWindowsErrorStd( errorID ) );
     }
 #endif
 }

@@ -33,8 +33,16 @@ if ( MKVUTILS )
     )
 endif()
 
+set( SOURCE_FILES
+    ../utils.cpp
+    ../utils.h
+)
+SET( LIBS 
+    gmock
+)
 IF(TOWEL42_QCORE_SUPPORT)
     set( SOURCE_FILES
+        ${SOURCE_FILES}
         ../RegExUtils.cpp
         ../RegExUtils.h
         ../StringUtils.cpp
@@ -54,16 +62,8 @@ IF(TOWEL42_QCORE_SUPPORT)
         ../WordExp.h
     )
     SET( LIBS 
-        gmock
+        ${LIBS}
         Qt6::Core
-    )
-else()
-    set( SOURCE_FILES
-        ../utils.cpp
-        ../utils.h
-    )
-    SET( LIBS 
-        gmock
     )
 endif()
 

@@ -468,7 +468,7 @@ namespace NTowel42Utils
             handled->insert( { widget, false } );
         }
 
-        QString className = widget->metaObject()->className();
+        auto className = QString::fromUtf8( widget->metaObject()->className() );
         // qDebug() << "Testing-" << widget << "-" << className << widget->objectName();
 
         QAbstractButton *button = dynamic_cast< QAbstractButton * >( widget );

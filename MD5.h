@@ -71,7 +71,7 @@ namespace NTowel42Utils
         void sigFinishedReading( unsigned long long threadID, const QDateTime &dt, const QString &filename );
         void sigReadPositionStatus( unsigned long long threadID, const QDateTime &dt, const QString &filename, qint64 pos );
         void sigFinishedComputing( unsigned long long threadID, const QDateTime &dt, const QString &filename );
-        void sigFinished( unsigned long long threadID, const QDateTime &dt, const QString &filename, const QString &md5 );
+        void sigFinished( unsigned long long threadID, const QDateTime &dt, const QString &filename, const QByteArray &md5 );
     public Q_SLOTS:
         void slotStop();
 

@@ -99,7 +99,7 @@ namespace NTowel42Utils
         if ( !metaObject )
             return;
 
-        auto item = new QStandardItem( metaObject->className() );
+        auto item = new QStandardItem( QString::fromUtf8( metaObject->className() ) );
         parent->appendRow( item );
         if ( metaObject->superClass() )
             dumpClassName( metaObject->superClass(), item );
@@ -113,7 +113,7 @@ namespace NTowel42Utils
             return nullptr;
 
         auto widgetItem = new QStandardItem( "Widget" );
-        QString widgetClassName = w.metaObject()->className();
+        QString widgetClassName = QString::fromUtf8( w.metaObject()->className() );
         parent->appendRow( QList< QStandardItem * >() << widgetItem << new QStandardItem( widgetClassName ) );
         dumpClassName( w.metaObject(), widgetItem );
 
@@ -126,7 +126,7 @@ namespace NTowel42Utils
         widgetItem->appendRow( QList< QStandardItem * >() << new QStandardItem( "Size" ) << new QStandardItem( QString::number( geom.width() ) ) << new QStandardItem( QString::number( geom.height() ) ) );
         widgetItem->appendRow( QList< QStandardItem * >() << new QStandardItem( "SizeHint" ) << new QStandardItem( QString::number( hint.width() ) ) << new QStandardItem( QString::number( hint.height() ) ) );
         widgetItem->appendRow( QList< QStandardItem * >() << new QStandardItem( "Policy" ) << new QStandardItem( toString( w.sizePolicy() ) ) );
-        widgetItem->appendRow( QList< QStandardItem * >() << new QStandardItem( "Visible" ) << new QStandardItem( ( w.isVisible() ? "" : "**HIDDEN**" ) ) );
+        widgetItem->appendRow( QList< QStandardItem * >() << new QStandardItem( "Visible" ) << new QStandardItem( ( w.isVisible() ? QStringLiteral( "" ) : QStringLiteral( "**HIDDEN**" ) ) ) );
         return widgetItem;
     }
 
@@ -169,9 +169,9 @@ namespace NTowel42Utils
 
         auto layoutItem = new QStandardItem( "Layout" );
         if ( parent )
-            parent->appendRow( QList< QStandardItem * >() << layoutItem << new QStandardItem( layout->metaObject()->className() ) );
+            parent->appendRow( QList< QStandardItem * >() << layoutItem << new QStandardItem( QString::fromUtf8( layout->metaObject()->className() ) ) );
         else
-            model->appendRow( QList< QStandardItem * >() << layoutItem << new QStandardItem( layout->metaObject()->className() ) );
+            model->appendRow( QList< QStandardItem * >() << layoutItem << new QStandardItem( QString::fromUtf8( layout->metaObject()->className() ) ) );
 
         auto marginItem = new QStandardItem( "Margin" );
         layoutItem->appendRow( marginItem );

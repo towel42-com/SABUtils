@@ -58,7 +58,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool runningAsConsole();   // getSubSystemForCurrentHandle() == eIMAGE_SUBSYSTEM_WINDOWS_CUI
 
     // does nothing for linux
-    TOWEL42_UTILS_EXPORT bool attachConsole( std::string *msg = nullptr );   // returns true if successful
+    TOWEL42_UTILS_EXPORT bool attachConsole( std::wstring *msg = nullptr );   // returns true if successful
 #ifdef TOWEL42_QCORE_SUPPORT
     TOWEL42_UTILS_EXPORT bool attachConsole( QString *msg );   // returns true if successful
 #endif

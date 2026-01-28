@@ -761,7 +761,7 @@ namespace NTowel42Utils
         */
 
         auto regEx = QRegularExpression( R"((?<decoder>D|\.)(?<encoder>E|\.)(?<type>[VASDT])(?<intraframeonly>I|\.)(?<lossy>L|\.)(?<lossless>S|\.)\s+(?<name>\S+)\s*(?<desc>[^\r\n].+))" );
-        auto ii = regEx.globalMatch( codecs );
+        auto ii = regEx.globalMatch( QString::fromUtf8( codecs ) );
         int count = 0;
         if ( dlg )
         {
@@ -770,7 +770,7 @@ namespace NTowel42Utils
                 count++;
                 ii.next();
             }
-            ii = regEx.globalMatch( codecs );
+            ii = regEx.globalMatch( QString::fromUtf8( codecs ) );
             dlg->setRange( 0, count );
             dlg->setValue( 0 );
         }
@@ -937,7 +937,7 @@ namespace NTowel42Utils
             V....D a64multi             Multicolor charset for Commodore 64 (codec a64_multi)
     */
         auto regEx = QRegularExpression( R"((?<type>[VAS][FSXBD\.]{5})\s+(?<name>\S+)\s+(?<desc>.*))" );
-        auto ii = regEx.globalMatch( codecs );
+        auto ii = regEx.globalMatch( QString::fromUtf8( codecs ) );
         int count = 0;
         if ( dlg )
         {
@@ -946,7 +946,7 @@ namespace NTowel42Utils
                 count++;
                 ii.next();
             }
-            ii = regEx.globalMatch( codecs );
+            ii = regEx.globalMatch( QString::fromUtf8( codecs ) );
             dlg->setRange( 0, count );
             dlg->setValue( 0 );
         }
@@ -1040,7 +1040,7 @@ namespace NTowel42Utils
             d3d11va
         */
         auto regEx = QRegularExpression( R"(\s*(?<hwaccel>\S+))" );
-        auto ii = regEx.globalMatch( hwaccels );
+        auto ii = regEx.globalMatch( QString::fromUtf8( hwaccels ) );
         int count = 0;
         if ( dlg )
         {
@@ -1049,7 +1049,7 @@ namespace NTowel42Utils
                 count++;
                 ii.next();
             }
-            ii = regEx.globalMatch( hwaccels );
+            ii = regEx.globalMatch( QString::fromUtf8( hwaccels ) );
             dlg->setRange( 0, count );
             dlg->setValue( 0 );
         }
@@ -1126,7 +1126,7 @@ namespace NTowel42Utils
         */
 
         auto regEx = QRegularExpression( R"((?<type>[DE]{1,2})\s+(?<name>\S+)\s+(?<desc>.*))" );
-        auto ii = regEx.globalMatch( formats );
+        auto ii = regEx.globalMatch( QString::fromUtf8( formats ) );
         int count = 0;
         if ( dlg )
         {
@@ -1135,7 +1135,7 @@ namespace NTowel42Utils
                 count++;
                 ii.next();
             }
-            ii = regEx.globalMatch( formats );
+            ii = regEx.globalMatch( QString::fromUtf8( formats ) );
             dlg->setRange( 0, count );
             dlg->setValue( 0 );
         }
@@ -1199,13 +1199,13 @@ namespace NTowel42Utils
             QProcess process;
             process.start(
                 fFFMpegExe, QStringList() << "-hide_banner"
-                                          << "-h" << ( isEncoder ? "muxer=" : "demuxer=" ) + formatName );
+                                          << "-h" << ( isEncoder ? QStringLiteral( "muxer=" ) : QStringLiteral( "demuxer=" ) ) + formatName );
             process.waitForFinished();
             auto formatHelp = process.readAllStandardOutput();
 
             // Common extensions: 3g2.
             auto regEx = QRegularExpression( R"(Common extensions\:\s*(?<exts>.*)\.)" );
-            auto match = regEx.match( formatHelp );
+            auto match = regEx.match( QString::fromUtf8( formatHelp ) );
             if ( match.hasMatch() )
             {
                 auto tmp = match.captured( "exts" ).trimmed();
@@ -1225,7 +1225,7 @@ namespace NTowel42Utils
             {
                 // Mime type: video/x-matroska.
                 regEx = QRegularExpression( R"(Mime type\:\s*(?<mimetype>.*)\.)" );
-                match = regEx.match( formatHelp );
+                match = regEx.match( QString::fromUtf8( formatHelp ) );
                 if ( match.hasMatch() )
                 {
                     auto mime = match.captured( "mimetype" ).trimmed().toLower();
@@ -1242,7 +1242,7 @@ namespace NTowel42Utils
                 if ( formats.empty() )
                 {
                     regEx = QRegularExpression( R"(Default\s+(?<codec>.*)\s+codec\:)" );
-                    auto ii = regEx.globalMatch( formatHelp );
+                    auto ii = regEx.globalMatch( QString::fromUtf8( formatHelp ) );
 
                     while ( ii.hasNext() )
                     {
@@ -1282,8 +1282,8 @@ namespace NTowel42Utils
             auto tmp = QImageReader::supportedImageFormats();
             for ( auto &&ii : tmp )
             {
-                fImageFormats.value().insert( "*." + ii );
-                fImageFormats.value().insert( ii );
+                fImageFormats.value().insert( QStringLiteral( "*." ) + QString::fromUtf8( ii ) );
+                fImageFormats.value().insert( QString::fromUtf8( ii ) );
             }
         }
 

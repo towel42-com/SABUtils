@@ -213,10 +213,10 @@ namespace NTowel42Utils
 #ifdef TOWEL42_QCORE_SUPPORT
     bool attachConsole( QString *msg )
     {
-        std::string tmp;
+        std::wstring tmp;
         auto retVal = attachConsole( &tmp );
         if ( msg )
-            *msg = QString::fromStdString( tmp );
+            *msg = QString::fromStdWString( tmp );
         return retVal;
     }
 #endif

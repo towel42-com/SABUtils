@@ -2430,13 +2430,13 @@ namespace NTowel42Utils
             std::wstring tmp;
             auto retVal = isDiacriticalCharacter( ch.unicode(), &tmp );
             if ( ascii )
-                *ascii = QString::fromWStdString();
+                *ascii = QString::fromStdWString( tmp );
             return retVal;
         }
 
         QString replaceDiacriticalCharacters( const QString &str )
         {
-            return QString::fromStdWString( replaceDiacriticalCharacters( str.toStdWString() );
+            return QString::fromStdWString( replaceDiacriticalCharacters( str.toStdWString() ) );
         }
 #endif
 

@@ -986,7 +986,7 @@ namespace NTowel42Utils
     QString dumpArray( const char *title, const uint8_t *arr, const uint8_t *baseArray, int size, bool asRGB /*= false*/, int colsPerRow /*= 20*/ )
     {
         static int hitCount = 0;
-        auto retVal = QString( "HitCount: %1 - %2 - Array: 0x%3\n" ).arg( hitCount++ ).arg( title ).arg( arr - baseArray, 8, 16, QChar( '0' ) );
+        auto retVal = QString( "HitCount: %1 - %2 - Array: 0x%3\n" ).arg( hitCount++ ).arg( QString::fromUtf8( title ) ).arg( arr - baseArray, 8, 16, QChar( '0' ) );
         if ( asRGB )
             colsPerRow /= 4;
         int colCount = 0;

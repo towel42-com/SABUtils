@@ -52,7 +52,6 @@ SET( TOWEL42_BIFSUPPORT OFF CACHE BOOL "Support for BIF Utilities" PARENT_SCOPE 
 SET( TOWEL42_GIFSUPPORT OFF CACHE BOOL "Support for GIF Utilities" PARENT_SCOPE )
 SET( TOWEL42_ZIP_SUPPORT OFF CACHE BOOL "Enable ZIP Utilities Support" PARENT_SCOPE )
 SET( TOWEL42_NUGET_SUPPORT OFF CACHE BOOL "Enable NuGet Package Support" PARENT_SCOPE )
-
 SET( TOWEL42_ENABLE_TESTING OFF CACHE BOOL "Enable Testing" PARENT_SCOPE )
    
 message( STATUS "T42-Utils: Building for DLL=${TOWEL42_UTILS_DLL}" )
@@ -63,7 +62,6 @@ message( STATUS "T42-Utils: Building TOWEL42_QNETWORK_SUPPORT=${TOWEL42_QNETWORK
 message( STATUS "T42-Utils: Building TOWEL42_QCONCURRENT_SUPPORT=${TOWEL42_QCONCURRENT_SUPPORT}" )
 message( STATUS "T42-Utils: Building TOWEL42_QXML_SUPPORT=${TOWEL42_QXML_SUPPORT}" )
 message( STATUS "T42-Utils: Building TOWEL42_QXMLPATTERNS_SUPPORT=${TOWEL42_QXMLPATTERNS_SUPPORT}" )
-
 message( STATUS "T42-Utils: Building TOWEL42_MKVUTILS=${TOWEL42_MKVUTILS}" )
 message( STATUS "T42-Utils: Building TOWEL42_BIFSUPPORT=${TOWEL42_BIFSUPPORT}" )
 message( STATUS "T42-Utils: Building TOWEL42_GIFSUPPORT=${TOWEL42_GIFSUPPORT}" )
@@ -77,6 +75,8 @@ if ( NOT TOWEL42_UTILS_DIR )
 endif()
 
 add_definitions( -DTOWEL42UTILS_INTERNAL )
+add_definitions( -DTOWEL42_QCORE_SUPPORT )
+
 
 include( ${CMAKE_SOURCE_DIR}/T42-CMakeUtils/Modules/EnableGoogleTesting.cmake )
 
@@ -92,7 +92,6 @@ endif()
 OPTION(TOWEL42_DEBUG_TRACE "Enable Debug Tracing to std::cout" OFF)
 
 IF(TOWEL42_QCORE_SUPPORT)
-    add_definitions( -DTOWEL42_QCORE_SUPPORT )
     find_package(Qt6 COMPONENTS Core REQUIRED)
 endif()
 
@@ -124,21 +123,17 @@ if ( TOWEL42_MKVUTILS )
     find_package(Qt6 COMPONENTS Multimedia REQUIRED)
 endif()
 
+find_package(IncludeProjectSettings REQUIRED)
+include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
+project( ${_PROJECT_NAME} ) 
+IncludeProjectSettings()
+
 find_package(Deploy REQUIRED)
 find_package(AddUnitTest REQUIRED)
 IF(TOWEL42_QCORE_SUPPORT)
     find_package(Qt6SrcMoc REQUIRED)
     set(TOWEL42_MOC_OPTIONS "-DNON_VIS_BUILD=1")
 endif()    
-
-if ( TOWEL42_MKVUTILS )
-    set( MEDIAINFOLIB mediainfo )
-endif()
-
-find_package(IncludeProjectSettings REQUIRED)
-include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
-project( ${_PROJECT_NAME} ) 
-IncludeProjectSettings()
 
 if ( TOWEL42_MKVUTILS )
     include_directories(MediaInfo/MediaInfoLib/Source)
