@@ -33,12 +33,46 @@ if ( MKVUTILS )
     )
 endif()
 
+IF(TOWEL42_QCORE_SUPPORT)
+    set( SOURCE_FILES
+        ../RegExUtils.cpp
+        ../RegExUtils.h
+        ../StringUtils.cpp
+        ../StringUtils.h
+        ../FileUtils.cpp
+        ../FileUtils_Remove.cpp
+        ../WindowsError.cpp
+        ../FileUtils.h
+        ../MoveToTrash.cpp
+        ../MoveToTrash_win.cpp
+        ../MoveToTrash.h
+        ../StringComparisonClasses.cpp
+        ../StringComparisonClasses.h
+        ../FromString.cpp
+        ../FromString.h
+        ../WordExp.cpp
+        ../WordExp.h
+    )
+    SET( LIBS 
+        gmock
+        Qt6::Core
+    )
+else()
+    set( SOURCE_FILES
+        ../utils.cpp
+        ../utils.h
+    )
+    SET( LIBS 
+        gmock
+    )
+endif()
+
 set( testProjectName "" )
 TOWEL42_UNIT_TEST(Utils
     Test.cpp
     "gmock;Qt6::Core"
     testProjectName
-    ../RegExUtils.cpp;../RegExUtils.h;../StringUtils.cpp;../StringUtils.h;../utils.cpp;../utils.h;../FileUtils.cpp;../FileUtils_Remove.cpp;../WindowsError.cpp;../FileUtils.h;../MoveToTrash.cpp;../MoveToTrash_win.cpp;../MoveToTrash.h;../StringComparisonClasses.cpp;../StringComparisonClasses.h;../FromString.cpp;../FromString.h;../WordExp.cpp;../WordExp.h
+    ${SOURCE_FILES}
     )
 
 set_target_properties( ${testProjectName} PROPERTIES 

@@ -22,20 +22,30 @@
 
 #include "ConsoleUtils.h"
 #include "utils.h"
-#include <QString>
+#include "WindowsError.h"
 #include <io.h>
 #include <cstdio>
 #include <iostream>
+#include <thread>
+#include <chrono>
 
-#include <QThread>
-
-#ifdef Q_OS_WINDOWS
-    #include <qt_windows.h>
+#ifdef TOWEL42_QCORE_SUPPORT
+    #include <QString>
+    #ifdef Q_OS_WINDOWS
+        #include <qt_windows.h>
+    #endif
+#else
+    #ifdef WIN32
+        #include <windows.h>
+    #endif
+#endif
+#ifdef min
+    #undef min
 #endif
 
 namespace NTowel42Utils
 {
-#ifdef Q_OS_WINDOWS
+#ifdef WIN32
     ESubSystem getSubSystemForHandle( void *handle )
     {
         auto offsetValue = NTowel42Utils::MarshalRead< uint32_t >( handle, 0x3C );
@@ -82,7 +92,7 @@ namespace NTowel42Utils
     FILE *file = nullptr;
     ESubSystem getSubSystemForCurrentHandle()
     {
-        QThread::usleep( 20000 );
+        std::this_thread::sleep_for( std::chrono::microseconds( 20000 ) );
         auto currModuleHandle = ::GetModuleHandle( nullptr );
         auto retVal = getSubSystemForHandle( currModuleHandle );
         fprintf( file, "currModuleHandle: 0x%Ix\n", reinterpret_cast< intptr_t >( currModuleHandle ) );
@@ -109,7 +119,7 @@ namespace NTowel42Utils
         return ( consoleWindow != nullptr ) || ( !!consoleCP );
     }
 
-    bool attachConsoleInt( QString *msg, bool tryToAlloc )
+    bool attachConsoleInt( std::wstring *msg, bool tryToAlloc )
     {
         if ( msg )
             msg->clear();
@@ -142,7 +152,7 @@ namespace NTowel42Utils
         if ( ::GetConsoleWindow() == nullptr )
         {
             if ( msg )
-                *msg = getLastError();
+                *msg = getWindowsErrorStd();
             return false;
         }
         else
@@ -192,7 +202,7 @@ namespace NTowel42Utils
         return true;
     }
 
-    bool attachConsole( QString *msg )
+    bool attachConsole( std::wstring *msg )
     {
         auto handle = ::GetConsoleWindow();
         auto retVal = attachConsoleInt( msg, true );
@@ -200,15 +210,16 @@ namespace NTowel42Utils
         return retVal || ( handle != nullptr );
     }
 
-    bool attachConsole( std::string *msg )
+#ifdef TOWEL42_QCORE_SUPPORT
+    bool attachConsole( QString *msg )
     {
-        QString tmp;
+        std::string tmp;
         auto retVal = attachConsole( &tmp );
         if ( msg )
-            *msg = tmp.toStdString();
+            *msg = QString::fromStdString( tmp );
         return retVal;
     }
-
+#endif
 #else
     bool runningAsConsole()
     {

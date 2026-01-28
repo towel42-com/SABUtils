@@ -21,34 +21,75 @@
 // SOFTWARE.
 
 #include "WindowsError.h"
-#ifdef Q_OS_WINDOWS
-    #include <qt_windows.h>
+#include "StringUtils.h"
+
+#ifdef TOWEL42_QCORE_SUPPORT
+    #ifdef WIN32
+        #include <qt_windows.h>
+    #endif
+#else
+    #ifdef WIN32
+        #include <windows.h>
+    #endif
 #endif
+#ifdef min
+    #undef min
+#endif
+
 
 namespace NTowel42Utils
 {
-#ifdef Q_OS_WINDOWS
-    QString getWindowsError( int errorCode )
+#ifdef WIN32
+    std::wstring getWindowsErrorStd()
     {
-        QString ret;
-    #ifndef Q_OS_WINRT
-        wchar_t *string = 0;
-        FormatMessageW( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, errorCode, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), (LPWSTR)&string, 0, NULL );
-        ret = QString::fromWCharArray( string );
-        LocalFree( (HLOCAL)string );
-    #else
-        wchar_t errorString[ 1024 ];
-        FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM, NULL, errorCode, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), (LPWSTR)&errorString, sizeof( errorString ) / sizeof( wchar_t ), NULL );
-        ret = QString::fromWCharArray( errorString );
-    #endif   // Q_OS_WINRT
+        auto errorID = ::GetLastError();
+        return getWindowsErrorStd( errorID );
+    }
 
-        if ( ret.isEmpty() && errorCode == ERROR_MOD_NOT_FOUND )
-            ret = QString::fromLatin1( "The specified module could not be found." );
-        if ( ret.endsWith( QLatin1String( "\r\n" ) ) )
-            ret.chop( 2 );
-        if ( ret.isEmpty() )
-            ret = QString::fromLatin1( "Unknown error 0x%1." ).arg( unsigned( errorCode ), 8, 16, QLatin1Char( '0' ) );
+    std::wstring getWindowsErrorStd( int errorID )
+    {
+        std::wstring ret;
+        wchar_t *string = 0;
+        FormatMessageW( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, errorID, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), (LPWSTR)&string, 0, NULL );
+        if ( string )
+            ret = string;
+        LocalFree( (HLOCAL)string );
+
+        if ( ret.empty() && errorID == ERROR_MOD_NOT_FOUND )
+            ret = L"The specified module could not be found.";
+        if ( ( ret.length() >= 2 ) && ( *std::rbegin( ret ) == L'\n' ) && ( *std::next( std::rbegin( ret ) ) == L'\n' ) )
+        {
+            ret.erase( std::rbegin( ret ).base() );
+            ret.erase( std::rbegin( ret ).base() );
+        }
+        if ( ret.empty() )
+        {
+            ret = L"Unknown error 0x" + NStringUtils::toHex( errorID );
+        }
         return ret;
+    }
+#else
+    std::wstring getWindowsErrorStd()
+    {
+        return {};
+    }
+    std::wstring getWindowsErrorStd( int errorID )
+    {
+        (void)errorID;
+        return {};
+    }
+#endif()
+
+#ifdef TOWEL42_QCORE_SUPPORT
+    QString getWindowsErrorStd()
+    {
+        return QString::fromStdString( getWindowsErrorStd() );
+    }
+
+    QString getWindowsErrorStd( int errorID )
+    {
+        return QString::fromStdString( getWindowsErrorStd( errorID ) );
     }
 #endif
 }
+

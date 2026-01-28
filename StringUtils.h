@@ -38,7 +38,11 @@
 #include <unordered_set>
 #include <chrono>
 #include <cctype>
-#include <QString>
+#include <iomanip>
+#include <sstream>
+#include <codecvt>
+
+
 #include <cctype>
 #include <optional>
 
@@ -46,22 +50,26 @@
 #include "StringComparisonClasses.h"
 #include "nodiscard.h"
 
-#include <locale>
-
+#ifdef TOWEL42_QCORE_SUPPORT
+    #include <QString>
 class QRegularExpression;
+#endif
+
+#include <locale>
 
 namespace NTowel42Utils
 {
     namespace NStringUtils
     {
-#if ( QT_VERSION < QT_VERSION_CHECK( 5, 14, 0 ) )
+#ifdef TOWEL42_QCORE_SUPPORT
+    #if ( QT_VERSION < QT_VERSION_CHECK( 5, 14, 0 ) )
         constexpr QString::SplitBehavior TSkipEmptyParts = QString::SkipEmptyParts;
         constexpr QString::SplitBehavior TKeepEmptyParts = QString::KeepEmptyParts;
-#else
+    #else
         constexpr Qt::SplitBehavior TSkipEmptyParts = Qt::SkipEmptyParts;
         constexpr Qt::SplitBehavior TKeepEmptyParts = Qt::KeepEmptyParts;
+    #endif
 #endif
-
         static const std::size_t sMAXLINE{ 2048 };
         TOWEL42_UTILS_EXPORT inline bool isWhiteSpace( char ch )
         {
@@ -121,7 +129,9 @@ namespace NTowel42Utils
             eCenter
         };
         TOWEL42_UTILS_EXPORT std::string PadString( const std::string &str, size_t max, EPadType padType = EPadType::eCenter, char padChar = ' ' );
+#ifdef TOWEL42_QCORE_SUPPORT
         TOWEL42_UTILS_EXPORT QString PadString( const QString &str, size_t max, EPadType padType = EPadType::eCenter, char padChar = ' ' );
+#endif
         TOWEL42_UTILS_EXPORT void stripLF( char *line );
         TOWEL42_UTILS_EXPORT void stripLF( std::string &line );
         TOWEL42_UTILS_EXPORT void strip( std::string &inStr, char value );
@@ -176,19 +186,18 @@ namespace NTowel42Utils
         TOWEL42_UTILS_EXPORT std::string stripBlanks( std::string_view inStr );
 
         TOWEL42_UTILS_EXPORT std::string stripQuotes( const std::string &text, const char *quotes = "\"\'" );
+#ifdef TOWEL42_QCORE_SUPPORT
         TOWEL42_UTILS_EXPORT QString stripQuotes( const QString &text, const char *quotes = "\"\'" );
+#endif
         TOWEL42_UTILS_EXPORT std::string stripQuotes( const char *text, const char *quotes = "\"\'" );
 
         TOWEL42_UTILS_EXPORT std::string stripQuotes( const std::string &text, char quote );
-        TOWEL42_UTILS_EXPORT QString stripQuotes( const QString &text, char quote );
         TOWEL42_UTILS_EXPORT std::string stripQuotes( const char *text, char quote );
 
         TOWEL42_UTILS_EXPORT bool isQuoted( const std::string &text, const char *quotes = "\"\'" );
-        TOWEL42_UTILS_EXPORT bool isQuoted( const QString &text, const char *quotes = "\"\'" );
         TOWEL42_UTILS_EXPORT bool isQuoted( const char *text, const char *quotes = "\"\'" );
 
         TOWEL42_UTILS_EXPORT bool isQuoted( const std::string &text, char quote );
-        TOWEL42_UTILS_EXPORT bool isQuoted( const QString &text, char quote );
         TOWEL42_UTILS_EXPORT bool isQuoted( const char *text, char quote );
 
         TOWEL42_UTILS_EXPORT void stripBlanksInline( std::string &inStr );
@@ -390,11 +399,7 @@ namespace NTowel42Utils
         TOWEL42_UTILS_EXPORT std::string binaryToASCII( const std::string &bString, bool &aOK );
 
         TOWEL42_UTILS_EXPORT std::list< std::string > splitSDCPattern( const std::string &pattern, bool regExp, char hsc, bool &aOK, std::string *msg );
-        TOWEL42_UTILS_EXPORT QStringList splitSDCPattern( const QString &pattern, bool regexp, char hsc, bool &aOK, QString *msg );
-
         TOWEL42_UTILS_EXPORT std::list< std::string > splitSDCPattern( const std::string &pattern, bool regExp, const char *hsc, bool &aOK, std::string *msg );
-        TOWEL42_UTILS_EXPORT QStringList splitSDCPattern( const QString &pattern, bool regexp, const char *hsc, bool &aOK, QString *msg );
-
         TOWEL42_UTILS_EXPORT char IsSwitch( const char *str );
         TOWEL42_UTILS_EXPORT char IsSwitch( const std::string &str );
 
@@ -461,29 +466,12 @@ namespace NTowel42Utils
             return retVal;
         }
 
-        TOWEL42_UTILS_EXPORT QStringList asReport( const QStringList &header, const QStringList &subHeader, const QList< QStringList > &data, bool sortData );
-
         TOWEL42_UTILS_EXPORT bool validateBase64String( const char *str, size_t len = std::string::npos );
         TOWEL42_UTILS_EXPORT bool validateBase64String( const std::string &str );
         TOWEL42_UTILS_EXPORT bool validateUUEncodeString( const char *str, size_t len = std::string::npos );
         TOWEL42_UTILS_EXPORT bool validateUUEncodeString( const std::string &str );
         TOWEL42_UTILS_EXPORT bool validateQuotedPrintableString( const char *str, size_t len = std::string::npos );
         TOWEL42_UTILS_EXPORT bool validateQuotedPrintableString( const std::string &str );
-
-        TOWEL42_UTILS_EXPORT QString numToEnglish( int value );
-        TOWEL42_UTILS_EXPORT QString replaceNumbersWithEnglish( const QString &str );
-        TOWEL42_UTILS_EXPORT QString replaceRomanNumeral( const QString &str );
-
-        TOWEL42_UTILS_EXPORT int romanToDecimal( QString string, bool &aOK );   // only valid for roman numbers to 3999 as 4000 requires a vinculum
-        TOWEL42_UTILS_EXPORT bool isRomanNumeral( const QString &string, int *value = nullptr );
-
-        TOWEL42_UTILS_EXPORT QString transformTitle( const QString &title, bool ignoreAllCase = true );
-        TOWEL42_UTILS_EXPORT QString titleCase( const QString &string, bool ignoreAllCase = true );
-        TOWEL42_UTILS_EXPORT const std::unordered_set< QString > &unimportantWords();
-
-        TOWEL42_UTILS_EXPORT std::vector< QString > getImportantWordsInOrder( const QString &string, bool stripPunctuation );
-        TOWEL42_UTILS_EXPORT std::unordered_set< QString > getImportantWords( const QString &string, bool stripPunctuation );
-        TOWEL42_UTILS_EXPORT bool isSimilar( const QString &lhs, const QString &rhs, bool inorder );   // is every important word in the rhs in the left
 
         template< typename T >
         T NODISCARD rtrim( T string )
@@ -511,6 +499,36 @@ namespace NTowel42Utils
 
         TOWEL42_UTILS_EXPORT std::string getPercentageAsString( double value );
 
+        template< typename T >
+        std::wstring toHex( T &value )
+        {
+            std::ostringstream oss;
+            oss << "Unknown error 0x" << std::hex << std::setw( 8 ) << std::setfill( '0' ) << value << ".";
+            auto tmp = oss.str();
+
+            std::wstring_convert< std::codecvt_utf8< wchar_t > > converter;
+            return converter.from_bytes( tmp );
+        }
+
+#ifdef TOWEL42_QCORE_SUPPORT
+        TOWEL42_UTILS_EXPORT QString stripQuotes( const QString &text, char quote );
+        TOWEL42_UTILS_EXPORT bool isQuoted( const QString &text, const char *quotes = "\"\'" );
+        TOWEL42_UTILS_EXPORT bool isQuoted( const QString &text, char quote );
+        TOWEL42_UTILS_EXPORT QStringList splitSDCPattern( const QString &pattern, bool regexp, char hsc, bool &aOK, QString *msg );
+        TOWEL42_UTILS_EXPORT QStringList splitSDCPattern( const QString &pattern, bool regexp, const char *hsc, bool &aOK, QString *msg );
+        TOWEL42_UTILS_EXPORT QStringList asReport( const QStringList &header, const QStringList &subHeader, const QList< QStringList > &data, bool sortData );
+        TOWEL42_UTILS_EXPORT QString numToEnglish( int value );
+        TOWEL42_UTILS_EXPORT QString replaceNumbersWithEnglish( const QString &str );
+        TOWEL42_UTILS_EXPORT QString replaceRomanNumeral( const QString &str );
+        TOWEL42_UTILS_EXPORT int romanToDecimal( QString string, bool &aOK );   // only valid for roman numbers to 3999 as 4000 requires a vinculum
+        TOWEL42_UTILS_EXPORT bool isRomanNumeral( const QString &string, int *value = nullptr );
+        TOWEL42_UTILS_EXPORT QString transformTitle( const QString &title, bool ignoreAllCase = true );
+        TOWEL42_UTILS_EXPORT QString titleCase( const QString &string, bool ignoreAllCase = true );
+        TOWEL42_UTILS_EXPORT const std::unordered_set< QString > &unimportantWords();
+        TOWEL42_UTILS_EXPORT std::vector< QString > getImportantWordsInOrder( const QString &string, bool stripPunctuation );
+        TOWEL42_UTILS_EXPORT std::unordered_set< QString > getImportantWords( const QString &string, bool stripPunctuation );
+        TOWEL42_UTILS_EXPORT bool isSimilar( const QString &lhs, const QString &rhs, bool inorder );   // is every important word in the rhs in the left
+
         TOWEL42_UTILS_EXPORT QString replaceDiacriticalCharacters( const QString &str );
         TOWEL42_UTILS_EXPORT bool isDiacriticalCharacter( const QChar &ch, QString *ascii = nullptr );
 
@@ -519,7 +537,9 @@ namespace NTowel42Utils
         TOWEL42_UTILS_EXPORT bool isValidEmailAddress( const QString &email );
 
         TOWEL42_UTILS_EXPORT QString toCSV( const QStringList &data );
-
+#endif
+        TOWEL42_UTILS_EXPORT std::wstring replaceDiacriticalCharacters( const std::wstring &str );
+        TOWEL42_UTILS_EXPORT bool isDiacriticalCharacter( const wchar_t &ch, std::wstring *ascii = nullptr );
     }
 }
 #endif

@@ -1,6 +1,10 @@
 #include "FileSIDInfo.h"
 #include "utils.h"
-#include <QFileInfo>
+#include "WindowsError.h"
+
+#ifdef TOWEL42_QCORE_SUPPORT
+    #include <QFileInfo>
+#endif
 
 #include <tuple>
 #include <cstdio>
@@ -70,7 +74,7 @@ namespace NTowel42Utils
                     {
                         if ( statusMsg )
                         {
-                            *statusMsg = { false, QString( "Could not find SID info" ).toStdWString() };
+                            *statusMsg = { false, L"Could not find SID info" };
                         }
                         break;
                     }
@@ -78,7 +82,8 @@ namespace NTowel42Utils
                     {
                         if ( statusMsg )
                         {
-                            auto msg = QString( "Error getting SID information: %1" ).arg( getLastError() ).toStdWString();
+                            auto msg = std::wstring( L"Error getting SID information: " );
+                            msg += getWindowsErrorStd();
                             *statusMsg = std::make_pair( false, msg );
                         }
                         break;
@@ -129,7 +134,7 @@ namespace NTowel42Utils
             auto status = GetNamedSecurityInfo( fFileName.c_str(), SE_FILE_OBJECT, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, &owner, &group, &dacl, 0, &pSD );
             if ( status != ERROR_SUCCESS )
             {
-                fMsg.emplace_back( QString( "Error getting Security Info: %1" ).arg( getLastError( status ) ).toStdWString() );
+                fMsg.emplace_back( std::wstring( L"Error getting Security Info: " ) + getWindowsErrorStd( status ) );
                 return;
             }
             LocalFree( pSD );
@@ -145,7 +150,7 @@ namespace NTowel42Utils
             ACL_SIZE_INFORMATION aclSizeInfo = { sizeof( ACL ) };
             if ( !GetAclInformation( dacl, &aclSizeInfo, sizeof( ACL_SIZE_INFORMATION ), ACL_INFORMATION_CLASS::AclSizeInformation ) )
             {
-                fMsg.emplace_back( QString( "Error getting Security Info: %1" ).arg( getLastError() ).toStdWString() );
+                fMsg.emplace_back( std::wstring( L"Error getting Security Info: " ) + getWindowsErrorStd() );
                 return;
             }
             for ( DWORD ii = 0; ii < aclSizeInfo.AceCount; ++ii )
@@ -153,7 +158,7 @@ namespace NTowel42Utils
                 LPVOID curr = nullptr;
                 if ( !::GetAce( dacl, ii, &curr ) )
                 {
-                    fMsg.emplace_back( QString( "Error getting Security Info: %1" ).arg( getLastError() ).toStdWString() );
+                    fMsg.emplace_back( std::wstring( L"Error getting Security Info: " ) + getWindowsErrorStd() );
                     continue;
                 }
                 PSID pSid = &( (ACCESS_ALLOWED_ACE *)curr )->SidStart;
@@ -174,6 +179,7 @@ namespace NTowel42Utils
         {
         }
 
+#ifdef TOWEL42_QCORE_SUPPORT
         CSIDFileInfo::CSIDFileInfo( const QString &pathName, bool onlyInvalidDACL ) :
             CSIDFileInfo( pathName.toStdWString(), onlyInvalidDACL )
         {
@@ -183,7 +189,7 @@ namespace NTowel42Utils
             CSIDFileInfo( fi.absoluteFilePath(), onlyInvalidDACL )
         {
         }
-
+#endif
         std::wstring CSIDFileInfo::daclsString() const
         {
             std::wstring retVal;

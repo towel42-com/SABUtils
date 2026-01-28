@@ -1,14 +1,24 @@
 #include "GPUDetect.h"
+#include "StringUtils.h"
 
 #define _WIN32_DCOM
-#include <qt_windows.h>
+#include <windows.h>
 #include <comdef.h>
 #include <Wbemidl.h>
+#include <iomanip>
+#include <sstream>
+#include <cassert>
+#include <wctype.h>
+#include <cctype>
+#include <cwchar>
+#include <cwctype>
+#include <algorithm>
+
 #pragma comment( lib, "wbemuuid.lib" )
 
 namespace NTowel42Utils
 {
-    std::list< std::shared_ptr< CGPUInfo > > detectGPUs( QString *errorMsg /*= nullptr*/ )
+    std::list< std::shared_ptr< CGPUInfo > > detectGPUs( std::wstring *errorMsg /*= nullptr*/ )
     {
         // Step 1: --------------------------------------------------
         // Initialize COM. ------------------------------------------
@@ -35,7 +45,9 @@ namespace NTowel42Utils
             if ( FAILED( hres ) )
             {
                 if ( errorMsg )
-                    *errorMsg = QString( "Failed to initialize COM library. Error code = 0x" ).arg( hres, 0, 16 );
+                {
+                    *errorMsg = std::wstring( L"Failed to initialize COM library. Error code = 0x" ) + NStringUtils::toHex( hres );
+                }
                 return {};
             }
             needCoUnit = true;
@@ -55,7 +67,7 @@ namespace NTowel42Utils
         if ( ( hres != RPC_E_TOO_LATE ) && FAILED( hres ) )
         {
             if ( errorMsg )
-                *errorMsg = QString( "Failed to initialize security. Error code = 0x" ).arg( hres, 0, 16 );
+                *errorMsg = std::wstring( L"Failed to initialize security. Error code = 0x" ) + NStringUtils::toHex( hres );
             if ( needCoUnit )
                 CoUninitialize();
             return {};
@@ -70,7 +82,7 @@ namespace NTowel42Utils
         if ( FAILED( hres ) )
         {
             if ( errorMsg )
-                *errorMsg = QString( "Failed to create IWbemLocator object. Error code = 0x" ).arg( hres, 0, 16 );
+                *errorMsg = std::wstring( L"Failed to create IWbemLocator object. Error code = 0x" ) + NStringUtils::toHex( hres );
             if ( needCoUnit )
                 CoUninitialize();
             return {};   // Program has failed.
@@ -97,7 +109,7 @@ namespace NTowel42Utils
         if ( FAILED( hres ) )
         {
             if ( errorMsg )
-                *errorMsg = QString( "Failed to create connect. Error code = 0x" ).arg( hres, 0, 16 );
+                *errorMsg = std::wstring( L"Failed to create connect. Error code = 0x" ) + NStringUtils::toHex( hres );
             pLoc->Release();
             if ( needCoUnit )
                 CoUninitialize();
@@ -123,7 +135,7 @@ namespace NTowel42Utils
         if ( FAILED( hres ) )
         {
             if ( errorMsg )
-                *errorMsg = QString( "Failed to set proxy blanket. Error code = 0x" ).arg( hres, 0, 16 );
+                *errorMsg = std::wstring( L"Failed to set proxy blanket. Error code = 0x" ) + NStringUtils::toHex( hres );
             pSvc->Release();
             pLoc->Release();
             if ( needCoUnit )
@@ -141,7 +153,7 @@ namespace NTowel42Utils
         if ( FAILED( hres ) )
         {
             if ( errorMsg )
-                *errorMsg = QString( "Failed to query for video controllers. Error code = 0x" ).arg( hres, 0, 16 );
+                *errorMsg = std::wstring( L"Failed to query for video controllers. Error code = 0x" ) + NStringUtils::toHex( hres );
             pSvc->Release();
             pLoc->Release();
             if ( needCoUnit )
@@ -282,7 +294,7 @@ namespace NTowel42Utils
         {
             return;
         }
-        Q_ASSERT( vtProp.vt == VT_BOOL );
+        assert( vtProp.vt == VT_BOOL );
         value = vtProp.boolVal;
 
         VariantClear( &vtProp );
@@ -307,13 +319,13 @@ namespace NTowel42Utils
         {
             return;
         }
-        Q_ASSERT( vtProp.vt == VT_I4 );
+        assert( vtProp.vt == VT_I4 );
         value = vtProp.lVal;
 
         VariantClear( &vtProp );
     }
 
-    void loadValue( IWbemClassObject *gpuInfo, const wchar_t *key, QString &value )
+    void loadValue( IWbemClassObject *gpuInfo, const wchar_t *key, std::wstring &value )
     {
         value.clear();
         VARIANT vtProp;
@@ -331,7 +343,7 @@ namespace NTowel42Utils
         {
             return;
         }
-        value = QString::fromUtf16( reinterpret_cast< const char16_t * >( vtProp.bstrVal ) );
+        value = vtProp.bstrVal;
 
         VariantClear( &vtProp );
     }
@@ -402,34 +414,49 @@ namespace NTowel42Utils
         loadValue( gpuInfo, L"VideoProcessor", fVideoProcessor );
     }
 
+    // Custom comparator for case-insensitive wide character comparison
+    bool is_equal_case_insensitive( wchar_t char1, wchar_t char2 )
+    {
+        // Use std::towlower for wide characters, considering locale
+        // static_cast to unsigned short (or unsigned int) avoids potential issues
+        // with negative wchar_t values and the ctype facet lookup.
+        return std::towlower( static_cast< unsigned short >( char1 ) ) == std::towlower( static_cast< unsigned short >( char2 ) );
+    }
+
+    // Function to perform case-insensitive wstring find
+    bool wicontains( const std::wstring &str, const std::wstring &substr )
+    {
+        return std::search( str.begin(), str.end(), substr.begin(), substr.end(), is_equal_case_insensitive ) != str.end();
+    }
+
     bool CGPUInfo::isIntelGPU() const
     {
-        return fVideoProcessor.contains( "Intel", Qt::CaseSensitivity::CaseInsensitive )   //
-               || fName.contains( "Intel", Qt::CaseSensitivity::CaseInsensitive )   //
-               || fDescription.contains( "Intel", Qt::CaseSensitivity::CaseInsensitive )   //
-               || fCaption.contains( "Intel", Qt::CaseSensitivity::CaseInsensitive )   //
-               || fAdapterCompatibility.contains( "Intel", Qt::CaseSensitivity::CaseInsensitive );
+        return wicontains( fVideoProcessor, L"Intel" )   //
+               || wicontains( fName, L"Intel" )   //
+               || wicontains( fDescription, L"Intel" )   //
+               || wicontains( fCaption, L"Intel" )   //
+               || wicontains( fAdapterCompatibility, L"Intel" );
     }
 
     bool CGPUInfo::isNVidiaGPU() const
     {
-        return fVideoProcessor.contains( "NVIDIA", Qt::CaseSensitivity::CaseInsensitive )   //
-               || fName.contains( "NVIDIA", Qt::CaseSensitivity::CaseInsensitive )   //
-               || fDescription.contains( "NVIDIA", Qt::CaseSensitivity::CaseInsensitive )   //
-               || fCaption.contains( "NVIDIA", Qt::CaseSensitivity::CaseInsensitive )   //
-               || fAdapterCompatibility.contains( "NVIDIA", Qt::CaseSensitivity::CaseInsensitive );
+        return wicontains( fVideoProcessor, L"NVIDIA" )   //
+               || wicontains( fName, L"NVIDIA" )   //
+               || wicontains( fDescription, L"NVIDIA" )   //
+               || wicontains( fCaption, L"NVIDIA" )   //
+               || wicontains( fAdapterCompatibility, L"NVIDIA" );
     }
 
     bool CGPUInfo::isAMDGPU() const
     {
-        return fVideoProcessor.contains( "AMD", Qt::CaseSensitivity::CaseInsensitive )   //
-               || fName.contains( "AMD", Qt::CaseSensitivity::CaseInsensitive )   //
-               || fDescription.contains( "AMD", Qt::CaseSensitivity::CaseInsensitive )   //
-               || fCaption.contains( "AMD", Qt::CaseSensitivity::CaseInsensitive )   //
-               || fAdapterCompatibility.contains( "AMD", Qt::CaseSensitivity::CaseInsensitive );
+        return wicontains( fVideoProcessor, L"AMD" )   //
+               || wicontains( fName, L"AMD" )   //
+               || wicontains( fDescription, L"AMD" )   //
+               || wicontains( fCaption, L"AMD" )   //
+               || wicontains( fAdapterCompatibility, L"AMD" );
     }
 
-    SGPUInfo::SGPUInfo( QString *errorMsg /*= nullptr */ )
+    SGPUInfo::SGPUInfo( std::wstring *errorMsg /*= nullptr */ )
     {
         auto gpus = NTowel42Utils::detectGPUs( errorMsg );
         bool hasIntel = false;

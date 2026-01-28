@@ -20,14 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "FileUtils.h"
-#include <QDir>
+#ifdef TOWEL42_QCORE_SUPPORT
+
+    #include "FileUtils.h"
+    #include <QDir>
 
 namespace NTowel42Utils
 {
     namespace NFileUtils
     {
-
         std::optional< QList< QFileInfo > > findAllFiles( const QDir &dir, const QStringList &nameFilters, bool recursive, bool sortByName, QString *errorMsg, std::function< bool( const QDir &dir ) > skipDir, std::function< bool( const QFileInfo &file ) > skipFile )
         {
             if ( !dir.exists() || !dir.isReadable() )
@@ -62,3 +63,4 @@ namespace NTowel42Utils
         }
     }
 }
+#endif

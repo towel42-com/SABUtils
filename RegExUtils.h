@@ -25,11 +25,12 @@
 
 #include "Towel42UtilsExport.h"
 #include <string>
-#include <QString>
+#ifdef TOWEL42_QCORE_SUPPORT
+    #include <QString>
+class QRegularExpression;
+#endif
 #include <list>
 #include <optional>
-
-class QRegularExpression;
 
 namespace NTowel42Utils
 {
@@ -37,18 +38,20 @@ namespace NTowel42Utils
     {
         TOWEL42_UTILS_EXPORT bool regExEqual( const std::string &lhs, const std::string &rhs );
 
-        TOWEL42_UTILS_EXPORT bool isExactMatchRegEx( const std::string &data, const std::string &pattern, bool nocase );
-        TOWEL42_UTILS_EXPORT std::list< std::string > splitStringRegEx( const std::string &string, const std::string &regex, bool nocase = false, bool skipEmpty = false );   // split based on regex
-
         TOWEL42_UTILS_EXPORT bool matchRegExpr( const char *s1, const char *s2 );
 
+#ifdef TOWEL42_QCORE_SUPPORT
+        TOWEL42_UTILS_EXPORT std::list< std::string > splitStringRegEx( const std::string &string, const std::string &regex, bool nocase = false, bool skipEmpty = false );   // split based on regex
+        TOWEL42_UTILS_EXPORT bool isExactMatchRegEx( const std::string &data, const std::string &pattern, bool nocase );
         TOWEL42_UTILS_EXPORT QString encodeRegEx( const char *inString );
         TOWEL42_UTILS_EXPORT QString encodeRegEx( QString inString );
         TOWEL42_UTILS_EXPORT std::string encodeRegEx( const std::string &inString );
+#endif
 
         TOWEL42_UTILS_EXPORT std::string addToRegEx( std::string oldRegEx, const std::string &regEx );
 
         TOWEL42_UTILS_EXPORT bool isSpecialRegExChar( char ch, bool includeDotSlash = true );
+#ifdef TOWEL42_QCORE_SUPPORT
         TOWEL42_UTILS_EXPORT bool isSpecialRegExChar( const QChar &ch, bool includeDotSlash = true );
 
         // used in the regExReplace and regExReplaceAll
@@ -61,7 +64,7 @@ namespace NTowel42Utils
         // replaces all occurences of pattern in input with replacement
         TOWEL42_UTILS_EXPORT std::optional< QString > regExReplace( const QString &input, const QString &pattern, const QString &replacement );
         TOWEL42_UTILS_EXPORT std::optional< QString > regExReplace( const QString &input, const QRegularExpression &pattern, const QString &replacement );
-
+#endif
     }
 }
 #endif

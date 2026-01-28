@@ -25,6 +25,7 @@
 
 #include "Towel42UtilsExport.h"
 
+#ifdef TOWEL42_QCORE_SUPPORT
 class QByteArray;
 class QFileInfo;
 class QString;
@@ -89,5 +90,6 @@ namespace NTowel42Utils
     };
 
 }
+#endif
 
 #endif

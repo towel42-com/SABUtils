@@ -30,16 +30,19 @@
 #include <set>
 #include <unordered_map>
 #include <optional>
-#include <QStringList>
-#include <QString>
-#include <QFileDevice>
-#include <QList>
 #include <functional>
+
+#ifdef TOWEL42_QCORE_SUPPORT
+    #include <QStringList>
+    #include <QString>
+    #include <QFileDevice>
+    #include <QList>
 
 class QFileInfo;
 class QDateTime;
 class QString;
 class QDir;
+#endif
 
 namespace NTowel42Utils
 {
@@ -54,19 +57,12 @@ namespace NTowel42Utils
         TOWEL42_UTILS_EXPORT bool isRelativePath( const std::string &pathName );
         TOWEL42_UTILS_EXPORT std::string getAbsoluteFilePath( const std::string &relativePath );
         TOWEL42_UTILS_EXPORT std::string getAbsoluteFilePath( const std::string &directory, const std::string &relativePath );
-        TOWEL42_UTILS_EXPORT QString getRelativePath( const QDir &dir, const QString &absPath );
         TOWEL42_UTILS_EXPORT std::string getRelativePath( const std::string &absPath, const std::string &dir = std::string() );
         TOWEL42_UTILS_EXPORT std::string getFileName( const std::string &fileName );
-        TOWEL42_UTILS_EXPORT QString driveSpec( const QString &path );
         TOWEL42_UTILS_EXPORT bool exists( const std::string &path );
         TOWEL42_UTILS_EXPORT bool isReadable( const std::string &path );
         TOWEL42_UTILS_EXPORT bool isRegularFile( const std::string &path );
         TOWEL42_UTILS_EXPORT bool isDirectory( const std::string &path );
-
-        TOWEL42_UTILS_EXPORT bool exists( const QString &path );
-        TOWEL42_UTILS_EXPORT bool isReadable( const QString &path );
-        TOWEL42_UTILS_EXPORT bool isRegularFile( const QString &path );
-        TOWEL42_UTILS_EXPORT bool isDirectory( const QString &path );
 
         TOWEL42_UTILS_EXPORT bool renameFile( const std::string &oldfileName, const std::string &newFileName, bool force = false );
         TOWEL42_UTILS_EXPORT std::string getWd();
@@ -77,13 +73,10 @@ namespace NTowel42Utils
         TOWEL42_UTILS_EXPORT bool pathCompare( const std::string &lhs, const std::string &rhs );   // return is lhs is the same path as rhs
         TOWEL42_UTILS_EXPORT std::string normalizePath( const std::string &path, const std::string &relToDir = std::string() );   // removes ".." and "." replaces all "\" with "/"
 
-        TOWEL42_UTILS_EXPORT bool removePath( const QString &item, QString *msg = nullptr );
         TOWEL42_UTILS_EXPORT bool removePath( const std::string &item, std::string *msg = nullptr );
-        TOWEL42_UTILS_EXPORT bool removeInsideOfDir( const QString &dirStr, QString *msg = nullptr );
         TOWEL42_UTILS_EXPORT bool removeInsideOfDir( const std::string &dir, std::string *msg = nullptr );
         TOWEL42_UTILS_EXPORT bool copy( const std::string &fileName, const std::string &newFileName );
 
-        TOWEL42_UTILS_EXPORT QString canonicalFilePath( const QString &fileName );
         TOWEL42_UTILS_EXPORT std::string canonicalFilePath( const std::string &fileName );
 
         TOWEL42_UTILS_EXPORT std::list< std::string > getSubDirs( const std::string &dir, bool recursive, bool includeTopDir );
@@ -92,6 +85,17 @@ namespace NTowel42Utils
 
         TOWEL42_UTILS_EXPORT bool isBinaryFile( const std::string &fileName );   // if any char in the first 100 characters is non std::isprint return true
         TOWEL42_UTILS_EXPORT bool isBinaryFile( const std::string &fileName, const std::string &relToDir );   // if any char in the first 100 characters is non std::isprint return true
+
+#ifdef TOWEL42_QCORE_SUPPORT
+        TOWEL42_UTILS_EXPORT QString getRelativePath( const QDir &dir, const QString &absPath );
+        TOWEL42_UTILS_EXPORT QString driveSpec( const QString &path );
+        TOWEL42_UTILS_EXPORT bool exists( const QString &path );
+        TOWEL42_UTILS_EXPORT bool isReadable( const QString &path );
+        TOWEL42_UTILS_EXPORT bool isRegularFile( const QString &path );
+        TOWEL42_UTILS_EXPORT bool isDirectory( const QString &path );
+        TOWEL42_UTILS_EXPORT bool removePath( const QString &item, QString *msg = nullptr );
+        TOWEL42_UTILS_EXPORT bool removeInsideOfDir( const QString &dirStr, QString *msg = nullptr );
+        TOWEL42_UTILS_EXPORT QString canonicalFilePath( const QString &fileName );
 
         // searches for environmental vars inside filenames of the form
         // $foo or %foo% \$foo \%foo\%
@@ -145,6 +149,7 @@ namespace NTowel42Utils
 
         TOWEL42_UTILS_EXPORT std::tuple< uint16_t, uint16_t, uint16_t, uint16_t > getVersionInfoFromFile( const QString &fileName, bool &aOK );
         TOWEL42_UTILS_EXPORT std::pair< uint32_t, uint32_t > getVersionInfoFromFile32( const QString &fileName, bool &aOK );   // the 32 bit version returns 2 32 bit values, the hiword of the first is the major version, loword is the minor, hi and low of the second value is the patch
+#endif
     }
 }
 #endif

@@ -26,7 +26,10 @@
 #include "../FileUtils.h"
 #include "../RegExUtils.h"
 
-#include <QCoreApplication>
+#ifdef TOWEL42_QCORE_SUPPORT
+    #include <QCoreApplication>
+#endif
+
 #include <string>
 #include <memory>
 #include <filesystem>
@@ -579,9 +582,10 @@ namespace
     }
 #endif
 
-#ifdef WIN32
-    #define USER     QString( R"__(scott.TOWEL42)__" )
-    #define HOME_DIR QString( R"__(C:\Users\)__" ) + USER
+#ifdef TOWEL42_QCORE_SUPPORT
+    #ifdef WIN32
+        #define USER     QString( R"__(scott.TOWEL42)__" )
+        #define HOME_DIR QString( R"__(C:\Users\)__" ) + USER
 
     TEST( TestUtils, DISABLED_TestWordExp )
     {
@@ -624,9 +628,9 @@ namespace
         //EXPECT_GE( 64, wordExp1.getAbsoluteFilePaths( &aOK ).size() );
         //EXPECT_TRUE( aOK );
     }
-#elif DONTTEST
-    #define USER     QString( R"__(scott)__" )
-    #define HOME_DIR QString( R"__(/home/)__" ) + USER
+    #elif DONTTEST
+        #define USER     QString( R"__(scott)__" )
+        #define HOME_DIR QString( R"__(/home/)__" ) + USER
     TEST( TestUtils, TestWordExp )
     {
         bool aOK = false;
@@ -663,7 +667,7 @@ namespace
         EXPECT_EQ( 17, wordExp1.getAbsoluteFilePaths( &aOK ).size() );
         EXPECT_TRUE( aOK );
     }
-#endif
+    #endif
 
     TEST( TestUtils, TestExpandEnvVars )
     {
@@ -758,13 +762,13 @@ namespace
         EXPECT_EQ( "${HOME}/foo/bar", NTowel42Utils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME" }, true ) );
         EXPECT_EQ( "${HOME}/foo/${BAR}", NTowel42Utils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME", "BAR" }, true ) );
 
-#ifdef WIN32
+    #ifdef WIN32
         EXPECT_EQ( "%HOME%/foo/bar", NTowel42Utils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME" } ) );
         EXPECT_EQ( "%HOME%/foo/%BAR%", NTowel42Utils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME", "BAR" } ) );
-#else
+    #else
         EXPECT_EQ( "${HOME}/foo/bar", NTowel42Utils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME" } ) );
         EXPECT_EQ( "${HOME}/foo/${BAR}", NTowel42Utils::NFileUtils::gSoftenPath( "/home/sbloom/foo/bar", { "HOME", "BAR" } ) );
-#endif
+    #endif
     }
 
     TEST( TestUtils, TestByteSizeString )
@@ -807,6 +811,7 @@ namespace
         EXPECT_EQ( QString( "0:00:09:12.800482 (552 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString( false ) );
         EXPECT_EQ( QString( "9:12.800482 (552 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString() );
     }
+#endif
 
     TEST( TestUtils, Help )
     {
@@ -859,6 +864,7 @@ namespace
         ASSERT_EQ( 5, grouped.size() );
     }
 
+#ifdef TOWEL42_QCORE_SUPPORT
     TEST( TestUtils, TestIntsFromString )
     {
         auto ints = NTowel42Utils::intsFromString( "1 2 3" );
@@ -1034,11 +1040,14 @@ namespace
         EXPECT_EQ( QStringLiteral( R"__("The Protestant Ethic and the Spirit of Capitalism<<==>>The Protestant Ethic and the Spirit of Capitalism")__" ), NTowel42Utils::NStringUtils::regExReplace( "The Protestant Ethic and the Spirit of Capitalism", pattern, replacement ) );
         EXPECT_EQ( QStringLiteral( R"__("The Origin of Species<<==>>The Origin of Species")__" ), NTowel42Utils::NStringUtils::regExReplace( "The Origin of Species", pattern, replacement ) );
     }
+#endif
 }
 
 int main( int argc, char **argv )
 {
+#ifdef TOWEL42_QCORE_SUPPORT
     QCoreApplication appl( argc, argv );
+#endif
     ::testing::InitGoogleTest( &argc, argv );
     int retVal = RUN_ALL_TESTS();
     return retVal;

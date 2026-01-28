@@ -21,20 +21,32 @@
 // SOFTWARE.
 
 #include "utils.h"
+#ifdef TOWEL42_QCORE_SUPPORT
+    #include <QString>
+    #include <QDateTime>
+    #include <QDebug>
+    #include <QRegularExpression>
+    #ifndef WIN32
+        #include <qt_windows.h>
+    #else
+        #include <termios.h>
+    #endif
+#else
+    #ifdef WIN32
+        #include <windows.h>
+    #else
+        #include <termios.h>
+    #endif
+#endif
+#ifdef min
+    #undef min
+#endif
+
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <utility>
 #include <cctype>
-#include <QString>
-#include <QDateTime>
-#include <QDebug>
-#include <QRegularExpression>
-
-#ifdef Q_OS_WINDOWS
-    #include <qt_windows.h>
-#else
-    #include <termios.h>
-#endif
 
 namespace NTowel42Utils
 {
@@ -284,13 +296,15 @@ namespace NTowel42Utils
         return retVal;
     }
 
+#ifdef TOWEL42_QCORE_SUPPORT
     QString secsToString( quint64 seconds )
     {
         CTimeString ts( seconds * 1000 );
         return ts.toString( "dd days, hh hours, mm minutes, ss seconds" );
     }
+#endif
 
-#ifdef Q_OS_WINDOWS
+#ifdef WIN32
     char GetChar()
     {
         auto stdInput = ::GetStdHandle( STD_INPUT_HANDLE );
@@ -334,6 +348,7 @@ namespace NTowel42Utils
         return returnCode;
     }
 
+#ifdef TOWEL42_QCORE_SUPPORT
     bool isValidURL( const QString &url, int *start, int *length )
     {
         auto regExStr = QStringLiteral( R"__(((([a-z]+):\/\/)|(www\.))(\.?[a-z0-9\-ßàÁâãóôþüúðæåïçèõöÿýòäœêëìíøùîûñé]{2,256})+(\.[a-z]+))__" );
@@ -442,35 +457,6 @@ namespace NTowel42Utils
         if ( sort )
             retVal.sort();
         return retVal;
-    }
-
-#ifdef Q_OS_WINDOWS
-    QString getLastError()
-    {
-        auto errorID = ::GetLastError();
-        return getLastError( errorID );
-    }
-
-    QString getLastError( int errorID )
-    {
-        LPWSTR lpMsgBuf = nullptr;
-
-        ::FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, errorID, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), (LPWSTR)&lpMsgBuf, 0, nullptr );
-
-        QString result = QString::fromWCharArray( lpMsgBuf );
-        LocalFree( lpMsgBuf );
-        return result;
-    }
-#else
-    QString getLastError( int errorID )
-    {
-        (void)errorID;
-        return QString();
-    }
-
-    QString getLastError()
-    {
-        return QString();
     }
 #endif
 }

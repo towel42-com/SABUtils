@@ -30,9 +30,11 @@
 #include <set>
 #include <memory>
 #include <unordered_map>
-#include <QStringList>
-#include <QFileDevice>
-#include <QList>
+#ifdef TOWEL42_QCORE_SUPPORT
+    #include <QStringList>
+    #include <QFileDevice>
+    #include <QList>
+#endif
 #include <memory>
 
 class QFileInfo;

@@ -26,7 +26,6 @@
 #include "utils.h"
 #include "WindowsError.h"
 
-#include <Qt>
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
@@ -42,7 +41,7 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
-#ifdef Q_OS_WINDOWS
+#ifdef WIN32
     #include <qt_windows.h>
 #else
     #include <wordexp.h>
@@ -998,7 +997,7 @@ namespace NTowel42Utils
             return retVal;
         }
 
-#ifdef Q_OS_WINDOWS
+#ifdef WIN32
         static inline bool toFileTime( const QDateTime &date, FILETIME *fileTime )
         {
             SYSTEMTIME sTime;

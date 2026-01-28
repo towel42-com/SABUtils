@@ -25,12 +25,12 @@
 
 #include "Towel42UtilsExport.h"
 
-#include <QString>
+#include <string>
 #include <list>
 #include <memory>
 #include <cinttypes>
 
-class IWbemClassObject;
+struct IWbemClassObject;
 namespace NTowel42Utils
 {
     class TOWEL42_UTILS_EXPORT CGPUInfo
@@ -44,71 +44,71 @@ namespace NTowel42Utils
         bool isAMDGPU() const;
 
     private:
-        QString fAcceleratorCapabilities;
-        QString fAdapterCompatibility;
-        QString fAdapterDACType;
+        std::wstring fAcceleratorCapabilities;
+        std::wstring fAdapterCompatibility;
+        std::wstring fAdapterDACType;
         uint32_t fAdapterRAM{ 0 };
         uint32_t fAvailability{ 0 };
-        QString fCapabilityDescriptions;
-        QString fCaption;
-        QString fColorTableEntries;
+        std::wstring fCapabilityDescriptions;
+        std::wstring fCaption;
+        std::wstring fColorTableEntries;
         uint32_t fConfigManagerErrorCode{ 0 };
         bool fConfigManagerUserConfig{ false };
-        QString fCreationClassName;
+        std::wstring fCreationClassName;
         uint32_t fCurrentBitsPerPixel{ 0 };
         uint32_t fCurrentHorizontalResolution{ 0 };
-        QString fCurrentNumberOfColors;
+        std::wstring fCurrentNumberOfColors;
         uint32_t fCurrentNumberOfColumns{ 0 };
         uint32_t fCurrentNumberOfRows{ 0 };
         uint32_t fCurrentRefreshRate{ 0 };
         uint32_t fCurrentScanMode{ 0 };
         uint32_t fCurrentVerticalResolution{ 0 };
-        QString fDescription;
-        QString fDeviceID;
-        QString fDeviceSpecificPens;
+        std::wstring fDescription;
+        std::wstring fDeviceID;
+        std::wstring fDeviceSpecificPens;
         uint32_t fDitherType{ 0 };
-        QString fDriverDate;
-        QString fDriverVersion;
-        QString fErrorCleared;
-        QString fErrorDescription;
-        QString fICMIntent;
-        QString fICMMethod;
-        QString fInfFilename;
-        QString fInfSection;
-        QString fInstallDate;
-        QString fInstalledDisplayDrivers;
-        QString fLastErrorCode;
-        QString fMaxMemorySupported;
-        QString fMaxNumberControlled;
+        std::wstring fDriverDate;
+        std::wstring fDriverVersion;
+        std::wstring fErrorCleared;
+        std::wstring fErrorDescription;
+        std::wstring fICMIntent;
+        std::wstring fICMMethod;
+        std::wstring fInfFilename;
+        std::wstring fInfSection;
+        std::wstring fInstallDate;
+        std::wstring fInstalledDisplayDrivers;
+        std::wstring fLastErrorCode;
+        std::wstring fMaxMemorySupported;
+        std::wstring fMaxNumberControlled;
         uint32_t fMaxRefreshRate{ 0 };
         uint32_t fMinRefreshRate{ 0 };
         bool fMonochrome{ false };
-        QString fName;
-        QString fNumberOfColorPlanes;
-        QString fNumberOfVideoPages;
-        QString fPNPDeviceID;
-        QString fPowerManagementCapabilities;
-        QString fPowerManagementSupported;
-        QString fProtocolSupported;
-        QString fReservedSystemPaletteEntries;
-        QString fSpecificationVersion;
-        QString fStatus;
-        QString fStatusInfo;
-        QString fSystemCreationClassName;
-        QString fSystemName;
-        QString fSystemPaletteEntries;
-        QString fTimeOfLastReset;
+        std::wstring fName;
+        std::wstring fNumberOfColorPlanes;
+        std::wstring fNumberOfVideoPages;
+        std::wstring fPNPDeviceID;
+        std::wstring fPowerManagementCapabilities;
+        std::wstring fPowerManagementSupported;
+        std::wstring fProtocolSupported;
+        std::wstring fReservedSystemPaletteEntries;
+        std::wstring fSpecificationVersion;
+        std::wstring fStatus;
+        std::wstring fStatusInfo;
+        std::wstring fSystemCreationClassName;
+        std::wstring fSystemName;
+        std::wstring fSystemPaletteEntries;
+        std::wstring fTimeOfLastReset;
         uint32_t fVideoArchitecture{ 0 };
         uint32_t fVideoMemoryType{ 0 };
-        QString fVideoMode;
-        QString fVideoModeDescription;
-        QString fVideoProcessor;
+        std::wstring fVideoMode;
+        std::wstring fVideoModeDescription;
+        std::wstring fVideoProcessor;
     };
 
-    TOWEL42_UTILS_EXPORT std::list< std::shared_ptr< CGPUInfo > > detectGPUs( QString *errorMsg = nullptr );
+    TOWEL42_UTILS_EXPORT std::list< std::shared_ptr< CGPUInfo > > detectGPUs( std::wstring *errorMsg = nullptr );
     struct TOWEL42_UTILS_EXPORT SGPUInfo
     {
-        SGPUInfo( QString *errorMsg = nullptr );
+        SGPUInfo( std::wstring *errorMsg = nullptr );
         bool fIntel{ false };
         bool fAMD{ false };
         bool fNVidia{ false };

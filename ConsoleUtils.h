@@ -25,7 +25,10 @@
 #include "Towel42UtilsExport.h"
 
 #include <string>
-#include <QString>
+#ifdef TOWEL42_QCORE_SUPPORT
+    #include <QString>
+#endif
+
 namespace NTowel42Utils
 {
     enum class ESubSystem
@@ -56,7 +59,9 @@ namespace NTowel42Utils
 
     // does nothing for linux
     TOWEL42_UTILS_EXPORT bool attachConsole( std::string *msg = nullptr );   // returns true if successful
+#ifdef TOWEL42_QCORE_SUPPORT
     TOWEL42_UTILS_EXPORT bool attachConsole( QString *msg );   // returns true if successful
+#endif
 }
 
 #endif

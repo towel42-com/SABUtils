@@ -39,13 +39,14 @@
 #include <sstream>
 #include <iostream>
 #include <optional>
-#include <QString>
-#include <QDateTime>
-#include <QLocale>
-#include <QRegularExpression>
-
+#ifdef TOWEL42_QCORE_SUPPORT
+    #include <QString>
+    #include <QDateTime>
+    #include <QLocale>
+    #include <QRegularExpression>
 class QFont;
 class QPoint;
+#endif
 
 #if __cplusplus > 201703L
     #include <optional>
@@ -112,7 +113,7 @@ TOWEL42_UTILS_EXPORT inline std::ostream &t42DebugStreamInternal()
 #else
     #define t42DebugStream \
         while ( false ) \
-            t42DebugStreamInternal
+        t42DebugStreamInternal
 #endif
 
 namespace NTowel42Utils
@@ -169,7 +170,10 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT std::string toString( int64_t val, int base );
     TOWEL42_UTILS_EXPORT int64_t fromString( const std::string &str, int base );
 
+#ifdef TOWEL42_QCORE_SUPPORT
     TOWEL42_UTILS_EXPORT QString secsToString( quint64 seconds );
+    TOWEL42_UTILS_EXPORT QTime msecsToTime( uint64_t msecs );
+#endif
 
     template< typename U, typename V >
     constexpr auto durationDiff( const U &lhs, const V &rhs ) -> typename std::common_type< U, V >::type
@@ -177,8 +181,6 @@ namespace NTowel42Utils
         typedef typename std::common_type< U, V >::type Common;
         return Common( lhs ) - Common( rhs );
     }
-
-    TOWEL42_UTILS_EXPORT QTime msecsToTime( uint64_t msecs );
 
     template< typename T = std::chrono::microseconds >
     class TOWEL42_UTILS_EXPORT CTimeString
@@ -196,10 +198,12 @@ namespace NTowel42Utils
         {
         }
 
+#ifdef TOWEL42_QCORE_SUPPORT
         CTimeString( const QDateTime &startTime, const QDateTime &endTime ) :   // limited to milliseconds
             CTimeString( startTime.msecsTo( endTime ) )
         {
         }
+#endif
 
         template< typename U, std::enable_if_t< !std::is_integral_v< U >, int > = 0 >
         CTimeString( const U &duration )
@@ -214,6 +218,7 @@ namespace NTowel42Utils
         {
         }
 
+#ifdef TOWEL42_QCORE_SUPPORT
         QString toString( bool autoTrim ) const { return toString( "dd:hh:mm:ss.zzz (SS seconds)", autoTrim ); }
 
         // dd -> days, hh -> hours, mm minutes, ss seconds, zzz milliseconds for Qt and microseconds for chrono based SS total seconds.  When autotrim is true, trims off days/hours/minutes if zero only when followed by a colon minutes and
@@ -275,7 +280,9 @@ namespace NTowel42Utils
 
             return retVal;
         }
+
         std::string toStdString( const std::string &format = "dd:hh:mm:ss.zzz (SS seconds)" ) const { return toString( QString::fromStdString( format ) ).toStdString(); }
+#endif
 
     private:
         T fDuration;
@@ -503,10 +510,9 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT char GetChar();
     TOWEL42_UTILS_EXPORT int waitForPrompt( int returnCode, const char *prompt = nullptr );   // uses GetChar above
-    TOWEL42_UTILS_EXPORT QString getLastError();   // windows only
-    TOWEL42_UTILS_EXPORT QString getLastError( int errorCode );   // windows only
-
+#ifdef TOWEL42_QCORE_SUPPORT
     TOWEL42_UTILS_EXPORT bool isValidURL( const QString &url, int *start = nullptr, int *length = nullptr );
+#endif
 
     template< typename T, typename = std::enable_if< std::is_integral_v< T > > >
     std::list< std::list< T > > group( const std::list< T > &inList )
@@ -537,7 +543,8 @@ namespace NTowel42Utils
         return retVal;
     }
 
+#ifdef TOWEL42_QCORE_SUPPORT
     TOWEL42_UTILS_EXPORT std::list< int > intsFromString( const QString &string, const QString &prefixRegEx = {}, bool sort = true, bool *aOK = nullptr );
-
+#endif
 }
 #endif

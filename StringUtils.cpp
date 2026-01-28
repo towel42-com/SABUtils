@@ -24,9 +24,13 @@
 #include "RegExUtils.h"
 #include "FromString.h"
 
-#include <QString>
-#include <QRegularExpression>
-#include <QTextStream>
+#ifdef TOWEL42_QCORE_SUPPORT
+    #include <QString>
+    #include <QRegularExpression>
+    #include <QTextStream>
+    #include <QDebug>
+#endif
+
 #include <algorithm>
 #include <vector>
 #include <cstring>
@@ -36,10 +40,9 @@
 #include <cmath>
 #include <unordered_set>
 #include <iomanip>
+#include <cassert>
 
-#include <QDebug>
-
-#ifdef Q_OS_WINDOWS
+#ifdef WIN32
     #define vscprintf _vscprintf
     #define vsnprintf _vsnprintf
     #if _MSC_VER == 1500
@@ -273,12 +276,14 @@ namespace NTowel42Utils
             return stripQuotes( text, tmp );
         }
 
+#ifdef TOWEL42_QCORE_SUPPORT
         QString stripQuotes( const QString &text, char quote )
         {
             char tmp[ 2 ] = { 0, 0 };
             tmp[ 0 ] = quote;
             return stripQuotes( text, tmp );
         }
+#endif
 
         std::string stripQuotes( const char *text, const char *quotes )
         {
@@ -301,6 +306,7 @@ namespace NTowel42Utils
             return retVal;
         }
 
+#ifdef TOWEL42_QCORE_SUPPORT
         QString stripQuotes( const QString &text, const char *quotes )
         {
             auto retVal = text.trimmed();
@@ -320,6 +326,7 @@ namespace NTowel42Utils
             }
             return retVal;
         }
+#endif
 
         bool isQuoted( const char *text, char quote )
         {
@@ -335,13 +342,14 @@ namespace NTowel42Utils
             return isQuoted( text, tmp );
         }
 
+#ifdef TOWEL42_QCORE_SUPPORT
         bool isQuoted( const QString &text, char quote )
         {
             char tmp[ 2 ] = { 0, 0 };
             tmp[ 0 ] = quote;
             return isQuoted( text, tmp );
         }
-
+#endif
         bool isQuoted( const char *text, const char *quotes )
         {
             if ( !text )
@@ -363,6 +371,7 @@ namespace NTowel42Utils
             return false;
         }
 
+#ifdef TOWEL42_QCORE_SUPPORT
         bool isQuoted( const QString &text, const char *quotes )
         {
             QString retVal = text.trimmed();
@@ -379,6 +388,7 @@ namespace NTowel42Utils
             }
             return false;
         }
+#endif
 
         std::string stripAllBlanksAndQuotes( const std::string &text )
         {
@@ -455,6 +465,7 @@ namespace NTowel42Utils
             return true;
         }
 
+#ifdef TOWEL42_QCORE_SUPPORT
         //////////////////////////////////////////////////////////////////////////
         // hasPrefixSubString(string str, std::string substr)
         //
@@ -474,7 +485,6 @@ namespace NTowel42Utils
             QRegularExpression regEx( pre );
             return regEx.match( QString::fromStdString( str ) ).hasMatch();
         }
-
         //////////////////////////////////////////////////////////////////////////
         // hasSuffixSubString(string str, std::string substr)
         //
@@ -494,12 +504,12 @@ namespace NTowel42Utils
             QRegularExpression regEx( suf );
             return regEx.match( QString::fromStdString( str ) ).hasMatch();
         }
+#endif
 
         std::string replaceAllNot( const std::string &inString, const std::string &notOf, char to )
         {
             std::string string = inString;
-            std::replace_if(
-                string.begin(), string.end(), [ notOf ]( char x ) { return ( notOf.find( x ) == std::string::npos ); }, to );
+            std::replace_if( string.begin(), string.end(), [ notOf ]( char x ) { return ( notOf.find( x ) == std::string::npos ); }, to );
             return string;
         }
 
@@ -920,11 +930,12 @@ namespace NTowel42Utils
             return retVal;
         }
 
+#ifdef TOWEL42_QCORE_SUPPORT
         QString PadString( const QString &str, size_t max, EPadType padType, char padChar )
         {
             return QString::fromStdString( PadString( str.toStdString(), max, padType, padChar ) );
         }
-
+#endif
         std::string PadString( const std::string &str, size_t max, EPadType padType, char padChar )
         {
             std::string retVal;
@@ -1211,7 +1222,7 @@ namespace NTowel42Utils
 
         int strNCaseCmp( const char *s1, const char *s2, size_t n )
         {
-#ifdef Q_OS_WINDOWS
+#ifdef WIN32
             return ( _strnicmp( s1, s2, n ) );
 #else
             return ( strncasecmp( s1, s2, n ) );
@@ -1235,7 +1246,7 @@ namespace NTowel42Utils
 
         int strCaseCmp( const char *s1, const char *s2 )
         {
-#ifdef Q_OS_WINDOWS
+#ifdef WIN32
             return ( _stricmp( s1, s2 ) );
 #else
             return ( strcasecmp( s1, s2 ) );
@@ -1461,11 +1472,11 @@ namespace NTowel42Utils
                 return string;
             }
 
-            auto tmp = qgetenv( envVar.c_str() );
+            auto tmp = getenv( envVar.c_str() );
             if ( tmp == nullptr )
             {
                 envVar = toupper( envVar );
-                tmp = qgetenv( envVar.c_str() );
+                tmp = getenv( envVar.c_str() );
             }
 
             if ( aOK )
@@ -1481,7 +1492,7 @@ namespace NTowel42Utils
                 return retVal;
             }
             else
-                retVal = pre + tmp.toStdString() + post;
+                retVal = pre + tmp + post;
             if ( retVal.find_first_of( "%$" ) != std::string::npos )
             {
                 return expandEnvVariable( retVal, msg, aOK );
@@ -1611,8 +1622,7 @@ namespace NTowel42Utils
             std::string hexStr;
             hexStr.reserve( string.length() / 4 + ( string.length() % 4 > 0 ) );
             int bitsSeen = 0;
-            int totalBits = std::count( string.begin(), string.end(), '0' ) + std::count( string.begin(), string.end(), '1' ) + std::count( string.begin(), string.end(), 'Z' ) + std::count( string.begin(), string.end(), 'z' ) + std::count( string.begin(), string.end(), 'X' ) + std::count( string.begin(), string.end(), 'x' ) + std::count( string.begin(), string.end(), '?' );
-            ;
+            auto totalBits = std::count( string.begin(), string.end(), '0' ) + std::count( string.begin(), string.end(), '1' ) + std::count( string.begin(), string.end(), 'Z' ) + std::count( string.begin(), string.end(), 'z' ) + std::count( string.begin(), string.end(), 'X' ) + std::count( string.begin(), string.end(), 'x' ) + std::count( string.begin(), string.end(), '?' );
 
             unsigned hexChar = 0;
             char xchar = 0;
@@ -1823,10 +1833,10 @@ namespace NTowel42Utils
                         else if ( hexIdx == 3 )
                             hexNum += 0x1;
                         else
-                            Q_ASSERT( 0 );
+                            assert( 0 );
                         break;
                     default:
-                        Q_ASSERT( 0 );
+                        assert( 0 );
                         break;
                 }
 
@@ -1958,6 +1968,7 @@ namespace NTowel42Utils
             return tmp;
         }
 
+#ifdef TOWEL42_QCORE_SUPPORT
         std::list< std::string > splitSDCPattern( const std::string &pattern, bool regExp, const char *hsc, bool &aOK, std::string *msg )
         {
             std::list< std::string > retVal;
@@ -1984,8 +1995,8 @@ namespace NTowel42Utils
             }
             if ( regExp )
             {
-                QString origHSC = QString( "%1" ).arg( QString::fromLatin1( hsc ) );
-                QString realHSC = QRegularExpression::escape( QString( "%1" ).arg( QString::fromLatin1( hsc ) ) );
+                QString origHSC = QString::fromLatin1( hsc );
+                QString realHSC = QRegularExpression::escape( QString::fromLatin1( hsc ) );
                 if ( realHSC != origHSC )
                 {
                     realHSC = QRegularExpression::escape( QString( "\\%1" ).arg( QString::fromLatin1( hsc ) ) );
@@ -2052,6 +2063,7 @@ namespace NTowel42Utils
             hsc[ 1 ] = 0;
             return splitSDCPattern( objName, regexp, hsc, aOK, msg );
         }
+#endif
 
         char IsSwitch( const std::string &str )
         {
@@ -2143,6 +2155,7 @@ namespace NTowel42Utils
             return ( ii == str.size() ) ? std::string::npos : ii;
         }
 
+#ifdef TOWEL42_QCORE_SUPPORT
         QStringList asReport( const QStringList &columnNames, const QStringList &subHeader, const QList< QStringList > &data, bool sortData )
         {
             // first row is the columnNames
@@ -2208,6 +2221,7 @@ namespace NTowel42Utils
             retVal = headers + retVal;
             return retVal;
         }
+#endif
 
         bool isNumericString( const std::string &constString, uint64_t &val, unsigned int &numBits )
         {
@@ -2410,199 +2424,215 @@ namespace NTowel42Utils
             return validateQuotedPrintableString( str.c_str(), str.length() );
         }
 
+#ifdef TOWEL42_QCORE_SUPPORT
         bool isDiacriticalCharacter( const QChar &ch, QString *ascii )
         {
-            static auto map = std::map< QChar, QString >( {
-                { u'Á', u8"A" },   //
-                { u'À', u8"A" },   //
-                { u'Â', u8"A" },   //
-                { u'Ä', u8"A" },   //
-                { u'Ă', u8"A" },   //
-                { u'Ā', u8"A" },   //
-                { u'Ã', u8"A" },   //
-                { u'Å', u8"A" },   //
-                { u'Ą', u8"A" },   //
-                { u'Æ', u8"AE" },   //
-                { u'Ć', u8"C" },   //
-                { u'Ċ', u8"C" },   //
-                { u'Ĉ', u8"C" },   //
-                { u'Č', u8"C" },   //
-                { u'Ç', u8"C" },   //
-                { u'Ď', u8"D" },   //
-                { u'Đ', u8"D" },   //
-                { u'Ð', u8"ETH" },   //
-                { u'É', u8"E" },   //
-                { u'È', u8"E" },   //
-                { u'Ė', u8"E" },   //
-                { u'Ê', u8"E" },   //
-                { u'Ë', u8"E" },   //
-                { u'Ě', u8"E" },   //
-                { u'Ĕ', u8"E" },   //
-                { u'Ē', u8"E" },   //
-                { u'Ę', u8"E" },   //
-                { u'Ġ', u8"G" },   //
-                { u'Ĝ', u8"G" },   //
-                { u'Ğ', u8"G" },   //
-                { u'Ģ', u8"G" },   //
-                { u'Ĥ', u8"H" },   //
-                { u'Ħ', u8"H" },   //
-                { u'Í', u8"I" },   //
-                { u'Ì', u8"I" },   //
-                { u'İ', u8"I" },   //
-                { u'Î', u8"I" },   //
-                { u'Ï', u8"I" },   //
-                { u'Ĭ', u8"I" },   //
-                { u'Ī', u8"I" },   //
-                { u'Ĩ', u8"I" },   //
-                { u'Į', u8"I" },   //
-                { u'Ĳ', u8"IJ" },   //
-                { u'Ĵ', u8"J" },   //
-                { u'Ķ', u8"K" },   //
-                { u'Ĺ', u8"L" },   //
-                { u'Ŀ', u8"L" },   //
-                { u'Ľ', u8"L" },   //
-                { u'Ļ', u8"L" },   //
-                { u'Ł', u8"L" },   //
-                { u'Ń', u8"N" },   //
-                { u'Ň', u8"N" },   //
-                { u'Ñ', u8"N" },   //
-                { u'Ņ', u8"N" },   //
-                { u'Ŋ', u8"N" },   //
-                { u'Ó', u8"O" },   //
-                { u'Ò', u8"O" },   //
-                { u'Ô', u8"O" },   //
-                { u'Ö', u8"O" },   //
-                { u'Ŏ', u8"O" },   //
-                { u'Ō', u8"O" },   //
-                { u'Õ', u8"O" },   //
-                { u'Ő', u8"O" },   //
-                { u'Ø', u8"O" },   //
-                { u'Œ', u8"OE" },   //
-                { u'Ŕ', u8"R" },   //
-                { u'Ř', u8"R" },   //
-                { u'Ŗ', u8"R" },   //
-                { u'Ś', u8"S" },   //
-                { u'Ŝ', u8"S" },   //
-                { u'Š', u8"S" },   //
-                { u'Ş', u8"S" },   //
-                { u'Ť', u8"T" },   //
-                { u'Ţ', u8"T" },   //
-                { u'Þ', u8"P" },   //
-                { u'Ŧ', u8"T" },   //
-                { u'Ú', u8"U" },   //
-                { u'Ù', u8"U" },   //
-                { u'Û', u8"U" },   //
-                { u'Ü', u8"U" },   //
-                { u'Ŭ', u8"U" },   //
-                { u'Ū', u8"U" },   //
-                { u'Ũ', u8"U" },   //
-                { u'Ů', u8"U" },   //
-                { u'Ų', u8"U" },   //
-                { u'Ű', u8"U" },   //
-                { u'Ŵ', u8"W" },   //
-                { u'Ý', u8"Y" },   //
-                { u'Ŷ', u8"Y" },   //
-                { u'Ÿ', u8"Y" },   //
-                { u'Ź', u8"Z" },   //
-                { u'Ż', u8"Z" },   //
-                { u'Ž', u8"Z" },   //
-                { u'á', u8"a" },   //
-                { u'à', u8"a" },   //
-                { u'â', u8"a" },   //
-                { u'ä', u8"a" },   //
-                { u'ă', u8"a" },   //
-                { u'ā', u8"a" },   //
-                { u'ã', u8"a" },   //
-                { u'å', u8"a" },   //
-                { u'ą', u8"a" },   //
-                { u'æ', u8"ae" },   //
-                { u'ć', u8"c" },   //
-                { u'ċ', u8"c" },   //
-                { u'ĉ', u8"c" },   //
-                { u'č', u8"c" },   //
-                { u'ç', u8"c" },   //
-                { u'ď', u8"d" },   //
-                { u'đ', u8"d" },   //
-                { u'ð', u8"eth" },   //
-                { u'é', u8"e" },   //
-                { u'è', u8"e" },   //
-                { u'ė', u8"e" },   //
-                { u'ê', u8"e" },   //
-                { u'ë', u8"e" },   //
-                { u'ě', u8"e" },   //
-                { u'ĕ', u8"e" },   //
-                { u'ē', u8"e" },   //
-                { u'ę', u8"e" },   //
-                { u'ġ', u8"g" },   //
-                { u'ĝ', u8"g" },   //
-                { u'ğ', u8"g" },   //
-                { u'ģ', u8"g" },   //
-                { u'ĥ', u8"h" },   //
-                { u'ħ', u8"h" },   //
-                { u'ı', u8"i" },   //
-                { u'í', u8"i" },   //
-                { u'ì', u8"i" },   //
-                { u'î', u8"i" },   //
-                { u'ï', u8"i" },   //
-                { u'ĭ', u8"i" },   //
-                { u'ī', u8"i" },   //
-                { u'ĩ', u8"i" },   //
-                { u'į', u8"i" },   //
-                { u'ĳ', u8"ij" },   //
-                { u'ĵ', u8"j" },   //
-                { u'ĸ', u8"k" },   //
-                { u'ķ', u8"k" },   //
-                { u'ĺ', u8"l" },   //
-                { u'ŀ', u8"l" },   //
-                { u'ľ', u8"l" },   //
-                { u'ļ', u8"l" },   //
-                { u'ł', u8"l" },   //
-                { u'ń', u8"n" },   //
-                { u'ň', u8"n" },   //
-                { u'ñ', u8"n" },   //
-                { u'ņ', u8"n" },   //
-                { u'ŉ', u8"n" },   //
-                { u'ŋ', u8"n" },   //
-                { u'ó', u8"o" },   //
-                { u'ò', u8"o" },   //
-                { u'ô', u8"o" },   //
-                { u'ö', u8"o" },   //
-                { u'ŏ', u8"o" },   //
-                { u'ō', u8"o" },   //
-                { u'õ', u8"o" },   //
-                { u'ő', u8"o" },   //
-                { u'ø', u8"o" },   //
-                { u'œ', u8"oe" },   //
-                { u'ŕ', u8"r" },   //
-                { u'ř', u8"r" },   //
-                { u'ŗ', u8"r" },   //
-                { u'ś', u8"s" },   //
-                { u'ŝ', u8"s" },   //
-                { u'š', u8"s" },   //
-                { u'ş', u8"s" },   //
-                { u'ß', u8"ss" },   //
-                { u'ſ', u8"s" },   //
-                { u'ť', u8"t" },   //
-                { u'ţ', u8"t" },   //
-                { u'þ', u8"p" },   //
-                { u'ŧ', u8"t" },   //
-                { u'ú', u8"u" },   //
-                { u'ù', u8"u" },   //
-                { u'û', u8"u" },   //
-                { u'ü', u8"u" },   //
-                { u'ŭ', u8"u" },   //
-                { u'ū', u8"u" },   //
-                { u'ũ', u8"u" },   //
-                { u'ů', u8"u" },   //
-                { u'ų', u8"u" },   //
-                { u'ű', u8"u" },   //
-                { u'ŵ', u8"w" },   //
-                { u'ý', u8"y" },   //
-                { u'ŷ', u8"y" },   //
-                { u'ÿ', u8"y" },   //
-                { u'ź', u8"z" },   //
-                { u'ż', u8"z" },   //
-                { u'ž', u8"z" },   //
+            std::wstring tmp;
+            auto retVal = isDiacriticalCharacter( ch.unicode(), &tmp );
+            if ( ascii )
+                *ascii = QString::fromWStdString();
+            return retVal;
+        }
+
+        QString replaceDiacriticalCharacters( const QString &str )
+        {
+            return QString::fromStdWString( replaceDiacriticalCharacters( str.toStdWString() );
+        }
+#endif
+
+        bool isDiacriticalCharacter( const wchar_t &ch, std::wstring *ascii )
+        {
+            static auto map = std::map< wchar_t, std::wstring >( {
+                { L'Á', L"A" },   //
+                { L'À', L"A" },   //
+                { L'Â', L"A" },   //
+                { L'Ä', L"A" },   //
+                { L'Ă', L"A" },   //
+                { L'Ā', L"A" },   //
+                { L'Ã', L"A" },   //
+                { L'Å', L"A" },   //
+                { L'Ą', L"A" },   //
+                { L'Æ', L"AE" },   //
+                { L'Ć', L"C" },   //
+                { L'Ċ', L"C" },   //
+                { L'Ĉ', L"C" },   //
+                { L'Č', L"C" },   //
+                { L'Ç', L"C" },   //
+                { L'Ď', L"D" },   //
+                { L'Đ', L"D" },   //
+                { L'Ð', L"ETH" },   //
+                { L'É', L"E" },   //
+                { L'È', L"E" },   //
+                { L'Ė', L"E" },   //
+                { L'Ê', L"E" },   //
+                { L'Ë', L"E" },   //
+                { L'Ě', L"E" },   //
+                { L'Ĕ', L"E" },   //
+                { L'Ē', L"E" },   //
+                { L'Ę', L"E" },   //
+                { L'Ġ', L"G" },   //
+                { L'Ĝ', L"G" },   //
+                { L'Ğ', L"G" },   //
+                { L'Ģ', L"G" },   //
+                { L'Ĥ', L"H" },   //
+                { L'Ħ', L"H" },   //
+                { L'Í', L"I" },   //
+                { L'Ì', L"I" },   //
+                { L'İ', L"I" },   //
+                { L'Î', L"I" },   //
+                { L'Ï', L"I" },   //
+                { L'Ĭ', L"I" },   //
+                { L'Ī', L"I" },   //
+                { L'Ĩ', L"I" },   //
+                { L'Į', L"I" },   //
+                { L'Ĳ', L"IJ" },   //
+                { L'Ĵ', L"J" },   //
+                { L'Ķ', L"K" },   //
+                { L'Ĺ', L"L" },   //
+                { L'Ŀ', L"L" },   //
+                { L'Ľ', L"L" },   //
+                { L'Ļ', L"L" },   //
+                { L'Ł', L"L" },   //
+                { L'Ń', L"N" },   //
+                { L'Ň', L"N" },   //
+                { L'Ñ', L"N" },   //
+                { L'Ņ', L"N" },   //
+                { L'Ŋ', L"N" },   //
+                { L'Ó', L"O" },   //
+                { L'Ò', L"O" },   //
+                { L'Ô', L"O" },   //
+                { L'Ö', L"O" },   //
+                { L'Ŏ', L"O" },   //
+                { L'Ō', L"O" },   //
+                { L'Õ', L"O" },   //
+                { L'Ő', L"O" },   //
+                { L'Ø', L"O" },   //
+                { L'Œ', L"OE" },   //
+                { L'Ŕ', L"R" },   //
+                { L'Ř', L"R" },   //
+                { L'Ŗ', L"R" },   //
+                { L'Ś', L"S" },   //
+                { L'Ŝ', L"S" },   //
+                { L'Š', L"S" },   //
+                { L'Ş', L"S" },   //
+                { L'Ť', L"T" },   //
+                { L'Ţ', L"T" },   //
+                { L'Þ', L"P" },   //
+                { L'Ŧ', L"T" },   //
+                { L'Ú', L"L" },   //
+                { L'Ù', L"L" },   //
+                { L'Û', L"L" },   //
+                { L'Ü', L"L" },   //
+                { L'Ŭ', L"L" },   //
+                { L'Ū', L"L" },   //
+                { L'Ũ', L"L" },   //
+                { L'Ů', L"L" },   //
+                { L'Ų', L"L" },   //
+                { L'Ű', L"L" },   //
+                { L'Ŵ', L"W" },   //
+                { L'Ý', L"Y" },   //
+                { L'Ŷ', L"Y" },   //
+                { L'Ÿ', L"Y" },   //
+                { L'Ź', L"Z" },   //
+                { L'Ż', L"Z" },   //
+                { L'Ž', L"Z" },   //
+                { L'á', L"a" },   //
+                { L'à', L"a" },   //
+                { L'â', L"a" },   //
+                { L'ä', L"a" },   //
+                { L'ă', L"a" },   //
+                { L'ā', L"a" },   //
+                { L'ã', L"a" },   //
+                { L'å', L"a" },   //
+                { L'ą', L"a" },   //
+                { L'æ', L"ae" },   //
+                { L'ć', L"c" },   //
+                { L'ċ', L"c" },   //
+                { L'ĉ', L"c" },   //
+                { L'č', L"c" },   //
+                { L'ç', L"c" },   //
+                { L'ď', L"d" },   //
+                { L'đ', L"d" },   //
+                { L'ð', L"eth" },   //
+                { L'é', L"e" },   //
+                { L'è', L"e" },   //
+                { L'ė', L"e" },   //
+                { L'ê', L"e" },   //
+                { L'ë', L"e" },   //
+                { L'ě', L"e" },   //
+                { L'ĕ', L"e" },   //
+                { L'ē', L"e" },   //
+                { L'ę', L"e" },   //
+                { L'ġ', L"g" },   //
+                { L'ĝ', L"g" },   //
+                { L'ğ', L"g" },   //
+                { L'ģ', L"g" },   //
+                { L'ĥ', L"h" },   //
+                { L'ħ', L"h" },   //
+                { L'ı', L"i" },   //
+                { L'í', L"i" },   //
+                { L'ì', L"i" },   //
+                { L'î', L"i" },   //
+                { L'ï', L"i" },   //
+                { L'ĭ', L"i" },   //
+                { L'ī', L"i" },   //
+                { L'ĩ', L"i" },   //
+                { L'į', L"i" },   //
+                { L'ĳ', L"ij" },   //
+                { L'ĵ', L"j" },   //
+                { L'ĸ', L"k" },   //
+                { L'ķ', L"k" },   //
+                { L'ĺ', L"l" },   //
+                { L'ŀ', L"l" },   //
+                { L'ľ', L"l" },   //
+                { L'ļ', L"l" },   //
+                { L'ł', L"l" },   //
+                { L'ń', L"n" },   //
+                { L'ň', L"n" },   //
+                { L'ñ', L"n" },   //
+                { L'ņ', L"n" },   //
+                { L'ŉ', L"n" },   //
+                { L'ŋ', L"n" },   //
+                { L'ó', L"o" },   //
+                { L'ò', L"o" },   //
+                { L'ô', L"o" },   //
+                { L'ö', L"o" },   //
+                { L'ŏ', L"o" },   //
+                { L'ō', L"o" },   //
+                { L'õ', L"o" },   //
+                { L'ő', L"o" },   //
+                { L'ø', L"o" },   //
+                { L'œ', L"oe" },   //
+                { L'ŕ', L"r" },   //
+                { L'ř', L"r" },   //
+                { L'ŗ', L"r" },   //
+                { L'ś', L"s" },   //
+                { L'ŝ', L"s" },   //
+                { L'š', L"s" },   //
+                { L'ş', L"s" },   //
+                { L'ß', L"ss" },   //
+                { L'ſ', L"s" },   //
+                { L'ť', L"t" },   //
+                { L'ţ', L"t" },   //
+                { L'þ', L"p" },   //
+                { L'ŧ', L"t" },   //
+                { L'ú', L"L" },   //
+                { L'ù', L"L" },   //
+                { L'û', L"L" },   //
+                { L'ü', L"L" },   //
+                { L'ŭ', L"L" },   //
+                { L'ū', L"L" },   //
+                { L'ũ', L"L" },   //
+                { L'ů', L"L" },   //
+                { L'ų', L"L" },   //
+                { L'ű', L"L" },   //
+                { L'ŵ', L"w" },   //
+                { L'ý', L"y" },   //
+                { L'ŷ', L"y" },   //
+                { L'ÿ', L"y" },   //
+                { L'ź', L"z" },   //
+                { L'ż', L"z" },   //
+                { L'ž', L"z" },   //
             } );
             auto pos = map.find( ch );
             if ( pos == map.end() )
@@ -2612,6 +2642,22 @@ namespace NTowel42Utils
             return true;
         }
 
+        std::wstring replaceDiacriticalCharacters( const std::wstring &str )
+        {
+            std::wstring retVal;
+            for ( auto &&ii : str )
+            {
+                std::wstring ascii;
+                if ( isDiacriticalCharacter( ii, &ascii ) )
+                    retVal += ascii;
+                else
+                    retVal += ii;
+            }
+
+            return retVal;
+        }
+
+#ifdef TOWEL42_QCORE_SUPPORT
         bool startsOrEndsWithNumber( const QString &string, QString *number /*= nullptr*/, QString *extra /*= nullptr*/, bool *numIsPrefix /*= nullptr*/ )   // a numbers separated by a non A-Z
         {
             if ( number )
@@ -2789,21 +2835,6 @@ namespace NTowel42Utils
             return retVal;
         }
 
-        QString replaceDiacriticalCharacters( const QString &str )
-        {
-            QString retVal;
-            for ( auto &&ii : str )
-            {
-                QString ascii;
-                if ( isDiacriticalCharacter( ii, &ascii ) )
-                    retVal += ascii;
-                else
-                    retVal += ii;
-            }
-
-            return retVal;
-        }
-
         const std::unordered_set< QString > &unimportantWords()
         {
             static std::unordered_set< QString > retVal = { "a", "an", "the", "at", "by", "in", "is", "of", "on", "to", "per", "via", "and", "as", "for", "and", "nor", "but", "or", "yet", "so", "if", "how" };
@@ -2874,7 +2905,7 @@ namespace NTowel42Utils
                 return ( lhsWords == rhsWords );
             }
         }
-
+#endif
         double TOWEL42_UTILS_EXPORT cleanPercentage( double in )
         {
             auto integral = static_cast< int >( std::floor( in ) );
@@ -2891,6 +2922,7 @@ namespace NTowel42Utils
             return retVal;
         }
 
+#ifdef TOWEL42_QCORE_SUPPORT
         int romanCharValue( QChar ch, bool &aOK )
         {
             static std::unordered_map< char, int > sValueMap = {
@@ -3062,5 +3094,6 @@ namespace NTowel42Utils
 
             return tmp.join( " " );
         }
+#endif
     }
 }

@@ -26,7 +26,9 @@
 #include "Towel42UtilsExport.h"
 
 #include <string>
-#include <QString>
+#ifdef TOWEL42_QCORE_SUPPORT
+    #include <QString>
+#endif
 namespace NTowel42Utils
 {
     namespace NStringUtils
@@ -50,12 +52,12 @@ namespace NTowel42Utils
             size_t operator()( const std::string &s ) const;
         };
 
+#ifdef TOWEL42_QCORE_SUPPORT
         class TOWEL42_UTILS_EXPORT noCaseQStringCmp
         {
         public:
             bool operator()( const QString &s1, const QString &s2 ) const;
         };
-
         class TOWEL42_UTILS_EXPORT noCaseQStringEq
         {
         public:
@@ -66,6 +68,7 @@ namespace NTowel42Utils
         {
             size_t operator()( const QString &s ) const;
         };
+#endif
     }
 }
 #endif
