@@ -48,7 +48,7 @@ class QFont;
 class QPoint;
 #endif
 
-#if __cplusplus > 201703L
+#if __cplusplus >= 201703L
     #include <optional>
 #endif
 
@@ -329,7 +329,7 @@ namespace NTowel42Utils
         return oss.str();
     }
 
-#if __cplusplus > 201703L
+#if __cplusplus >= 201703L
     template< size_t N >
     constexpr std::optional< size_t > findLargestIndexInBitSet( const std::bitset< N > &set )
     {
@@ -389,7 +389,7 @@ namespace NTowel42Utils
         }
     }
 
-#if __cplusplus > 201703L
+#if __cplusplus >= 201703L
     template< typename T >
     void allCombinations( const std::vector< T > &arr, size_t r, const std::function< void( const std::vector< T > &sub ) > &func )
     {
