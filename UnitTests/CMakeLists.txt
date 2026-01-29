@@ -60,6 +60,8 @@ IF(TOWEL42_QCORE_SUPPORT)
         ../FromString.h
         ../WordExp.cpp
         ../WordExp.h
+        ../ExcelFuncs.h
+        ../ExcelFuncs.cpp
     )
     SET( LIBS 
         ${LIBS}
@@ -68,11 +70,11 @@ IF(TOWEL42_QCORE_SUPPORT)
 endif()
 
 set( testProjectName "" )
-TOWEL42_UNIT_TEST(Utils
-    Test.cpp
+TOWEL42_UNIT_TEST(QtBasedUtils
+    main.cpp
     "gmock;Qt6::Core"
     testProjectName
-    ${SOURCE_FILES}
+    TestGeneral.cpp;TestExcelFuncs.cpp;${SOURCE_FILES}
     )
 
 set_target_properties( ${testProjectName} PROPERTIES 
@@ -94,3 +96,4 @@ set_target_properties( ${testProjectName} PROPERTIES
                                     VS_DEBUGGER_COMMAND "$<TARGET_FILE:${testProjectName}>" 
                                     VS_DEBUGGER_ENVIRONMENT "PATH=${DEBUG_PATH}" 
                      )
+

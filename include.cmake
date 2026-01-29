@@ -42,12 +42,11 @@ ENDIF()
 
 set(project_SRCS
     FileSIDInfo.cpp
+    FromString.cpp
     GPUDetect.cpp
     RegExUtils.cpp
     StringComparisonClasses.cpp
-    utils.cpp
     StringUtils.cpp
-    FromString.cpp
     ${OS_SRCS}
 )
 
@@ -59,13 +58,13 @@ set(project_H
     EnumUtils.h
     FileSIDInfo.h
     FromString.h
-    HashUtils.h
     GPUDetect.h
-    RevertValue.h
+    HashUtils.h
     RegExUtils.h
-    Towel42UtilsExport.h
+    RevertValue.h
     StringComparisonClasses.h
     StringUtils.h
+    Towel42UtilsExport.h
     ${OS_HEADERS}
 )
 
@@ -77,50 +76,58 @@ if ( NOT TOWEL42_QCORE_SUPPORT )
     if ( TOWEL42_QWIDGET_SUPPORT )
         MESSAGE( WARNING "QWidget Support requires QtCore Support" )
         set( TOWEL42_QCORE_SUPPORT true )
+        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
     endif()
     
     if ( TOWEL42_BIFSUPPORT )
         MESSAGE( WARNING "BIF Support requires QtCore Support" )
         set( TOWEL42_QCORE_SUPPORT true )
+        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
     endif()
 
     if ( TOWEL42_QNETWORK_SUPPORT )
         MESSAGE( WARNING "QNetwork Support requires QtCore Support" )
         set( TOWEL42_QCORE_SUPPORT true )
+        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
     endif()
 
     if ( TOWEL42_MKVUTILS )
         MESSAGE( WARNING "MKVUtils Support requires QtCore Support" )
         set( TOWEL42_QCORE_SUPPORT true )
+        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
     endif()
     
     if ( TOWEL42_GIFSUPPORT )
         MESSAGE( WARNING "GIF Support requires QtCore Support" )
         set( TOWEL42_QCORE_SUPPORT true )
+        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
     endif()
 
     if ( TOWEL42_QAXOBJECT_SUPPORT )
         MESSAGE( WARNING "QAXObject Support requires QtCore Support" )
         set( TOWEL42_QCORE_SUPPORT true )
+        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
     endif()
     
         if ( TOWEL42_ZIP_SUPPORT )
         MESSAGE( WARNING "ZIP Support requires QtCore Support" )
         set( TOWEL42_QCORE_SUPPORT true )
+        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
     endif()
 
     if ( TOWEL42_QCONCURRENT_SUPPORT )
         MESSAGE( WARNING "QConcurrent Support requires QtCore Support" )
         set( TOWEL42_QCORE_SUPPORT true )
+        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
     endif()
 endif()
 
 if ( TOWEL42_QCORE_SUPPORT )
     IF(WIN32)
             set( QT_OS_SRCS 
+                ForceUnbufferedProcessModifier.cpp 
                 MoveToTrash_win.cpp 
                 SystemInfo_win.cpp 
-                ForceUnbufferedProcessModifier.cpp 
             )
             set( QT_OS_HEADERS 
                 ${OS_HEADERS}
@@ -137,21 +144,23 @@ if ( TOWEL42_QCORE_SUPPORT )
     set(qtproject_SRCS
         ${qtproject_SRCS}
         ${QT_OS_SRCS}
-        BackupFile.cpp
         BackgroundFileCheck.cpp
+        BackupFile.cpp
+        ExcelFuncs.cpp
         FFMpegFormats.cpp
-        MD5.cpp
-        SystemInfo.cpp
-        UtilityModels.cpp
-        MoveToTrash.cpp
+        FileCompare.cpp
         FileUtils.cpp
         FileUtils_Remove.cpp
         FindAllFiles.cpp
-        QtUtils.cpp
         JsonUtils.cpp
-        FileCompare.cpp
+        MD5.cpp
+        MoveToTrash.cpp
+        QtUtils.cpp
         StayAwake.cpp
+        SystemInfo.cpp
         Towel42UtilsResources.cpp
+        UtilityModels.cpp
+        utils.cpp
         WordExp.cpp
     )
 
@@ -165,19 +174,20 @@ if ( TOWEL42_QCORE_SUPPORT )
     set(project_H
         ${QT_OS_HEADERS}
         ${project_H}
+        ExcelFuncs.h
         FFMpegFormats.h
-        FileUtils.h
         FileCompare.h
-        QtHashUtils.h
-        QtUtils.h
-        utils.h
-        SystemInfo.h
-        MoveToTrash.h
+        FileUtils.h
         JsonUtils.h
         MetaUtils.h
-        Towel42UtilsResources.h
-        WordExp.h
+        MoveToTrash.h
+        QtHashUtils.h
+        QtUtils.h
         StayAwake.h   
+        SystemInfo.h
+        Towel42UtilsResources.h
+        utils.h
+        WordExp.h
     )
 
     SET( project_pub_DEPS
@@ -201,12 +211,12 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         AutoWaitCursor.cpp
         ButtonEnabler.cpp
         CollapsableGroupBox.cpp
-        DelayLineEdit.cpp
         DelayComboBox.cpp
+        DelayLineEdit.cpp
         DelaySpinBox.cpp
         DoubleProgressDlg.cpp
-        HyperLinkLineEdit.cpp
         FileBasedCache.cpp
+        HyperLinkLineEdit.cpp
         ImageScrollBar.cpp
         LineEditWithSuffix.cpp
         MenuBarEx.cpp
@@ -216,26 +226,26 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         SelectFileUrl.cpp
         SpinBox64.cpp
         SpinBox64U.cpp
-        UtilityViews.cpp
         uiUtils.cpp
-        WidgetEnabler.cpp
+        UtilityViews.cpp
         WidgetChanged.cpp
+        WidgetEnabler.cpp
     )
     set(qtproject_H
         ${qtproject_H}
         AutoWaitCursor.h
         ButtonEnabler.h
         CollapsableGroupBox.h
-        DelayLineEdit.h
         DelayComboBox.h
+        DelayLineEdit.h
         DelaySpinBox.h
         DoubleProgressDlg.h
-        ImageScrollBar.h
         HyperLinkLineEdit.h
+        ImageScrollBar.h
         LineEditWithSuffix.h
         MenuBarEx.h
-        SelectFileUrl.h
         ScrollMessageBox.h
+        SelectFileUrl.h
         SpinBox64.h
         SpinBox64U.h
         UtilityViews.h
@@ -243,9 +253,9 @@ if ( TOWEL42_QWIDGET_SUPPORT )
     )
     set(project_H
         ${project_H}
-        FileBasedCache.h
         AutoFetch.h
         BackupFile.h
+        FileBasedCache.h
         ProgressBarProxyStyle.h
         QtDumper.h
         SpinBox64_StepType.h
@@ -254,8 +264,8 @@ if ( TOWEL42_QWIDGET_SUPPORT )
     )
     set(qtproject_UIS
         ${qtproject_UIS}
-        ScrollMessageBox.ui
         DownloadFile.ui
+        ScrollMessageBox.ui
     )
     
     SET( project_pub_DEPS
@@ -329,14 +339,14 @@ endif()
 if ( TOWEL42_MKVUTILS )
     set(qtproject_SRCS
         ${qtproject_SRCS}
-        MKVUtils.cpp
         MediaInfo.cpp
+        MKVUtils.cpp
         SetMKVTags.cpp
     )
     set(qtproject_H
         ${qtproject_H}
-        SetMKVTags.h
         MediaInfo.h
+        SetMKVTags.h
     )
     set(project_H
         ${project_H}
@@ -349,8 +359,8 @@ if ( TOWEL42_MKVUTILS )
 
     SET( project_pub_DEPS
         ${project_pub_DEPS}
-        MKVReader
         mediainfo
+        MKVReader
         Qt6::Multimedia
     )
 endif()

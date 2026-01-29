@@ -360,8 +360,8 @@ namespace
     TEST( TestUtils, TestCombinationalString )
     {
         std::vector< std::string > arr = { "1", "2", "3" };
-        auto numCombinations = NUtils::numCombinations( 3, 3 );
-        auto combinations = NUtils::allCombinations( arr, 3 );
+        auto numCombinations = NTowel42Utils::numCombinations( 3, 3 );
+        auto combinations = NTowel42Utils::allCombinations( arr, 3 );
     }
 
     TEST( TestUtils, TestCombinational )
@@ -1041,14 +1041,4 @@ namespace
         EXPECT_EQ( QStringLiteral( R"__("The Origin of Species<<==>>The Origin of Species")__" ), NTowel42Utils::NStringUtils::regExReplace( "The Origin of Species", pattern, replacement ) );
     }
 #endif
-}
-
-int main( int argc, char **argv )
-{
-#ifdef TOWEL42_QCORE_SUPPORT
-    QCoreApplication appl( argc, argv );
-#endif
-    ::testing::InitGoogleTest( &argc, argv );
-    int retVal = RUN_ALL_TESTS();
-    return retVal;
 }

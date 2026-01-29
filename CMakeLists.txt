@@ -75,10 +75,11 @@ if ( NOT TOWEL42_UTILS_DIR )
 endif()
 
 add_definitions( -DTOWEL42UTILS_INTERNAL )
-add_definitions( -DTOWEL42_QCORE_SUPPORT )
 
 
 include( ${CMAKE_SOURCE_DIR}/T42-CMakeUtils/Modules/EnableGoogleTesting.cmake )
+
+include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
 
 if ( TOWEL42_MKVUTILS )
     SET(NO_USE_MEDIAINFO_INSTALL ON)
@@ -87,7 +88,6 @@ if ( TOWEL42_MKVUTILS )
     add_subdirectory( MediaInfo/ProjectFiles/MediaInfoLib )
     add_subdirectory( MKVReader )
 endif()
-
 
 OPTION(TOWEL42_DEBUG_TRACE "Enable Debug Tracing to std::cout" OFF)
 
@@ -123,9 +123,8 @@ if ( TOWEL42_MKVUTILS )
     find_package(Qt6 COMPONENTS Multimedia REQUIRED)
 endif()
 
-find_package(IncludeProjectSettings REQUIRED)
-include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
 project( ${_PROJECT_NAME} ) 
+find_package(IncludeProjectSettings REQUIRED)
 IncludeProjectSettings()
 
 find_package(Deploy REQUIRED)
@@ -200,6 +199,7 @@ if ( NOT TOWEL42_NO_DEPLOY_SUBMODULES )
         IF(TOWEL42_QCORE_SUPPORT)
             DeployQt( ${PROJECT_NAME} . )
         ENDIF()
+
         DeploySystem( ${PROJECT_NAME} . )
     endif()
 endif()
