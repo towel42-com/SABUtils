@@ -42,6 +42,15 @@ namespace NTowel42Utils
 #ifdef TOWEL42_QCORE_SUPPORT
     TOWEL42_UTILS_EXPORT QDate nthDayOfMonth( int year, int month, int nthDay, int dayOfWeek );
     TOWEL42_UTILS_EXPORT QDate closestWorkDay( const QDate &date );
+    TOWEL42_UTILS_EXPORT bool isWorkDay( const QDate &date );
+    TOWEL42_UTILS_EXPORT bool isHoliday( const QDate &date, const std::list< QDate > &holidays );
+
+    TOWEL42_UTILS_EXPORT int quarterNum( const QDate &date );
+
+    TOWEL42_UTILS_EXPORT int numberOfBusinessDays( const QDate &startDate, const QDate &endDate );
+    TOWEL42_UTILS_EXPORT int numberOfHolidayDays( const QDate &startDate, const QDate &endDate, const std::list< QDate > &holidays );
+    TOWEL42_UTILS_EXPORT int numberOfWorkDays( const QDate &startDate, const QDate &endDate, const std::list< QDate > &holidays );
+
 #endif
 }
 #endif

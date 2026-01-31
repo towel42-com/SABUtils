@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 #include "ExcelFuncs.h"
+#include <QDate>
+#include < unordered_set >
 
 #if __cplusplus >= 202002L
     #include <chrono>
@@ -80,6 +82,7 @@ namespace NTowel42Utils
             retVal = std::chrono::sys_days( retVal ) + std::chrono::days( 1 );
         return retVal;
     }
+
 #endif
 #ifdef TOWEL42_QCORE_SUPPORT
     QDate nthDayOfMonth( int year, int month, int nthDay, int dayOfWeek )
@@ -88,8 +91,7 @@ namespace NTowel42Utils
         int offset = 1;
         if ( nthDay < 0 )
         {
-            dt = QDate( year, month + 1, 1 );
-            dt = dt.addDays( -1 );
+            dt = QDate( year, month, 1 ).addMonths( 1 ).addDays( -1 );
             offset = -1;
             nthDay *= -1;
         }
@@ -112,6 +114,7 @@ namespace NTowel42Utils
 
     QDate closestWorkDay( const QDate &date )
     {
+        Q_ASSERT( date.isValid() );
         QDate retVal = date;
         auto dayOfWeek = date.dayOfWeek();
         if ( dayOfWeek == 6 )
@@ -120,5 +123,74 @@ namespace NTowel42Utils
             retVal = retVal.addDays( 1 );
         return retVal;
     }
+
+    bool isWorkDay( const QDate &date )
+    {
+        return ( date.dayOfWeek() != 6 ) && ( date.dayOfWeek() != 7 );
+    }
+
+    int numberOfBusinessDays( const QDate &startDate, const QDate &endDate )
+    {
+        int retVal = 0;
+        for ( auto ii = startDate; ii <= endDate; ii = ii.addDays( 1 ) )
+        {
+            if ( isWorkDay( ii ) )
+                retVal++;
+        }
+        return retVal;
+    }
+    struct QDateHash
+    {
+        std::size_t operator()( const QDate &date ) const { return std::hash< qint64 >()( date.toJulianDay() ); }
+    };
+
+    bool isHoliday( const QDate &date, const std::unordered_set< QDate, QDateHash > &holidays )
+    {
+        auto pos = holidays.find( date );
+        return ( holidays.find( date ) != holidays.end() );
+    }
+
+    bool isHoliday( const QDate &date, const std::list< QDate > &holidays )
+    {
+        return isHoliday( date, std::unordered_set< QDate, QDateHash >( { holidays.begin(), holidays.end() } ) );
+    }
+
+    int quarterNum( const QDate &date )
+    {
+        auto monthNum = date.month();
+        if ( monthNum >= 1 && monthNum <= 3 )
+            return 1;
+        if ( monthNum >= 4 && monthNum <= 6 )
+            return 2;
+        if ( monthNum >= 7 && monthNum <= 9 )
+            return 3;
+        //if ( monthNum >= 10 && monthNum <= 12 )
+        return 4;
+    }
+
+    int numberOfHolidayDays( const QDate &startDate, const QDate &endDate, const std::list< QDate > &holidaysList )
+    {
+        auto holidays = std::unordered_set< QDate, QDateHash >( { holidaysList.begin(), holidaysList.end() } );
+        int retVal = 0;
+        for ( auto ii = startDate; ii <= endDate; ii = ii.addDays( 1 ) )
+        {
+            if ( isHoliday( ii, holidays ) )
+                retVal++;
+        }
+        return retVal;
+    }
+
+    int numberOfWorkDays( const QDate &startDate, const QDate &endDate, const std::list< QDate > &holidaysList )
+    {
+        auto holidays = std::unordered_set< QDate, QDateHash >( { holidaysList.begin(), holidaysList.end() } );
+        int retVal = 0;
+        for ( auto ii = startDate; ii <= endDate; ii = ii.addDays( 1 ) )
+        {
+            if ( isWorkDay( ii ) && !isHoliday( ii, holidays ) )
+                retVal++;
+        }
+        return retVal;
+    }
+
 #endif
 }
