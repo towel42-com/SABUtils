@@ -171,4 +171,49 @@ namespace NTowel42Utils
         auto objValue = obj[ keyName ];
         return fromJson( value, objValue );
     }
+
+    bool fromJson( QDate &value, const QJsonValue &val )
+    {
+        value = {};
+        if ( !val.isObject() || val.toObject().isEmpty() )
+        {
+            return false;
+        }
+
+        auto dateObj = val.toObject();
+
+        std::optional< int > year;
+        std::optional< int > month;
+        std::optional< int > day;
+
+        if ( dateObj.contains( "year" ) )
+            year = dateObj[ "year" ].toInteger();
+        if ( !year.has_value() )
+        {
+            return false;
+        }
+
+        if ( dateObj.contains( "month" ) )
+            month = dateObj[ "month" ].toInteger();
+        if ( !month.has_value() )
+        {
+            return false;
+        }
+
+        if ( dateObj.contains( "day" ) )
+            day = dateObj[ "day" ].toInteger();
+        if ( !day.has_value() )
+        {
+            return false;
+        }
+
+        auto retVal = QDate( year.value(), month.value(), day.value() );
+        if ( retVal.isNull() )
+        {
+            return false;
+        }
+        value = retVal;
+        return true;
+    }
+
 }

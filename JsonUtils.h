@@ -24,7 +24,7 @@
 #define __JSONUTILS_H
 
 #include "Towel42UtilsExport.h"
-
+#include <QDate>
 #include <set>
 #include <list>
 #include <unordered_map>
@@ -34,15 +34,27 @@
 namespace NTowel42Utils
 {
     template< typename T >
-    QJsonValue toJson( const T &value )
+    inline QJsonValue toJson( const T &value )
     {
         return QJsonValue( value );
     }
-        
+
+    template<>
+    inline QJsonValue toJson( const QDate &date )
+    {
+        QJsonObject retVal;
+        if ( !date.isValid() )
+            return {};
+        retVal.insert( "year", date.year() );
+        retVal.insert( "month", date.month() );
+        retVal.insert( "day", date.day() );
+        return retVal;
+    }
+
     TOWEL42_UTILS_EXPORT QJsonValue toJson( const QStringList &value );
 
     template< typename T >
-    QJsonValue toJson( const std::list< T > &value )
+    inline QJsonValue toJson( const std::list< T > &value )
     {
         QJsonArray retVal;
         for ( auto &&ii : value )
@@ -54,7 +66,7 @@ namespace NTowel42Utils
     }
 
     template< typename T >
-    QJsonValue toJson( const std::set< T > &value )
+    inline QJsonValue toJson( const std::set< T > &value )
     {
         QJsonArray retVal;
         for ( auto &&ii : value )
@@ -66,7 +78,7 @@ namespace NTowel42Utils
     }
 
     template< typename T1, typename T2 >
-    QJsonValue toJson( const std::pair< T1, T2 > &value )
+    inline QJsonValue toJson( const std::pair< T1, T2 > &value )
     {
         QJsonArray retVal;
 
@@ -80,7 +92,7 @@ namespace NTowel42Utils
     }
 
     template< typename T2 >
-    QJsonValue toJson( const std::unordered_map< QString, T2 > &value )
+    inline QJsonValue toJson( const std::unordered_map< QString, T2 > &value )
     {
         QJsonObject retVal;
         for ( auto &&ii : value )
@@ -102,9 +114,10 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool fromJson( double &value, const QJsonValue &val );
     TOWEL42_UTILS_EXPORT bool fromJson( QString &value, const QJsonValue &val );
     TOWEL42_UTILS_EXPORT bool fromJson( int &value, const QJsonValue &val );
+    TOWEL42_UTILS_EXPORT bool fromJson( QDate &value, const QJsonValue &val );
 
     template< typename T >
-    bool fromJson( std::list< T > &value, const QJsonValue &val )
+    inline bool fromJson( std::list< T > &value, const QJsonValue &val )
     {
         value.clear();
         if ( !val.isArray() )
@@ -121,14 +134,14 @@ namespace NTowel42Utils
     }
 
     template< typename T >
-    bool fromJson( std::list< T > &value, const QJsonObject &obj, const QString &keyName )
+    inline bool fromJson( std::list< T > &value, const QJsonObject &obj, const QString &keyName )
     {
         auto objValue = obj[ keyName ];
         return fromJson( value, objValue );
     }
 
     template< typename T >
-    bool fromJson( std::set< T > &value, const QJsonValue &val )
+    inline bool fromJson( std::set< T > &value, const QJsonValue &val )
     {
         value.clear();
         if ( !val.isArray() )
@@ -146,14 +159,14 @@ namespace NTowel42Utils
     }
 
     template< typename T >
-    bool fromJson( std::set< T > &value, const QJsonObject &obj, const QString &keyName )
+    inline bool fromJson( std::set< T > &value, const QJsonObject &obj, const QString &keyName )
     {
         auto objValue = obj[ keyName ];
         return fromJson( value, objValue );
     }
 
     template< typename T1, typename T2 >
-    bool fromJson( std::pair< T1, T2 > &value, const QJsonValue &val )
+    inline bool fromJson( std::pair< T1, T2 > &value, const QJsonValue &val )
     {
         value = std::make_pair( T1(), T2() );
         if ( !val.isArray() )
@@ -173,14 +186,14 @@ namespace NTowel42Utils
     }
 
     template< typename T1, typename T2 >
-    bool fromJson( std::pair< T1, T2 > &value, const QJsonObject &obj, const QString &keyName )
+    inline bool fromJson( std::pair< T1, T2 > &value, const QJsonObject &obj, const QString &keyName )
     {
         auto objValue = obj[ keyName ];
         return fromJson( value, objValue );
     }
 
     template< typename T2 >
-    bool fromJson( std::unordered_map< QString, T2 > &value, const QJsonValue &val )
+    inline bool fromJson( std::unordered_map< QString, T2 > &value, const QJsonValue &val )
     {
         value.clear();
         if ( !val.isObject() )
@@ -199,14 +212,14 @@ namespace NTowel42Utils
     }
 
     template< typename T2 >
-    bool fromJson( std::unordered_map< QString, T2 > &value, const QJsonObject &obj, const QString &keyName )
+    inline bool fromJson( std::unordered_map< QString, T2 > &value, const QJsonObject &obj, const QString &keyName )
     {
         auto objValue = obj[ keyName ];
         return fromJson( value, objValue );
     }
 
     template< typename T >
-    bool fromJson( std::optional< T > &value, const QJsonValue &val )
+    inline bool fromJson( std::optional< T > &value, const QJsonValue &val )
     {
         value.reset();
 
@@ -219,10 +232,20 @@ namespace NTowel42Utils
     }
 
     template< typename T >
-    bool fromJson( std::optional< T > &value, const QJsonObject &obj, const QString &keyName )
+    inline bool fromJson( std::optional< T > &value, const QJsonObject &obj, const QString &keyName )
     {
         auto objValue = obj[ keyName ];
         return fromJson( value, objValue );
+    }
+
+    template< typename T >
+    inline std::optional< T > fromJson( const QJsonValue &val )
+    {
+        T retVal;
+        auto aOK = fromJson( retVal, val );
+        if ( aOK )
+            return retVal;
+        return {};
     }
 }
 #endif
