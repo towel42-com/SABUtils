@@ -112,6 +112,11 @@ namespace NTowel42Utils
         return dt;
     }
 
+    struct QDateHash
+    {
+        std::size_t operator()( const QDate &date ) const { return std::hash< qint64 >()( date.toJulianDay() ); }
+    };
+
     QDate closestWorkDay( const QDate &date )
     {
         Q_ASSERT( date.isValid() );
@@ -129,20 +134,14 @@ namespace NTowel42Utils
         return ( date.dayOfWeek() != 6 ) && ( date.dayOfWeek() != 7 );
     }
 
-    int numberOfBusinessDays( const QDate &startDate, const QDate &endDate )
+    bool isHoliday( const QDate &date, const std::unordered_map< QDate, double, QDateHash > &holidays, std::optional< double > &numHours )
     {
-        int retVal = 0;
-        for ( auto ii = startDate; ii <= endDate; ii = ii.addDays( 1 ) )
-        {
-            if ( isWorkDay( ii ) )
-                retVal++;
-        }
-        return retVal;
+        auto pos = holidays.find( date );
+        auto found = ( pos != holidays.end() );
+        if ( found )
+            numHours = ( *pos ).second;
+        return found;
     }
-    struct QDateHash
-    {
-        std::size_t operator()( const QDate &date ) const { return std::hash< qint64 >()( date.toJulianDay() ); }
-    };
 
     bool isHoliday( const QDate &date, const std::unordered_set< QDate, QDateHash > &holidays )
     {
@@ -168,26 +167,51 @@ namespace NTowel42Utils
         return 4;
     }
 
-    int numberOfHolidayDays( const QDate &startDate, const QDate &endDate, const std::list< QDate > &holidaysList )
+    int numberOfBusinessDays( const QDate &startDate, const QDate &endDate )
     {
-        auto holidays = std::unordered_set< QDate, QDateHash >( { holidaysList.begin(), holidaysList.end() } );
         int retVal = 0;
         for ( auto ii = startDate; ii <= endDate; ii = ii.addDays( 1 ) )
         {
-            if ( isHoliday( ii, holidays ) )
+            if ( isWorkDay( ii ) )
                 retVal++;
         }
         return retVal;
     }
 
-    int numberOfWorkDays( const QDate &startDate, const QDate &endDate, const std::list< QDate > &holidaysList )
+    double numberOfHolidayDays( const QDate &startDate, const QDate &endDate, const std::list< std::pair< QDate, double > > &holidaysList )
     {
-        auto holidays = std::unordered_set< QDate, QDateHash >( { holidaysList.begin(), holidaysList.end() } );
-        int retVal = 0;
+        auto holidays = std::unordered_map< QDate, double, QDateHash >( { holidaysList.begin(), holidaysList.end() } );
+        double retVal = 0;
         for ( auto ii = startDate; ii <= endDate; ii = ii.addDays( 1 ) )
         {
-            if ( isWorkDay( ii ) && !isHoliday( ii, holidays ) )
-                retVal++;
+            std::optional< double > numHours;
+            if ( isHoliday( ii, holidays, numHours ) )
+            {
+                if ( numHours.has_value() )
+                    retVal += ( numHours.value() / 8 );
+                else
+                    retVal += 1;
+            }
+        }
+        return retVal;
+    }
+
+    double numberOfWorkDays( const QDate &startDate, const QDate &endDate, const std::list< std::pair< QDate, double > > &holidaysList )
+    {
+        auto holidays = std::unordered_map< QDate, double, QDateHash >( { holidaysList.begin(), holidaysList.end() } );
+        double retVal = 0;
+        for ( auto ii = startDate; ii <= endDate; ii = ii.addDays( 1 ) )
+        {
+            std::optional< double > numHours;
+            if ( isWorkDay( ii ) )
+            {
+                retVal += 1;
+                if ( isHoliday( ii, holidays, numHours ) )
+                {
+                    if ( numHours.has_value() )
+                        retVal -= ( numHours.value() / 8 );
+                }
+            }
         }
         return retVal;
     }

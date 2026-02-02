@@ -48,8 +48,8 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT int quarterNum( const QDate &date );
 
     TOWEL42_UTILS_EXPORT int numberOfBusinessDays( const QDate &startDate, const QDate &endDate );
-    TOWEL42_UTILS_EXPORT int numberOfHolidayDays( const QDate &startDate, const QDate &endDate, const std::list< QDate > &holidays );
-    TOWEL42_UTILS_EXPORT int numberOfWorkDays( const QDate &startDate, const QDate &endDate, const std::list< QDate > &holidays );
+    TOWEL42_UTILS_EXPORT double numberOfHolidayDays( const QDate &startDate, const QDate &endDate, const std::list< std::pair< QDate, double > > &holidays );
+    TOWEL42_UTILS_EXPORT double numberOfWorkDays( const QDate &startDate, const QDate &endDate, const std::list< std::pair< QDate, double > > &holidays );
 
 #endif
 }
