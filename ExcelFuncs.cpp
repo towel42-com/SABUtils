@@ -167,6 +167,23 @@ namespace NTowel42Utils
         return 4;
     }
 
+    std::pair< QDate, QDate > quarterRange( const QDate &date )
+    {
+        auto quarterNum = NTowel42Utils::quarterNum( date );
+        return quarterRange( quarterNum, date.year() );
+    }
+
+    std::pair< QDate, QDate > quarterRange( int quarterNum, int year )
+    {
+        auto startMonth = 1 + ( ( quarterNum - 1 ) * 3 );
+        auto endMonth = startMonth + 2;
+
+        auto startDate = QDate( year, startMonth, 1 );
+        auto endDate = QDate( year, endMonth, 1 ).addMonths( 1 ).addDays( -1 );
+        
+        return { startDate, endDate };
+    }
+
     int numberOfBusinessDays( const QDate &startDate, const QDate &endDate )
     {
         int retVal = 0;
@@ -178,7 +195,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    double numberOfHolidayDays( const QDate &startDate, const QDate &endDate, const std::list< std::pair< QDate, double > > &holidaysList )
+    double numberOfHolidayDays( const QDate &startDate, const QDate &endDate, const THolidayDateList &holidaysList )
     {
         auto holidays = std::unordered_map< QDate, double, QDateHash >( { holidaysList.begin(), holidaysList.end() } );
         double retVal = 0;
@@ -196,7 +213,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    double numberOfWorkDays( const QDate &startDate, const QDate &endDate, const std::list< std::pair< QDate, double > > &holidaysList )
+    double numberOfWorkDays( const QDate &startDate, const QDate &endDate, const THolidayDateList &holidaysList )
     {
         auto holidays = std::unordered_map< QDate, double, QDateHash >( { holidaysList.begin(), holidaysList.end() } );
         double retVal = 0;

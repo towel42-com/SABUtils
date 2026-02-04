@@ -27,6 +27,8 @@
 
 #ifdef TOWEL42_QCORE_SUPPORT
     #include <QDate>
+    #include <utility>
+    #include <list>
 #endif
 
 #if __cplusplus >= 202002L
@@ -40,16 +42,20 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT std::chrono::year_month_day closestWorkDay( const std::chrono::year_month_day &date );
 #endif
 #ifdef TOWEL42_QCORE_SUPPORT
+    using THolidayDateList = std::list< std::pair< QDate, double > >;
+
     TOWEL42_UTILS_EXPORT QDate nthDayOfMonth( int year, int month, int nthDay, int dayOfWeek );
     TOWEL42_UTILS_EXPORT QDate closestWorkDay( const QDate &date );
     TOWEL42_UTILS_EXPORT bool isWorkDay( const QDate &date );
     TOWEL42_UTILS_EXPORT bool isHoliday( const QDate &date, const std::list< QDate > &holidays );
 
     TOWEL42_UTILS_EXPORT int quarterNum( const QDate &date );
+    TOWEL42_UTILS_EXPORT std::pair< QDate, QDate > quarterRange( const QDate &date );
+    TOWEL42_UTILS_EXPORT std::pair< QDate, QDate > quarterRange( int quarterNum, int year );
 
     TOWEL42_UTILS_EXPORT int numberOfBusinessDays( const QDate &startDate, const QDate &endDate );
-    TOWEL42_UTILS_EXPORT double numberOfHolidayDays( const QDate &startDate, const QDate &endDate, const std::list< std::pair< QDate, double > > &holidays );
-    TOWEL42_UTILS_EXPORT double numberOfWorkDays( const QDate &startDate, const QDate &endDate, const std::list< std::pair< QDate, double > > &holidays );
+    TOWEL42_UTILS_EXPORT double numberOfHolidayDays( const QDate &startDate, const QDate &endDate, const THolidayDateList &holidays );
+    TOWEL42_UTILS_EXPORT double numberOfWorkDays( const QDate &startDate, const QDate &endDate, const THolidayDateList &holidays );
 
 #endif
 }

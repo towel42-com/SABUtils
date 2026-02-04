@@ -23,7 +23,6 @@
 #include "../ExcelFuncs.h"
 #include "gtest/gtest.h"
 
-
 namespace
 {
 #ifdef TOWEL42_QCORE_SUPPORT
@@ -48,6 +47,50 @@ namespace
         EXPECT_EQ( QDate( 2026, 12, 24 ), NTowel42Utils::closestWorkDay( QDate( 2026, 12, 24 ) ) );
         EXPECT_EQ( QDate( 2026, 12, 25 ), NTowel42Utils::closestWorkDay( QDate( 2026, 12, 25 ) ) );
     }
+
+    TEST( TestExcelFuncs, QtTestQuarterNum )
+    {
+        EXPECT_EQ( 1, NTowel42Utils::quarterNum( QDate( 2026, 1, 1 ) ) );
+        EXPECT_EQ( 1, NTowel42Utils::quarterNum( QDate( 2028, 2, 1 ) ) );
+        EXPECT_EQ( 1, NTowel42Utils::quarterNum( QDate( 2034, 3, 1 ) ) );
+
+        EXPECT_EQ( 1, NTowel42Utils::quarterNum( QDate( 2026, 1, 10 ) ) );
+        EXPECT_EQ( 1, NTowel42Utils::quarterNum( QDate( 2028, 2, 10 ) ) );
+        EXPECT_EQ( 1, NTowel42Utils::quarterNum( QDate( 2034, 3, 10 ) ) );
+
+        EXPECT_EQ( 2, NTowel42Utils::quarterNum( QDate( 2026, 4, 1 ) ) );
+        EXPECT_EQ( 2, NTowel42Utils::quarterNum( QDate( 2028, 5, 1 ) ) );
+        EXPECT_EQ( 2, NTowel42Utils::quarterNum( QDate( 2034, 6, 1 ) ) );
+
+        EXPECT_EQ( 2, NTowel42Utils::quarterNum( QDate( 2026, 4, 10 ) ) );
+        EXPECT_EQ( 2, NTowel42Utils::quarterNum( QDate( 2028, 5, 10 ) ) );
+        EXPECT_EQ( 2, NTowel42Utils::quarterNum( QDate( 2034, 6, 10 ) ) );
+
+        EXPECT_EQ( 3, NTowel42Utils::quarterNum( QDate( 2026, 7, 1 ) ) );
+        EXPECT_EQ( 3, NTowel42Utils::quarterNum( QDate( 2028, 8, 1 ) ) );
+        EXPECT_EQ( 3, NTowel42Utils::quarterNum( QDate( 2034, 9, 1 ) ) );
+
+        EXPECT_EQ( 3, NTowel42Utils::quarterNum( QDate( 2026, 7, 10 ) ) );
+        EXPECT_EQ( 3, NTowel42Utils::quarterNum( QDate( 2028, 8, 10 ) ) );
+        EXPECT_EQ( 3, NTowel42Utils::quarterNum( QDate( 2034, 9, 10 ) ) );
+
+        EXPECT_EQ( 4, NTowel42Utils::quarterNum( QDate( 2026, 10, 1 ) ) );
+        EXPECT_EQ( 4, NTowel42Utils::quarterNum( QDate( 2028, 11, 1 ) ) );
+        EXPECT_EQ( 4, NTowel42Utils::quarterNum( QDate( 2034, 12, 1 ) ) );
+
+        EXPECT_EQ( 4, NTowel42Utils::quarterNum( QDate( 2026, 10, 10 ) ) );
+        EXPECT_EQ( 4, NTowel42Utils::quarterNum( QDate( 2028, 11, 10 ) ) );
+        EXPECT_EQ( 4, NTowel42Utils::quarterNum( QDate( 2034, 12, 10 ) ) );
+    }
+
+    TEST( TestExcelFuncs, QtTestQuarterRange )
+    {
+        EXPECT_EQ( std::make_pair( QDate( 2026, 1, 1 ), QDate( 2026, 3, 31 ) ), NTowel42Utils::quarterRange( QDate( 2026, 1, 1 ) ) );
+        EXPECT_EQ( std::make_pair( QDate( 2026, 4, 1 ), QDate( 2026, 6, 30 ) ), NTowel42Utils::quarterRange( QDate( 2026, 5, 1 ) ) );
+        EXPECT_EQ( std::make_pair( QDate( 2026, 7, 1 ), QDate( 2026, 9, 30 ) ), NTowel42Utils::quarterRange( QDate( 2026, 8, 1 ) ) );
+        EXPECT_EQ( std::make_pair( QDate( 2026, 10, 1 ), QDate( 2026, 12, 31 ) ), NTowel42Utils::quarterRange( QDate( 2026, 12, 31 ) ) );
+    }
+
 #endif
 #if __cplusplus >= 202002L
     std::chrono::year_month_day createYMD( int year, int month, int day )
