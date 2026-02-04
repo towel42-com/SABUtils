@@ -21,15 +21,6 @@
 // SOFTWARE.
 
 #include "FileBasedCache.h"
-//#include "MKVUtils.h"
-//
-//#include "utils.h"
-//#include "FileUtils.h"
-//#include <QFileInfo>
-//#include <QRegularExpression>
-//#include <QDebug>
-//
-//#include "MediaInfoDLL/MediaInfoDLL_Static.h"
 
 namespace NTowel42Utils
 {
