@@ -222,6 +222,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         MenuBarEx.cpp
         ProgressBarProxyStyle.cpp
         QtDumper.cpp
+        SummaryDateEdit.cpp
         ScrollMessageBox.cpp
         SelectFileUrl.cpp
         SpinBox64.cpp
@@ -244,6 +245,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         ImageScrollBar.h
         LineEditWithSuffix.h
         MenuBarEx.h
+        SummaryDateEdit.h
         ScrollMessageBox.h
         SelectFileUrl.h
         SpinBox64.h
