@@ -131,7 +131,9 @@ namespace NTowel42Utils
 
     bool isWorkDay( const QDate &date )
     {
-        return ( date.dayOfWeek() != 6 ) && ( date.dayOfWeek() != 7 );
+        auto isSaturday = ( date.dayOfWeek() == 6 );
+        auto isSunday = ( date.dayOfWeek() == 7 );
+        return !isSaturday && !isSunday;
     }
 
     bool isHoliday( const QDate &date, const std::unordered_map< QDate, double, QDateHash > &holidays, std::optional< double > &numHours )
@@ -167,21 +169,26 @@ namespace NTowel42Utils
         return 4;
     }
 
-    std::pair< QDate, QDate > quarterRange( const QDate &date )
+    TDateRange quarterRange( const QDate &date )
     {
         auto quarterNum = NTowel42Utils::quarterNum( date );
         return quarterRange( quarterNum, date.year() );
     }
 
-    std::pair< QDate, QDate > quarterRange( int quarterNum, int year )
+    TDateRange quarterRange( int quarterNum, int year )
     {
         auto startMonth = 1 + ( ( quarterNum - 1 ) * 3 );
         auto endMonth = startMonth + 2;
 
         auto startDate = QDate( year, startMonth, 1 );
         auto endDate = QDate( year, endMonth, 1 ).addMonths( 1 ).addDays( -1 );
-        
+
         return { startDate, endDate };
+    }
+
+    int numberOfBusinessDays( const TDateRange &dateRange )
+    {
+        return numberOfBusinessDays( dateRange.first, dateRange.second );
     }
 
     int numberOfBusinessDays( const QDate &startDate, const QDate &endDate )
@@ -193,6 +200,11 @@ namespace NTowel42Utils
                 retVal++;
         }
         return retVal;
+    }
+
+    double numberOfHolidayDays( const TDateRange &dateRange, const THolidayDateList &holidaysList )
+    {
+        return numberOfHolidayDays( dateRange.first, dateRange.second, holidaysList );
     }
 
     double numberOfHolidayDays( const QDate &startDate, const QDate &endDate, const THolidayDateList &holidaysList )
@@ -213,6 +225,11 @@ namespace NTowel42Utils
         return retVal;
     }
 
+    double numberOfWorkDays( const TDateRange &dateRange, const THolidayDateList &holidaysList )
+    {
+        return numberOfWorkDays( dateRange.first, dateRange.second, holidaysList );
+    }
+
     double numberOfWorkDays( const QDate &startDate, const QDate &endDate, const THolidayDateList &holidaysList )
     {
         auto holidays = std::unordered_map< QDate, double, QDateHash >( { holidaysList.begin(), holidaysList.end() } );
@@ -231,6 +248,48 @@ namespace NTowel42Utils
             }
         }
         return retVal;
+    }
+
+    bool containsDate( const TDateRange &dateRange, const QDate &date )
+    {
+        return containsDate( dateRange.first, dateRange.second, date );
+    }
+
+    bool containsDate( const QDate &startDate, const QDate &endDate, const QDate &date )
+    {
+        return ( ( date >= startDate ) && ( date <= endDate ) );
+    }
+
+    bool containsDates( const TDateRange &dateRange, const std::list< QDate > &dates )
+    {
+        return containsDates( dateRange.first, dateRange.second, dates );
+    }
+
+    bool containsDates( const QDate &startDate, const QDate &endDate, const std::list< QDate > &dates )
+    {
+        for ( auto &&ii : dates )
+        {
+            if ( !containsDate( startDate, endDate, ii ) )
+                return false;
+        }
+        return true;
+    }
+
+    bool isChildRangeOfOrIsDateRange( const TDateRange &parentDateRange, const TDateRange &childDateRange )
+    {
+        return isChildRangeOfOrIsDateRange( parentDateRange.first, parentDateRange.second, childDateRange.first, childDateRange.second );
+    }
+
+    bool isChildRangeOfOrIsDateRange( const QDate &parentStartDate, const QDate &parentEndDate, const QDate &childStartDate, const QDate &childEndDate )
+    {
+        if ( ( parentStartDate == childStartDate ) && ( parentEndDate == childEndDate ) )
+            return true;
+
+        if ( parentStartDate > childStartDate )
+            return false;
+        if ( parentEndDate < childEndDate )
+            return false;
+        return true;
     }
 
 #endif
