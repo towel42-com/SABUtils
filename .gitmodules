@@ -1,21 +1,21 @@
 [submodule "googletest"]
-	path = googletest
-	url =  https://github.com/google/googletest.git
-	branch = main
+    path = googletest
+    url = ssh://git@github.com/google/googletest.git
+    branch = main
 [submodule "MediaInfo/ZenLib"]
-	path = MediaInfo/ZenLib
-	url =  https://github.com/MediaArea/ZenLib.git
+    path = MediaInfo/ZenLib
+    url = ssh://git@github.com/MediaArea/ZenLib.git
     branch = master
 [submodule "MediaInfo/zlib"]
-	path = MediaInfo/zlib
-	url =  https://github.com/MediaArea/zlib
+    path = MediaInfo/zlib
+    url = ssh://git@github.com/MediaArea/zlib
     ignore = all
-	branch = develop
+    branch = develop
 [submodule "CMakeNuGetTools"]
-	path = CMakeNuGetTools
-	url =  https://github.com/towel42-com/CMakeNuGetTools
-	branch = master
+    path = CMakeNuGetTools
+    url = ssh://git@github.com/towel42-com/CMakeNuGetTools
+    branch = master
 [submodule "MediaInfo/MediaInfoLib"]
-	path = MediaInfo/MediaInfoLib
-	url =  https://github.com/towel42-com/MediaInfoLib.git
-	branch = master
+    path = MediaInfo/MediaInfoLib
+    url = ssh://git@github.com/towel42-com/MediaInfoLib.git
+    branch = master
