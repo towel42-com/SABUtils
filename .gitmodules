@@ -4,11 +4,11 @@
     branch = main
 [submodule "MediaInfo/ZenLib"]
     path = MediaInfo/ZenLib
-    url = ssh://git@github.com/MediaArea/ZenLib.git
+	url = ssh://git@github.com/towel42-com/MediaArea-ZenLib.git
     branch = master
 [submodule "MediaInfo/zlib"]
     path = MediaInfo/zlib
-    url = ssh://git@github.com/MediaArea/zlib
+	url = ssh://git@github.com/towel42-com/MediaArea-zlib.git
     ignore = all
     branch = develop
 [submodule "CMakeNuGetTools"]
