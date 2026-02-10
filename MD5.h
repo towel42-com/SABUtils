@@ -32,10 +32,11 @@ class QString;
 class QIcon;
 class QPixmap;
 class QImage;
-#include <QRunnable>
-#include <string>
-#include <QObject>
-#include <QFileInfo>
+
+    #include <QRunnable>
+    #include <string>
+    #include <QObject>
+    #include <QFileInfo>
 
 namespace NTowel42Utils
 {

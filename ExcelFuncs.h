@@ -54,22 +54,22 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT TDateRange quarterRange( const QDate &date );
     TOWEL42_UTILS_EXPORT TDateRange quarterRange( int quarterNum, int year );
 
-    TOWEL42_UTILS_EXPORT int numberOfBusinessDays( const TDateRange & dateRange  );
+    TOWEL42_UTILS_EXPORT int numberOfBusinessDays( const TDateRange &dateRange );
     TOWEL42_UTILS_EXPORT int numberOfBusinessDays( const QDate &startDate, const QDate &endDate );
 
-    TOWEL42_UTILS_EXPORT double numberOfHolidayDays( const TDateRange & dateRange , const THolidayDateList &holidays );
+    TOWEL42_UTILS_EXPORT double numberOfHolidayDays( const TDateRange &dateRange, const THolidayDateList &holidays );
     TOWEL42_UTILS_EXPORT double numberOfHolidayDays( const QDate &startDate, const QDate &endDate, const THolidayDateList &holidays );
 
-    TOWEL42_UTILS_EXPORT double numberOfWorkDays( const TDateRange & dateRange , const THolidayDateList &holidays );
+    TOWEL42_UTILS_EXPORT double numberOfWorkDays( const TDateRange &dateRange, const THolidayDateList &holidays );
     TOWEL42_UTILS_EXPORT double numberOfWorkDays( const QDate &startDate, const QDate &endDate, const THolidayDateList &holidays );
 
-    TOWEL42_UTILS_EXPORT bool containsDate( const TDateRange & dateRange , const QDate &date );
+    TOWEL42_UTILS_EXPORT bool containsDate( const TDateRange &dateRange, const QDate &date );
     TOWEL42_UTILS_EXPORT bool containsDate( const QDate &startDate, const QDate &endDate, const QDate &date );
 
-    TOWEL42_UTILS_EXPORT bool containsDates( const TDateRange & dateRange , const std::list< QDate > &dates );
+    TOWEL42_UTILS_EXPORT bool containsDates( const TDateRange &dateRange, const std::list< QDate > &dates );
     TOWEL42_UTILS_EXPORT bool containsDates( const QDate &startDate, const QDate &endDate, const std::list< QDate > &dates );
 
-    TOWEL42_UTILS_EXPORT bool isChildRangeOfOrIsDateRange( const TDateRange &parentDateRange, const TDateRange & childDateRange );
+    TOWEL42_UTILS_EXPORT bool isChildRangeOfOrIsDateRange( const TDateRange &parentDateRange, const TDateRange &childDateRange );
     TOWEL42_UTILS_EXPORT bool isChildRangeOfOrIsDateRange( const QDate &parentStartDate, const QDate &parentEndDate, const QDate &childStartDate, const QDate &childEndDate );
 
 #endif
