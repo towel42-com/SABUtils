@@ -5,6 +5,7 @@
 [submodule "MediaInfo/ZenLib"]
 	path = MediaInfo/ZenLib
 	url =  https://github.com/MediaArea/ZenLib.git
+    branch = master
 [submodule "MediaInfo/zlib"]
 	path = MediaInfo/zlib
 	url =  https://github.com/MediaArea/zlib
