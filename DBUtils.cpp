@@ -359,6 +359,8 @@ namespace NTowel42Utils
                 retVal = true;
                 if ( columns )
                     columns->insert( query.value( 1 ).toString().toLower() );
+                else
+                    break;
             }
         }
         return retVal;

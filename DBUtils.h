@@ -56,7 +56,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool commit( QSqlDatabase &db );
     TOWEL42_UTILS_EXPORT bool rollback( QSqlDatabase &db );
 
-    TOWEL42_UTILS_EXPORT bool tableExists( QSqlQuery &query, const QString &tableName, QSet< QString > *columns );
+    TOWEL42_UTILS_EXPORT bool tableExists( QSqlQuery &query, const QString &tableName, QSet< QString > *columns = nullptr );
     TOWEL42_UTILS_EXPORT bool AddColumn( QSqlQuery &query, const QString &tableName, const QString &columnName, const QString &columnDef, bool *colAdded = nullptr );
     TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, std::size_t numParams );
     TOWEL42_UTILS_EXPORT bool validateQuery( QSqlQuery &query );
