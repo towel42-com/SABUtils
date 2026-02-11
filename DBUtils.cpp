@@ -119,14 +119,14 @@ namespace NTowel42Utils
         return true;
     }
 
-    bool validateParams( const QSqlQuery &query, int numParams )
+    bool validateParams( const QSqlQuery &query, std::size_t numParams )
     {
         QRegularExpression regEx( R"__((\?)|(\:\w*))__" );
         if ( !regEx.isValid() )
             return false;
 
         QString cmd = query.lastQuery();
-        int numParam = 0;
+        std::size_t numParam = 0;
 
         auto ii = regEx.globalMatch( cmd );
         while ( ii.hasNext() )
@@ -143,7 +143,7 @@ namespace NTowel42Utils
         }
 
         auto keys = query.boundValueNames();
-        for ( auto && key : keys )
+        for ( auto &&key : keys )
         {
             Q_ASSERT( key.toLower() == key );
             if ( key.toLower() != key )
@@ -151,6 +151,28 @@ namespace NTowel42Utils
         }
         Q_ASSERT( query.boundValues().size() == numParams );
         return ( query.boundValues().size() == numParams );
+    }
+
+    bool runCmd( QSqlQuery &query, const QString &cmd, const std::map< QString, QVariant > &namedParams )
+    {
+        query.clear();
+        if ( !query.prepare( cmd ) )
+        {
+            qDebug() << getThreadName() << ": " << query.lastError().driverText();
+            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
+            Q_ASSERT( 0 );
+            return false;
+        }
+
+        for ( auto &&ii : namedParams )
+        {
+            query.bindValue( ii.first, ii.second );
+        }
+
+    #ifdef _DEBUG
+        validateParams( query, namedParams.size() );
+    #endif
+        return runCmd( query );
     }
 
     bool runCmd( QSqlQuery &query, const QString &cmd, const QMap< QString, QVariant > &namedParams )
@@ -186,6 +208,34 @@ namespace NTowel42Utils
         return runCmd( query );
     }
 
+    bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< QVariantList > &params )
+    {
+        query.clear();
+        if ( !query.prepare( cmd ) )
+        {
+            qDebug() << getThreadName() << ": " << query.lastError().driverText();
+            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
+            Q_ASSERT( 0 );
+            return false;
+        }
+
+        for ( auto && param : params )
+            query.addBindValue( param );
+
+    #ifdef _DEBUG
+        validateParams( query, params.size() );
+    #endif
+
+        if ( !query.execBatch() )
+        {
+            qDebug() << getThreadName() << ": " << query.lastError().driverText();
+            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
+            Q_ASSERT( 0 );
+            return false;
+        }
+        return true;
+    }
+
     bool runCmd( QSqlQuery &query, const QString &cmd, const QList< QVariantList > &params )
     {
         query.clear();
@@ -212,6 +262,29 @@ namespace NTowel42Utils
             return false;
         }
         return true;
+    }
+
+    bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< QVariant > &params )
+    {
+        query.clear();
+        if ( !query.prepare( cmd ) )
+        {
+            qDebug() << getThreadName() << ": " << query.lastError().driverText();
+            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
+            Q_ASSERT( 0 );
+            return false;
+        }
+
+        for ( auto &&ii : params )
+        {
+            query.addBindValue( ii );
+        }
+
+    #ifdef _DEBUG
+        validateParams( query, params.size() );
+    #endif
+
+        return runCmd( query );
     }
 
     bool runCmd( QSqlQuery &query, const QString &cmd, const QList< QVariant > &params )

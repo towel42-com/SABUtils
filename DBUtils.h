@@ -37,33 +37,34 @@ class QTextStream;
     #include <QMap>
     #include <list>
     #include <map>
+    #include <cstdint>
 
 namespace NTowel42Utils
 {
-    bool runCmd( QSqlQuery &query, const QString &cmd, const QList< QVariantList > &params );
-    bool runCmd( QSqlQuery &query, const QString &cmd, const QList< QVariant > &params );
-    bool runCmd( QSqlQuery &query, const QString &cmd, const QMap< QString, QVariant > &namedParams );
-    bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< std::list< QVariant > > &params );
-    bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< QVariant > &params = std::list< QVariant >() );
-    bool runCmd( QSqlQuery &query, const QString &cmd, const std::map< QString, QVariant > &namedParams );
-    bool runCmd( QSqlQuery &query, const QString &cmd, const QVariant &param );
-    bool runCmd( QSqlQuery &query );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QList< QVariantList > &params );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QList< QVariant > &params );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QMap< QString, QVariant > &namedParams );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< QVariantList > &params );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< QVariant > &params = std::list< QVariant >() );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::map< QString, QVariant > &namedParams );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QVariant &param );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query );
 
-    bool runCmd( QSqlQuery &query, const QList< QVariant > &params );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QList< QVariant > &params );
 
-    bool transaction( QSqlDatabase &db );
-    bool commit( QSqlDatabase &db );
-    bool rollback( QSqlDatabase &db );
+    TOWEL42_UTILS_EXPORT bool transaction( QSqlDatabase &db );
+    TOWEL42_UTILS_EXPORT bool commit( QSqlDatabase &db );
+    TOWEL42_UTILS_EXPORT bool rollback( QSqlDatabase &db );
 
-    bool tableExists( QSqlQuery &query, const QString &tableName, QSet< QString > *columns );
-    bool AddColumn( QSqlQuery &query, const QString &tableName, const QString &columnName, const QString &columnDef, bool *colAdded = nullptr );
-    bool validateParams( const QSqlQuery &query, int numParams );
-    bool validateQuery( QSqlQuery &query );
+    TOWEL42_UTILS_EXPORT bool tableExists( QSqlQuery &query, const QString &tableName, QSet< QString > *columns );
+    TOWEL42_UTILS_EXPORT bool AddColumn( QSqlQuery &query, const QString &tableName, const QString &columnName, const QString &columnDef, bool *colAdded = nullptr );
+    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, std::size_t numParams );
+    TOWEL42_UTILS_EXPORT bool validateQuery( QSqlQuery &query );
 
-    bool clearDatabase( QSqlDatabase &db, bool close );
+    TOWEL42_UTILS_EXPORT bool clearDatabase( QSqlDatabase &db, bool close );
 }
-QDebug &operator<<( QDebug &dbg, const QSqlQuery &query );
-QTextStream &operator<<( QTextStream &ds, const QSqlQuery &query );
+TOWEL42_UTILS_EXPORT QDebug &operator<<( QDebug &dbg, const QSqlQuery &query );
+TOWEL42_UTILS_EXPORT QTextStream &operator<<( QTextStream &ds, const QSqlQuery &query );
 
 #endif
 
