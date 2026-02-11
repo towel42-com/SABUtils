@@ -438,5 +438,3 @@ QDebug &operator<<( QDebug &dbg, const QSqlQuery &query )
 }
 
 #endif
-
-
