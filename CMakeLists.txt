@@ -22,51 +22,42 @@
 
 cmake_minimum_required(VERSION 3.30)
 
-if(WIN32)
-    include( "${CMAKE_CURRENT_LIST_DIR}/CMakeNuGetTools/cmake/NuGetTools.cmake" )
-    UNSET( NUGET_COMMAND CACHE )
-    find_program( 
-        NUGET_COMMAND 
-        nuget.exe 
-        PATHS ${HOME_BIN_DIR}
-        REQUIRED )
-endif()
-
 if( TOWEL42_UTILS_DLL )
-#    message( STATUS "Towel42 Utils exists" )
-    SET( TOWEL42_UTILS_DLL ON CACHE BOOL "Build Towel42 Utils as a Shared Library" PARENT_SCOPE )
-else()
-#    message( STATUS "Towel42 Utils does not exist" )
     SET( TOWEL42_UTILS_DLL ON CACHE BOOL "Build Towel42 Utils as a Shared Library" )
+else()
+    SET( TOWEL42_UTILS_DLL OFF CACHE BOOL "Build Towel42 Utils as a Shared Library" )
 endif()
 
-SET( TOWEL42_QCORE_SUPPORT OFF CACHE BOOL "Enable QCore Utilities Support" PARENT_SCOPE )
-SET( TOWEL42_QWIDGET_SUPPORT OFF CACHE BOOL "Enable QWidget Utilities Support" PARENT_SCOPE )
-SET( TOWEL42_QAXOBJECT_SUPPORT OFF CACHE BOOL "Enable QAxObject Utilities Support" PARENT_SCOPE )
-SET( TOWEL42_QNETWORK_SUPPORT OFF CACHE BOOL "Enable QNetwork Utilities Support" PARENT_SCOPE )
-SET( TOWEL42_QCONCURRENT_SUPPORT OFF CACHE BOOL "Enable QConcurrent Utilities Support" PARENT_SCOPE )
-SET( TOWEL42_QXML_SUPPORT OFF CACHE BOOL "Enable QXml Utilities Support" PARENT_SCOPE )
-SET( TOWEL42_QXMLPATTERNS_SUPPORT OFF CACHE BOOL "Enable QXmlPatterns Utilities Support" PARENT_SCOPE )
-SET( TOWEL42_MKVUTILS OFF CACHE BOOL "Support for MKV Utilities" PARENT_SCOPE )
-SET( TOWEL42_BIFSUPPORT OFF CACHE BOOL "Support for BIF Utilities" PARENT_SCOPE )
-SET( TOWEL42_GIFSUPPORT OFF CACHE BOOL "Support for GIF Utilities" PARENT_SCOPE )
-SET( TOWEL42_ZIP_SUPPORT OFF CACHE BOOL "Enable ZIP Utilities Support" PARENT_SCOPE )
-SET( TOWEL42_NUGET_SUPPORT OFF CACHE BOOL "Enable NuGet Package Support" PARENT_SCOPE )
-SET( TOWEL42_ENABLE_TESTING OFF CACHE BOOL "Enable Testing" PARENT_SCOPE )
+SET( TOWEL42_BIFSUPPORT OFF CACHE BOOL "Support for BIF Utilities" )
+SET( TOWEL42_GIFSUPPORT OFF CACHE BOOL "Support for GIF Utilities" )
+SET( TOWEL42_MKVUTILS OFF CACHE BOOL "Support for MKV Utilities" )
+SET( TOWEL42_NUGET_SUPPORT OFF CACHE BOOL "Enable NuGet Package Support" )
+SET( TOWEL42_QAXOBJECT_SUPPORT OFF CACHE BOOL "Enable QAxObject Utilities Support" )
+SET( TOWEL42_QCONCURRENT_SUPPORT OFF CACHE BOOL "Enable QConcurrent Utilities Support" )
+SET( TOWEL42_QCORE_SUPPORT OFF CACHE BOOL "Enable QCore Utilities Support" )
+SET( TOWEL42_QNETWORK_SUPPORT OFF CACHE BOOL "Enable QNetwork Utilities Support" )
+SET( TOWEL42_QSQL_SUPPORT OFF CACHE BOOL "Enable QSql Utilities Support" )
+SET( TOWEL42_QWIDGET_SUPPORT OFF CACHE BOOL "Enable QWidget Utilities Support" )
+SET( TOWEL42_QXMLPATTERNS_SUPPORT OFF CACHE BOOL "Enable QXmlPatterns Utilities Support" )
+SET( TOWEL42_QXML_SUPPORT OFF CACHE BOOL "Enable QXml Utilities Support" )
+SET( TOWEL42_ZIP_SUPPORT OFF CACHE BOOL "Enable ZIP Utilities Support" )
+SET( TOWEL42_ENABLE_TESTING OFF CACHE BOOL "Enable Testing" )
    
 message( STATUS "T42-Utils: Building for DLL=${TOWEL42_UTILS_DLL}" )
-message( STATUS "T42-Utils: Building TOWEL42_QCORE_SUPPORT=${TOWEL42_QCORE_SUPPORT}" )
-message( STATUS "T42-Utils: Building TOWEL42_QWIDGET_SUPPORT=${TOWEL42_QWIDGET_SUPPORT}" )
-message( STATUS "T42-Utils: Building TOWEL42_QAXOBJECT_SUPPORT=${TOWEL42_QAXOBJECT_SUPPORT}" )
-message( STATUS "T42-Utils: Building TOWEL42_QNETWORK_SUPPORT=${TOWEL42_QNETWORK_SUPPORT}" )
-message( STATUS "T42-Utils: Building TOWEL42_QCONCURRENT_SUPPORT=${TOWEL42_QCONCURRENT_SUPPORT}" )
-message( STATUS "T42-Utils: Building TOWEL42_QXML_SUPPORT=${TOWEL42_QXML_SUPPORT}" )
-message( STATUS "T42-Utils: Building TOWEL42_QXMLPATTERNS_SUPPORT=${TOWEL42_QXMLPATTERNS_SUPPORT}" )
-message( STATUS "T42-Utils: Building TOWEL42_MKVUTILS=${TOWEL42_MKVUTILS}" )
+
 message( STATUS "T42-Utils: Building TOWEL42_BIFSUPPORT=${TOWEL42_BIFSUPPORT}" )
 message( STATUS "T42-Utils: Building TOWEL42_GIFSUPPORT=${TOWEL42_GIFSUPPORT}" )
-message( STATUS "T42-Utils: Building ZIP_SUPPORT=${ZIP_SUPPORT}" )
-message( STATUS "T42-Utils: Building NUGET_SUPPORT=${NUGET_SUPPORT}" )
+message( STATUS "T42-Utils: Building TOWEL42_MKVUTILS=${TOWEL42_MKVUTILS}" )
+message( STATUS "T42-Utils: Building TOWEL42_NUGET_SUPPORT=${TOWEL42_NUGET_SUPPORT}" )
+message( STATUS "T42-Utils: Building TOWEL42_QAXOBJECT_SUPPORT=${TOWEL42_QAXOBJECT_SUPPORT}" )
+message( STATUS "T42-Utils: Building TOWEL42_QCONCURRENT_SUPPORT=${TOWEL42_QCONCURRENT_SUPPORT}" )
+message( STATUS "T42-Utils: Building TOWEL42_QCORE_SUPPORT=${TOWEL42_QCORE_SUPPORT}" )
+message( STATUS "T42-Utils: Building TOWEL42_QNETWORK_SUPPORT=${TOWEL42_QNETWORK_SUPPORT}" )
+message( STATUS "T42-Utils: Building TOWEL42_QSQL_SUPPORT=${TOWEL42_QSQL_SUPPORT}" )
+message( STATUS "T42-Utils: Building TOWEL42_QWIDGET_SUPPORT=${TOWEL42_QWIDGET_SUPPORT}" )
+message( STATUS "T42-Utils: Building TOWEL42_QXMLPATTERNS_SUPPORT=${TOWEL42_QXMLPATTERNS_SUPPORT}" )
+message( STATUS "T42-Utils: Building TOWEL42_QXML_SUPPORT=${TOWEL42_QXML_SUPPORT}" )
+message( STATUS "T42-Utils: Building TOWEL42_ZIP_SUPPORT=${TOWEL42_ZIP_SUPPORT}" )
 
 message( STATUS "T42-Utils: Building TOWEL42_ENABLE_TESTING=${TOWEL42_ENABLE_TESTING}" )
 
@@ -91,44 +82,13 @@ endif()
 
 OPTION(TOWEL42_DEBUG_TRACE "Enable Debug Tracing to std::cout" OFF)
 
-IF(TOWEL42_QCORE_SUPPORT)
-    find_package(Qt6 COMPONENTS Core REQUIRED)
-endif()
-
-IF(TOWEL42_QWIDGET_SUPPORT)
-    find_package(Qt6 COMPONENTS Widgets REQUIRED)
-ENDIF()
-
-IF(WIN32 AND TOWEL42_QAXOBJECT_SUPPORT )
-    find_package(Qt6 COMPONENTS AxContainer REQUIRED)
-ENDIF()
-
-IF(TOWEL42_QNETWORK_SUPPORT)
-    find_package(Qt6 COMPONENTS Network REQUIRED)
-ENDIF()
-
-IF(TOWEL42_QCONCURRENT_SUPPORT)
-    find_package(Qt6 COMPONENTS Concurrent REQUIRED)
-ENDIF()
-
-IF(TOWEL42_QXML_SUPPORT)
-    find_package(Qt6 COMPONENTS Xml REQUIRED)
-ENDIF()
-
-IF(TOWEL42_QXMLPATTERNS_SUPPORT)
-    find_package(Qt6 COMPONENTS XmlPatterns REQUIRED)
-ENDIF()
-
-if ( TOWEL42_MKVUTILS )
-    find_package(Qt6 COMPONENTS Multimedia REQUIRED)
-endif()
-
 project( ${_PROJECT_NAME} ) 
 find_package(IncludeProjectSettings REQUIRED)
 IncludeProjectSettings()
 
 find_package(Deploy REQUIRED)
 find_package(AddUnitTest REQUIRED)
+
 IF(TOWEL42_QCORE_SUPPORT)
     find_package(Qt6SrcMoc REQUIRED)
     set(TOWEL42_MOC_OPTIONS "-DNON_VIS_BUILD=1")
@@ -139,7 +99,15 @@ if ( TOWEL42_MKVUTILS )
     include_directories(MediaInfo/ZenLib/Source)
 endif()
 
-if( WIN32 AND NUGET_SUPPORT )
+if( WIN32 AND TOWEL42_NUGET_SUPPORT )
+    include( "${CMAKE_CURRENT_LIST_DIR}/CMakeNuGetTools/cmake/NuGetTools.cmake" )
+    UNSET( NUGET_COMMAND CACHE )
+    find_program( 
+        NUGET_COMMAND 
+        nuget.exe 
+        PATHS ${HOME_BIN_DIR}
+        REQUIRED )
+
     nuget_initialize()
 
     SET( packageID Microsoft.VisualStudio.Setup.Configuration.Native )

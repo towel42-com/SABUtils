@@ -71,56 +71,27 @@ set(project_H
 set(qtproject_UIS
 )
 
+MACRO(CheckForCoreSupport whichLibVAR whichLibName)
+    if ( NOT TOWEL42_QCORE_SUPPORT )
+        if ( ${whichLibVAR} )
+            MESSAGE( WARNING "${whichLibName} Support requires QtCore Support" )
+            set( TOWEL42_QCORE_SUPPORT true )
+            set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
+        endif()
+    endif()
+ENDMACRO()
 
-if ( NOT TOWEL42_QCORE_SUPPORT )
-    if ( TOWEL42_QWIDGET_SUPPORT )
-        MESSAGE( WARNING "QWidget Support requires QtCore Support" )
-        set( TOWEL42_QCORE_SUPPORT true )
-        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
-    endif()
-    
-    if ( TOWEL42_BIFSUPPORT )
-        MESSAGE( WARNING "BIF Support requires QtCore Support" )
-        set( TOWEL42_QCORE_SUPPORT true )
-        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
-    endif()
-
-    if ( TOWEL42_QNETWORK_SUPPORT )
-        MESSAGE( WARNING "QNetwork Support requires QtCore Support" )
-        set( TOWEL42_QCORE_SUPPORT true )
-        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
-    endif()
-
-    if ( TOWEL42_MKVUTILS )
-        MESSAGE( WARNING "MKVUtils Support requires QtCore Support" )
-        set( TOWEL42_QCORE_SUPPORT true )
-        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
-    endif()
-    
-    if ( TOWEL42_GIFSUPPORT )
-        MESSAGE( WARNING "GIF Support requires QtCore Support" )
-        set( TOWEL42_QCORE_SUPPORT true )
-        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
-    endif()
-
-    if ( TOWEL42_QAXOBJECT_SUPPORT )
-        MESSAGE( WARNING "QAXObject Support requires QtCore Support" )
-        set( TOWEL42_QCORE_SUPPORT true )
-        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
-    endif()
-    
-        if ( TOWEL42_ZIP_SUPPORT )
-        MESSAGE( WARNING "ZIP Support requires QtCore Support" )
-        set( TOWEL42_QCORE_SUPPORT true )
-        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
-    endif()
-
-    if ( TOWEL42_QCONCURRENT_SUPPORT )
-        MESSAGE( WARNING "QConcurrent Support requires QtCore Support" )
-        set( TOWEL42_QCORE_SUPPORT true )
-        set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
-    endif()
-endif()
+CheckForCoreSupport( TOWEL42_BIFSUPPORT "BIF" )
+CheckForCoreSupport( TOWEL42_GIFSUPPORT "GIF" )
+CheckForCoreSupport( TOWEL42_MKVUTILS "MKVUtils" )
+CheckForCoreSupport( TOWEL42_QAXOBJECT_SUPPORT "QAXObject" )
+CheckForCoreSupport( TOWEL42_QCONCURRENT_SUPPORT "QConcurrent" )
+CheckForCoreSupport( TOWEL42_QNETWORK_SUPPORT "QNetwork" )
+CheckForCoreSupport( TOWEL42_QSQL_SUPPORT "QSql" )
+CheckForCoreSupport( TOWEL42_QWIDGET_SUPPORT "QWidget" )
+CheckForCoreSupport( TOWEL42_QXMLPATTERNS_SUPPORT "QXmlPatterns" )
+CheckForCoreSupport( TOWEL42_QXML_SUPPORT "QXml" )
+CheckForCoreSupport( TOWEL42_ZIP_SUPPORT "ZIP" )
 
 if ( TOWEL42_QCORE_SUPPORT )
     IF(WIN32)
@@ -441,5 +412,25 @@ IF ( TOWEL42_ZIP_SUPPORT )
     )
     
     include_directories(${Qt6CorePrivate_INCLUDE_DIRS})
+endif()
+
+if ( TOWEL42_QSQL_SUPPORT )
+    set(qtproject_H
+        ${qtproject_H}
+    )
+
+    SET( project_H    
+        ${project_H}
+        DBUtils.h
+    )
+
+    SET( qtproject_SRCS
+        ${qtproject_SRCS}
+        DBUtils.cpp
+    )
+    SET( project_pub_DEPS
+        ${project_pub_DEPS}
+        Qt6::Sql
+    )
 endif()
 
