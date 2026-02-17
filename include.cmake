@@ -41,6 +41,7 @@ ELSE()
 ENDIF()
 
 set(project_SRCS
+    CustomerData.cpp
     FileSIDInfo.cpp
     FromString.cpp
     GPUDetect.cpp
@@ -55,6 +56,7 @@ set(qtproject_CPPMOC_SRCS
 
 set(project_H
     CantorHash.h
+    CustomerData.h
     EnumUtils.h
     FileSIDInfo.h
     FromString.h
@@ -74,7 +76,7 @@ set(qtproject_UIS
 MACRO(CheckForCoreSupport whichLibVAR whichLibName)
     if ( NOT TOWEL42_QCORE_SUPPORT )
         if ( ${whichLibVAR} )
-            MESSAGE( WARNING "${whichLibName} Support requires QtCore Support" )
+            MESSAGE( WARNING "${whichLibName} Support requires QtCore Support, set TOWEL42_QCORE_SUPPORT to true to prevent this warning" )
             set( TOWEL42_QCORE_SUPPORT true )
             set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
         endif()
