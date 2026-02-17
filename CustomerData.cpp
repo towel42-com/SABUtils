@@ -251,7 +251,7 @@ namespace NTowel42Utils
             if ( !file )
                 return {};
 
-            if ( !validateSQLLITEInstalled( nullptr ) )
+            if ( !validateSQLITEInstalled( nullptr ) )
                 return {};
 
             QSqlDatabase db = QSqlDatabase::addDatabase( "QSQLITE", "customerDataDB" );
