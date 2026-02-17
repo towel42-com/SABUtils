@@ -36,7 +36,7 @@ class QTextStream;
     #include <QList>
     #include <QMap>
     #include <list>
-    #include <map>
+    #include <unordered_map>
     #include <cstdint>
 
 namespace NTowel42Utils
@@ -46,7 +46,8 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QMap< QString, QVariant > &namedParams );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< QVariantList > &params );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< QVariant > &params = std::list< QVariant >() );
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::map< QString, QVariant > &namedParams );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::unordered_map< QString, QVariant > &namedParams );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::unordered_map< QString, QString > &namedParams );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QVariant &param );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query );
 
@@ -62,6 +63,9 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool validateQuery( QSqlQuery &query );
 
     TOWEL42_UTILS_EXPORT bool clearDatabase( QSqlDatabase &db, bool close );
+
+    TOWEL42_UTILS_EXPORT bool validateSQLITEInstalled( QString * msg );
+
 }
 TOWEL42_UTILS_EXPORT QDebug &operator<<( QDebug &dbg, const QSqlQuery &query );
 TOWEL42_UTILS_EXPORT QTextStream &operator<<( QTextStream &ds, const QSqlQuery &query );

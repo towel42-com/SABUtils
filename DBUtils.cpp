@@ -1,26 +1,30 @@
-/*
- * (c) Copyright 2004 - 2025 Blue Pearl Software Inc.
- * All rights reserved.
- *
- * This source code belongs to Blue Pearl Software Inc.
- * It is considered trade secret and confidential, and is not to be used
- * by parties who have not received written authorization
- * from Blue Pearl Software Inc.
- *
- * Only authorized users are allowed to use, copy and modify
- * this software provided that the above copyright notice
- * remains in all copies of this software.
- *
- *
- * $Author: simon $ - $Revision: 66418 $ - $Date: 2025-01-13 12:32:35 -0800 (Mon, 13 Jan 2025) $
- * $HeadURL: http://bpsvn/svn/trunk/Shared/DBUtils/DBUtils.cpp $
- *
- *
-*/
+// The MIT License( MIT )
+//
+// Copyright( c ) 2020-2025 Towel 42 Development LLC and Scott Aron Bloom
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files( the "Software" ), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sub-license, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions :
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #ifdef TOWEL42_QSQL_SUPPORT
 
     #include "DBUtils.h"
     #include <cassert>
+    #include <unordered_map>
 
     #include <QSqlQuery>
     #include <QSqlRecord>
@@ -119,8 +123,22 @@ namespace NTowel42Utils
         return true;
     }
 
+    bool validateSQLITEInstalled( QString *msg )
+    {
+        if ( !QSqlDatabase::isDriverAvailable( "QSQLITE" ) )
+        {
+            if ( msg )
+                *msg = QObject::tr( "Could not find Database Driver libraries.  Please re-install or contact support." );
+            return false;
+        }
+        return true;
+    }
+
     bool validateParams( const QSqlQuery &query, std::size_t numParams )
     {
+        Q_ASSERT( query.boundValueNames().size() == query.boundValues().size() );
+        Q_ASSERT( query.boundValueNames().size() == numParams );
+
         QRegularExpression regEx( R"__((\?)|(\:\w*))__" );
         if ( !regEx.isValid() )
             return false;
@@ -149,11 +167,47 @@ namespace NTowel42Utils
             if ( key.toLower() != key )
                 return false;
         }
-        Q_ASSERT( query.boundValues().size() == numParams );
-        return ( query.boundValues().size() == numParams );
+        auto numBoundWithValue = 0;
+        for ( auto &&ii : query.boundValues() )
+        {
+            if ( ii.isNull() )
+                continue;
+            numBoundWithValue++;
+        }
+        if ( numBoundWithValue != numParams )
+        {
+            for ( int ii = 0; ii < query.boundValues().size(); ++ii )
+            {
+                qDebug() << query.boundValueName( ii ) << query.boundValue( ii );
+            }
+        }
+        Q_ASSERT( numBoundWithValue == numParams );
+        return ( numBoundWithValue == numParams );
     }
 
-    bool runCmd( QSqlQuery &query, const QString &cmd, const std::map< QString, QVariant > &namedParams )
+    bool runCmd( QSqlQuery &query, const QString &cmd, const std::unordered_map< QString, QVariant > &namedParams )
+    {
+        query.clear();
+        if ( !query.prepare( cmd ) )
+        {
+            qDebug() << getThreadName() << ": " << query.lastError().driverText();
+            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
+            Q_ASSERT( 0 );
+            return false;
+        }
+
+        for ( auto &&ii : namedParams )
+        {
+            query.bindValue( ii.first, ii.second );
+        }
+
+    #ifdef _DEBUG
+        validateParams( query, namedParams.size() );
+    #endif
+        return runCmd( query );
+    }
+
+    bool runCmd( QSqlQuery &query, const QString &cmd, const std::unordered_map< QString, QString > &namedParams )
     {
         query.clear();
         if ( !query.prepare( cmd ) )
@@ -219,7 +273,7 @@ namespace NTowel42Utils
             return false;
         }
 
-        for ( auto && param : params )
+        for ( auto &&param : params )
             query.addBindValue( param );
 
     #ifdef _DEBUG
