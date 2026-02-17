@@ -13,5 +13,6 @@
         <file>eye.png</file>
         <file>unknownStatus.png</file>
         <file>BlankMKVTags.xml</file>
+        <file>CustomerData.db</file>
     </qresource>
 </RCC>
