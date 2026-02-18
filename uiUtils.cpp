@@ -28,6 +28,16 @@
 #include <QUrl>
 #include <QCoreApplication>
 #include <QGuiApplication>
+#include <QLineEdit>
+#include <QLabel>
+#include <QComboBox>
+#include <QDateEdit>
+#include <QButtonGroup>
+#include <QAbstractButton>
+#include <QTextEdit>
+#include <QCheckBox>
+#include <QSpinBox>
+#include< functional >
 
 #ifdef Q_OS_WINDOWS
     #include <qt_windows.h>
@@ -87,6 +97,122 @@ namespace NTowel42Utils
 #endif
 
         return QObject::tr( "Could not open url.  Run with QGuiApplication" );
+    }
+
+    bool setIsOK( bool aOK, QWidget *widget, const QString &widgetName )
+    {
+        if ( !aOK )
+            widget->setStyleSheet( QString( "%1 { color : red; }" ).arg( widgetName ) );
+        else
+            widget->setStyleSheet( QString() );
+        return aOK;
+    }
+
+    bool setIsOK( bool aOK, QLabel *label )
+    {
+        return setIsOK( aOK, label, "QLabel" );
+    }
+
+    bool setIsOK( bool aOK, QCheckBox *cb )
+    {
+        return setIsOK( aOK, cb, "QCheckBox" );
+    }
+
+    bool isValid( QLineEdit *edit, QLabel *label, std::function< bool( const QString &text ) > isValidFunc /*= {} */ )
+    {
+        if ( !edit || !label )
+            return false;
+
+        return isValid( edit->text(), label, isValidFunc );
+    }
+
+    bool isValid( QComboBox *cb, QLabel *label, std::function< bool( const QString &text ) > isValidFunc /*= {} */ )
+    {
+        if ( !cb || !label )
+            return false;
+
+        return isValid( cb->currentText(), label, isValidFunc );
+    }
+
+    bool isValid( const QString &text, QLabel *label, std::function< bool( const QString &text ) > isValidFunc /*= {} */ )
+    {
+        bool aOK = false;
+        if ( isValidFunc )
+            aOK = isValidFunc( text );
+        else
+            aOK = !text.isEmpty();
+
+        return setIsOK( aOK, label );
+    }
+
+    bool isValid( QDateEdit *de, QLabel *label, std::function< bool( const QDate &date ) > isValidFunc /*= {} */ )
+    {
+        if ( !de || !label )
+            return false;
+
+        bool aOK = false;
+        if ( isValidFunc )
+            aOK = isValidFunc( de->date() );
+        else
+            aOK = de->date().isValid();
+
+        return setIsOK( aOK, label );
+    }
+
+    bool isValid( QButtonGroup *bg, QLabel *label, std::function< bool( const QAbstractButton *btn ) > isValidFunc /*= {} */ )
+    {
+        if ( !bg || !label )
+            return false;
+        auto buttons = bg->buttons();
+        QAbstractButton *checkedButton = nullptr;
+        for ( auto &&ii : buttons )
+        {
+            if ( ii->isChecked() )
+                checkedButton = ii;
+        }
+
+        bool aOK = false;
+        if ( isValidFunc )
+            aOK = isValidFunc( checkedButton );
+        else
+            aOK = checkedButton != nullptr;
+        return setIsOK( aOK, label );
+    }
+
+    bool isValid( QCheckBox *cb, QLineEdit *desc, std::function< bool( bool checked, const QString &text ) > isValidFunc /*= {} */ )
+    {
+        if ( !cb || !desc )
+            return false;
+
+        bool aOK = false;
+        if ( isValidFunc )
+            aOK = isValidFunc( cb->isChecked(), desc->text() );
+        else
+        {
+            aOK = !cb->isChecked() || !desc->text().isEmpty();
+        }
+        return setIsOK( aOK, cb );
+    }
+
+    bool isValid( QTextEdit *te, QLabel *label, std::function< bool( const QString &text ) > isValidFunc /*= {} */ )
+    {
+        if ( !te || !label )
+            return false;
+
+        return isValid( te->toPlainText(), label, isValidFunc );
+    }
+
+    bool isValid( QSpinBox *sb, QLabel *label, std::function< bool( int value ) > isValidFunc /*= {} */ )
+    {
+        if ( !sb || !label )
+            return false;
+
+        bool aOK = false;
+        if ( isValidFunc )
+            aOK = isValidFunc( sb->value() );
+        else
+            aOK = sb->value() != sb->minimum();
+        return setIsOK( aOK, label );
     }
 
 }

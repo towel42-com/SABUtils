@@ -29,11 +29,36 @@ class QString;
 class QPoint;
 class QFont;
 class QUrl;
+class QLineEdit;
+class QComboBox;
+class QDateEdit;
+class QLabel;
+class QDate;
+class QButtonGroup;
+class QAbstractButton;
+class QCheckBox;
+class QTextEdit;
+class QWidget;
+class QSpinBox;
 #include <optional>
+#include <functional>
 
 namespace NTowel42Utils
 {
     TOWEL42_UTILS_EXPORT bool launchIfURLClicked( const QString &title, const QPoint &pt, const QFont &font );
     TOWEL42_UTILS_EXPORT std::optional< QString > openUrl( const QUrl &url );
+
+    TOWEL42_UTILS_EXPORT bool isValid( QLineEdit *edit, QLabel *label, std::function< bool( const QString &text ) > isValidFunc = {} );
+    TOWEL42_UTILS_EXPORT bool isValid( QComboBox *cb, QLabel *label, std::function< bool( const QString &text ) > isValidFunc = {} );
+    TOWEL42_UTILS_EXPORT bool isValid( QDateEdit *de, QLabel *label, std::function< bool( const QDate &date ) > isValidFunc = {} );
+    TOWEL42_UTILS_EXPORT bool isValid( const QString &text, QLabel *label, std::function< bool( const QString &text ) > isValidFunc = {} );
+    TOWEL42_UTILS_EXPORT bool isValid( QButtonGroup *bg, QLabel *label, std::function< bool( const QAbstractButton *btn ) > isValidFunc = {} );
+    TOWEL42_UTILS_EXPORT bool isValid( QCheckBox *cb, QLineEdit *desc, std::function< bool( bool checked, const QString & text  ) > isValidFunc = {} );
+    TOWEL42_UTILS_EXPORT bool isValid( QTextEdit *te, QLabel *label, std::function< bool( const QString &text ) > isValidFunc = {} );
+    TOWEL42_UTILS_EXPORT bool isValid( QSpinBox *te, QLabel *label, std::function< bool( int value ) > isValidFunc = {} );
+    TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QWidget *widget, const QString &widgetName );
+    TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QLabel *label );
+    TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QCheckBox *cb );
+
 }
 #endif
