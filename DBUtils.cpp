@@ -37,7 +37,6 @@
 
 namespace NTowel42Utils
 {
-
     QString getThreadName()
     {
         auto currThread = QThread::currentThread();
@@ -45,13 +44,31 @@ namespace NTowel42Utils
         return retVal;
     }
 
+    void reportError( const QSqlError &error, bool assert )
+    {
+        if ( error.type() != QSqlError::NoError )
+        {
+            qDebug() << getThreadName() << ": " << error.driverText();
+            qDebug() << getThreadName() << ": " << error.databaseText();
+            if ( assert )
+                Q_ASSERT( error.type() == QSqlError::NoError );
+        }
+    }
+    void reportError( const QSqlQuery &query, bool assert )
+    {
+        reportError( query.lastError(), assert );
+    }
+
+    void reportError( const QSqlDatabase &db, bool assert )
+    {
+        reportError( db.lastError(), assert );
+    }
+
     bool runCmd( QSqlQuery &query )
     {
         if ( !query.exec() )
         {
-            qDebug() << getThreadName() << ": " << query.lastError().driverText();
-            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
-            Q_ASSERT( 0 );
+            reportError( query );
             return false;
         }
 
@@ -88,8 +105,7 @@ namespace NTowel42Utils
 
         if ( !query.exec() )
         {
-            qDebug() << getThreadName() << ": " << query.lastError().driverText();
-            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
+            reportError( query, false );
             return false;
         }
 
@@ -190,9 +206,7 @@ namespace NTowel42Utils
         query.clear();
         if ( !query.prepare( cmd ) )
         {
-            qDebug() << getThreadName() << ": " << query.lastError().driverText();
-            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
-            Q_ASSERT( 0 );
+            reportError( query );
             return false;
         }
 
@@ -212,9 +226,7 @@ namespace NTowel42Utils
         query.clear();
         if ( !query.prepare( cmd ) )
         {
-            qDebug() << getThreadName() << ": " << query.lastError().driverText();
-            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
-            Q_ASSERT( 0 );
+            reportError( query );
             return false;
         }
 
@@ -234,9 +246,7 @@ namespace NTowel42Utils
         query.clear();
         if ( !query.prepare( cmd ) )
         {
-            qDebug() << getThreadName() << ": " << query.lastError().driverText();
-            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
-            Q_ASSERT( 0 );
+            reportError( query );
             return false;
         }
 
@@ -267,9 +277,7 @@ namespace NTowel42Utils
         query.clear();
         if ( !query.prepare( cmd ) )
         {
-            qDebug() << getThreadName() << ": " << query.lastError().driverText();
-            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
-            Q_ASSERT( 0 );
+            reportError( query );
             return false;
         }
 
@@ -282,9 +290,7 @@ namespace NTowel42Utils
 
         if ( !query.execBatch() )
         {
-            qDebug() << getThreadName() << ": " << query.lastError().driverText();
-            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
-            Q_ASSERT( 0 );
+            reportError( query );
             return false;
         }
         return true;
@@ -295,9 +301,7 @@ namespace NTowel42Utils
         query.clear();
         if ( !query.prepare( cmd ) )
         {
-            qDebug() << getThreadName() << ": " << query.lastError().driverText();
-            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
-            Q_ASSERT( 0 );
+            reportError( query );
             return false;
         }
 
@@ -310,9 +314,7 @@ namespace NTowel42Utils
 
         if ( !query.execBatch() )
         {
-            qDebug() << getThreadName() << ": " << query.lastError().driverText();
-            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
-            Q_ASSERT( 0 );
+            reportError( query );
             return false;
         }
         return true;
@@ -323,9 +325,7 @@ namespace NTowel42Utils
         query.clear();
         if ( !query.prepare( cmd ) )
         {
-            qDebug() << getThreadName() << ": " << query.lastError().driverText();
-            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
-            Q_ASSERT( 0 );
+            reportError( query );
             return false;
         }
 
@@ -346,9 +346,7 @@ namespace NTowel42Utils
         query.clear();
         if ( !query.prepare( cmd ) )
         {
-            qDebug() << getThreadName() << ": " << query.lastError().driverText();
-            qDebug() << getThreadName() << ": " << query.lastError().databaseText();
-            Q_ASSERT( 0 );
+            reportError( query );
             return false;
         }
 
@@ -371,9 +369,7 @@ namespace NTowel42Utils
     {
         if ( !db.transaction() )
         {
-            qDebug() << getThreadName() << ": " << db.lastError().driverText();
-            qDebug() << getThreadName() << ": " << db.lastError().databaseText();
-            Q_ASSERT( 0 );
+            reportError( db );
             return false;
         }
         return true;
@@ -383,9 +379,7 @@ namespace NTowel42Utils
     {
         if ( !db.commit() )
         {
-            qDebug() << getThreadName() << ": " << db.lastError().driverText();
-            qDebug() << getThreadName() << ": " << db.lastError().databaseText();
-            Q_ASSERT( 0 );
+            reportError( db );
             return false;
         }
         return true;
@@ -395,9 +389,7 @@ namespace NTowel42Utils
     {
         if ( !db.rollback() )
         {
-            qDebug() << getThreadName() << ": " << db.lastError().driverText();
-            qDebug() << getThreadName() << ": " << db.lastError().databaseText();
-            Q_ASSERT( 0 );
+            reportError( db );
             return false;
         }
         return true;
@@ -417,10 +409,11 @@ namespace NTowel42Utils
                     break;
             }
         }
+        query.clear();
         return retVal;
     }
 
-    bool AddColumn( QSqlQuery &query, const QString &tableName, const QString &columnName, const QString &columnDef, bool *colAdded )
+    bool addColumn( QSqlQuery &query, const QString &tableName, const QString &columnName, const QString &columnDef, bool *colAdded )
     {
         if ( colAdded )
             *colAdded = false;

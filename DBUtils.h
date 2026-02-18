@@ -31,6 +31,7 @@ class QSqlQuery;
 class QSqlDatabase;
 class QDebug;
 class QTextStream;
+class QSqlError;
 
     #include <QVariant>
     #include <QList>
@@ -53,18 +54,22 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QList< QVariant > &params );
 
+    TOWEL42_UTILS_EXPORT void reportError( const QSqlError &error, bool assert = true );
+    TOWEL42_UTILS_EXPORT void reportError( const QSqlQuery &query, bool assert = true );
+    TOWEL42_UTILS_EXPORT void reportError( const QSqlDatabase &db, bool assert = true );
+
     TOWEL42_UTILS_EXPORT bool transaction( QSqlDatabase &db );
     TOWEL42_UTILS_EXPORT bool commit( QSqlDatabase &db );
     TOWEL42_UTILS_EXPORT bool rollback( QSqlDatabase &db );
 
     TOWEL42_UTILS_EXPORT bool tableExists( QSqlQuery &query, const QString &tableName, QSet< QString > *columns = nullptr );
-    TOWEL42_UTILS_EXPORT bool AddColumn( QSqlQuery &query, const QString &tableName, const QString &columnName, const QString &columnDef, bool *colAdded = nullptr );
+    TOWEL42_UTILS_EXPORT bool addColumn( QSqlQuery &query, const QString &tableName, const QString &columnName, const QString &columnDef, bool *colAdded = nullptr );
     TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, std::size_t numParams );
     TOWEL42_UTILS_EXPORT bool validateQuery( QSqlQuery &query );
 
     TOWEL42_UTILS_EXPORT bool clearDatabase( QSqlDatabase &db, bool close );
 
-    TOWEL42_UTILS_EXPORT bool validateSQLITEInstalled( QString * msg );
+    TOWEL42_UTILS_EXPORT bool validateSQLITEInstalled( QString *msg );
 
 }
 TOWEL42_UTILS_EXPORT QDebug &operator<<( QDebug &dbg, const QSqlQuery &query );
