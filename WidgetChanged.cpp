@@ -306,9 +306,9 @@ namespace NTowel42Utils
 
     void setupWidgetChanged( QSpinBox *spinBox, const QWidget *parentWidget, const char *member, bool isExcluded )
     {
-        QObject::disconnect( spinBox, SIGNAL( valueChanged( const QString & ) ), parentWidget, member );
+        QObject::disconnect( spinBox, SIGNAL( valueChanged( int ) ), parentWidget, member );
         if ( !isExcluded )
-            QObject::connect( spinBox, SIGNAL( valueChanged( const QString & ) ), parentWidget, member );
+            QObject::connect( spinBox, SIGNAL( valueChanged( int ) ), parentWidget, member );
     }
 
     void setupWidgetChanged( QSpinBox *spinBox, const QWidget *parentWidget, const QMetaMethod &member, bool isExcluded )
@@ -326,9 +326,9 @@ namespace NTowel42Utils
 
     void setupWidgetChanged( QDoubleSpinBox *doubleSpinBox, const QWidget *parentWidget, const char *member, bool isExcluded )
     {
-        QObject::disconnect( doubleSpinBox, SIGNAL( valueChanged( const QString & ) ), parentWidget, member );
+        QObject::disconnect( doubleSpinBox, SIGNAL( valueChanged( double) ), parentWidget, member );
         if ( !isExcluded )
-            QObject::connect( doubleSpinBox, SIGNAL( valueChanged( const QString & ) ), parentWidget, member );
+            QObject::connect( doubleSpinBox, SIGNAL( valueChanged( double ) ), parentWidget, member );
     }
 
     void setupWidgetChanged( QDoubleSpinBox *doubleSpinBox, const QWidget *parentWidget, const QMetaMethod &member, bool isExcluded )
