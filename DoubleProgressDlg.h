@@ -38,10 +38,10 @@ namespace NTowel42Utils
         friend class CDoubleProgressDlgImpl;
         Q_OBJECT
     public:
-        CDoubleProgressDlg( const QString &text, const QString &subTitle, const QString &cancelText, int min, int max, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags() );
-        CDoubleProgressDlg( const QString &labelText, const QString &cancelText, int min, int max, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags() );   // subtitle = QString()
-        CDoubleProgressDlg( const QString &text, const QString &cancelText, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags() );   // subtitle = QString(), min max = 0, 100;
-        CDoubleProgressDlg( QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags() );   // all defaults
+        CDoubleProgressDlg( const QString &text, const QString &subTitle, const QString &cancelText, int min, int max, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags() );
+        CDoubleProgressDlg( const QString &labelText, const QString &cancelText, int min, int max, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags() );   // subtitle = QString()
+        CDoubleProgressDlg( const QString &text, const QString &cancelText, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags() );   // subtitle = QString(), min max = 0, 100;
+        CDoubleProgressDlg( QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags() );   // all defaults
         virtual ~CDoubleProgressDlg() override;
 
         int primaryValue() const;
