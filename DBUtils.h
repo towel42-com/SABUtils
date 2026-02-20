@@ -42,13 +42,16 @@ class QSqlError;
 
 namespace NTowel42Utils
 {
+    using TParameterVariantMap = std::unordered_map< QString, QVariant >;
+    using TParameterStringMap = std::unordered_map< QString, QString >;
+
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QList< QVariantList > &params );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QList< QVariant > &params );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QMap< QString, QVariant > &namedParams );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< QVariantList > &params );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< QVariant > &params = std::list< QVariant >() );
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::unordered_map< QString, QVariant > &namedParams );
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::unordered_map< QString, QString > &namedParams );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterVariantMap &namedParams );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterStringMap &namedParams );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QVariant &param );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query );
 
@@ -65,6 +68,9 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool tableExists( QSqlQuery &query, const QString &tableName, QSet< QString > *columns = nullptr );
     TOWEL42_UTILS_EXPORT bool addColumn( QSqlQuery &query, const QString &tableName, const QString &columnName, const QString &columnDef, bool *colAdded = nullptr );
     TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, std::size_t numParams );
+    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, const TParameterVariantMap & params );
+    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, const TParameterStringMap &params );
+    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, const QMap< QString, QVariant > &params );
     TOWEL42_UTILS_EXPORT bool validateQuery( QSqlQuery &query );
 
     TOWEL42_UTILS_EXPORT bool clearDatabase( QSqlDatabase &db, bool close );

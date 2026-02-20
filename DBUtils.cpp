@@ -25,6 +25,7 @@
     #include "DBUtils.h"
     #include <cassert>
     #include <unordered_map>
+    #include <unordered_set>
 
     #include <QSqlQuery>
     #include <QSqlRecord>
@@ -34,6 +35,7 @@
     #include <QRegularExpression>
     #include <QStringList>
     #include <QThread>
+    #include <tuple>
 
 namespace NTowel42Utils
 {
@@ -184,24 +186,106 @@ namespace NTowel42Utils
                 return false;
         }
         auto numBoundWithValue = 0;
-        for ( auto &&ii : query.boundValues() )
+        for ( int ii = 0; ii < query.boundValues().count(); ++ii )
         {
-            if ( ii.isNull() )
+            auto value = query.boundValues()[ ii ];
+            if ( value.isNull() )
+            {
+                qDebug() << query.boundValueNames()[ ii ] << " has a null bound value.";
                 continue;
+            }
             numBoundWithValue++;
         }
-        if ( numBoundWithValue != numParams )
-        {
-            for ( int ii = 0; ii < query.boundValues().size(); ++ii )
-            {
-                qDebug() << query.boundValueName( ii ) << query.boundValue( ii );
-            }
-        }
         Q_ASSERT( numBoundWithValue == numParams );
-        return ( numBoundWithValue == numParams );
+
+        return ( ( numBoundWithValue == numParams ) && ( query.boundValueNames().size() == numParams ) && ( query.boundValueNames().size() == query.boundValues().size() ) );
     }
 
-    bool runCmd( QSqlQuery &query, const QString &cmd, const std::unordered_map< QString, QVariant > &namedParams )
+    bool validateParams( const QSqlQuery &query, const TParameterVariantMap &params )
+    {
+        TParameterVariantMap boundValueMap;
+        for ( int ii = 0; ii < query.boundValues().count(); ++ii )
+        {
+            auto value = query.boundValues()[ ii ];
+            auto name = query.boundValueNames()[ ii ];
+            boundValueMap[ name ] = value;
+        }
+
+        QStringList boundNotParam;
+        std::list< std::tuple< QString, QVariant, QVariant > > boundIncorrectly;
+        for ( auto &&ii : boundValueMap )
+        {
+            auto pos = params.find( ii.first );
+            if ( pos == params.end() )
+                boundNotParam << ii.first;
+            else
+            {
+                if ( ( *pos ).second != ii.second )
+                    boundIncorrectly.emplace_back( ii.first, ii.second, ( *pos ).second );
+            }
+        }
+
+        QStringList paramNoBound;
+        for ( auto &&ii : params )
+        {
+            auto pos = boundValueMap.find( ii.first );
+            if ( pos == boundValueMap.end() )
+                boundNotParam << ii.first;
+        }
+
+        auto aOK = boundNotParam.empty();
+        Q_ASSERT( boundNotParam.empty() );
+        if ( !boundNotParam.empty() )
+        {
+            qDebug() << "The following are bound but not in param map: ";
+            for ( auto &&ii : boundNotParam )
+                qDebug() << ii;
+        }
+
+        aOK = aOK && boundNotParam.empty();
+        Q_ASSERT( boundIncorrectly.empty() );
+        if ( !boundIncorrectly.empty() )
+        {
+            qDebug() << "The following are bound incorrectly: ";
+            for ( auto &&ii : boundNotParam )
+                qDebug() << ii;
+        }
+
+        aOK = aOK && paramNoBound.empty();
+        Q_ASSERT( paramNoBound.empty() );
+        if ( !paramNoBound.empty() )
+        {
+            qDebug() << "The following are in the param map but not bound: ";
+            for ( auto &&ii : paramNoBound )
+                qDebug() << ii;
+        }
+
+        return aOK && validateParams( query, params.size() );
+    }
+
+    bool validateParams( const QSqlQuery &query, const TParameterStringMap &params )
+    {
+        TParameterVariantMap realParams;
+        for(auto && ii : params)
+        {
+            realParams[ ii.first ] = ii.second;
+        }
+        return validateParams( query, realParams );
+    }
+
+    bool validateParams( const QSqlQuery &query, const QMap< QString, QVariant > &params )
+    {
+        TParameterVariantMap realParams;
+        auto ii = QMapIterator( params );
+        while ( ii.hasNext() )
+        {
+            ii.next();
+            realParams[ ii.key() ] = ii.value();
+        }
+        return validateParams( query, realParams );
+    }
+
+    bool runCmd( QSqlQuery &query, const QString &cmd, const NTowel42Utils::TParameterVariantMap &namedParams )
     {
         query.clear();
         if ( !query.prepare( cmd ) )
@@ -216,12 +300,12 @@ namespace NTowel42Utils
         }
 
     #ifdef _DEBUG
-        validateParams( query, namedParams.size() );
+        validateParams( query, namedParams );
     #endif
         return runCmd( query );
     }
 
-    bool runCmd( QSqlQuery &query, const QString &cmd, const std::unordered_map< QString, QString > &namedParams )
+    bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterStringMap &namedParams )
     {
         query.clear();
         if ( !query.prepare( cmd ) )
@@ -236,7 +320,7 @@ namespace NTowel42Utils
         }
 
     #ifdef _DEBUG
-        validateParams( query, namedParams.size() );
+        validateParams( query, namedParams );
     #endif
         return runCmd( query );
     }
@@ -256,7 +340,7 @@ namespace NTowel42Utils
         }
 
     #ifdef _DEBUG
-        validateParams( query, namedParams.size() );
+        validateParams( query, namedParams );
     #endif
         return runCmd( query );
     }
