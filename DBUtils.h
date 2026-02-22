@@ -77,6 +77,8 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT bool validateSQLITEInstalled( QString *msg );
 
+    TOWEL42_UTILS_EXPORT QString convertQtToSqliteDTFormat(const QString & qtFormat);
+
 }
 TOWEL42_UTILS_EXPORT QDebug &operator<<( QDebug &dbg, const QSqlQuery &query );
 TOWEL42_UTILS_EXPORT QTextStream &operator<<( QTextStream &ds, const QSqlQuery &query );

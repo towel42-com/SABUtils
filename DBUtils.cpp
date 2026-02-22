@@ -152,6 +152,51 @@ namespace NTowel42Utils
         return true;
     }
 
+    QString convertQtToSqliteDTFormat( const QString &qtFormat )
+    {
+        auto retVal = qtFormat;
+        std::list< std::pair< QString, QString > > formats =   //
+            {
+                //
+                { "dddd", "%d" },   // does not exist in sqlite
+                { "ddd", "%d" },   // does not exist in sqlite
+                { "dd", "%d" },   //
+                { "d", "%d" },   // %e is not supported in all versions of sqlite
+                { "MMMM", "%m" },   // DNE
+                { "MMM", "%m" },   // DNE
+                { "MM", "%m" },   //
+                { "M", "%m" },   // DNE
+                { "yyyy", "%Y" },   // 4 digit year
+                { "yy", "%G" },   // 2 digit year
+                { "hh", "%I" },   //
+                { "h", "%l" },   //
+                { "HH", "%H" },   //
+                { "H", "%k" },   //
+                { "mm", "%M" },   //
+                { "m", "%M" },   // DNE
+                { "ss", "%S" },   //
+                { "s", "%S" },   // DNE
+                { "zzz", "%f" },   //
+                { "zz", "%f" },   // DNE
+                { "z", "%f" },   // DNE
+                { "aP", "%P" },   // DNE
+                { "Pa", "%P" },   // DNE
+                { "AP", "%P" },   //
+                { "A", "%P" },   //  DNE
+                { "ap", "%p" },   // DNE
+                { "a", "%p" },   // DNE
+                { "tttt", "" },   // DNE
+                { "ttt", "" },   // DNE
+                { "tt", "" },   // DNE
+                { "t", "" },   // DNE
+            };
+        for ( auto &&ii : formats )
+        {
+            retVal = retVal.replace( QRegularExpression( "([^%]|^)" + ii.first ), R"__(\1)__" + ii.second );
+        }
+        return retVal;
+    }
+
     bool validateParams( const QSqlQuery &query, std::size_t numParams )
     {
         Q_ASSERT( query.boundValueNames().size() == query.boundValues().size() );
@@ -266,7 +311,7 @@ namespace NTowel42Utils
     bool validateParams( const QSqlQuery &query, const TParameterStringMap &params )
     {
         TParameterVariantMap realParams;
-        for(auto && ii : params)
+        for ( auto &&ii : params )
         {
             realParams[ ii.first ] = ii.second;
         }
