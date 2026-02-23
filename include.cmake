@@ -180,6 +180,7 @@ endif()
 if ( TOWEL42_QWIDGET_SUPPORT )
     set(qtproject_SRCS
         ${qtproject_SRCS}
+        AutoSize.cpp
         AutoFetch.cpp
         AutoWaitCursor.cpp
         ButtonEnabler.cpp
@@ -229,6 +230,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
     set(project_H
         ${project_H}
         AutoFetch.h
+        AutoSize.h
         BackupFile.h
         FileBasedCache.h
         ProgressBarProxyStyle.h

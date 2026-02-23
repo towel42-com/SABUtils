@@ -37,9 +37,6 @@
 #include <QTimer>
 #include <QLayout>
 #include <QPlainTextEdit>
-#include <QComboBox>
-#include <QTableView>
-#include <QHeaderView>
 #include <QTreeWidget>
 #include <QApplication>
 #include <QDebug>
@@ -1096,97 +1093,6 @@ namespace NTowel42Utils
         }
         else
             return value.toString();
-    }
-
-    int autoSize( QAbstractItemView *view, QHeaderView *header, int minWidth /*=-1*/ )
-    {
-        if ( !view || !view->model() || !header )
-            return -1;
-
-        auto model = view->model();
-        fetchMore( model, 3 );
-
-        auto numCols = model->columnCount();
-        bool stretchLastColumn = header->stretchLastSection();
-        header->setStretchLastSection( false );
-
-        header->resizeSections( QHeaderView::ResizeToContents );
-        int numVisibleColumns = 0;
-        for ( int ii = 0; ii < numCols; ++ii )
-        {
-            if ( header->isSectionHidden( ii ) )
-                continue;
-            numVisibleColumns++;
-            if ( numVisibleColumns > 1 )
-                break;
-        }
-        bool dontResize = ( numVisibleColumns <= 1 ) && stretchLastColumn;
-
-        int totalWidth = 0;
-        for ( int ii = 0; ii < numCols; ++ii )
-        {
-            if ( header->isSectionHidden( ii ) )
-                continue;
-
-            int contentSz = view->sizeHintForColumn( ii );
-            int headerSz = header->sectionSizeHint( ii );
-
-            auto newWidth = std::max( { minWidth, contentSz, headerSz } );
-            totalWidth += newWidth;
-
-            if ( !dontResize )
-                header->resizeSection( ii, newWidth );
-        }
-        if ( stretchLastColumn )
-            header->setStretchLastSection( true );
-        return totalWidth;
-    }
-
-    int autoSize( QTableView *table, int minWidth /*= -1*/ )
-    {
-        return autoSize( table, table->horizontalHeader(), minWidth );
-    }
-
-    int autoSize( QTreeView *tree, int minWidth /*= -1*/ )
-    {
-        return autoSize( tree, tree->header(), minWidth );
-    }
-
-    int autoSize( QAbstractItemView *view, int minWidth /*= -1*/ )
-    {
-        auto treeView = dynamic_cast< QTreeView * >( view );
-        if ( treeView )
-            return autoSize( treeView, minWidth );
-
-        auto tableView = dynamic_cast< QTableView * >( view );
-        if ( tableView )
-            return autoSize( tableView, minWidth );
-        return -1;
-    }
-
-    int autoSize( QComboBox *comboBox, int minNumChars /*= -1*/ )
-    {
-        if ( !comboBox )
-            return -1;
-
-        comboBox->view()->setTextElideMode( Qt::ElideNone );
-        auto prevPolicy = comboBox->sizeAdjustPolicy();
-        if ( prevPolicy == QComboBox::AdjustToContents )
-            comboBox->setSizeAdjustPolicy( QComboBox::AdjustToContentsOnFirstShow );
-        comboBox->setSizeAdjustPolicy( QComboBox::AdjustToContents );
-        qApp->processEvents( QEventLoop::ExcludeUserInputEvents );
-
-        if ( ( minNumChars == -1 ) && !comboBox->placeholderText().isEmpty() && ( comboBox->count() == 0 ) )
-        {
-            bool hasIcon = comboBox->sizeAdjustPolicy() == QComboBox::AdjustToMinimumContentsLengthWithIcon;
-            const QFontMetrics &fm = comboBox->fontMetrics();
-            minNumChars = comboBox->placeholderText().length();
-        }
-
-        if ( minNumChars != -1 )
-            comboBox->setMinimumContentsLength( minNumChars );
-
-        return comboBox->width();
     }
 
     QTreeWidgetItem *nextVisibleItem( QTreeWidgetItem *item )

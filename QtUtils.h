@@ -44,11 +44,6 @@ class QAbstractItemView;
 class QTreeWidgetItem;
 class QVariant;
 
-class QTableView;
-class QTreeView;
-class QHeaderView;
-class QComboBox;
-
 #ifdef QT_XMLPATTERNS_LIB
 class QXmlQuery;
 #endif
@@ -155,12 +150,6 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT QStringList getTimeFormats( const SDateSearchOptions &options = {} );
     TOWEL42_UTILS_EXPORT QStringList getHuristicDateFormats();
     TOWEL42_UTILS_EXPORT QStringList getDateFormats( const SDateSearchOptions &options = {} );
-
-    TOWEL42_UTILS_EXPORT int autoSize( QTableView *table, int minWidth = -1 );   // autoSize( table, table->horizontalHeader )
-    TOWEL42_UTILS_EXPORT int autoSize( QTreeView *treeView, int minWidth = -1 );   // autoSize( table, table->header )
-    TOWEL42_UTILS_EXPORT int autoSize( QAbstractItemView *view, int minWidth = -1 );   // autoSize( table, table->horizontalHeader )
-    TOWEL42_UTILS_EXPORT int autoSize( QAbstractItemView *view, QHeaderView *header, int minWidth = -1 );
-    TOWEL42_UTILS_EXPORT int autoSize( QComboBox *comboBox, int minNumChars = -1 );
 
     TOWEL42_UTILS_EXPORT QTreeWidgetItem *nextVisibleItem( QTreeWidgetItem *item );
     TOWEL42_UTILS_EXPORT void fetchMore( QAbstractItemModel *model, int maxFetches = 3 );
