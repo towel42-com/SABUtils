@@ -118,6 +118,22 @@ namespace NTowel42Utils
         return setIsOK( aOK, cb, "QCheckBox" );
     }
 
+    bool setIsOK( bool aOK, QTabWidget * tw, int index )
+    {
+        if ( !tw )
+            return false;
+        auto tabCount = tw->count();
+        if ( ( index < 0 ) || ( index >= tabCount ) )
+            return false;
+
+        auto tmp = tw->tabBar()->tabButton( index, QTabBar::ButtonPosition::LeftSide );
+        if ( !aOK )
+            tw->tabBar()->setTabTextColor( index, QColor( "red" ) );
+        else 
+            tw->tabBar()->setTabTextColor( index, QColor( "black" ) );
+        return aOK;
+    }
+
     bool isValid( QLineEdit *edit, QLabel *label, std::function< bool( const QString &text ) > isValidFunc /*= {} */ )
     {
         if ( !edit || !label )

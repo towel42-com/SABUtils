@@ -36,6 +36,7 @@ class QLabel;
 class QDate;
 class QButtonGroup;
 class QAbstractButton;
+class QTabWidget;
 class QCheckBox;
 class QTextEdit;
 class QWidget;
@@ -59,6 +60,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QWidget *widget, const QString &widgetName );
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QLabel *label );
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QCheckBox *cb );
+    TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QTabWidget *tw, int index );
 
 }
 #endif
