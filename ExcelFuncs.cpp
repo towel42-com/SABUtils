@@ -22,7 +22,7 @@
 
 #include "ExcelFuncs.h"
 #include <QDate>
-#include < unordered_set >
+#include <unordered_set>
 
 #if __cplusplus >= 202002L
     #include <chrono>
