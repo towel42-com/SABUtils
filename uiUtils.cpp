@@ -37,7 +37,9 @@
 #include <QTextEdit>
 #include <QCheckBox>
 #include <QSpinBox>
-#include< functional >
+#include <functional>
+#include <unordered_set>
+#include <set>
 
 #ifdef Q_OS_WINDOWS
     #include <qt_windows.h>
@@ -46,6 +48,8 @@
 
 namespace NTowel42Utils
 {
+    QWidget *determineLastFocusChild( const QWidget *target );
+
     bool launchIfURLClicked( const QString &title, const QPoint &pt, const QFont &font )
     {
         int urlStart;
@@ -118,7 +122,7 @@ namespace NTowel42Utils
         return setIsOK( aOK, cb, "QCheckBox" );
     }
 
-    bool setIsOK( bool aOK, QTabWidget * tw, int index )
+    bool setIsOK( bool aOK, QTabWidget *tw, int index )
     {
         if ( !tw )
             return false;
@@ -129,9 +133,233 @@ namespace NTowel42Utils
         auto tmp = tw->tabBar()->tabButton( index, QTabBar::ButtonPosition::LeftSide );
         if ( !aOK )
             tw->tabBar()->setTabTextColor( index, QColor( "red" ) );
-        else 
+        else
             tw->tabBar()->setTabTextColor( index, QColor( "black" ) );
         return aOK;
+    }
+
+    void dumpSinglePos( const QWidget *parentWidget, const QWidget *widget, const QString &prefix = {} )
+    {
+        qDebug().noquote() << prefix << widget << widget->mapToGlobal( widget->pos() ) << parentWidget << widget->mapTo( parentWidget, widget->pos() );
+    }
+
+    void dumpPos( const QWidget *parentWidget, const QWidget *widget, const std::function< QLabel *( const QWidget * ) > &getLabelForBuddyFunc = {} )
+    {
+        parentWidget = widget;
+        while ( !parentWidget->isWindow() )
+            parentWidget = parentWidget->parentWidget();
+
+        dumpSinglePos( parentWidget, widget );
+        auto focusWidget = determineLastFocusChild( widget );
+        if ( focusWidget != widget )
+        {
+            dumpSinglePos( parentWidget, focusWidget, "    " );
+        }
+        if ( getLabelForBuddyFunc )
+        {
+            auto label = getLabelForBuddyFunc( widget );
+            if ( label )
+            {
+                dumpSinglePos( parentWidget, label, "    " );
+            }
+        }
+    }
+    bool validTabStop( const QWidget *parentWidget, const QWidget *widget )
+    {
+        if ( !parentWidget || !widget )
+            return false;
+
+        return ( widget->focusPolicy() != Qt::FocusPolicy::NoFocus )   //
+               && parentWidget->isAncestorOf( widget )   //
+               && widget->isVisible()   //
+               && !widget->pos().isNull()   //
+               && !widget->mapToGlobal( widget->pos() ).isNull()   //
+            ;
+        //&& !widget->objectName().startsWith( "qt_" );
+    }
+
+    std::list< QWidget * > getFocusChain( QWidget *start, const QWidget *parentWidget, bool bForward, bool allWidgets /*= false */ )
+    {
+        std::list< QWidget * > ret;
+        std::unordered_set< QWidget * > beenThere;
+        auto currWidget = start;
+        // detect infinite loop
+        do
+        {
+            if ( beenThere.find( currWidget ) != beenThere.end() )
+                return ret;
+
+            if ( ( allWidgets && parentWidget->isAncestorOf( currWidget ) ) || validTabStop( parentWidget, currWidget ) )
+                ret.push_back( currWidget );
+            currWidget = bForward ? currWidget->nextInFocusChain() : currWidget->previousInFocusChain();
+        }
+        while ( currWidget != start );
+        return ret;
+    }
+
+    QWidget *determineLastFocusChild( const QWidget *target )
+    {
+        // Since we need to repeat the same logic for both 'first' and 'second', we add a function that
+        // determines the last focus child for a widget, taking proxies and compound widgets into account.
+        // If the target is not a compound widget (it doesn't have a focus proxy that points to a child),
+        // 'lastFocusChild' will be set to the target itself.
+        QWidget *lastFocusChild = const_cast< QWidget * >( target );
+
+        QWidget *focusProxy = target->focusProxy();
+        if ( !focusProxy )
+        {
+            // QTBUG-81097: Another case is possible here. We can have a child
+            // widget, that sets its focusProxy() to the parent (target).
+            // An example of such widget is a QLineEdit, nested into
+            // a QAbstractSpinBox. In this case such widget should be considered
+            // the last focus child.
+            for ( auto *object : target->children() )
+            {
+                QWidget *w = qobject_cast< QWidget * >( object );
+                if ( w && w->focusProxy() == target )
+                {
+                    lastFocusChild = w;
+                    break;
+                }
+            }
+        }
+        else if ( target->isAncestorOf( focusProxy ) )
+        {
+            lastFocusChild = focusProxy;
+            for ( QWidget *focusNext = lastFocusChild->nextInFocusChain(); focusNext != focusProxy && target->isAncestorOf( focusNext ) && focusNext->window() == focusProxy->window(); focusNext = focusNext->nextInFocusChain() )
+            {
+                if ( focusNext->focusPolicy() != Qt::NoFocus )
+                    lastFocusChild = focusNext;
+            }
+        }
+        return lastFocusChild;
+    }
+
+    void autoTabStop( QWidget *parentWidget )
+    {
+        if ( !parentWidget )
+            return;
+
+        std::unordered_map< const QWidget *, QLabel * > buddyMap;
+
+        auto children = parentWidget->findChildren< QWidget * >();
+        for ( auto &&ii : children )
+        {
+            auto label = dynamic_cast< QLabel * >( ii );
+            if ( !label )
+                continue;
+
+            auto buddy = label->buddy();
+            if ( !buddy )
+                continue;
+
+            buddyMap[ buddy ] = label;
+            auto buddyChildren = buddy->findChildren< QWidget * >();
+            for ( auto &&ii : buddyChildren )
+                buddyMap[ ii ] = label;
+        }
+
+        auto labelForBuddy = [ buddyMap ]( const QWidget *buddy ) -> QLabel *
+        {
+            auto pos = buddyMap.find( buddy );
+            if ( pos == buddyMap.end() )
+                return nullptr;
+            return ( *pos ).second;
+        };
+
+        auto widgetLocationCompare = [ labelForBuddy ]( QWidget *lhs, QWidget *rhs ) -> bool
+        {
+            Q_ASSERT( lhs && rhs );
+
+            auto lhsFocusChild = determineLastFocusChild( lhs );
+            auto rhsFocusChild = determineLastFocusChild( rhs );
+
+            auto lhsLabel = labelForBuddy( lhs );
+            if ( !lhsLabel && ( lhs != lhsFocusChild ) )
+                lhsLabel = labelForBuddy( lhsFocusChild );
+
+            auto rhsLabel = labelForBuddy( rhs );
+            if ( !rhsLabel && ( lhs != rhsFocusChild ) )
+                rhsLabel = labelForBuddy( rhsFocusChild );
+
+            int lhsYPos = 0;
+            if ( lhsLabel )
+                lhsYPos = lhsLabel->mapToGlobal( lhsLabel->pos() ).y();
+            else
+                lhsYPos = lhsFocusChild->mapToGlobal( lhsFocusChild->pos() ).y();
+
+            int rhsYPos = 0;
+            if ( rhsLabel )
+                rhsYPos = rhsLabel->mapToGlobal( rhsLabel->pos() ).y();
+            else
+                rhsYPos = rhsFocusChild->mapToGlobal( rhsFocusChild->pos() ).y();
+
+            auto yDiff = std::abs( lhsYPos - rhsYPos );
+            if ( yDiff <= 2 )
+                yDiff = 0;
+
+            if ( yDiff != 0 )
+                return lhsYPos < rhsYPos;
+
+            auto lhsPos = lhsFocusChild->mapToGlobal( lhsFocusChild->pos() );
+            auto rhsPos = rhsFocusChild->mapToGlobal( rhsFocusChild->pos() );
+            return lhsPos.x() < rhsPos.x();
+        };
+
+        std::unordered_set< QWidget * > beenThere;
+        for ( auto ii = children.begin(); ii != children.end(); )
+        {
+            auto beenHandled = beenThere.find( *ii ) != beenThere.end();
+            auto realFocusWidget = determineLastFocusChild( *ii );
+            beenHandled = beenHandled || ( beenThere.find( realFocusWidget ) != beenThere.end() );
+            if ( beenHandled )
+            {
+                ii = children.erase( ii );
+                continue;
+            }
+
+            if ( validTabStop( parentWidget, realFocusWidget ) )
+            {
+                beenThere.insert( *ii );
+                beenThere.insert( realFocusWidget );
+                ii++;
+            }
+            else
+                ii = children.erase( ii );
+        }
+
+        //qDebug() << "================================";
+        //for ( auto &&ii : children )
+        //{
+        //    dumpPos( parentWidget, ii, labelForBuddy );
+        //}
+
+        std::set< QWidget *, decltype( widgetLocationCompare ) > widgetMap( widgetLocationCompare );
+        for ( auto &&child : children )
+        {
+            widgetMap.insert( child );
+        }
+
+        //qDebug() << "================================";
+        //for ( auto &&ii : widgetMap )
+        //{
+        //    dumpPos( parentWidget, ii, labelForBuddy );
+        //}
+
+        //qDebug() << "================================";
+        QWidget *prev = nullptr;
+        for ( const auto &widget : widgetMap )
+        {
+            if ( !prev )
+            {
+                prev = widget;
+            }
+            else
+            {
+                QWidget::setTabOrder( prev, widget );
+                prev = widget;
+            }
+        }
     }
 
     bool isValid( QLineEdit *edit, QLabel *label, std::function< bool( const QString &text ) > isValidFunc /*= {} */ )

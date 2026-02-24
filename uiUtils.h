@@ -54,7 +54,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool isValid( QDateEdit *de, QLabel *label, std::function< bool( const QDate &date ) > isValidFunc = {} );
     TOWEL42_UTILS_EXPORT bool isValid( const QString &text, QLabel *label, std::function< bool( const QString &text ) > isValidFunc = {} );
     TOWEL42_UTILS_EXPORT bool isValid( QButtonGroup *bg, QLabel *label, std::function< bool( const QAbstractButton *btn ) > isValidFunc = {} );
-    TOWEL42_UTILS_EXPORT bool isValid( QCheckBox *cb, QLineEdit *desc, std::function< bool( bool checked, const QString & text  ) > isValidFunc = {} );
+    TOWEL42_UTILS_EXPORT bool isValid( QCheckBox *cb, QLineEdit *desc, std::function< bool( bool checked, const QString &text ) > isValidFunc = {} );
     TOWEL42_UTILS_EXPORT bool isValid( QTextEdit *te, QLabel *label, std::function< bool( const QString &text ) > isValidFunc = {} );
     TOWEL42_UTILS_EXPORT bool isValid( QSpinBox *te, QLabel *label, std::function< bool( int value ) > isValidFunc = {} );
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QWidget *widget, const QString &widgetName );
@@ -62,5 +62,9 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QCheckBox *cb );
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QTabWidget *tw, int index );
 
+    TOWEL42_UTILS_EXPORT bool validTabStop( const QWidget *parentWidget, const QWidget *widget );
+    TOWEL42_UTILS_EXPORT std::list< QWidget * > getFocusChain( QWidget *start, const QWidget *parentWidget, bool bForward, bool allWidgets = false );
+    // taken from QWidget.cpp
+    TOWEL42_UTILS_EXPORT void autoTabStop( QWidget *parentWidget );
 }
 #endif
