@@ -171,7 +171,7 @@ namespace NTowel42Utils
 
         return ( widget->focusPolicy() != Qt::FocusPolicy::NoFocus )   //
                && parentWidget->isAncestorOf( widget )   //
-               && widget->isVisible()   //
+               //&& widget->isVisible()   //
                && !widget->pos().isNull()   //
                && !widget->mapToGlobal( widget->pos() ).isNull()   //
             ;
@@ -235,39 +235,26 @@ namespace NTowel42Utils
         return lastFocusChild;
     }
 
-    void autoTabStop( QWidget *parentWidget )
+    using TBuddyMap = std::unordered_map< const QWidget *, QLabel * >;
+
+    struct SWidgetLocationCompare
     {
-        if ( !parentWidget )
-            return;
+        TBuddyMap fBuddyMap;
 
-        std::unordered_map< const QWidget *, QLabel * > buddyMap;
-
-        auto children = parentWidget->findChildren< QWidget * >();
-        for ( auto &&ii : children )
+        SWidgetLocationCompare( const TBuddyMap &buddyMap = {} ) :
+            fBuddyMap( buddyMap )
         {
-            auto label = dynamic_cast< QLabel * >( ii );
-            if ( !label )
-                continue;
-
-            auto buddy = label->buddy();
-            if ( !buddy )
-                continue;
-
-            buddyMap[ buddy ] = label;
-            auto buddyChildren = buddy->findChildren< QWidget * >();
-            for ( auto &&ii : buddyChildren )
-                buddyMap[ ii ] = label;
         }
 
-        auto labelForBuddy = [ buddyMap ]( const QWidget *buddy ) -> QLabel *
+        QLabel *labelForBuddy( const QWidget *buddy ) const
         {
-            auto pos = buddyMap.find( buddy );
-            if ( pos == buddyMap.end() )
+            auto pos = fBuddyMap.find( buddy );
+            if ( pos == fBuddyMap.end() )
                 return nullptr;
             return ( *pos ).second;
         };
 
-        auto widgetLocationCompare = [ labelForBuddy ]( QWidget *lhs, QWidget *rhs ) -> bool
+        bool operator()( QWidget *lhs, QWidget *rhs ) const
         {
             Q_ASSERT( lhs && rhs );
 
@@ -304,7 +291,33 @@ namespace NTowel42Utils
             auto lhsPos = lhsFocusChild->mapToGlobal( lhsFocusChild->pos() );
             auto rhsPos = rhsFocusChild->mapToGlobal( rhsFocusChild->pos() );
             return lhsPos.x() < rhsPos.x();
-        };
+        }
+    };
+
+    using TWidgetLocationMap = std::set< QWidget *, SWidgetLocationCompare >;
+    TWidgetLocationMap determineWidgetLocationMap( QWidget *parentWidget )
+    {
+        if ( !parentWidget )
+            return {};
+
+        std::unordered_map< const QWidget *, QLabel * > buddyMap;
+
+        auto children = parentWidget->findChildren< QWidget * >();
+        for ( auto &&ii : children )
+        {
+            auto label = dynamic_cast< QLabel * >( ii );
+            if ( !label )
+                continue;
+
+            auto buddy = label->buddy();
+            if ( !buddy )
+                continue;
+
+            buddyMap[ buddy ] = label;
+            auto buddyChildren = buddy->findChildren< QWidget * >();
+            for ( auto &&ii : buddyChildren )
+                buddyMap[ ii ] = label;
+        }
 
         std::unordered_set< QWidget * > beenThere;
         for ( auto ii = children.begin(); ii != children.end(); )
@@ -334,12 +347,11 @@ namespace NTowel42Utils
         //    dumpPos( parentWidget, ii, labelForBuddy );
         //}
 
-        std::set< QWidget *, decltype( widgetLocationCompare ) > widgetMap( widgetLocationCompare );
+        TWidgetLocationMap widgetMap( buddyMap );
         for ( auto &&child : children )
         {
             widgetMap.insert( child );
         }
-
         //qDebug() << "================================";
         //for ( auto &&ii : widgetMap )
         //{
@@ -347,6 +359,12 @@ namespace NTowel42Utils
         //}
 
         //qDebug() << "================================";
+        return widgetMap;
+    }
+
+    QWidget *autoTabStop( QWidget *parentWidget )
+    {
+        auto widgetMap = determineWidgetLocationMap( parentWidget );
         QWidget *prev = nullptr;
         for ( const auto &widget : widgetMap )
         {
@@ -360,7 +378,19 @@ namespace NTowel42Utils
                 prev = widget;
             }
         }
+
+        if ( widgetMap.empty() )
+            return nullptr;
+        return *widgetMap.begin();
     }
+
+    QWidget *getFirstFocusItem( QWidget *parentWidget )
+    {
+        auto widgetMap = determineWidgetLocationMap( parentWidget );
+        if ( widgetMap.empty() )
+            return nullptr;
+        return *widgetMap.begin();
+    };
 
     bool isValid( QLineEdit *edit, QLabel *label, std::function< bool( const QString &text ) > isValidFunc /*= {} */ )
     {

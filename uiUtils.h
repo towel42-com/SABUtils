@@ -65,6 +65,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool validTabStop( const QWidget *parentWidget, const QWidget *widget );
     TOWEL42_UTILS_EXPORT std::list< QWidget * > getFocusChain( QWidget *start, const QWidget *parentWidget, bool bForward, bool allWidgets = false );
     // taken from QWidget.cpp
-    TOWEL42_UTILS_EXPORT void autoTabStop( QWidget *parentWidget );
+    TOWEL42_UTILS_EXPORT QWidget *autoTabStop( QWidget *parentWidget );
+    TOWEL42_UTILS_EXPORT QWidget *getFirstFocusItem( QWidget *parentWidget );
 }
 #endif
