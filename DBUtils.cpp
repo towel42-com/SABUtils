@@ -199,8 +199,11 @@ namespace NTowel42Utils
 
     bool validateParams( const QSqlQuery &query, std::size_t numParams )
     {
-        Q_ASSERT( query.boundValueNames().size() == query.boundValues().size() );
-        Q_ASSERT( query.boundValueNames().size() == numParams );
+        if ( !query.boundValueNames().isEmpty() )
+        {
+            Q_ASSERT( query.boundValueNames().size() == query.boundValues().size() );
+            Q_ASSERT( query.boundValueNames().size() == numParams );
+        }
 
         QRegularExpression regEx( R"__((\?)|(\:\w*))__" );
         if ( !regEx.isValid() )
@@ -243,7 +246,7 @@ namespace NTowel42Utils
         }
         Q_ASSERT( numBoundWithValue == numParams );
 
-        return ( ( numBoundWithValue == numParams ) && ( query.boundValueNames().size() == numParams ) && ( query.boundValueNames().size() == query.boundValues().size() ) );
+        return ( ( numBoundWithValue == numParams ) && ( query.boundValues().size() == numParams ) && ( !query.boundValueNames().empty() && ( query.boundValueNames().size() == query.boundValues().size() ) ) );
     }
 
     bool validateParams( const QSqlQuery &query, const TParameterVariantMap &params )
