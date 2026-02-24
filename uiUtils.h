@@ -1,6 +1,6 @@
 // The MIT License( MIT )
 //
-// Copyright( c ) 2020-2025 Scott Aron Bloom
+// Copyright( c ) 2020-2026 Towel 42 Development, LLC and Scott Aron Bloom
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to deal
@@ -61,11 +61,5 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QLabel *label );
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QCheckBox *cb );
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QTabWidget *tw, int index );
-
-    TOWEL42_UTILS_EXPORT bool validTabStop( const QWidget *parentWidget, const QWidget *widget );
-    TOWEL42_UTILS_EXPORT std::list< QWidget * > getFocusChain( QWidget *start, const QWidget *parentWidget, bool bForward, bool allWidgets = false );
-    // taken from QWidget.cpp
-    TOWEL42_UTILS_EXPORT QWidget *autoTabStop( QWidget *parentWidget );
-    TOWEL42_UTILS_EXPORT QWidget *getFirstFocusItem( QWidget *parentWidget );
 }
 #endif

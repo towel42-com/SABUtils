@@ -182,6 +182,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         ${qtproject_SRCS}
         AutoSize.cpp
         AutoFetch.cpp
+        AutoTabStop.cpp
         AutoWaitCursor.cpp
         ButtonEnabler.cpp
         CollapsableGroupBox.cpp
@@ -208,6 +209,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
     )
     set(qtproject_H
         ${qtproject_H}
+        AutoTabStop.h
         AutoWaitCursor.h
         ButtonEnabler.h
         CollapsableGroupBox.h
