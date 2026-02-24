@@ -1,6 +1,6 @@
 ﻿// The MIT License( MIT )
 //
-// Copyright( c ) 2020-2025 Scott Aron Bloom
+// Copyright( c ) 2020-2026 Towel 42 Development, LLC and Scott Aron Bloom
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to deal
@@ -2721,6 +2721,38 @@ namespace NTowel42Utils
             }
             return retVal;
         }
+
+        QString textToIdentifier( const QString &text, bool camelCase )
+        {
+            auto retVal = text;
+            if ( retVal.isEmpty() )
+                return retVal;
+
+            if ( !QRegularExpression( R"__(^[A-Za-z_])__" ).match( retVal ).hasMatch() )
+            {
+                retVal = "_" + text;
+            }
+
+            // already handled the start dont use full cppIndentRegex
+            auto invalidIdentCharsRegEx = QRegularExpression( R"__([^a-zA-Z0-9_])__" );
+            if ( !invalidIdentCharsRegEx.match( retVal ).hasMatch() )
+            {
+                retVal.replace( invalidIdentCharsRegEx, "_" );
+            }
+
+            if ( camelCase )
+            {
+            }
+            else
+            {
+                retVal.replace( QRegularExpression( R"__(([A-Z]))__" ), R"__(_\1)__" );
+            }
+
+            auto cppIdentRegex = QStringLiteral( R"__(^[a-zA-Z_][a-zA-Z0-9_]*$)__" );
+            //Q_ASSERT( QRegularExpression( cppIdentRegex ).match( retVal ).hasMatch() );
+            return retVal;
+        }
+            
 
         QString numToEnglish( int value )
         {

@@ -1,6 +1,6 @@
 // The MIT License( MIT )
 //
-// Copyright( c ) 2020-2025 Scott Aron Bloom
+// Copyright( c ) 2020-2026 Towel 42 Development, LLC and Scott Aron Bloom
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to deal
@@ -537,6 +537,7 @@ namespace NTowel42Utils
         TOWEL42_UTILS_EXPORT bool isValidEmailAddress( const QString &email );
 
         TOWEL42_UTILS_EXPORT QString toCSV( const QStringList &data );
+        TOWEL42_UTILS_EXPORT QString textToIdentifier( const QString &text, bool camelCase );;   // camel case or _ separators, _ will be all lower case
 #endif
         TOWEL42_UTILS_EXPORT std::wstring replaceDiacriticalCharacters( const std::wstring &str );
         TOWEL42_UTILS_EXPORT bool isDiacriticalCharacter( const wchar_t &ch, std::wstring *ascii = nullptr );
