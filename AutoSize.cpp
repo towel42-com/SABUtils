@@ -125,7 +125,7 @@ namespace NTowel42Utils
         return comboBox->width();
     }
 
-    std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, QWidget *resizeWidget )
+    std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, std::optional< int > widthHint )
     {
         if ( !scrollArea )
             return {};
@@ -133,15 +133,10 @@ namespace NTowel42Utils
         if ( !scrollArea->horizontalScrollBar() )
             return {};
 
-        if ( !resizeWidget )
+        QWidget *resizeWidget = scrollArea;
+        while ( resizeWidget && !resizeWidget->isWindow() && resizeWidget->parentWidget() )
         {
-            resizeWidget = scrollArea;
-            while ( resizeWidget && resizeWidget->parentWidget() )
-            {
-                resizeWidget = resizeWidget->parentWidget();
-                if ( resizeWidget->isWindow() )
-                    break;
-            }
+            resizeWidget = resizeWidget->parentWidget();
         }
 
         if ( !resizeWidget )
@@ -152,17 +147,30 @@ namespace NTowel42Utils
         QSize lhsSize;
         QSize rhsSize;
 
+        if ( widthHint.has_value() && ( resizeWidget->width() != widthHint.value() ) )
+        {
+            auto sz = resizeWidget->size();
+            sz.setWidth( widthHint.value() );
+            resizeWidget->resize( sz );
+            qApp->processEvents( QEventLoop::ExcludeUserInputEvents );
+        }
+
+        // grow/shrink it by 5% to find the initial boundaries
+        auto percent = .05;
+        int resizeCount = 0;
         if ( scrollArea->horizontalScrollBar()->isVisible() )
         {
             lhsSize = resizeWidget->size();
-
-            // grow it by 10% until its not visible.
+            bool first = true;
             while ( scrollArea->horizontalScrollBar()->isVisible() )
             {
                 lhsSize = resizeWidget->size();
                 auto newSize = lhsSize;
-                newSize.setWidth( newSize.width() * 1.5 );
+                auto delta = first ? 1 : newSize.width() * percent;
+                newSize.setWidth( newSize.width() + delta );
+                first = false;
                 resizeWidget->resize( newSize );
+                resizeCount++;
                 qApp->processEvents( QEventLoop::ExcludeUserInputEvents );
             }
             rhsSize = resizeWidget->size();
@@ -170,19 +178,25 @@ namespace NTowel42Utils
         else
         {
             rhsSize = resizeWidget->size();
-            // shrink it by 10% until its visible.
+            bool first = true;
             while ( !scrollArea->horizontalScrollBar()->isVisible() )
             {
                 rhsSize = resizeWidget->size();
                 auto newSize = rhsSize;
-                newSize.setWidth( newSize.width() * 0.5 );
+                auto delta = first ? 1 : newSize.width() * percent;
+                newSize.setWidth( newSize.width() - delta );
+                first = false;
                 resizeWidget->resize( newSize );
+                resizeCount++;
                 qApp->processEvents( QEventLoop::ExcludeUserInputEvents );
             }
             lhsSize = resizeWidget->size();
         }
 
-        resizeWidget->resize( lhsSize );
+        qDebug() << "It took " << resizeCount << " to find starting points";
+        if ( resizeWidget->size() != rhsSize )
+            resizeWidget->resize( rhsSize );
+
         while ( lhsSize.width() < rhsSize.width() && ( ( rhsSize.width() - lhsSize.width() ) > 1 ) )
         {
             auto mid = ( rhsSize.width() - lhsSize.width() ) / 2;
@@ -191,13 +205,27 @@ namespace NTowel42Utils
             auto newSize = lhsSize;
             newSize.setWidth( newSize.width() + mid );
             resizeWidget->resize( newSize );
+            resizeCount++;
             qApp->processEvents( QEventLoop::ExcludeUserInputEvents );
             if ( scrollArea->horizontalScrollBar()->isVisible() )
                 lhsSize = newSize;
             else
                 rhsSize = newSize;
         }
+
+        auto isVisible = scrollArea->horizontalScrollBar()->isVisible();
+        bool delta = isVisible ? 1 : -1;
+        while ( isVisible ? scrollArea->horizontalScrollBar()->isVisible() : !scrollArea->horizontalScrollBar()->isVisible() )
+        {
+            auto newSize = resizeWidget->size();
+            newSize.setWidth( newSize.width() + delta );
+            resizeWidget->resize( newSize );
+            resizeCount++;
+            qApp->processEvents( QEventLoop::ExcludeUserInputEvents );
+        }
         scrollArea->setHorizontalScrollBarPolicy( currPolicy );
+        qDebug() << "It took " << resizeCount << " total";
+        qDebug() << "Final Width: " << resizeWidget->size().width();
         return resizeWidget->size().width();
     }
 }

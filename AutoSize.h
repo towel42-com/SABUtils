@@ -43,7 +43,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT std::optional< int > autoSize( QAbstractItemView *view, QHeaderView *header, int minWidth = -1 );
     TOWEL42_UTILS_EXPORT std::optional< int > autoSize( QComboBox *comboBox, int minNumChars = -1 );
 
-    TOWEL42_UTILS_EXPORT std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, QWidget *resizeWidget );
+    TOWEL42_UTILS_EXPORT std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, std::optional< int > hintWidth );
 }
 
 #endif
