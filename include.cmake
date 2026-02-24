@@ -185,6 +185,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         AutoTabStop.cpp
         AutoWaitCursor.cpp
         ButtonEnabler.cpp
+        ButtonGroupWDescriptiveText.cpp
         CollapsableGroupBox.cpp
         DelayComboBox.cpp
         DelayLineEdit.cpp
@@ -212,6 +213,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         AutoTabStop.h
         AutoWaitCursor.h
         ButtonEnabler.h
+        ButtonGroupWDescriptiveText.h
         CollapsableGroupBox.h
         DelayComboBox.h
         DelayLineEdit.h
