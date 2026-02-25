@@ -195,6 +195,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         HyperLinkLineEdit.cpp
         ImageScrollBar.cpp
         LineEditWithSuffix.cpp
+        MapTo.cpp
         MenuBarEx.cpp
         ProgressBarProxyStyle.cpp
         QtDumper.cpp
@@ -237,6 +238,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         AutoSize.h
         BackupFile.h
         FileBasedCache.h
+        MapTo.h
         ProgressBarProxyStyle.h
         QtDumper.h
         SpinBox64_StepType.h

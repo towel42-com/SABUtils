@@ -32,14 +32,14 @@ class QTimer;
 class QLabel;
 
 #include <QObject>
-#include <QWidget> // required for the firstFocusItem property
+#include <QWidget>   // required for the firstFocusItem property
 #include <list>
 #include <functional>
 
 namespace NTowel42Utils
 {
     // the easy way to use this,
-    // in the constructor of the widget simply 
+    // in the constructor of the widget simply
     // new CAutoTabStop( this )
     // the class will take care of the rest
     // you can also use the statics to do it manually
@@ -49,7 +49,7 @@ namespace NTowel42Utils
         Q_OBJECT;
         Q_PROPERTY( bool focusToFirstWidgetOnShow MEMBER fSetFocusOnShow );
         Q_PROPERTY( bool targetWidgetShown MEMBER fTargetWidgetShown );
-        Q_PROPERTY( QWidget * firstFocusItem MEMBER fFirstFocusItem );
+        Q_PROPERTY( QWidget *firstFocusItem MEMBER fFirstFocusItem );
 
     public:
         CAutoTabStop( QWidget *targetWidget );
@@ -63,15 +63,15 @@ namespace NTowel42Utils
         static QWidget *autoTabStop( QWidget *rootWidget );   // returns the firstFocusItem
         static QWidget *getFirstFocusItem( QWidget *rootWidget );
         static bool validTabStop( const QWidget *rootWidget, const QWidget *widget );
-        static std::list< QWidget * > getFocusChain( QWidget *start, const QWidget *rootWidget, bool forward, bool allWidgets = false );
+        static std::list< QWidget * > getFocusChain( QWidget *start, const QWidget *rootWidget, bool forward = true, bool allWidgets = false );
         static QWidget *determineLastFocusChild( const QWidget *target );   // taken from QWidget.cpp
 
+        static void dumpSinglePos( const QWidget *targetWidget, const QWidget *widget, const QString &prefix = {} );
+        static void dumpPos( const QWidget *targetWidget, const QWidget *widget, const std::function< QLabel *( const QWidget * ) > &getLabelForBuddyFunc = {} );
     private Q_SLOTS:
         void slotTimerTimeout();
 
     private:
-        static void dumpSinglePos( const QWidget *targetWidget, const QWidget *widget, const QString &prefix = {} );
-        static void dumpPos( const QWidget *targetWidget, const QWidget *widget, const std::function< QLabel *( const QWidget * ) > &getLabelForBuddyFunc = {} );
 
         QWidget *fTargetWidget{ nullptr };
         QWidget *fFirstFocusItem{ nullptr };
