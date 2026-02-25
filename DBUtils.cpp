@@ -26,10 +26,13 @@
     #include <cassert>
     #include <unordered_map>
     #include <unordered_set>
+    #include <list>
 
     #include <QSqlQuery>
+    #include <QSqlDriver>
     #include <QSqlRecord>
     #include <QSqlError>
+    #include <QSqlField>
     #include <QDebug>
     #include <QMap>
     #include <QRegularExpression>
@@ -56,6 +59,7 @@ namespace NTowel42Utils
                 Q_ASSERT( error.type() == QSqlError::NoError );
         }
     }
+
     void reportError( const QSqlQuery &query, bool assert )
     {
         reportError( query.lastError(), assert );
@@ -527,38 +531,310 @@ namespace NTowel42Utils
         return true;
     }
 
-    bool tableExists( QSqlQuery &query, const QString &tableName, QSet< QString > *columns )
+    bool tableExists( QSqlQuery &query, const QString &tableName, std::list< QString > *columns )
     {
-        bool retVal = false;
-        if ( runCmd( query, "PRAGMA table_info('" + tableName + "');" ) )
+        auto tables = query.driver()->tables( QSql::Tables );
+
+        for ( auto &&ii : tables )
         {
-            while ( query.next() )
+            if ( ii.toLower() == tableName.toLower() )
             {
-                retVal = true;
                 if ( columns )
-                    columns->insert( query.value( 1 ).toString().toLower() );
-                else
-                    break;
+                {
+                    auto record = QSqlDatabase::database().record( tableName );
+                    for ( int ii = 0; ii < record.count(); ++ii )
+                    {
+                        columns->push_back( record.fieldName( ii ).toLower() );
+                    }
+                }
+                return true;
             }
         }
-        query.clear();
-        return retVal;
+        return false;
     }
 
     bool addColumn( QSqlQuery &query, const QString &tableName, const QString &columnName, const QString &columnDef, bool *colAdded )
     {
         if ( colAdded )
             *colAdded = false;
-        QSet< QString > columns;
+        std::list< QString > columns;
         if ( !tableExists( query, tableName, &columns ) )
             return true;
 
-        if ( columns.contains( columnName.toLower() ) )
-            return true;
+        for ( auto &&ii : columns )
+        {
+            if ( ii.toLower() == columnName.toLower() )
+                return true;
+        }
 
         if ( colAdded )
             *colAdded = true;
         return runCmd( query, "ALTER TABLE '" + tableName + "' ADD " + columnDef );
+    }
+
+    bool renameTable( QSqlQuery &query, const QString &oldTableName, const QString &newTableName )
+    {
+        auto cmd = QString( "ALTER TABLE %1 RENAME TO %2" ).arg( oldTableName ).arg( newTableName );
+        return runCmd( query, cmd );
+    }
+
+    std::optional< QString > backupTable( QSqlQuery &query, const QString &tableName )
+    {
+        std::optional< int > backupNum;
+        QString newTableName;
+        do
+        {
+            newTableName = tableName + "_";
+            if ( backupNum.has_value() )
+                newTableName += QString( "%1_" ).arg( backupNum.value() );
+            else
+                backupNum = 0;
+            backupNum.value() = backupNum.value() + 1;
+            newTableName += "bak";
+        }
+        while ( tableExists( query, newTableName ) );
+
+        if ( !renameTable( query, tableName, newTableName ) )
+        {
+            return {};
+        }
+        return newTableName;
+    }
+
+    std::list< NTowel42Utils::SColumnInfo > columnInfoForTable( QSqlQuery &query, const QString &tableName )
+    {
+        auto cmd = QString( "PRAGMA table_info('%1')" ).arg( tableName );
+        if ( !runCmd( query, cmd ) )
+            return {};
+
+        std::list< SColumnInfo > columns;
+        while ( query.next() )
+        {
+            SColumnInfo curr;
+            int ii = 0;
+            auto colID = query.value( ii++ ).toInt();
+            auto columnName = query.value( ii++ ).toString();
+            auto typeName = query.value( ii++ ).toString();
+            auto notNull = query.value( ii++ ).toBool();
+            auto defaultValue = query.value( ii++ ).toString();
+            auto primaryKey = query.value( ii++ ).toBool();
+            columns.emplace_back( colID, columnName, typeName, notNull, defaultValue, primaryKey, QString() );
+        }
+        return columns;
+    }
+
+    QString createTableCommand( const QString &tableName, const std::list< NTowel42Utils::SColumnInfo > &columns, bool checkIfExists )
+    {
+        QString retVal = "CREATE TABLE ";
+        if ( checkIfExists )
+            retVal += "IF NOT EXISTS ";
+        retVal += tableName + "( \n";
+        bool first = true;
+        for ( auto &&ii : columns )
+        {
+            if ( !first )
+                retVal += ",";
+            else
+                retVal += " ";
+            retVal += " ";
+
+            retVal += ii.columnDef();
+        }
+        retVal += ")";
+        return retVal;
+    }
+
+    bool renameColumn( QSqlDatabase &db, const QString &tableName, const QString &oldColumnName, const QString &newColumnName )
+    {
+        auto version = sqliteVersion();
+        QSqlQuery query( db );
+        if ( version.fMajor > 25 )
+        {
+            // rename column exists
+
+            auto cmd = QString( "ALTER TABLE %1 RENAME COLUMN %2 TO %3" ).arg( tableName ).arg( oldColumnName ).arg( newColumnName );
+            return runCmd( query, cmd );
+        }
+        else
+        {
+            auto columns = columnInfoForTable( query, tableName );
+            bool columnFound = false;
+            for ( auto &&ii : columns )
+            {
+                if ( ii.fName.toLower() == oldColumnName.toLower() )
+                {
+                    ii.fName = oldColumnName;
+                    columnFound = true;
+                    break;
+                }
+            }
+            if ( !columnFound )
+                return false;
+
+            CTransaction transaction( db );
+            auto newTableName = backupTable( query, tableName );
+            if ( !newTableName.has_value() )
+            {
+                transaction.setRollback();
+                return false;
+            }
+
+            auto cmd = createTableCommand( tableName, columns, false );
+            if ( !runCmd( query, cmd ) )
+            {
+                transaction.setRollback();
+                return false;
+            }
+
+            if ( !importTable( query, newTableName.value(), tableName, { { oldColumnName, newColumnName } } ) )
+            {
+                transaction.setRollback();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    QString getColumnListing( const std::list< NTowel42Utils::SColumnInfo > & columns, const std::unordered_map< QString, QString > &mapping )
+    {
+        QString retVal;
+        bool first = true;
+        for ( auto &&ii : columns )
+        {
+            auto columnName = ii.fName;
+            auto pos = mapping.find( columnName );
+            if ( pos != mapping.end() )
+                columnName = ( *pos ).second;
+
+            if ( !first )
+                retVal += ",";
+            else
+                retVal += " ";
+            first = false;
+            retVal += " " + columnName + "\n";
+        }
+        return retVal;
+    }
+
+    bool importTable( QSqlQuery &query, const QString &srcTableName, const QString &destTableName, const std::unordered_map< QString, QString > &mapping )
+    {
+        if ( !tableExists( query, srcTableName ) || !tableExists( query, destTableName ) )
+            return false;
+
+        auto srcColumns = columnInfoForTable( query, srcTableName );
+        auto destColumns = columnInfoForTable( query, destTableName );
+
+        auto cmd = QString( "INSERT INTO %1(\n" ).arg( destTableName );
+        cmd += getColumnListing( srcColumns, mapping );
+
+        cmd += ")\n";
+        cmd += "SELECT\n";
+        cmd += getColumnListing( srcColumns, {} );
+        cmd += "FROM " + srcTableName;
+
+        return runCmd( query, cmd );
+    }
+
+    bool dropTable( QSqlQuery &query, const QString &tableName )
+    {
+        auto cmd = QString( "DROP TABLE IF EXISTS %1" ).arg( tableName );
+        return runCmd( query, cmd );
+    }
+
+    SDBVersion sqliteVersion()
+    {
+        QSqlQuery query;
+        query.exec( "select sqlite_version();" );
+        if ( !query.next() )
+            return {};
+        return query.value( 0 ).toString();
+    }
+
+    SDBVersion::SDBVersion( const QString &str )
+    {
+        auto tmp = str.split( "." );
+        Q_ASSERT( !tmp.isEmpty() );
+        if ( tmp.isEmpty() )
+            return;
+        bool aOK = false;
+        fMajor = tmp.front().toInt( &aOK );
+        Q_ASSERT( aOK && !tmp.isEmpty() );
+        if ( !aOK )
+            return;
+        tmp.pop_front();
+
+        Q_ASSERT( !tmp.isEmpty() );
+        if ( tmp.isEmpty() )
+            return;
+        fMinor = tmp.front().toInt( &aOK );
+        Q_ASSERT( aOK && !tmp.isEmpty() );
+        if ( !aOK )
+            return;
+        tmp.pop_front();
+
+        Q_ASSERT( !tmp.isEmpty() );
+        if ( tmp.isEmpty() )
+            return;
+        fPatch = tmp.front().toInt( &aOK );
+        Q_ASSERT( aOK && !tmp.isEmpty() );
+        if ( !aOK )
+            return;
+        tmp.pop_front();
+        Q_ASSERT( tmp.isEmpty() );
+    }
+
+    QString SColumnInfo::columnDef() const
+    {
+        QStringList retVal;
+
+        retVal << fName;
+        retVal << fType;
+        if ( fNotNull )
+            retVal << "NOT" << "NULL";
+        if ( fPrimaryKey )
+        {
+            retVal << "PRIMARY" << "KEY" << "AUTOINCREMENT";
+        }
+        else
+        {
+            if ( fDefaultValue.isEmpty() )
+            {
+                retVal << "DEFAULT" << fDefaultValue;
+            }
+            if ( !fConstraint.isEmpty() )
+                retVal << "CHECK(" << fConstraint << ")";
+        }
+        return retVal.join( " " );
+    }
+
+    SColumnInfo::SColumnInfo( int colID, const QString &name, const QString &colType, bool notNull, const QString &defValue, bool primKey, const QString &contraint ) :
+        fColID( colID ),
+        fName( name ),
+        fType( colType ),
+        fNotNull( notNull ),
+        fDefaultValue( defValue ),
+        fPrimaryKey( primKey ),
+        fConstraint( contraint )
+    {
+    }
+
+    CTransaction::CTransaction() :
+        CTransaction( QSqlDatabase::database() )
+    {
+    }
+
+    CTransaction::CTransaction( const QSqlDatabase &db ) :
+        fDatabase( db )
+    {
+        transaction( fDatabase );
+    }
+
+    CTransaction::~CTransaction()
+    {
+        if ( fRollback )
+            rollback( fDatabase );
+        else
+            commit( fDatabase );
     }
 }
 

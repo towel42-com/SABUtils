@@ -1,7 +1,7 @@
 // The MIT License( MIT )
 //
 // Copyright( c ) 2022 Towel 42 Development, LLC and Scott Aron Bloom
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to deal
 // in the Software without restriction, including without limitation the rights
@@ -39,6 +39,7 @@ class QSqlError;
     #include <list>
     #include <unordered_map>
     #include <cstdint>
+    #include <QSqlDatabase>
 
 namespace NTowel42Utils
 {
@@ -65,10 +66,46 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool commit( QSqlDatabase &db );
     TOWEL42_UTILS_EXPORT bool rollback( QSqlDatabase &db );
 
-    TOWEL42_UTILS_EXPORT bool tableExists( QSqlQuery &query, const QString &tableName, QSet< QString > *columns = nullptr );
+    class TOWEL42_UTILS_EXPORT CTransaction
+    {
+    public:
+        CTransaction();
+        CTransaction( const QSqlDatabase &db );
+        ~CTransaction();
+
+        void setRollback( bool rollback = true ) { fRollback = rollback; }
+
+    private:
+        QSqlDatabase fDatabase;
+        bool fRollback{ false };
+    };
+
+    TOWEL42_UTILS_EXPORT bool tableExists( QSqlQuery &query, const QString &tableName, std::list< QString > *columns = nullptr );
     TOWEL42_UTILS_EXPORT bool addColumn( QSqlQuery &query, const QString &tableName, const QString &columnName, const QString &columnDef, bool *colAdded = nullptr );
+    TOWEL42_UTILS_EXPORT bool renameTable( QSqlQuery &query, const QString &oldTableName, const QString &newTableName );
+    TOWEL42_UTILS_EXPORT bool renameColumn( QSqlDatabase &db, const QString &tableName, const QString &oldColumnName, const QString &newColumnName );
+    TOWEL42_UTILS_EXPORT bool importTable( QSqlQuery &query, const QString &srcTableName, const QString &destTableName, const std::unordered_map< QString, QString > &mapping );
+    TOWEL42_UTILS_EXPORT bool dropTable( QSqlQuery &query, const QString &tableName );
+    TOWEL42_UTILS_EXPORT std::optional< QString > backupTable( QSqlQuery &query, const QString &tableName );   // if successful returns the new table name
+
+    struct TOWEL42_UTILS_EXPORT SColumnInfo
+    {
+        QString columnDef() const;
+        SColumnInfo() = default;
+        SColumnInfo( int colID, const QString &name, const QString &colType, bool notNull, const QString &defValue, bool primKey, const QString &contraint );
+
+        int fColID{ -1 };
+        QString fName;
+        QString fType;
+        bool fNotNull{ false };
+        QString fDefaultValue;
+        bool fPrimaryKey{ false };
+        QString fConstraint;
+    };
+    TOWEL42_UTILS_EXPORT std::list< SColumnInfo > columnInfoForTable( QSqlQuery &query, const QString &tableName );
+
     TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, std::size_t numParams );
-    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, const TParameterVariantMap & params );
+    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, const TParameterVariantMap &params );
     TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, const TParameterStringMap &params );
     TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, const QMap< QString, QVariant > &params );
     TOWEL42_UTILS_EXPORT bool validateQuery( QSqlQuery &query );
@@ -77,7 +114,17 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT bool validateSQLITEInstalled( QString *msg );
 
-    TOWEL42_UTILS_EXPORT QString convertQtToSqliteDTFormat(const QString & qtFormat);
+    TOWEL42_UTILS_EXPORT QString convertQtToSqliteDTFormat( const QString &qtFormat );
+
+    struct TOWEL42_UTILS_EXPORT SDBVersion
+    {
+        SDBVersion() = default;
+        SDBVersion( const QString &str );
+        int fMajor;
+        int fMinor;
+        int fPatch;
+    };
+    TOWEL42_UTILS_EXPORT SDBVersion sqliteVersion();
 
 }
 TOWEL42_UTILS_EXPORT QDebug &operator<<( QDebug &dbg, const QSqlQuery &query );
