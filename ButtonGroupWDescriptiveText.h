@@ -46,23 +46,22 @@ namespace NTowel42Utils
         {
             eYes = 0,
             eNo = 1,
-            eNA = 2,
-            eAccept = 0,
-            eReject = 1,
-            eCondem = 2
+            eNA = 2
         };
 
         CButtonGroupWDescriptiveText( QWidget *parent = nullptr );
         ~CButtonGroupWDescriptiveText();
 
-        void setAcceptRejectCondemn( bool isARC, QTextEdit *te );
+        void setAcceptRejectCondemn( bool isARC, QTextEdit *te );   // short cut to building it all yourself
         void setHasNA( bool hasNA );
         void setHasText( bool hasText );
-        void setLabel( QLabel *label, const std::optional< QString > &labelDesc = {} );
+        void setLabel( QLabel *label );
+        void setDescText( const QString &text );
         bool setValue( int value, const QString &desc );
         std::optional< int > value() const;
         void setNoYesSwapped( bool swapped );
         void setAlwaysRequiresText( bool requiresText );
+        void setNeverRequiresText( bool requiresText );
         void addButton( const QString &text );
         bool aOK() const;
 
@@ -80,6 +79,7 @@ namespace NTowel42Utils
         void slotChanged();
 
     private:
+        bool aOK( bool *textMissing ) const;
         void rebuild();
         void addButtons( const QStringList &buttonText, bool addSpacer );
         void nameObjects();
@@ -89,11 +89,13 @@ namespace NTowel42Utils
         bool fHasText{ true };
         bool fNoYesSwapped{ false };
         bool fAlwaysRequiresText{ false };
+        bool fNeverRequiresText{ false };
         std::optional< QString > fLabelDesc;
         QLineEdit *fText{ nullptr };
         QLabel *fLabelForText{ nullptr };
 
         std::vector< QRadioButton * > fButtons;
+        QStringList fBaseButtonText;
         QStringList fExtraButtonText;
 
         QButtonGroup *fButtonGroup{ nullptr };
