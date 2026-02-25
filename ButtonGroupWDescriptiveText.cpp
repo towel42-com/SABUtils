@@ -80,9 +80,9 @@ namespace NTowel42Utils
 
         auto buttonText = fBaseButtonText << fExtraButtonText;
 
-        addButtons( buttonText, fIsARC || !fHasText );
+        addButtons( buttonText, fTextEdit || !fHasText );
 
-        if ( !fIsARC && fHasText )
+        if ( !fTextEdit && fHasText )
         {
             if ( fLabelDesc.has_value() )
             {
@@ -117,37 +117,49 @@ namespace NTowel42Utils
     {
     }
 
-    void CButtonGroupWDescriptiveText::setAcceptRejectCondemn( bool isARC, QTextEdit *pte )
+    void CButtonGroupWDescriptiveText::setAcceptRejectCondemn( QTextEdit *pte )
     {
-        fIsARC = isARC;
-        fNoYesSwapped = true;
-        fTextEdit = pte;
-        fBaseButtonText.clear();
+        setNoYesSwapped( true );
+        setCustomButtonList( QStringList() << tr( "Accept" ) << tr( "Reject" ) << tr( "Condemn" ), false );
+        setPlainText( pte, true );
+    }
 
-        fBaseButtonText.push_back( tr( "Accept" ) );
-        fBaseButtonText.push_back( tr( "Reject" ) );
-        fBaseButtonText.push_back( tr( "Condemn" ) );
+    void CButtonGroupWDescriptiveText::setCustomButtonList( const QStringList &buttonNames, bool rebuild )
+    {
+        fBaseButtonText = buttonNames;
 
         if ( fHasNA )
             fBaseButtonText.push_back( tr( "N/A" ) );
 
-        connect( fTextEdit, &QTextEdit::textChanged, this, &CButtonGroupWDescriptiveText::slotChanged );
-
-        rebuild();
+        if ( rebuild )
+            this->rebuild();
     }
 
-    void CButtonGroupWDescriptiveText::setHasNA( bool hasNA )
+    void CButtonGroupWDescriptiveText::setPlainText( QTextEdit *pte, bool rebuild )
+    {
+        fTextEdit = pte;
+
+        if ( fTextEdit )
+            connect( fTextEdit, &QTextEdit::textChanged, this, &CButtonGroupWDescriptiveText::slotChanged );
+
+        if ( rebuild )
+            this->rebuild();
+    }
+
+    void CButtonGroupWDescriptiveText::setHasNA( bool hasNA, bool rebuild )
     {
         fHasNA = hasNA;
         fBaseButtonText.push_back( tr( "N/A" ) );
 
-        rebuild();
+        if ( rebuild )
+            this->rebuild();
     }
 
-    void CButtonGroupWDescriptiveText::setHasText( bool hasText )
+    void CButtonGroupWDescriptiveText::setHasText( bool hasText, bool rebuild )
     {
         fHasText = hasText;
-        rebuild();
+        if ( rebuild )
+            this->rebuild();
     }
 
     void CButtonGroupWDescriptiveText::setLabel( QLabel *label )
@@ -156,15 +168,15 @@ namespace NTowel42Utils
         slotChanged();
     }
 
-    void CButtonGroupWDescriptiveText::setDescText( const QString &labelText )
+    void CButtonGroupWDescriptiveText::setDescText( const QString &labelText, bool rebuild )
     {
         auto needsRebuild = fLabelDesc != labelText;
         fLabelDesc = labelText;
         if ( labelText.isEmpty() )
             fLabelDesc.reset();
 
-        if ( needsRebuild )
-            rebuild();
+        if ( needsRebuild && rebuild )
+            this->rebuild();
     }
 
     bool CButtonGroupWDescriptiveText::setValue( int value, const QString &desc )
@@ -242,10 +254,11 @@ namespace NTowel42Utils
         slotChanged();
     }
 
-    void CButtonGroupWDescriptiveText::addButton( const QString &text )
+    void CButtonGroupWDescriptiveText::addButton( const QString &text, bool rebuild )
     {
         fExtraButtonText.push_back( text );
-        rebuild();
+        if ( rebuild )
+            this->rebuild();
     }
 
     std::optional< int > CButtonGroupWDescriptiveText::value() const
@@ -262,7 +275,7 @@ namespace NTowel42Utils
     {
         return aOK( nullptr );
     }
-    
+
     bool CButtonGroupWDescriptiveText::aOK( bool *textMissing ) const
     {
         auto lclTextMissing = text().isEmpty();
@@ -272,7 +285,6 @@ namespace NTowel42Utils
         auto val = value();
         if ( !val.has_value() )
             return false;
-
 
         auto noVal = fNoYesSwapped ? EValue::eYes : EValue::eNo;
         auto yesVal = fNoYesSwapped ? EValue::eNo : EValue::eYes;
@@ -286,9 +298,9 @@ namespace NTowel42Utils
 
         if ( val == noVal )
             return true;
-        if ( !fIsARC && ( val == EValue::eNA ) )
+        if ( !fTextEdit && ( val == EValue::eNA ) )
             return true;
-        if ( fIsARC || ( val == yesVal ) )
+        if ( fTextEdit || ( val == yesVal ) )
         {
             return !lclTextMissing;
         }
@@ -305,6 +317,7 @@ namespace NTowel42Utils
         if ( fLabelForText )
             NTowel42Utils::setIsOK( aOK || !textMissing, fLabelForText );
         NTowel42Utils::setIsOK( aOK, fLabel );
-        emit sigChanged();
+        if ( sender() )
+            emit sigChanged();
     }
 }

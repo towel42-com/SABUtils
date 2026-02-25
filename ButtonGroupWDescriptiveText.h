@@ -52,17 +52,19 @@ namespace NTowel42Utils
         CButtonGroupWDescriptiveText( QWidget *parent = nullptr );
         ~CButtonGroupWDescriptiveText();
 
-        void setAcceptRejectCondemn( bool isARC, QTextEdit *te );   // short cut to building it all yourself
-        void setHasNA( bool hasNA );
-        void setHasText( bool hasText );
+        void setAcceptRejectCondemn( QTextEdit *te );   // short cut to building it all yourself
+        void setCustomButtonList( const QStringList &buttonNames, bool rebuild = true );
+        void setPlainText( QTextEdit *pte, bool rebuild = true );
+        void setHasNA( bool hasNA, bool rebuild = true );
+        void setHasText( bool hasText, bool rebuild = true );
         void setLabel( QLabel *label );
-        void setDescText( const QString &text );
+        void setDescText( const QString &text, bool rebuild = true );
         bool setValue( int value, const QString &desc );
         std::optional< int > value() const;
         void setNoYesSwapped( bool swapped );
         void setAlwaysRequiresText( bool requiresText );
         void setNeverRequiresText( bool requiresText );
-        void addButton( const QString &text );
+        void addButton( const QString &text, bool rebuild = true );
         bool aOK() const;
 
         bool setPropValue( std::optional< int > value );
@@ -85,7 +87,6 @@ namespace NTowel42Utils
         void nameObjects();
 
         bool fHasNA{ false };
-        bool fIsARC{ false };
         bool fHasText{ true };
         bool fNoYesSwapped{ false };
         bool fAlwaysRequiresText{ false };
