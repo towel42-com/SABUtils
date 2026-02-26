@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 #include "AutoTabStop.h"
-#include "MapTo.h"
 
 #include <QString>
 #include <QDebug>
@@ -67,58 +66,69 @@ namespace NTowel42Utils
         return QObject::eventFilter( watched, event );
     }
 
-    void CAutoTabStop::dumpSinglePos( const QWidget *targetWidget, const QWidget *widget, const QString &prefix )
+    void CAutoTabStop::dumpSinglePos( const QWidget *widget, const QString &prefix )
     {
-        qDebug().noquote() << prefix << widget << NTowel42Utils::mapTo( nullptr, widget, widget->pos() ) << targetWidget << NTowel42Utils::mapTo( targetWidget, widget, widget->pos() );
+        if ( !widget )
+            return;
+
+        auto window = widget->window();
+        auto pos = window->pos();
+        if ( widget->parentWidget() )
+            pos = widget->parentWidget()->mapTo( window, pos );
+        else
+            pos = widget->mapTo( window, pos );
+
+        qDebug().noquote() << prefix << widget << pos;
     }
 
-    void CAutoTabStop::dumpPos( const QWidget *targetWidget, const QWidget *widget, const std::function< QLabel *( const QWidget * ) > &getLabelForBuddyFunc /*= {}*/ )
+    void CAutoTabStop::dumpPos( const QWidget *widget, const std::function< QLabel *( const QWidget * ) > &getLabelForBuddyFunc /*= {}*/ )
     {
-        targetWidget = widget;
-        while ( !targetWidget->isWindow() )
-            targetWidget = targetWidget->parentWidget();
-
-        dumpSinglePos( targetWidget, widget );
+        dumpSinglePos( widget );
         auto focusWidget = CAutoTabStop::determineLastFocusChild( widget );
         if ( focusWidget != widget )
         {
-            dumpSinglePos( targetWidget, focusWidget, "    " );
+            dumpSinglePos( focusWidget, "    " );
         }
         if ( getLabelForBuddyFunc )
         {
             auto label = getLabelForBuddyFunc( widget );
             if ( label )
             {
-                dumpSinglePos( targetWidget, label, "    " );
+                dumpSinglePos( label, "    " );
             }
         }
     }
 
-    bool CAutoTabStop::validTabStop( const QWidget *targetWidget, const QWidget *widget )
+    bool CAutoTabStop::validTabStop( const QWidget *widget )
     {
-        if ( !targetWidget || !widget )
+        if ( !widget )
             return false;
 
-        return ( widget->focusPolicy() != Qt::FocusPolicy::NoFocus )   //
-               && targetWidget->isAncestorOf( widget )   //
-               && widget->isVisible()   //
-               && !widget->pos().isNull()   //
-               && !NTowel42Utils::mapTo( nullptr, widget, widget->pos() ).isNull()   //
-            ;
+        bool isValid = ( widget->focusPolicy() != Qt::FocusPolicy::NoFocus )   //
+                       && widget->isVisible()   //
+                       && !widget->pos().isNull();
+        if(isValid)
+        {
+            if ( widget->parentWidget() )
+                isValid = isValid && !widget->parentWidget()->mapTo( widget->window(), widget->pos() ).isNull();
+            else
+                isValid = isValid && !widget->mapTo( widget->window(), widget->pos() ).isNull();
+        }
+        return isValid;
     }
 
-    std::list< QWidget * > CAutoTabStop::getFocusChain( QWidget *start, const QWidget *parentWidget, bool bForward, bool allWidgets /*= false */ )
+    std::list< QWidget * > CAutoTabStop::getFocusChain( QWidget *start, const QWidget *rootWidget, bool bForward, bool allWidgets /*= false */ )
     {
         if ( !start )
         {
             start = QApplication::focusWidget();
-            if ( !parentWidget->isAncestorOf( start ) )
+            if ( !rootWidget->isAncestorOf( start ) )
                 start = nullptr;
         }
 
         if ( !start )
         {
-            auto children = parentWidget->findChildren< QWidget * >();
+            auto children = rootWidget->findChildren< QWidget * >();
             for ( auto &&child : children )
             {
                 if ( child->focusPolicy() != Qt::FocusPolicy::NoFocus )
@@ -140,7 +150,7 @@ namespace NTowel42Utils
             if ( beenThere.find( currWidget ) != beenThere.end() )
                 return ret;
 
-            if ( ( allWidgets && parentWidget->isAncestorOf( currWidget ) ) || validTabStop( parentWidget, currWidget ) )
+            if ( ( allWidgets && rootWidget->isAncestorOf( currWidget ) ) || validTabStop( currWidget ) )
                 ret.push_back( currWidget );
             currWidget = bForward ? currWidget->nextInFocusChain() : currWidget->previousInFocusChain();
         }
@@ -196,8 +206,17 @@ namespace NTowel42Utils
             auto lhsFocusChild = CAutoTabStop::determineLastFocusChild( lhs );
             auto rhsFocusChild = CAutoTabStop::determineLastFocusChild( rhs );
 
-            auto lhsFocusChildPos = NTowel42Utils::mapTo( nullptr, lhsFocusChild, lhsFocusChild->pos() );
-            auto rhsFocusChildPos = NTowel42Utils::mapTo( nullptr, rhsFocusChild, rhsFocusChild->pos() );
+            auto lhsWindow = lhsFocusChild->window();
+            auto rhsWindow = rhsFocusChild->window();
+            Q_ASSERT( lhsWindow && rhsWindow );
+            Q_ASSERT( lhsWindow == rhsWindow );
+
+            auto lhsParent = lhsFocusChild->parentWidget();
+            auto rhsParent = rhsFocusChild->parentWidget();
+            Q_ASSERT( lhsParent && rhsParent );
+
+            auto lhsFocusChildPos = lhsParent->mapTo( lhsWindow, lhsFocusChild->pos() );
+            auto rhsFocusChildPos = rhsParent->mapTo( rhsWindow, rhsFocusChild->pos() );
 
             auto lhsYPos = lhsFocusChildPos.y();
             auto rhsYPos = rhsFocusChildPos.y();
@@ -216,12 +235,12 @@ namespace NTowel42Utils
     };
 
     using TWidgetLocationMap = std::set< QWidget *, SWidgetLocationCompare >;
-    TWidgetLocationMap determineWidgetLocationMap( QWidget *targetWidget )
+    TWidgetLocationMap determineWidgetLocationMap( QWidget *rootWidget )
     {
-        if ( !targetWidget )
+        if ( !rootWidget )
             return {};
 
-        auto children = targetWidget->findChildren< QWidget * >();
+        auto children = rootWidget->findChildren< QWidget * >();
         std::unordered_set< QWidget * > beenThere;
         for ( auto ii = children.begin(); ii != children.end(); )
         {
@@ -234,7 +253,7 @@ namespace NTowel42Utils
                 continue;
             }
 
-            if ( CAutoTabStop::validTabStop( targetWidget, realFocusWidget ) )
+            if ( CAutoTabStop::validTabStop( realFocusWidget ) )
             {
                 beenThere.insert( *ii );
                 beenThere.insert( realFocusWidget );
@@ -266,9 +285,9 @@ namespace NTowel42Utils
         return widgetMap;
     }
 
-    QWidget *CAutoTabStop::autoTabStop( QWidget *parentWidget )
+    QWidget *CAutoTabStop::autoTabStop( QWidget *rootWidget )
     {
-        auto widgetMap = determineWidgetLocationMap( parentWidget );
+        auto widgetMap = determineWidgetLocationMap( rootWidget );
         QWidget *prev = nullptr;
         for ( const auto &widget : widgetMap )
         {

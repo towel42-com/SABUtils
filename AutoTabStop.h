@@ -62,12 +62,12 @@ namespace NTowel42Utils
 
         static QWidget *autoTabStop( QWidget *rootWidget );   // returns the firstFocusItem
         static QWidget *getFirstFocusItem( QWidget *rootWidget );
-        static bool validTabStop( const QWidget *rootWidget, const QWidget *widget );
+        static bool validTabStop( const QWidget *widget );
         static std::list< QWidget * > getFocusChain( QWidget *start, const QWidget *rootWidget, bool forward = true, bool allWidgets = false );
         static QWidget *determineLastFocusChild( const QWidget *target );   // taken from QWidget.cpp
 
-        static void dumpSinglePos( const QWidget *targetWidget, const QWidget *widget, const QString &prefix = {} );
-        static void dumpPos( const QWidget *targetWidget, const QWidget *widget, const std::function< QLabel *( const QWidget * ) > &getLabelForBuddyFunc = {} );
+        static void dumpSinglePos( const QWidget *widget, const QString &prefix = {} );
+        static void dumpPos( const QWidget *widget, const std::function< QLabel *( const QWidget * ) > &getLabelForBuddyFunc = {} );
     private Q_SLOTS:
         void slotTimerTimeout();
 
