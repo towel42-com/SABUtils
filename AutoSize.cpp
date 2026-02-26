@@ -214,7 +214,7 @@ namespace NTowel42Utils
         }
 
         auto isVisible = scrollArea->horizontalScrollBar()->isVisible();
-        bool delta = isVisible ? 1 : -1;
+        auto delta = isVisible ? 1 : -1;
         while ( isVisible ? scrollArea->horizontalScrollBar()->isVisible() : !scrollArea->horizontalScrollBar()->isVisible() )
         {
             auto newSize = resizeWidget->size();
