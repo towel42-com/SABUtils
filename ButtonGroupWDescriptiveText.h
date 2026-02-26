@@ -74,6 +74,10 @@ namespace NTowel42Utils
 
         QLabel *label() const { return fLabel; }
         QLineEdit *lineEdit() const { return fText; }
+
+        QString textForReport( bool includeText ) const;
+        QString textForValue( int value ) const;
+
     Q_SIGNALS:
         void sigChanged();
 

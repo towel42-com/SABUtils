@@ -271,6 +271,35 @@ namespace NTowel42Utils
         return {};
     }
 
+    QString CButtonGroupWDescriptiveText::textForValue( int value ) const
+    {
+        if ( value < 0 )
+            return {};
+
+        if ( value < fBaseButtonText.count() )
+            return fBaseButtonText[ value ];
+        value -= fBaseButtonText.count();
+        if ( value < 0 )
+            return {};
+        if ( value < fExtraButtonText.count() )
+            return fExtraButtonText[ value ];
+        return {};
+    }
+
+    QString CButtonGroupWDescriptiveText::textForReport( bool includeText ) const
+    {
+        QString retVal;
+
+        auto val = value();
+        if ( val.has_value() )
+        {
+            retVal += textForValue( val.value() );
+        }
+        if ( includeText && !text().isEmpty() )
+            retVal += " - " + text();
+        return retVal;
+    }
+
     bool CButtonGroupWDescriptiveText::aOK() const
     {
         return aOK( nullptr );
