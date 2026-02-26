@@ -432,6 +432,7 @@ if ( TOWEL42_QSQL_SUPPORT )
     SET( project_H    
         ${project_H}
         DBUtils.h
+        DBUtilsFwd.h
     )
 
     SET( qtproject_SRCS
