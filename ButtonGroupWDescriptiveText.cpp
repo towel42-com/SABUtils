@@ -165,6 +165,8 @@ namespace NTowel42Utils
     void CButtonGroupWDescriptiveText::setLabel( QLabel *label )
     {
         fLabel = label;
+        if ( fLabel )
+            fLabel->setBuddy( this );
         slotChanged();
     }
 
