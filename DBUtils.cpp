@@ -646,8 +646,8 @@ namespace NTowel42Utils
 
     bool renameColumn( QSqlDatabase &db, const QString &tableName, const QString &oldColumnName, const QString &newColumnName )
     {
-        auto version = sqliteVersion();
         QSqlQuery query( db );
+        auto version = sqliteVersion( query );
         if ( version.fMajor > 25 )
         {
             // rename column exists
@@ -741,13 +741,21 @@ namespace NTowel42Utils
         return runCmd( query, cmd );
     }
 
-    SDBVersion sqliteVersion()
+    SDBVersion sqliteVersion( QSqlQuery &query )
     {
-        QSqlQuery query;
         query.exec( "select sqlite_version();" );
         if ( !query.next() )
             return {};
         return query.value( 0 ).toString();
+    }
+
+    std::optional< int > lastInsertedKey( QSqlQuery & query, const QString &/*tableName*/ )
+    {
+        auto cmd = QStringLiteral( "SELECT last_insert_rowid()" );
+        auto retVal = NTowel42Utils::runCmd( query, cmd );
+        if ( !retVal || !query.next() ) 
+            return {};
+        return query.value( 0 ).toInt();
     }
 
     SDBVersion::SDBVersion( const QString &str )

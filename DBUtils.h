@@ -87,7 +87,9 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT QString convertQtToSqliteDTFormat( const QString &qtFormat );
 
-    TOWEL42_UTILS_EXPORT SDBVersion sqliteVersion();
+    TOWEL42_UTILS_EXPORT SDBVersion sqliteVersion( QSqlQuery &query );
+
+    TOWEL42_UTILS_EXPORT std::optional< int > lastInsertedKey( QSqlQuery &query, const QString &tableName );
 
 }
 TOWEL42_UTILS_EXPORT QDebug &operator<<( QDebug &dbg, const QSqlQuery &query );
