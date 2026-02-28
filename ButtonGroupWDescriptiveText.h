@@ -26,6 +26,8 @@
 
 #include <QWidget>
 #include <optional>
+#include <unordered_set>
+#include <unordered_map>
 
 class QRadioButton;
 class QLineEdit;
@@ -46,25 +48,34 @@ namespace NTowel42Utils
         {
             eYes = 0,
             eNo = 1,
-            eNA = 2
+            eNA = 2,
+            eFirstCustomValue = 3
         };
+        std::optional< QString > toString( EValue value ) const;
 
         CButtonGroupWDescriptiveText( QWidget *parent = nullptr );
         ~CButtonGroupWDescriptiveText();
 
         void setAcceptRejectCondemn( QTextEdit *te );   // short cut to building it all yourself
         void setCustomButtonList( const QStringList &buttonNames, bool rebuild = true );
-        void setPlainText( QTextEdit *pte, bool rebuild = true );
+        void setLongDescriptiveTextEdit( QTextEdit *pte, bool rebuild = true );
         void setHasNA( bool hasNA, bool rebuild = true );
-        void setHasText( bool hasText, bool rebuild = true );
+        void setShowDescriptiveText( bool showDescriptiveText, bool rebuild = true );
         void setLabel( QLabel *label );
         void setDescText( const QString &text, bool rebuild = true );
         bool setValue( int value, const QString &desc );
         std::optional< int > value() const;
-        void setNoYesSwapped( bool swapped );
-        void setAlwaysRequiresText( bool requiresText );
-        void setNeverRequiresText( bool requiresText );
+        void setButtonRequiresText( int id );   // default is the eYes
+        void setButtonRequiresText( const QString &buttonText );   // default is the "Yes" Button
+        void setButtonsThatRequiresText( const std::list< int > &ids );   // default is the { eYes }
+        void setButtonsThatRequiresText( const QStringList &buttonsText );   // default is the { "Yes" } Button
+
+        void setAlwaysRequiresText();
+        void setNeverRequiresText();
+
         void addButton( const QString &text, bool rebuild = true );
+
+        void setReadOnly( bool readOnly, bool rebuild = true );
         bool aOK() const;
 
         bool setPropValue( std::optional< int > value );
@@ -72,8 +83,9 @@ namespace NTowel42Utils
         QString text() const;
         void setText( const QString &text );
 
-        QLabel *label() const { return fLabel; }
-        QLineEdit *lineEdit() const { return fText; }
+        QLabel *label() const { return fBuddyLabel; }
+        QLineEdit *lineEdit() const { return fDescriptiveText; }
+        QLabel *descriptiveTextLabel() const { return fDescriptiveTextLabel; }
 
         QString textForReport( bool includeText ) const;
         QString textForValue( int value ) const;
@@ -88,26 +100,35 @@ namespace NTowel42Utils
         bool aOK( bool *textMissing ) const;
         void rebuild();
         void addButtons( const QStringList &buttonText, bool addSpacer );
+
+    private:
+        void rebuildIDRequiredTextMap();
+
         void nameObjects();
 
+        bool fReadOnly{ false };
         bool fHasNA{ false };
-        bool fHasText{ true };
-        bool fNoYesSwapped{ false };
-        bool fAlwaysRequiresText{ false };
-        bool fNeverRequiresText{ false };
-        std::optional< QString > fLabelDesc;
-        QLineEdit *fText{ nullptr };
-        QLabel *fLabelForText{ nullptr };
+        bool fShowDescriptiveText{ true };
 
-        std::vector< QRadioButton * > fButtons;
+        std::optional< QString > fLabelDesc;
         QStringList fBaseButtonText;
         QStringList fExtraButtonText;
+
+        // owned widgets
+        QLineEdit *fDescriptiveText{ nullptr };   //
+        QLabel *fDescriptiveTextLabel{ nullptr };
+        std::vector< QRadioButton * > fButtons;
 
         QButtonGroup *fButtonGroup{ nullptr };
         QHBoxLayout *fHorizontalLayout{ nullptr };
 
-        QLabel *fLabel{ nullptr };
-        QTextEdit *fTextEdit{ nullptr };
+        // NOT OWNED
+        QLabel *fBuddyLabel{ nullptr };   // the label outside the widget to change colors
+        QTextEdit *fLongDescriptiveTextEdit{ nullptr };   // the TextEdit for more extensive details, unowned
+
+        bool requiredTextMissing() const;
+        std::unordered_set< QString > fButtonsThatRequireText;
+        std::unordered_set< int > fIDsThatRequireText;
     };
 }
 #endif

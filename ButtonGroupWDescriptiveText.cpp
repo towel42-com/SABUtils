@@ -36,8 +36,9 @@ namespace NTowel42Utils
     CButtonGroupWDescriptiveText::CButtonGroupWDescriptiveText( QWidget *parent /*= nullptr*/ ) :
         QWidget( parent )
     {
-        fBaseButtonText.push_back( tr( "Yes" ) );
-        fBaseButtonText.push_back( tr( "No" ) );
+        fBaseButtonText.push_back( toString( eYes ).value() );
+        fBaseButtonText.push_back( toString( eNo ).value() );
+        fButtonsThatRequireText.insert( toString( eYes ).value() );
 
         rebuild();
         connect( this, &QWidget::objectNameChanged, this, &CButtonGroupWDescriptiveText::nameObjects );
@@ -53,10 +54,10 @@ namespace NTowel42Utils
             fHorizontalLayout->setObjectName( base + "_horizontalLayout" );
         if ( fButtonGroup )
             fButtonGroup->setObjectName( base + "_buttonGroup" );
-        if ( fLabelForText )
-            fLabelForText->setObjectName( base + "_labelDesc" );
-        if ( fText )
-            fText->setObjectName( base + "_text" );
+        if ( fDescriptiveTextLabel )
+            fDescriptiveTextLabel->setObjectName( base + "_labelDesc" );
+        if ( fDescriptiveText )
+            fDescriptiveText->setObjectName( base + "_text" );
         for ( auto &&ii : fButtons )
         {
             auto buttonName = NTowel42Utils::NStringUtils::textToIdentifier( base + "_" + ii->text(), false );
@@ -64,14 +65,31 @@ namespace NTowel42Utils
         }
     }
 
+    bool CButtonGroupWDescriptiveText::requiredTextMissing() const
+    {
+        auto id = fButtonGroup->checkedId();
+        if ( id == -1 )
+            return false;
+
+        auto pos = fIDsThatRequireText.find( id );
+        return pos != fIDsThatRequireText.end();
+    }
+
     void CButtonGroupWDescriptiveText::rebuild()
     {
-        delete fHorizontalLayout;
-        delete fButtonGroup;
+        delete fDescriptiveText;
+        delete fDescriptiveTextLabel;
         for ( auto &&ii : fButtons )
             delete ii;
         fButtons.clear();
-        delete fLabelForText;
+        delete fButtonGroup;
+        delete fHorizontalLayout;
+        fIDsThatRequireText.clear();
+
+        fHorizontalLayout = nullptr;
+        fButtonGroup = nullptr;
+        fDescriptiveTextLabel = nullptr;
+        fDescriptiveText = nullptr;
 
         fHorizontalLayout = new QHBoxLayout( this );
         fHorizontalLayout->setContentsMargins( 0, 0, 0, 0 );
@@ -80,20 +98,26 @@ namespace NTowel42Utils
 
         auto buttonText = fBaseButtonText << fExtraButtonText;
 
-        addButtons( buttonText, fTextEdit || !fHasText );
+        addButtons( buttonText, fLongDescriptiveTextEdit || !fShowDescriptiveText );
 
-        if ( !fTextEdit && fHasText )
+        if ( !fLongDescriptiveTextEdit && fShowDescriptiveText )
         {
             if ( fLabelDesc.has_value() )
             {
-                fLabelForText = new QLabel( this );
-                fLabelForText->setText( fLabelDesc.value() );
-                fHorizontalLayout->addWidget( fLabelForText );
+                fDescriptiveTextLabel = new QLabel( this );
+                fDescriptiveTextLabel->setText( fLabelDesc.value() );
+                fHorizontalLayout->addWidget( fDescriptiveTextLabel );
             }
-            fText = new QLineEdit( this );
-            fHorizontalLayout->addWidget( fText );
-            connect( fText, &QLineEdit::textChanged, this, &CButtonGroupWDescriptiveText::slotChanged );
+            fDescriptiveText = new QLineEdit( this );
+            fHorizontalLayout->addWidget( fDescriptiveText );
+            connect( fDescriptiveText, &QLineEdit::textChanged, this, &CButtonGroupWDescriptiveText::slotChanged );
         }
+
+        if ( fLongDescriptiveTextEdit )
+            fLongDescriptiveTextEdit->setReadOnly( fReadOnly );
+        if ( fDescriptiveText )
+            fDescriptiveText->setReadOnly( fReadOnly );
+
         nameObjects();
     }
 
@@ -103,14 +127,40 @@ namespace NTowel42Utils
         {
             auto button = new QRadioButton( this );
             button->setText( ii );
-            fButtonGroup->addButton( button );
+
+            EValue id;
+            if ( ii == toString( eYes ) )
+                id = eYes;
+            else if ( ii == toString( eNo ) )
+                id = eNo;
+            else if ( ii == toString( eNA ) )
+                id = eNA;
+            else
+                id = static_cast< EValue >( eFirstCustomValue + fButtons.size() );
+            fButtonGroup->addButton( button, id );
             fHorizontalLayout->addWidget( button );
             connect( button, &QRadioButton::clicked, this, &CButtonGroupWDescriptiveText::slotChanged );
             fButtons.push_back( button );
         }
 
+        rebuildIDRequiredTextMap();
+
         if ( addSpacer )
             fHorizontalLayout->addSpacerItem( new QSpacerItem( 40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum ) );
+    }
+
+    void CButtonGroupWDescriptiveText::rebuildIDRequiredTextMap()
+    {
+        fIDsThatRequireText.clear();
+        for ( auto &&ii : fButtonGroup->buttons() )
+        {
+            if ( fButtonsThatRequireText.find( ii->text() ) != fButtonsThatRequireText.end() )
+            {
+                auto id = fButtonGroup->id( ii );
+                Q_ASSERT( id != -1 );
+                fIDsThatRequireText.insert( id );
+            }
+        }
     }
 
     CButtonGroupWDescriptiveText::~CButtonGroupWDescriptiveText()
@@ -119,9 +169,11 @@ namespace NTowel42Utils
 
     void CButtonGroupWDescriptiveText::setAcceptRejectCondemn( QTextEdit *pte )
     {
-        setNoYesSwapped( true );
         setCustomButtonList( QStringList() << tr( "Accept" ) << tr( "Reject" ) << tr( "Condemn" ), false );
-        setPlainText( pte, true );
+        fButtonsThatRequireText.clear();
+        fButtonsThatRequireText.insert( tr( "Reject" ) );
+        fButtonsThatRequireText.insert( tr( "Condemn" ) );
+        setLongDescriptiveTextEdit( pte, true );
     }
 
     void CButtonGroupWDescriptiveText::setCustomButtonList( const QStringList &buttonNames, bool rebuild )
@@ -129,18 +181,19 @@ namespace NTowel42Utils
         fBaseButtonText = buttonNames;
 
         if ( fHasNA )
-            fBaseButtonText.push_back( tr( "N/A" ) );
+            fBaseButtonText.push_back( toString( eNA ).value() );
 
         if ( rebuild )
             this->rebuild();
     }
 
-    void CButtonGroupWDescriptiveText::setPlainText( QTextEdit *pte, bool rebuild )
+    void CButtonGroupWDescriptiveText::setLongDescriptiveTextEdit( QTextEdit *pte, bool rebuild )
     {
-        fTextEdit = pte;
+        fShowDescriptiveText = pte == nullptr;
+        fLongDescriptiveTextEdit = pte;
 
-        if ( fTextEdit )
-            connect( fTextEdit, &QTextEdit::textChanged, this, &CButtonGroupWDescriptiveText::slotChanged );
+        if ( fLongDescriptiveTextEdit )
+            connect( fLongDescriptiveTextEdit, &QTextEdit::textChanged, this, &CButtonGroupWDescriptiveText::slotChanged );
 
         if ( rebuild )
             this->rebuild();
@@ -149,24 +202,25 @@ namespace NTowel42Utils
     void CButtonGroupWDescriptiveText::setHasNA( bool hasNA, bool rebuild )
     {
         fHasNA = hasNA;
-        fBaseButtonText.push_back( tr( "N/A" ) );
+        fBaseButtonText.push_back( toString( eNA ).value() );
 
         if ( rebuild )
             this->rebuild();
     }
 
-    void CButtonGroupWDescriptiveText::setHasText( bool hasText, bool rebuild )
+    void CButtonGroupWDescriptiveText::setShowDescriptiveText( bool hasText, bool rebuild )
     {
-        fHasText = hasText;
+        Q_ASSERT( !fLongDescriptiveTextEdit );
+        fShowDescriptiveText = hasText;
         if ( rebuild )
             this->rebuild();
     }
 
     void CButtonGroupWDescriptiveText::setLabel( QLabel *label )
     {
-        fLabel = label;
-        if ( fLabel )
-            fLabel->setBuddy( this );
+        fBuddyLabel = label;
+        if ( fBuddyLabel )
+            fBuddyLabel->setBuddy( this );
         slotChanged();
     }
 
@@ -191,69 +245,52 @@ namespace NTowel42Utils
 
     bool CButtonGroupWDescriptiveText::setPropValue( std::optional< int > value )
     {
-        if ( value.has_value() && ( ( value.value() >= 0 ) && ( value < fButtons.size() ) ) )
+        if ( value.has_value() )
         {
-            fButtons[ value.value() ]->setChecked( true );
-            return true;
+            auto button = fButtonGroup->button( value.value() );
+            if ( button )
+            {
+                button->setChecked( true );
+                return true;
+            }
         }
-        else
-        {
-            for ( auto ii : fButtons )
-                ii->setChecked( false );
-            return false;
-        }
+        for ( auto ii : fButtons )
+            ii->setChecked( false );
+        return false;
     }
 
     QString CButtonGroupWDescriptiveText::text() const
     {
-        if ( fTextEdit )
+        if ( fLongDescriptiveTextEdit )
         {
-            return fTextEdit->toPlainText();
+            return fLongDescriptiveTextEdit->toPlainText();
         }
 
-        Q_ASSERT( fHasText && fText );
-        if ( !fHasText || !fText )
+        Q_ASSERT( fShowDescriptiveText && fDescriptiveText );
+        if ( !fShowDescriptiveText || !fDescriptiveText )
             return {};
-        return fText->text();
+        return fDescriptiveText->text();
     }
 
     void CButtonGroupWDescriptiveText::setText( const QString &text )
     {
-        if ( fTextEdit )
+        if ( fLongDescriptiveTextEdit )
         {
-            fTextEdit->setPlainText( text );
+            fLongDescriptiveTextEdit->setPlainText( text );
         }
         else
         {
-            Q_ASSERT( fHasText && fText );
-            if ( !fHasText || !fText )
+            Q_ASSERT( fShowDescriptiveText && fDescriptiveText );
+            if ( !fShowDescriptiveText || !fDescriptiveText )
                 return;
 
-            fText->setText( text );
+            fDescriptiveText->setText( text );
         }
     }
 
     int CButtonGroupWDescriptiveText::propValue() const
     {
         return value().has_value() ? value().value() : -1;
-    }
-
-    void CButtonGroupWDescriptiveText::setNoYesSwapped( bool swapped )
-    {
-        fNoYesSwapped = swapped;
-        slotChanged();
-    }
-
-    void CButtonGroupWDescriptiveText::setAlwaysRequiresText( bool requiresText )
-    {
-        fAlwaysRequiresText = requiresText;
-        slotChanged();
-    }
-
-    void CButtonGroupWDescriptiveText::setNeverRequiresText( bool requiresText )
-    {
-        fNeverRequiresText = requiresText;
-        slotChanged();
     }
 
     void CButtonGroupWDescriptiveText::addButton( const QString &text, bool rebuild )
@@ -263,14 +300,74 @@ namespace NTowel42Utils
             this->rebuild();
     }
 
+    void CButtonGroupWDescriptiveText::setReadOnly( bool readOnly, bool rebuild )
+    {
+        fReadOnly = readOnly;
+        if ( rebuild )
+            this->rebuild();
+    }
+
     std::optional< int > CButtonGroupWDescriptiveText::value() const
     {
-        for ( int ii = 0; ii < fButtons.size(); ++ii )
+        auto value = fButtonGroup->checkedId();
+        if ( value == -1 )
+            return {};
+        return value;
+    }
+
+    void CButtonGroupWDescriptiveText::setButtonRequiresText( int id )
+    {
+        setButtonsThatRequiresText( { id } );
+    }
+
+    void CButtonGroupWDescriptiveText::setButtonRequiresText( const QString &buttonText )
+    {
+        setButtonsThatRequiresText( { buttonText } );
+    }
+
+    void CButtonGroupWDescriptiveText::setButtonsThatRequiresText( const std::list< int > &ids )
+    {
+        if ( !fButtonGroup )
         {
-            if ( fButtons[ ii ]->isChecked() )
-                return ii;
+            rebuild();
         }
-        return {};
+        fButtonsThatRequireText.clear();
+        for ( auto &&id : ids )
+        {
+            auto button = fButtonGroup->button( id );
+            Q_ASSERT( button );
+            if ( !button )
+                return;
+            fButtonsThatRequireText.insert( button->text() );
+        }
+        rebuildIDRequiredTextMap();
+    }
+
+    void CButtonGroupWDescriptiveText::setButtonsThatRequiresText( const QStringList &buttonsText )
+    {
+        if ( !fButtonGroup )
+        {
+            rebuild();
+        }
+        fButtonsThatRequireText = { buttonsText.begin(), buttonsText.end() };
+        rebuildIDRequiredTextMap();
+    }
+
+    void CButtonGroupWDescriptiveText::setAlwaysRequiresText()
+    {
+        fButtonsThatRequireText.clear();
+        fIDsThatRequireText.clear();
+        for ( auto &&ii : fBaseButtonText )
+        {
+            fButtonsThatRequireText.insert( ii );
+        }
+    }
+
+    void CButtonGroupWDescriptiveText::setNeverRequiresText()
+    {
+        fButtonsThatRequireText.clear();
+        fIDsThatRequireText.clear();
+        slotChanged();
     }
 
     QString CButtonGroupWDescriptiveText::textForValue( int value ) const
@@ -313,42 +410,36 @@ namespace NTowel42Utils
         if ( textMissing )
             *textMissing = lclTextMissing;
 
-        auto val = value();
-        if ( !val.has_value() )
-            return false;
-
-        auto noVal = fNoYesSwapped ? EValue::eYes : EValue::eNo;
-        auto yesVal = fNoYesSwapped ? EValue::eNo : EValue::eYes;
-        if ( fAlwaysRequiresText )
-        {
+        auto requiresText = this->requiredTextMissing();
+        if ( requiresText )
             return !lclTextMissing;
-        }
-
-        if ( fNeverRequiresText )
-            return true;
-
-        if ( val == noVal )
-            return true;
-        if ( !fTextEdit && ( val == EValue::eNA ) )
-            return true;
-        if ( fTextEdit || ( val == yesVal ) )
-        {
-            return !lclTextMissing;
-        }
-        return false;
+        return value().has_value();
     }
 
     void CButtonGroupWDescriptiveText::slotChanged()
     {
-        if ( !fLabel )
+        if ( !fBuddyLabel )
             return;
 
         bool textMissing = false;
         bool aOK = this->aOK( &textMissing );
-        if ( fLabelForText )
-            NTowel42Utils::setIsOK( aOK || !textMissing, fLabelForText );
-        NTowel42Utils::setIsOK( aOK, fLabel );
+        if ( fDescriptiveTextLabel )
+            NTowel42Utils::setIsOK( aOK || !textMissing, fDescriptiveTextLabel );
+        NTowel42Utils::setIsOK( aOK, fBuddyLabel );
         if ( sender() )
             emit sigChanged();
     }
+
+    std::optional< QString > CButtonGroupWDescriptiveText::toString( EValue value ) const
+    {
+        if ( value == eYes )
+            return tr( "Yes" );
+        else if ( value == eNo )
+            return tr( "No" );
+        else if ( value == eNA )
+            return tr( "N/A" );
+        else
+            return {};
+    }
+
 }
