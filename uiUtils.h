@@ -41,6 +41,7 @@ class QCheckBox;
 class QTextEdit;
 class QWidget;
 class QSpinBox;
+class QAbstractItemView;
 #include <optional>
 #include <functional>
 
@@ -61,5 +62,8 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QLabel *label );
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QCheckBox *cb );
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QTabWidget *tw, int index );
+
+    TOWEL42_UTILS_EXPORT void selectFirstVisibleItem( QAbstractItemView *view, bool setFocus );
+
 }
 #endif

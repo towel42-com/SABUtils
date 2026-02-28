@@ -37,6 +37,8 @@
 #include <QTextEdit>
 #include <QCheckBox>
 #include <QSpinBox>
+#include <QAbstractItemView>
+#include <QAbstractItemModel>
 #include <functional>
 #include <unordered_set>
 #include <set>
@@ -136,6 +138,37 @@ namespace NTowel42Utils
         else
             tw->tabBar()->setTabTextColor( index, QColor( "black" ) );
         return aOK;
+    }
+
+    void selectFirstVisibleItem( QAbstractItemView *view, bool setFocus )
+    {
+        auto isVisibleIndex = [ view ]( const QModelIndex &idx )
+        {
+            return idx.isValid() && view->visualRect( idx ).isValid() && view->visualRect( idx ).intersects( view->viewport()->rect() );
+        };
+
+        auto rowCount = view->model()->rowCount();
+        auto colCount = view->model()->columnCount();
+        int row = 0;
+        QModelIndex idx;
+        bool foundVisible = false;
+        do
+        {
+            int col = 0;
+            do
+            {
+                idx = view->model()->index( row, col );
+                foundVisible = isVisibleIndex( idx );
+                col++;
+            }
+            while ( !foundVisible );
+            row++;
+        }
+        while ( !foundVisible );
+
+        view->setCurrentIndex( idx );
+        if ( setFocus )
+            view->setFocus();
     }
 
     bool isValid( QLineEdit *edit, QLabel *label, std::function< bool( const QString &text ) > isValidFunc /*= {} */ )
