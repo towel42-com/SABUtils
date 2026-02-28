@@ -34,6 +34,7 @@ class QLineEdit;
 class QButtonGroup;
 class QLabel;
 class QHBoxLayout;
+class QVBoxLayout;
 class QTextEdit;
 
 namespace NTowel42Utils
@@ -70,6 +71,7 @@ namespace NTowel42Utils
         void setButtonsThatRequiresText( const std::list< int > &ids );   // default is the { eYes }
         void setButtonsThatRequiresText( const QStringList &buttonsText );   // default is the { "Yes" } Button
 
+        void setPlaceDescriptiveTextOnSeparateLine( bool separateLine, bool rebuild = true );
         void setAlwaysRequiresText();
         void setNeverRequiresText();
 
@@ -109,6 +111,7 @@ namespace NTowel42Utils
         bool fReadOnly{ false };
         bool fHasNA{ false };
         bool fShowDescriptiveText{ true };
+        bool fPlaceDescriptiveTextOnSeparateLine{ false };
 
         std::optional< QString > fLabelDesc;
         QStringList fBaseButtonText;
@@ -120,7 +123,9 @@ namespace NTowel42Utils
         std::vector< QRadioButton * > fButtons;
 
         QButtonGroup *fButtonGroup{ nullptr };
-        QHBoxLayout *fHorizontalLayout{ nullptr };
+        QHBoxLayout *fHorizontalLayout1{ nullptr };
+        QHBoxLayout *fHorizontalLayout2{ nullptr };
+        QVBoxLayout *fVerticalLayout{ nullptr };
 
         // NOT OWNED
         QLabel *fBuddyLabel{ nullptr };   // the label outside the widget to change colors

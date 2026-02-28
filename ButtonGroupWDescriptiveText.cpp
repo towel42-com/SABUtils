@@ -24,6 +24,7 @@
 #include "StringUtils.h"
 
 #include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QButtonGroup>
 #include <QRadioButton>
 #include <QLineEdit>
@@ -44,14 +45,18 @@ namespace NTowel42Utils
         connect( this, &QWidget::objectNameChanged, this, &CButtonGroupWDescriptiveText::nameObjects );
     }
 
+    CButtonGroupWDescriptiveText::~CButtonGroupWDescriptiveText()
+    {
+    }
+
     void CButtonGroupWDescriptiveText::nameObjects()
     {
         if ( objectName().isEmpty() )
             setObjectName( "CButtonGroupWDescriptiveText" );
 
         auto base = objectName();
-        if ( fHorizontalLayout )
-            fHorizontalLayout->setObjectName( base + "_horizontalLayout" );
+        if ( fHorizontalLayout1 )
+            fHorizontalLayout1->setObjectName( base + "_horizontalLayout" );
         if ( fButtonGroup )
             fButtonGroup->setObjectName( base + "_buttonGroup" );
         if ( fDescriptiveTextLabel )
@@ -75,107 +80,22 @@ namespace NTowel42Utils
         return pos != fIDsThatRequireText.end();
     }
 
-    void CButtonGroupWDescriptiveText::rebuild()
-    {
-        delete fDescriptiveText;
-        delete fDescriptiveTextLabel;
-        for ( auto &&ii : fButtons )
-            delete ii;
-        fButtons.clear();
-        delete fButtonGroup;
-        delete fHorizontalLayout;
-        fIDsThatRequireText.clear();
-
-        fHorizontalLayout = nullptr;
-        fButtonGroup = nullptr;
-        fDescriptiveTextLabel = nullptr;
-        fDescriptiveText = nullptr;
-
-        fHorizontalLayout = new QHBoxLayout( this );
-        fHorizontalLayout->setContentsMargins( 0, 0, 0, 0 );
-
-        fButtonGroup = new QButtonGroup( this );
-
-        auto buttonText = fBaseButtonText << fExtraButtonText;
-
-        addButtons( buttonText, fLongDescriptiveTextEdit || !fShowDescriptiveText );
-
-        if ( !fLongDescriptiveTextEdit && fShowDescriptiveText )
-        {
-            if ( fLabelDesc.has_value() )
-            {
-                fDescriptiveTextLabel = new QLabel( this );
-                fDescriptiveTextLabel->setText( fLabelDesc.value() );
-                fHorizontalLayout->addWidget( fDescriptiveTextLabel );
-            }
-            fDescriptiveText = new QLineEdit( this );
-            fHorizontalLayout->addWidget( fDescriptiveText );
-            connect( fDescriptiveText, &QLineEdit::textChanged, this, &CButtonGroupWDescriptiveText::slotChanged );
-        }
-
-        if ( fLongDescriptiveTextEdit )
-            fLongDescriptiveTextEdit->setReadOnly( fReadOnly );
-        if ( fDescriptiveText )
-            fDescriptiveText->setReadOnly( fReadOnly );
-
-        nameObjects();
-    }
-
-    void CButtonGroupWDescriptiveText::addButtons( const QStringList &buttonText, bool addSpacer )
-    {
-        for ( auto &&ii : buttonText )
-        {
-            auto button = new QRadioButton( this );
-            button->setText( ii );
-
-            EValue id;
-            if ( ii == toString( eYes ) )
-                id = eYes;
-            else if ( ii == toString( eNo ) )
-                id = eNo;
-            else if ( ii == toString( eNA ) )
-                id = eNA;
-            else
-                id = static_cast< EValue >( eFirstCustomValue + fButtons.size() );
-            fButtonGroup->addButton( button, id );
-            fHorizontalLayout->addWidget( button );
-            connect( button, &QRadioButton::clicked, this, &CButtonGroupWDescriptiveText::slotChanged );
-            fButtons.push_back( button );
-        }
-
-        rebuildIDRequiredTextMap();
-
-        if ( addSpacer )
-            fHorizontalLayout->addSpacerItem( new QSpacerItem( 40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum ) );
-    }
-
-    void CButtonGroupWDescriptiveText::rebuildIDRequiredTextMap()
-    {
-        fIDsThatRequireText.clear();
-        for ( auto &&ii : fButtonGroup->buttons() )
-        {
-            if ( fButtonsThatRequireText.find( ii->text() ) != fButtonsThatRequireText.end() )
-            {
-                auto id = fButtonGroup->id( ii );
-                Q_ASSERT( id != -1 );
-                fIDsThatRequireText.insert( id );
-            }
-        }
-    }
-
-    CButtonGroupWDescriptiveText::~CButtonGroupWDescriptiveText()
-    {
-    }
-
     void CButtonGroupWDescriptiveText::setAcceptRejectCondemn( QTextEdit *pte )
     {
         setCustomButtonList( QStringList() << tr( "Accept" ) << tr( "Reject" ) << tr( "Condemn" ), false );
         fButtonsThatRequireText.clear();
         fButtonsThatRequireText.insert( tr( "Reject" ) );
         fButtonsThatRequireText.insert( tr( "Condemn" ) );
-        setLongDescriptiveTextEdit( pte, true );
+        setLongDescriptiveTextEdit( pte, false );
+        setPlaceDescriptiveTextOnSeparateLine( pte == nullptr, true );
     }
 
+    void CButtonGroupWDescriptiveText::setPlaceDescriptiveTextOnSeparateLine( bool separateLine, bool rebuild )
+    {
+        fPlaceDescriptiveTextOnSeparateLine = separateLine;
+        if ( rebuild )
+            this->rebuild();
+    }
     void CButtonGroupWDescriptiveText::setCustomButtonList( const QStringList &buttonNames, bool rebuild )
     {
         fBaseButtonText = buttonNames;
@@ -440,6 +360,118 @@ namespace NTowel42Utils
             return tr( "N/A" );
         else
             return {};
+    }
+
+    void CButtonGroupWDescriptiveText::rebuildIDRequiredTextMap()
+    {
+        fIDsThatRequireText.clear();
+        for ( auto &&ii : fButtonGroup->buttons() )
+        {
+            if ( fButtonsThatRequireText.find( ii->text() ) != fButtonsThatRequireText.end() )
+            {
+                auto id = fButtonGroup->id( ii );
+                Q_ASSERT( id != -1 );
+                fIDsThatRequireText.insert( id );
+            }
+        }
+    }
+
+    void CButtonGroupWDescriptiveText::addButtons( const QStringList &buttonText, bool addSpacer )
+    {
+        for ( auto &&ii : buttonText )
+        {
+            auto button = new QRadioButton( this );
+            button->setText( ii );
+
+            EValue id;
+            if ( ii == toString( eYes ) )
+                id = eYes;
+            else if ( ii == toString( eNo ) )
+                id = eNo;
+            else if ( ii == toString( eNA ) )
+                id = eNA;
+            else
+                id = static_cast< EValue >( eFirstCustomValue + fButtons.size() );
+            fButtonGroup->addButton( button, id );
+            fHorizontalLayout1->addWidget( button );
+            connect( button, &QRadioButton::clicked, this, &CButtonGroupWDescriptiveText::slotChanged );
+            fButtons.push_back( button );
+        }
+
+        rebuildIDRequiredTextMap();
+
+        if ( addSpacer )
+            fHorizontalLayout1->addSpacerItem( new QSpacerItem( 40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum ) );
+    }
+
+    void CButtonGroupWDescriptiveText::rebuild()
+    {
+        delete fDescriptiveText;
+        delete fDescriptiveTextLabel;
+        for ( auto &&ii : fButtons )
+            delete ii;
+        fButtons.clear();
+        delete fButtonGroup;
+        delete fHorizontalLayout1;
+        delete fHorizontalLayout2;
+        delete fVerticalLayout;
+        fIDsThatRequireText.clear();
+
+        fVerticalLayout = nullptr;
+        fHorizontalLayout1 = nullptr;
+        fHorizontalLayout2 = nullptr;
+        fButtonGroup = nullptr;
+        fDescriptiveTextLabel = nullptr;
+        fDescriptiveText = nullptr;
+
+        fHorizontalLayout1 = new QHBoxLayout;
+        fHorizontalLayout1->setContentsMargins( 0, 0, 0, 0 );
+        fHorizontalLayout1->setObjectName( "fHorizontalLayout1" );
+        auto descTextLayout = fHorizontalLayout1;
+
+        if ( fPlaceDescriptiveTextOnSeparateLine )
+        {
+            fHorizontalLayout2 = new QHBoxLayout;
+            fHorizontalLayout2->setContentsMargins( 0, 0, 0, 0 );
+            fHorizontalLayout2->setObjectName( "fHorizontalLayout2" );
+
+            fVerticalLayout = new QVBoxLayout( this );
+            fVerticalLayout->setContentsMargins( 0, 0, 0, 0 );
+            fVerticalLayout->setObjectName( "fVerticalLayout" );
+
+            fVerticalLayout->addLayout( fHorizontalLayout1 );
+            fVerticalLayout->addLayout( fHorizontalLayout2 );
+
+            descTextLayout = fHorizontalLayout2;
+        }
+        else
+            setLayout( fHorizontalLayout1 );
+
+        fButtonGroup = new QButtonGroup( this );
+
+        auto buttonText = fBaseButtonText << fExtraButtonText;
+
+        addButtons( buttonText, fPlaceDescriptiveTextOnSeparateLine || fLongDescriptiveTextEdit || !fShowDescriptiveText );
+
+        if ( !fLongDescriptiveTextEdit && fShowDescriptiveText )
+        {
+            if ( fLabelDesc.has_value() )
+            {
+                fDescriptiveTextLabel = new QLabel( this );
+                fDescriptiveTextLabel->setText( fLabelDesc.value() );
+                descTextLayout->addWidget( fDescriptiveTextLabel );
+            }
+            fDescriptiveText = new QLineEdit( this );
+            descTextLayout->addWidget( fDescriptiveText );
+            connect( fDescriptiveText, &QLineEdit::textChanged, this, &CButtonGroupWDescriptiveText::slotChanged );
+        }
+
+        if ( fLongDescriptiveTextEdit )
+            fLongDescriptiveTextEdit->setReadOnly( fReadOnly );
+        if ( fDescriptiveText )
+            fDescriptiveText->setReadOnly( fReadOnly );
+
+        nameObjects();
     }
 
 }
