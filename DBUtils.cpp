@@ -686,7 +686,7 @@ namespace NTowel42Utils
                 return false;
             }
 
-            if ( !importTable( query, newTableName.value(), tableName, { { oldColumnName, newColumnName } } ) )
+            if ( !importTable( query, newTableName.value(), tableName, { { oldColumnName, newColumnName } }, {} ) )
             {
                 transaction.setRollback();
                 return false;
@@ -716,7 +716,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    bool importTable( QSqlQuery &query, const QString &srcTableName, const QString &destTableName, const std::unordered_map< QString, QString > &mapping )
+    bool importTable( QSqlQuery &query, const QString &srcTableName, const QString &destTableName, const std::unordered_map< QString, QString > &columnMapping, const std::unordered_map< QString, QString > &srcSelectMapping )
     {
         if ( !tableExists( query, srcTableName ) || !tableExists( query, destTableName ) )
             return false;
@@ -725,11 +725,11 @@ namespace NTowel42Utils
         auto destColumns = columnInfoForTable( query, destTableName );
 
         auto cmd = QString( "INSERT INTO %1(\n" ).arg( destTableName );
-        cmd += getColumnListing( srcColumns, mapping );
+        cmd += getColumnListing( srcColumns, columnMapping );
 
         cmd += ")\n";
         cmd += "SELECT\n";
-        cmd += getColumnListing( srcColumns, {} );
+        cmd += getColumnListing( srcColumns, srcSelectMapping );
         cmd += "FROM " + srcTableName;
 
         return runCmd( query, cmd );

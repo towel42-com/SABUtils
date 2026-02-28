@@ -69,7 +69,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool addColumn( QSqlQuery &query, const QString &tableName, const QString &columnName, const QString &columnDef, bool *colAdded = nullptr );
     TOWEL42_UTILS_EXPORT bool renameTable( QSqlQuery &query, const QString &oldTableName, const QString &newTableName );
     TOWEL42_UTILS_EXPORT bool renameColumn( QSqlDatabase &db, const QString &tableName, const QString &oldColumnName, const QString &newColumnName );
-    TOWEL42_UTILS_EXPORT bool importTable( QSqlQuery &query, const QString &srcTableName, const QString &destTableName, const std::unordered_map< QString, QString > &mapping );
+    TOWEL42_UTILS_EXPORT bool importTable( QSqlQuery &query, const QString &srcTableName, const QString &destTableName, const std::unordered_map< QString, QString > &columnMapping, const std::unordered_map< QString, QString > &srcSelectMapping );
     TOWEL42_UTILS_EXPORT bool dropTable( QSqlQuery &query, const QString &tableName );
     TOWEL42_UTILS_EXPORT std::optional< QString > backupTable( QSqlQuery &query, const QString &tableName );   // if successful returns the new table name
 
@@ -91,6 +91,37 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT std::optional< int > lastInsertedKey( QSqlQuery &query, const QString &tableName );
 
+    template< typename T >
+    bool hasValue( const std::shared_ptr< NTowel42Utils::TParameterVariantMap > &values, const QString &label )
+    {
+        if ( !values )
+            return false;
+
+        auto pos = values->find( label );
+        if ( pos == values->end() )
+            return false;
+
+        if constexpr ( std::is_same_v< QString, T > )
+            return true;
+
+        if ( !( *pos ).second.canConvert< T >() )
+            return false;
+
+        return true;
+    }
+
+    template< typename T >
+    T getValue( const std::shared_ptr< NTowel42Utils::TParameterVariantMap > &values, const QString &label )
+    {
+        if ( !hasValue< T >( values, label ) )
+            return {};
+
+        auto pos = values->find( label );
+        if ( pos == values->end() )
+            return {};
+        auto var = ( *pos ).second;
+        return var.value< T >();
+    }
 }
 TOWEL42_UTILS_EXPORT QDebug &operator<<( QDebug &dbg, const QSqlQuery &query );
 TOWEL42_UTILS_EXPORT QTextStream &operator<<( QTextStream &ds, const QSqlQuery &query );
