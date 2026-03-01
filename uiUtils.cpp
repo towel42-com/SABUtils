@@ -161,12 +161,15 @@ namespace NTowel42Utils
                 foundVisible = isVisibleIndex( idx );
                 col++;
             }
-            while ( !foundVisible );
+            while ( idx.isValid() && ( col < colCount ) && !foundVisible );
             row++;
         }
-        while ( !foundVisible );
+        while ( ( row < rowCount ) && !foundVisible );
 
-        view->setCurrentIndex( idx );
+        if ( idx.isValid() )
+        {
+            view->setCurrentIndex( idx );
+        }
         if ( setFocus )
             view->setFocus();
     }
