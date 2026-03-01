@@ -42,6 +42,83 @@
 
 namespace NTowel42Utils
 {
+    bool runCmd( QSqlQuery &query, const QString &cmd, const QString &paramName, const QVariant &paramValue )
+    {
+        return runCmd( query, cmd, std::make_pair( paramName, paramValue ) );
+    }
+
+    bool runCmd( QSqlQuery &query, const QString &cmd, const std::pair< QString, QVariant > &param )
+    {
+        return runCmd( query, cmd, TParameterVariantMap( { { param.first, param.second } } ) );
+    }
+
+    bool runCmd( QSqlQuery &query )
+    {
+        if ( !query.exec() )
+        {
+            reportError( query );
+            return false;
+        }
+
+        return true;
+    }
+
+    bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterStringMap &namedParams )
+    {
+        NTowel42Utils::TParameterVariantMap params;
+        for ( auto &&ii : namedParams )
+        {
+            params.insert( ii );
+        }
+        return runCmd( query, cmd, params );
+    }
+
+    bool runCmd( QSqlQuery &query, const QString &cmd, const QMap< QString, QVariant > &namedParams )
+    {
+        NTowel42Utils::TParameterVariantMap params;
+        for ( auto &&ii = namedParams.begin(); ii != namedParams.end(); ++ii )
+        {
+            params.emplace( ii.key(), ii.value() );
+        }
+        return runCmd( query, cmd, params );
+    }
+
+
+    bool runCmd( QSqlQuery &query, const TParameterVariantMap &params )
+    {
+        for ( auto &&ii : params )
+            query.bindValue( ii.first, ii.second );
+
+    #ifdef _DEBUG
+        validateParams( query, params );
+    #endif
+        return runCmd( query );
+    }
+
+    bool runCmd( QSqlQuery &query, const QString &cmd, const NTowel42Utils::TParameterVariantMap &namedParams )
+    {
+        query.clear();
+        if ( !query.prepare( cmd ) )
+        {
+            reportError( query );
+            return false;
+        }
+
+        return runCmd( query, namedParams );
+    }
+
+    bool runCmd( QSqlQuery &query, const QString &cmd )
+    {
+        query.clear();
+        if ( !query.prepare( cmd ) )
+        {
+            reportError( query );
+            return false;
+        }
+
+        return runCmd( query );
+    }
+
     QString getThreadName()
     {
         auto currThread = QThread::currentThread();
@@ -68,17 +145,6 @@ namespace NTowel42Utils
     void reportError( const QSqlDatabase &db, bool assert )
     {
         reportError( db.lastError(), assert );
-    }
-
-    bool runCmd( QSqlQuery &query )
-    {
-        if ( !query.exec() )
-        {
-            reportError( query );
-            return false;
-        }
-
-        return true;
     }
 
     bool validateQuery( QSqlQuery &query )
@@ -147,10 +213,15 @@ namespace NTowel42Utils
 
     bool validateSQLITEInstalled( QString *msg )
     {
-        if ( !QSqlDatabase::isDriverAvailable( "QSQLITE" ) )
+        return validateDriverInstalled( "QSQLITE", msg );
+    }
+
+    bool validateDriverInstalled( const QString &driver, QString *msg )
+    {
+        if ( !QSqlDatabase::isDriverAvailable( driver ) )
         {
             if ( msg )
-                *msg = QObject::tr( "Could not find Database Driver libraries.  Please re-install or contact support." );
+                *msg = QObject::tr( "Could not find Database %1 libraries.  Please re-install or contact support." ).arg( driver );
             return false;
         }
         return true;
@@ -335,170 +406,6 @@ namespace NTowel42Utils
             realParams[ ii.key() ] = ii.value();
         }
         return validateParams( query, realParams );
-    }
-
-    bool runCmd( QSqlQuery &query, const QString &cmd, const NTowel42Utils::TParameterVariantMap &namedParams )
-    {
-        query.clear();
-        if ( !query.prepare( cmd ) )
-        {
-            reportError( query );
-            return false;
-        }
-
-        for ( auto &&ii : namedParams )
-        {
-            query.bindValue( ii.first, ii.second );
-        }
-
-    #ifdef _DEBUG
-        validateParams( query, namedParams );
-    #endif
-        return runCmd( query );
-    }
-
-    bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterStringMap &namedParams )
-    {
-        query.clear();
-        if ( !query.prepare( cmd ) )
-        {
-            reportError( query );
-            return false;
-        }
-
-        for ( auto &&ii : namedParams )
-        {
-            query.bindValue( ii.first, ii.second );
-        }
-
-    #ifdef _DEBUG
-        validateParams( query, namedParams );
-    #endif
-        return runCmd( query );
-    }
-
-    bool runCmd( QSqlQuery &query, const QString &cmd, const QMap< QString, QVariant > &namedParams )
-    {
-        query.clear();
-        if ( !query.prepare( cmd ) )
-        {
-            reportError( query );
-            return false;
-        }
-
-        for ( QMap< QString, QVariant >::const_iterator ii = namedParams.begin(); ii != namedParams.end(); ++ii )
-        {
-            query.bindValue( ii.key(), ii.value() );
-        }
-
-    #ifdef _DEBUG
-        validateParams( query, namedParams );
-    #endif
-        return runCmd( query );
-    }
-
-    bool runCmd( QSqlQuery &query, const QList< QVariant > &params )
-    {
-        for ( int ii = 0; ii < params.count(); ++ii )
-            query.bindValue( ii, params[ ii ] );
-
-    #ifdef _DEBUG
-        validateParams( query, params.size() );
-    #endif
-        return runCmd( query );
-    }
-
-    bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< QVariantList > &params )
-    {
-        query.clear();
-        if ( !query.prepare( cmd ) )
-        {
-            reportError( query );
-            return false;
-        }
-
-        for ( auto &&param : params )
-            query.addBindValue( param );
-
-    #ifdef _DEBUG
-        validateParams( query, params.size() );
-    #endif
-
-        if ( !query.execBatch() )
-        {
-            reportError( query );
-            return false;
-        }
-        return true;
-    }
-
-    bool runCmd( QSqlQuery &query, const QString &cmd, const QList< QVariantList > &params )
-    {
-        query.clear();
-        if ( !query.prepare( cmd ) )
-        {
-            reportError( query );
-            return false;
-        }
-
-        for ( int ii = 0; ii < params.count(); ++ii )
-            query.addBindValue( params[ ii ] );
-
-    #ifdef _DEBUG
-        validateParams( query, params.size() );
-    #endif
-
-        if ( !query.execBatch() )
-        {
-            reportError( query );
-            return false;
-        }
-        return true;
-    }
-
-    bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< QVariant > &params )
-    {
-        query.clear();
-        if ( !query.prepare( cmd ) )
-        {
-            reportError( query );
-            return false;
-        }
-
-        for ( auto &&ii : params )
-        {
-            query.addBindValue( ii );
-        }
-
-    #ifdef _DEBUG
-        validateParams( query, params.size() );
-    #endif
-
-        return runCmd( query );
-    }
-
-    bool runCmd( QSqlQuery &query, const QString &cmd, const QList< QVariant > &params )
-    {
-        query.clear();
-        if ( !query.prepare( cmd ) )
-        {
-            reportError( query );
-            return false;
-        }
-
-        for ( int ii = 0; ii < params.count(); ++ii )
-            query.bindValue( ii, params[ ii ] );
-
-    #ifdef _DEBUG
-        validateParams( query, params.size() );
-    #endif
-
-        return runCmd( query );
-    }
-
-    bool runCmd( QSqlQuery &query, const QString &cmd, const QVariant &param )
-    {
-        return runCmd( query, cmd, QList< QVariant >() << param );
     }
 
     bool transaction( QSqlDatabase &db )
@@ -695,7 +602,7 @@ namespace NTowel42Utils
         return true;
     }
 
-    QString getColumnListing( const std::list< NTowel42Utils::SColumnInfo > & columns, const std::unordered_map< QString, QString > &mapping )
+    QString getColumnListing( const std::list< NTowel42Utils::SColumnInfo > &columns, const std::unordered_map< QString, QString > &mapping )
     {
         QString retVal;
         bool first = true;
@@ -749,11 +656,14 @@ namespace NTowel42Utils
         return query.value( 0 ).toString();
     }
 
-    std::optional< int > lastInsertedKey( QSqlQuery & query, const QString &/*tableName*/ )
+    std::optional< int > lastInsertedKey( QSqlQuery &query, const QString & /*tableName*/ )
     {
+        qDebug() << ( query.driver()->objectName() );
+        qDebug() << ( QSqlDatabase().driverName() );
+
         auto cmd = QStringLiteral( "SELECT last_insert_rowid()" );
         auto retVal = NTowel42Utils::runCmd( query, cmd );
-        if ( !retVal || !query.next() ) 
+        if ( !retVal || !query.next() )
             return {};
         return query.value( 0 ).toInt();
     }

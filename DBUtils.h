@@ -45,17 +45,12 @@ class QSqlError;
 
 namespace NTowel42Utils
 {
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QList< QVariantList > &params );
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QList< QVariant > &params );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QMap< QString, QVariant > &namedParams );
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< QVariantList > &params );
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::list< QVariant > &params = std::list< QVariant >() );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterVariantMap &namedParams );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterStringMap &namedParams );
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QVariant &param );
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query );
-
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QList< QVariant > &params );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QString &paramName, const QVariant &paramValue );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::pair< QString, QVariant > &param );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd );
 
     TOWEL42_UTILS_EXPORT void reportError( const QSqlError &error, bool assert = true );
     TOWEL42_UTILS_EXPORT void reportError( const QSqlQuery &query, bool assert = true );
@@ -84,6 +79,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool clearDatabase( QSqlDatabase &db, bool close );
 
     TOWEL42_UTILS_EXPORT bool validateSQLITEInstalled( QString *msg );
+    TOWEL42_UTILS_EXPORT bool validateDriverInstalled( const QString &driver, QString *msg );
 
     TOWEL42_UTILS_EXPORT QString convertQtToSqliteDTFormat( const QString &qtFormat );
 

@@ -296,7 +296,7 @@ namespace NTowel42Utils
 
         QSqlQuery query( db );
 
-        if ( !runCmd( query, "select State from States WHERE CODE LIKE :abbr", abbr ) )
+        if ( !runCmd( query, "select State from States WHERE CODE LIKE :abbr", { ":abbr", abbr } ) )
             return {};
         if ( !query.next() )
             return {};
@@ -322,13 +322,13 @@ namespace NTowel42Utils
 
         QSqlQuery query( db );
 
-        QVariantList params;
-        params << zip;
+        std::unordered_map< QString, QVariant > params;
+        params.emplace( ":zipcode", zip );
         QString cmd = "SELECT * FROM ZipCodes WHERE ( ZipCode = :zipcode )";
-        if(!zip4.isEmpty())
+        if ( !zip4.isEmpty() )
         {
             cmd += " AND ( Zip4Code = :zip4code )";
-            params << zip4;
+            params.emplace( ":zip4code", zip4 );
         }
 
         if ( !runCmd( query, cmd, params ) )
@@ -358,7 +358,7 @@ namespace NTowel42Utils
 
         QSqlQuery query( db );
 
-        if ( !runCmd( query, "SELECT City, State, ZipCode, Zip4Code FROM ZipCodes WHERE ZipCode LIKE :zipcode", zipCode + '%' ) )
+        if ( !runCmd( query, "SELECT City, State, ZipCode, Zip4Code FROM ZipCodes WHERE ZipCode LIKE :zipcode", ":zipcode", zipCode + '%' ) )
             return {};
 
         if ( query.next() )
