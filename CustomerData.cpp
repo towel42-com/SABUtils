@@ -275,7 +275,7 @@ namespace NTowel42Utils
 
         QSqlQuery query( db );
 
-        if ( !runCmd( query, "select State from States ORDER BY State" ) )
+        if ( !runCmd( query, "SELECT State FROM States ORDER BY State" ) )
             return {};
 
         QStringList tmp;
@@ -296,7 +296,7 @@ namespace NTowel42Utils
 
         QSqlQuery query( db );
 
-        if ( !runCmd( query, "select State from States WHERE CODE LIKE :abbr", { ":abbr", abbr } ) )
+        if ( !runCmd( query, "SELECT State FROM States WHERE CODE LIKE :abbr", { ":abbr", abbr } ) )
             return {};
         if ( !query.next() )
             return {};
@@ -313,7 +313,7 @@ namespace NTowel42Utils
         QString zip4;
         if ( zipCode.length() > 5 )
             zip4 = zipCode.mid( 6 );
-        if ( zip4.length() != 4 )
+        if ( !zip4.isEmpty() && ( zip4.length() != 4 ) )
             return false;
 
         auto db = getCustomerDataDB();
@@ -324,7 +324,7 @@ namespace NTowel42Utils
 
         std::unordered_map< QString, QVariant > params;
         params.emplace( ":zipcode", zip );
-        QString cmd = "SELECT * FROM ZipCodes WHERE ( ZipCode = :zipcode )";
+        QString cmd = "SELECT City, State, ZipCode, Zip4Code FROM ZipCodes WHERE ( ZipCode = :zipcode )";
         if ( !zip4.isEmpty() )
         {
             cmd += " AND ( Zip4Code = :zip4code )";
@@ -334,7 +334,8 @@ namespace NTowel42Utils
         if ( !runCmd( query, cmd, params ) )
             return {};
 
-        return query.next();
+        auto hasMatch = query.next();
+        return hasMatch;
     }
 
     QString cleanCityName( QStringView cityName )
