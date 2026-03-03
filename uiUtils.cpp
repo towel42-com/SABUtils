@@ -39,6 +39,8 @@
 #include <QSpinBox>
 #include <QAbstractItemView>
 #include <QAbstractItemModel>
+#include <QGroupBox>
+
 #include <functional>
 #include <unordered_set>
 #include <set>
@@ -124,6 +126,11 @@ namespace NTowel42Utils
         return setIsOK( aOK, cb, "QCheckBox" );
     }
 
+    bool setIsOK( bool aOK, QGroupBox *gb )
+    {
+        return setIsOK( aOK, gb, "QGroupBox" );
+    }
+
     bool setIsOK( bool aOK, QTabWidget *tw, int index )
     {
         if ( !tw )
@@ -146,6 +153,9 @@ namespace NTowel42Utils
         {
             return idx.isValid() && view->visualRect( idx ).isValid() && view->visualRect( idx ).intersects( view->viewport()->rect() );
         };
+
+        if ( !view->model() )
+            return;
 
         auto rowCount = view->model()->rowCount();
         auto colCount = view->model()->columnCount();
@@ -172,6 +182,19 @@ namespace NTowel42Utils
         }
         if ( setFocus )
             view->setFocus();
+    }
+
+    void selectItemInComboBox( QComboBox *cb, const QString &text )
+    {
+        if ( !cb )
+            return;
+        auto pos = cb->findText( text );
+        if ( pos == -1 )
+        {
+            if ( cb->itemText( 0 ).isEmpty() )
+                pos = 0;
+        }
+        cb->setCurrentIndex( pos );
     }
 
     bool isValid( QLineEdit *edit, QLabel *label, std::function< bool( const QString &text ) > isValidFunc /*= {} */ )
