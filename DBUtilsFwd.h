@@ -35,6 +35,7 @@ namespace NTowel42Utils
 {
     using TParameterVariantMap = std::unordered_map< QString, QVariant >;
     using TParameterStringMap = std::unordered_map< QString, QString >;
+    using TParameter = std::pair< QString, QVariant >;
 
     class TOWEL42_UTILS_EXPORT CTransaction
     {
