@@ -26,6 +26,7 @@
 #include "Towel42UtilsExport.h"
 
 #include <QObject>
+#include <QPointer>
 class QAbstractItemView;
 class QAbstractButton;
 class QItemSelection;
@@ -53,7 +54,7 @@ namespace NTowel42Utils
         void slotTextChanged( const QString &changed );
 
     private:
-        QAbstractButton *fButton{ nullptr };
+        QPointer< QAbstractButton > fButton{ nullptr };
         QAction *fAction{ nullptr };
         bool fLineEditIsFile{ true };
     };
