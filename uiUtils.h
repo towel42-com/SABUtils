@@ -24,6 +24,7 @@
 #define __UIUTILS_H
 
 #include "Towel42UtilsExport.h"
+#include <QModelIndex>
 
 class QString;
 class QPoint;
@@ -65,7 +66,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QTabWidget *tw, int index );
     TOWEL42_UTILS_EXPORT bool setIsOK( bool aOK, QGroupBox *gb );
 
-    TOWEL42_UTILS_EXPORT void selectFirstVisibleItem( QAbstractItemView *view, bool setFocus );
+    TOWEL42_UTILS_EXPORT QModelIndex selectFirstVisibleItem( QAbstractItemView *view, bool setFocus );
 
     TOWEL42_UTILS_EXPORT void selectItemInComboBox(QComboBox * cb,const QString & text);
 

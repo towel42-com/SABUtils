@@ -147,7 +147,7 @@ namespace NTowel42Utils
         return aOK;
     }
 
-    void selectFirstVisibleItem( QAbstractItemView *view, bool setFocus )
+    QModelIndex selectFirstVisibleItem( QAbstractItemView *view, bool setFocus )
     {
         auto isVisibleIndex = [ view ]( const QModelIndex &idx )
         {
@@ -155,7 +155,7 @@ namespace NTowel42Utils
         };
 
         if ( !view->model() )
-            return;
+            return {};
 
         auto rowCount = view->model()->rowCount();
         auto colCount = view->model()->columnCount();
@@ -182,6 +182,7 @@ namespace NTowel42Utils
         }
         if ( setFocus )
             view->setFocus();
+        return idx;
     }
 
     void selectItemInComboBox( QComboBox *cb, const QString &text )
