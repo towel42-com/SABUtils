@@ -195,6 +195,60 @@ namespace NTowel42Utils
         return retVal;
     }
 
+    std::pair< bool, bool > confirmPassword( bool userTypeRequiresPassword, bool isNewUser, const QString &password, const QString &confirmPassword )
+    {
+        bool passwordOK = true;
+        bool confirmPasswordOK = true;
+
+        auto pwEmpty = password.isEmpty();
+        auto confirmEmpty = confirmPassword.isEmpty();
+
+        // if pw or confirm empty but not both, always password OK and confirm is not
+        // if both not empty, always pw OK and confirm is if they match
+        //  utRequiresPW | isNewUser | pwEmpty | confirmEmpty || passwordOK | confirmOK
+        //        X      |     X     |    0    |      1       ||     1      |     0
+        //        X      |     X     |    1    |      0       ||     1      |     0
+        //        X      |     X     |    0    |      0       ||     1      |  pw=conf
+        if ( ( pwEmpty && !confirmEmpty ) || ( !pwEmpty && confirmEmpty ) )
+        {
+            passwordOK = true;
+            confirmPasswordOK = true;
+        }
+        else if ( !pwEmpty && !confirmEmpty )
+        {
+            passwordOK = true;
+            confirmPasswordOK = password == confirmPassword;
+        }
+        // existing user a does not require password, if both are empty its fine, don't update password
+        // new user does not require password, if both empty its fine as its not required for this user
+        //  utRequiresPW | isNewUser | pwEmpty | confirmEmpty || passwordOK | confirmOK
+        //        0      |     0     |    1    |      1       ||     1      |     1
+        else if ( !userTypeRequiresPassword )
+        {
+            passwordOK = true;
+            confirmPasswordOK = true;
+        }
+
+        // existing user not a customer, if both are empty its fine, dont update password
+        //  utRequiresPW | isNewUser | pwEmpty | confirmEmpty || passwordOK | confirmOK
+        //        1      |     0     |    1    |      1       ||     1      |     1
+        else if ( userTypeRequiresPassword && !isNewUser )
+        {
+            passwordOK = true;
+            confirmPasswordOK = true;
+        }
+
+        // new user not a customer, requires password and they have to match
+        //  utRequiresPW | isNewUser | pwEmpty | confirmEmpty || passwordOK | confirmOK
+        //       1       |     1     |    1    |      1       ||     1      |     0
+        else if ( userTypeRequiresPassword && isNewUser )
+        {
+            passwordOK = true;
+            confirmPasswordOK = false;
+        }
+        return { passwordOK, confirmPasswordOK };
+    }
+
 #ifdef TOWEL42_QCORE_SUPPORT
     std::optional< QString > fixupPhoneNumber( const QString &phoneNumber )
     {

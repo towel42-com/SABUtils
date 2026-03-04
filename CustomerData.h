@@ -1,7 +1,7 @@
 // The MIT License( MIT )
 //
 // Copyright( c ) 2022 Towel 42 Development, LLC and Scott Aron Bloom
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to deal
 // in the Software without restriction, including without limitation the rights
@@ -48,12 +48,15 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT std::optional< std::pair< QString, QString > > splitByCountryCode( const QString &phoneNumber );
     TOWEL42_UTILS_EXPORT bool isValidEmail( const QString &email );
 
+    // returns pwOK, confirmPW OK
+    TOWEL42_UTILS_EXPORT std::pair< bool, bool > confirmPassword( bool userTypeRequiresPassword, bool isNewUser, const QString &password, const QString &confirmPassword );
+
     #ifdef TOWEL42_QSQL_SUPPORT
     TOWEL42_UTILS_EXPORT QStringList stateList();
-    using TCityStateZip=std::tuple< QString, QString, QString >;
+    using TCityStateZip = std::tuple< QString, QString, QString >;
     TOWEL42_UTILS_EXPORT std::optional< TCityStateZip > getCityStateForZip( const QString &zipCode, bool useStateAbbreviation );
     TOWEL42_UTILS_EXPORT std::optional< QString > getStateNameForAbbreviation( const QString &abbr );
-    TOWEL42_UTILS_EXPORT bool isValidZipCode(const QString &zipCode);
+    TOWEL42_UTILS_EXPORT bool isValidZipCode( const QString &zipCode );
     #endif
 #endif
 
