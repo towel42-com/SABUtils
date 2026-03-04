@@ -47,6 +47,9 @@ namespace NTowel42Utils
 
         void setLineEditIsFile() { fLineEditIsFile = true; };
         void setEnabled( bool enabled );
+
+        QAbstractButton *button() const;
+        static bool checkIfAlreadyExists(QObject * parent,QAbstractButton * btn);
     public Q_SLOTS:
         void slotReset();
     private Q_SLOTS:

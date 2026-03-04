@@ -95,6 +95,32 @@ namespace NTowel42Utils
             fAction->setEnabled( enabled );
     }
 
+    QAbstractButton *CButtonEnabler::button() const
+    {
+        return fButton.get();
+    }
+
+    bool CButtonEnabler::checkIfAlreadyExists( QObject *parent, QAbstractButton *btn )
+    {
+        auto children = parent->findChildren< NTowel42Utils::CButtonEnabler * >();
+        bool mayExist = !children.isEmpty();
+        bool alreadyExists = mayExist;
+        if ( mayExist )
+        {
+            bool btnFound = false;
+            for ( auto &&ii : children )
+            {
+                if ( ii->button() == btn )
+                {
+                    btnFound = true;
+                    break;
+                }
+            }
+            alreadyExists = btnFound;
+        }
+        return alreadyExists;
+    }
+
     void CButtonEnabler::slotSelectionChanged( const QItemSelection &selected, const QItemSelection & )
     {
         bool enabled = selected.count() && selected.first().isValid();
