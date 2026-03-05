@@ -1,6 +1,6 @@
 // The MIT License( MIT )
 //
-// Copyright( c ) 2020-2026 Towel 42 Development, LLC and Scott Aron Bloom
+// Copyright( c ) 2026 Towel 42 Development, LLC and Scott Aron Bloom
 // SPDX-License-Identifier: MIT License
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,124 +21,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "DelayComboBox.h"
-#include "DelayLineEdit.h"
+#include "SetReadOnlyComboBox.h"
+#include <QLineEdit>
 
 namespace NTowel42Utils
 {
-    CDelayComboBox::CDelayComboBox( QWidget *parent /*= nullptr */ ) :
+    CSetReadOnlyComboBox::CSetReadOnlyComboBox( QWidget *parent /*= nullptr */ ) :
         QComboBox( parent )
     {
-        setDelayLineEdit( new CDelayLineEdit );
     }
 
-    CDelayLineEdit *CDelayComboBox::lineEdit() const
+    void CSetReadOnlyComboBox::setReadOnly( bool readOnly )
     {
-        return dynamic_cast< CDelayLineEdit * >( QComboBox::lineEdit() );
-    }
-
-    void CDelayComboBox::setDelay( int delayMS )
-    {
-        lineEdit()->setDelay( delayMS );
-    }
-
-    void CDelayComboBox::setIsOKFunction( std::function< bool( const QString &text ) > func, const QString &errorMsg /*= {} */ )
-    {
-        lineEdit()->setIsOKFunction( func, errorMsg );
-    }
-
-    bool CDelayComboBox::isOK() const
-    {
-        return lineEdit()->isOK();
-    }
-
-    void CDelayComboBox::setDelayLineEdit( CDelayLineEdit *le )
-    {
+        fReadOnly = readOnly;
         if ( lineEdit() )
-            disconnect( lineEdit(), &CDelayLineEdit::sigTextChangedAfterDelay, this, &CDelayComboBox::sigEditTextChangedAfterDelay );
-        setLineEdit( le );
-        if ( le )
-            connect( le, &CDelayLineEdit::sigTextChangedAfterDelay, this, &CDelayComboBox::sigEditTextChangedAfterDelay );
+            lineEdit()->setReadOnly( readOnly );
+        setEditable( !readOnly );
     }
 
-    QStringList CDelayComboBox::getAllText() const
+    void CSetReadOnlyComboBox::showPopup()
     {
-        auto retVal = QStringList() << currentText();
-        for ( int ii = 0; ii < this->count(); ++ii )
-        {
-            retVal << itemText( ii );
-        }
-        return retVal;
-    }
-
-    void CDelayComboBox::addCurrentItem()
-    {
-        auto currText = currentText();
-        if ( currText.isEmpty() )
+        if ( fReadOnly )
             return;
-
-        disconnect( lineEdit(), &CDelayLineEdit::sigTextChangedAfterDelay, this, &CDelayComboBox::sigEditTextChangedAfterDelay );
-
-        int index = -1;
-        switch ( insertPolicy() )
-        {
-            case QComboBox::InsertAtTop:
-                index = 0;
-                break;
-            case QComboBox::InsertAtBottom:
-                index = count();
-                break;
-            case QComboBox::InsertAtCurrent:
-            case QComboBox::InsertAfterCurrent:
-            case QComboBox::InsertBeforeCurrent:
-                if ( !count() || ( currentIndex() != -1 ) )
-                    index = 0;
-                else if ( insertPolicy() == QComboBox::InsertAtCurrent )
-                    setItemText( currentIndex(), currText );
-                else if ( insertPolicy() == QComboBox::InsertAfterCurrent )
-                    index = currentIndex() + 1;
-                else if ( insertPolicy() == QComboBox::InsertBeforeCurrent )
-                    index = currentIndex();
-                break;
-            case QComboBox::InsertAlphabetically:
-                index = 0;
-                for ( int i = 0; i < count(); i++, index++ )
-                {
-                    if ( currText.toLower() < itemText( i ).toLower() )
-                        break;
-                }
-                break;
-            default:
-                break;
-        }
-        if ( index >= 0 )
-        {
-            bool add = true;
-            if ( !duplicatesEnabled() )
-            {
-                for ( int ii = 0; ii < count(); ++ii )
-                {
-                    if ( itemText( ii ) == currText )
-                    {
-                        if ( ii == index )
-                        {
-                            add = false;
-                            break;
-                        }
-                        removeItem( ii );
-                        ii--;
-                    }
-                }
-            }
-
-            if ( add )
-            {
-                insertItem( index, currText );
-                setCurrentIndex( index );
-            }
-        }
-
-        connect( lineEdit(), &CDelayLineEdit::sigTextChangedAfterDelay, this, &CDelayComboBox::sigEditTextChangedAfterDelay );
+        QComboBox::showPopup();
     }
 
 }

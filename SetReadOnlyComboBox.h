@@ -1,6 +1,6 @@
 // The MIT License( MIT )
 //
-// Copyright( c ) 2020-2026 Towel 42 Development, LLC and Scott Aron Bloom
+// Copyright( c ) 2026 Towel 42 Development, LLC and Scott Aron Bloom
 // SPDX-License-Identifier: MIT License
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,10 +36,10 @@ namespace NTowel42Utils
 
     public:
         CSetReadOnlyComboBox( QWidget *parent = nullptr );
+        virtual void showPopup() override;
 
-        void setReadOnly( bool setReadOnly );
+        void setReadOnly( bool readOnly );
         bool readOnly() const { return fReadOnly; }
-
     private:
         bool fReadOnly{ false };
     };
