@@ -70,11 +70,15 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT std::list< SColumnInfo > columnInfoForTable( QSqlQuery &query, const QString &tableName );
 
-    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, std::size_t numParams );
-    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, const TParameterVariantMap &params );
-    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, const TParameterStringMap &params );
-    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, const QMap< QString, QVariant > &params );
-    TOWEL42_UTILS_EXPORT bool validateQuery( QSqlQuery &query );
+    TOWEL42_UTILS_EXPORT QStringList paramsInCmd( const QString &cmdText, bool namedOnly );
+
+    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, std::size_t numParams, bool assert = true );
+    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, const TParameterVariantMap &params, bool assert = true );
+    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, const TParameterStringMap &params, bool assert = true );
+    TOWEL42_UTILS_EXPORT bool validateParams( const QSqlQuery &query, const QMap< QString, QVariant > &params, bool assert = true );
+    TOWEL42_UTILS_EXPORT bool validateQuery( QSqlQuery &query, bool assert = true );
+
+    TOWEL42_UTILS_EXPORT bool validateOnly( QSqlQuery &query, const QString &cmd, bool assert );
 
     TOWEL42_UTILS_EXPORT bool clearDatabase( QSqlDatabase &db, bool close );
 
@@ -97,7 +101,7 @@ namespace NTowel42Utils
         if ( pos == values->end() )
             return false;
 
-        if constexpr ( std::is_same_v< QString, T > )
+        if constexpr ( std::is_same_v< QString, T > || std::is_same_v< QVariant, T > )
             return true;
 
         if ( !( *pos ).second.canConvert< T >() )

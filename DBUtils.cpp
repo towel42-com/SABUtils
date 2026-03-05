@@ -83,7 +83,6 @@ namespace NTowel42Utils
         return runCmd( query, cmd, params );
     }
 
-
     bool runCmd( QSqlQuery &query, const TParameterVariantMap &params )
     {
         for ( auto &&ii : params )
@@ -93,6 +92,41 @@ namespace NTowel42Utils
         validateParams( query, params );
     #endif
         return runCmd( query );
+    }
+
+    bool validateOnly( QSqlQuery &query, const QString &cmd, bool assert )
+    {
+        query.clear();
+        bool aOK = query.prepare( cmd );
+        if ( !aOK )
+        {
+            reportError( query, assert );
+        }
+
+        NTowel42Utils::TParameterVariantMap params;
+        auto cmdParams = paramsInCmd( cmd, true );
+        for ( auto &&ii : cmdParams )
+        {
+            if ( assert )
+                Q_ASSERT( params.find( ii ) == params.end() );
+
+            if ( params.find( ii ) == params.end() )
+            {
+                if ( ii.endsWith( "_id" ) )
+                    params[ ii ] = 1;
+                else
+                    params[ ii ] = ii.mid( 1 );
+            }
+            else
+                qDebug() << "Param: " << ii << "is in the sql cmd twice";
+        }
+
+        for ( auto &&ii : params )
+            query.bindValue( ii.first, ii.second );
+
+        aOK = aOK && validateParams( query, params, assert );
+    
+        return aOK;
     }
 
     bool runCmd( QSqlQuery &query, const QString &cmd, const NTowel42Utils::TParameterVariantMap &namedParams )
@@ -147,27 +181,45 @@ namespace NTowel42Utils
         reportError( db.lastError(), assert );
     }
 
-    bool validateQuery( QSqlQuery &query )
+    QStringList paramsInCmd( const QString &cmdText, bool namedOnly )
     {
+        QStringList retVal;
+
         QRegularExpression regEx( R"__((\?)|(\:\w*))__" );
         if ( !regEx.isValid() )
-            return false;
+            return retVal;
 
-        auto cmd = query.lastQuery();
-        int numParam = 0;
-        int pos = 0;
-        auto ii = regEx.globalMatch( cmd );
+        auto ii = regEx.globalMatch( cmdText );
         while ( ii.hasNext() )
         {
             auto match = ii.next();
-            numParam++;
-            query.addBindValue( QString( "%1" ).arg( numParam ) );
             auto curr = match.capturedTexts()[ 0 ];
-            if ( curr[ 0 ] == ':' )
+            if ( curr.isEmpty() )
+                continue;
+            if ( !namedOnly || ( curr[ 0 ] == ':' ) )
+                retVal << curr;
+        }
+        return retVal;
+    }
+
+    bool validateQuery( QSqlQuery &query, bool assert )
+    {
+        auto cmd = query.lastQuery();
+        auto paramList = paramsInCmd( cmd, false );
+
+        int numParam = 0;
+        for ( auto &&currParam : paramList )
+        {
+            bool namedParam = ( currParam[ 0 ] == ':' );
+
+            if ( !namedParam )
+                query.addBindValue( QString( "%1" ).arg( ++numParam ) );
+            else if ( currParam.toLower() != currParam )
             {
-                Q_ASSERT( curr.toLower() == curr );
-                if ( curr.toLower() != curr )
-                    return false;
+                if ( assert )
+                    Q_ASSERT( currParam.toLower() == currParam );
+                qDebug() << QString( "Parameter '%1' should be all lowercase" ).arg( currParam );
+                return false;
             }
         }
 
@@ -272,30 +324,25 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    bool validateParams( const QSqlQuery &query, std::size_t numParams )
+    bool validateParams( const QSqlQuery &query, std::size_t numParams, bool assert )
     {
         if ( !query.boundValueNames().isEmpty() )
         {
-            Q_ASSERT( query.boundValueNames().size() == query.boundValues().size() );
-            Q_ASSERT( query.boundValueNames().size() == numParams );
+            if ( assert )
+            {
+                Q_ASSERT( query.boundValueNames().size() == query.boundValues().size() );
+                Q_ASSERT( query.boundValueNames().size() == numParams );
+            }
         }
 
-        QRegularExpression regEx( R"__((\?)|(\:\w*))__" );
-        if ( !regEx.isValid() )
-            return false;
-
         QString cmd = query.lastQuery();
-        std::size_t numParam = 0;
-
-        auto ii = regEx.globalMatch( cmd );
-        while ( ii.hasNext() )
+        auto params = paramsInCmd( cmd, true );
+        for( auto && curr : params )
         {
-            auto match = ii.next();
-            numParam++;
-            auto curr = match.capturedTexts()[ 0 ];
             if ( curr[ 0 ] == ':' )
             {
-                Q_ASSERT( curr.toLower() == curr );
+                if ( assert )
+                    Q_ASSERT( curr.toLower() == curr );
                 if ( curr.toLower() != curr )
                     return false;
             }
@@ -304,7 +351,8 @@ namespace NTowel42Utils
         auto keys = query.boundValueNames();
         for ( auto &&key : keys )
         {
-            Q_ASSERT( key.toLower() == key );
+            if ( assert )
+                Q_ASSERT( key.toLower() == key );
             if ( key.toLower() != key )
                 return false;
         }
@@ -319,12 +367,16 @@ namespace NTowel42Utils
             }
             numBoundWithValue++;
         }
-        Q_ASSERT( numBoundWithValue == numParams );
+        if ( assert )
+            Q_ASSERT( numBoundWithValue == numParams );
 
-        return ( ( numBoundWithValue == numParams ) && ( query.boundValues().size() == numParams ) && ( !query.boundValueNames().empty() && ( query.boundValueNames().size() == query.boundValues().size() ) ) );
+        auto aOK = ( numBoundWithValue == numParams );
+        aOK = aOK && ( query.boundValues().size() == numParams );
+        aOK = aOK && ( query.boundValueNames().empty() || ( query.boundValueNames().size() == query.boundValues().size() ) );
+        return aOK;
     }
 
-    bool validateParams( const QSqlQuery &query, const TParameterVariantMap &params )
+    bool validateParams( const QSqlQuery &query, const TParameterVariantMap &params, bool assert )
     {
         TParameterVariantMap boundValueMap;
         for ( int ii = 0; ii < query.boundValues().count(); ++ii )
@@ -357,7 +409,8 @@ namespace NTowel42Utils
         }
 
         auto aOK = boundNotParam.empty();
-        Q_ASSERT( boundNotParam.empty() );
+        if ( assert )
+            Q_ASSERT( boundNotParam.empty() );
         if ( !boundNotParam.empty() )
         {
             qDebug() << "The following are bound but not in param map: ";
@@ -366,7 +419,8 @@ namespace NTowel42Utils
         }
 
         aOK = aOK && boundNotParam.empty();
-        Q_ASSERT( boundIncorrectly.empty() );
+        if ( assert )
+            Q_ASSERT( boundIncorrectly.empty() );
         if ( !boundIncorrectly.empty() )
         {
             qDebug() << "The following are bound incorrectly: ";
@@ -375,7 +429,8 @@ namespace NTowel42Utils
         }
 
         aOK = aOK && paramNoBound.empty();
-        Q_ASSERT( paramNoBound.empty() );
+        if ( assert )
+            Q_ASSERT( paramNoBound.empty() );
         if ( !paramNoBound.empty() )
         {
             qDebug() << "The following are in the param map but not bound: ";
@@ -383,7 +438,7 @@ namespace NTowel42Utils
                 qDebug() << ii;
         }
 
-        return aOK && validateParams( query, params.size() );
+        return aOK && validateParams( query, params.size(), assert );
     }
 
     bool validateParams( const QSqlQuery &query, const TParameterStringMap &params )
@@ -393,7 +448,7 @@ namespace NTowel42Utils
         {
             realParams[ ii.first ] = ii.second;
         }
-        return validateParams( query, realParams );
+        return validateParams( query, realParams, true );
     }
 
     bool validateParams( const QSqlQuery &query, const QMap< QString, QVariant > &params )
@@ -662,43 +717,10 @@ namespace NTowel42Utils
         qDebug() << ( QSqlDatabase().driverName() );
 
         auto cmd = QStringLiteral( "SELECT last_insert_rowid()" );
-        auto retVal = NTowel42Utils::runCmd( query, cmd );
+        auto retVal = runCmd( query, cmd );
         if ( !retVal || !query.next() )
             return {};
         return query.value( 0 ).toInt();
-    }
-
-    SDBVersion::SDBVersion( const QString &str )
-    {
-        auto tmp = str.split( "." );
-        Q_ASSERT( !tmp.isEmpty() );
-        if ( tmp.isEmpty() )
-            return;
-        bool aOK = false;
-        fMajor = tmp.front().toInt( &aOK );
-        Q_ASSERT( aOK && !tmp.isEmpty() );
-        if ( !aOK )
-            return;
-        tmp.pop_front();
-
-        Q_ASSERT( !tmp.isEmpty() );
-        if ( tmp.isEmpty() )
-            return;
-        fMinor = tmp.front().toInt( &aOK );
-        Q_ASSERT( aOK && !tmp.isEmpty() );
-        if ( !aOK )
-            return;
-        tmp.pop_front();
-
-        Q_ASSERT( !tmp.isEmpty() );
-        if ( tmp.isEmpty() )
-            return;
-        fPatch = tmp.front().toInt( &aOK );
-        Q_ASSERT( aOK && !tmp.isEmpty() );
-        if ( !aOK )
-            return;
-        tmp.pop_front();
-        Q_ASSERT( tmp.isEmpty() );
     }
 
     QString SColumnInfo::columnDef() const
@@ -753,6 +775,39 @@ namespace NTowel42Utils
             rollback( fDatabase );
         else
             commit( fDatabase );
+    }
+
+    SDBVersion::SDBVersion( const QString &str )
+    {
+        auto tmp = str.split( "." );
+        Q_ASSERT( !tmp.isEmpty() );
+        if ( tmp.isEmpty() )
+            return;
+        bool aOK = false;
+        fMajor = tmp.front().toInt( &aOK );
+        Q_ASSERT( aOK && !tmp.isEmpty() );
+        if ( !aOK )
+            return;
+        tmp.pop_front();
+
+        Q_ASSERT( !tmp.isEmpty() );
+        if ( tmp.isEmpty() )
+            return;
+        fMinor = tmp.front().toInt( &aOK );
+        Q_ASSERT( aOK && !tmp.isEmpty() );
+        if ( !aOK )
+            return;
+        tmp.pop_front();
+
+        Q_ASSERT( !tmp.isEmpty() );
+        if ( tmp.isEmpty() )
+            return;
+        fPatch = tmp.front().toInt( &aOK );
+        Q_ASSERT( aOK && !tmp.isEmpty() );
+        if ( !aOK )
+            return;
+        tmp.pop_front();
+        Q_ASSERT( tmp.isEmpty() );
     }
 }
 
