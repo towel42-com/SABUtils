@@ -199,12 +199,13 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         MenuBarEx.cpp
         ProgressBarProxyStyle.cpp
         QtDumper.cpp
-        setReadOnly.cpp
-        SummaryDateEdit.cpp
+        SetReadOnly.cpp
+        SetReadOnlyComboBox.cpp
         ScrollMessageBox.cpp
         SelectFileUrl.cpp
         SpinBox64.cpp
         SpinBox64U.cpp
+        SummaryDateEdit.cpp
         uiUtils.cpp
         UtilityViews.cpp
         WidgetChanged.cpp
@@ -225,6 +226,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         ImageScrollBar.h
         LineEditWithSuffix.h
         MenuBarEx.h
+        SetReadOnlyComboBox.h
         SummaryDateEdit.h
         ScrollMessageBox.h
         SelectFileUrl.h
@@ -241,7 +243,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         FileBasedCache.h
         ProgressBarProxyStyle.h
         QtDumper.h
-        setReadOnly.h
+        SetReadOnly.h
         SpinBox64_StepType.h
         uiUtils.h
         WidgetChanged.h
