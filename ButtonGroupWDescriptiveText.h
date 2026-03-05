@@ -67,6 +67,7 @@ namespace NTowel42Utils
     {
         Q_OBJECT;
         Q_PROPERTY( int value READ propValue WRITE setPropValue );
+        Q_PROPERTY( bool readOnly READ readOnly WRITE setReadOnly );
 
     public:
         enum EValue
@@ -103,6 +104,7 @@ namespace NTowel42Utils
         void addButton( const QString &text, bool rebuild = true );
 
         void setReadOnly( bool readOnly, bool rebuild = true );
+        bool readOnly() const { return fReadOnly; }
         bool aOK() const;
 
         bool setPropValue( std::optional< int > value );
@@ -122,6 +124,7 @@ namespace NTowel42Utils
 
     public Q_SLOTS:
         void slotChanged();
+        void slotButtonClicked();
 
     private:
         bool aOK( bool *textMissing ) const;
@@ -159,6 +162,7 @@ namespace NTowel42Utils
         bool requiredTextMissing() const;
         std::unordered_set< QString > fButtonsThatRequireText;
         std::unordered_set< int > fIDsThatRequireText;
+        std::optional< int > fPreviousValue;
     };
 }
 #endif

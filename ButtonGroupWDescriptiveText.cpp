@@ -203,11 +203,13 @@ namespace NTowel42Utils
             if ( button )
             {
                 button->setChecked( true );
+                fPreviousValue = value;
                 return true;
             }
         }
         for ( auto ii : fButtons )
             ii->setChecked( false );
+        fPreviousValue.reset();
         return false;
     }
 
@@ -368,6 +370,16 @@ namespace NTowel42Utils
         return value().has_value();
     }
 
+    void CButtonGroupWDescriptiveText::slotButtonClicked()
+    {
+        if ( fReadOnly )
+        {
+            if ( fPreviousValue.has_value() && ( fButtonGroup->checkedId() != fPreviousValue.value() ) )
+                setPropValue( fPreviousValue.value() );
+        }
+        else
+            slotChanged();
+    }
     void CButtonGroupWDescriptiveText::slotChanged()
     {
         if ( !fBuddyLabel )
@@ -426,7 +438,6 @@ namespace NTowel42Utils
                 id = static_cast< EValue >( eFirstCustomValue + fButtons.size() );
             fButtonGroup->addButton( button, id );
             fHorizontalLayout1->addWidget( button );
-            connect( button, &QRadioButton::clicked, this, &CButtonGroupWDescriptiveText::slotChanged );
             fButtons.push_back( button );
         }
 
@@ -438,6 +449,10 @@ namespace NTowel42Utils
 
     void CButtonGroupWDescriptiveText::rebuild()
     {
+        std::optional< int > currentCheckedId;
+        if ( fButtonGroup )
+            currentCheckedId = fButtonGroup->checkedId();
+
         delete fDescriptiveText;
         delete fDescriptiveTextLabel;
         for ( auto &&ii : fButtons )
@@ -480,10 +495,18 @@ namespace NTowel42Utils
             setLayout( fHorizontalLayout1 );
 
         fButtonGroup = new QButtonGroup( this );
+        connect( fButtonGroup, &QButtonGroup::buttonClicked, this, &CButtonGroupWDescriptiveText::slotButtonClicked );
 
         auto buttonText = fBaseButtonText << fExtraButtonText;
 
         addButtons( buttonText, fPlaceDescriptiveTextOnSeparateLine || fLongDescriptiveTextEdit || !fShowDescriptiveText );
+
+        if ( currentCheckedId.has_value() )
+        {
+            auto newButton = fButtonGroup->button( currentCheckedId.value() );
+            if ( newButton )
+                newButton->setChecked( true );
+        }
 
         if ( !fLongDescriptiveTextEdit && fShowDescriptiveText )
         {
