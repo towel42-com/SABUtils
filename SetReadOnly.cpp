@@ -38,58 +38,60 @@
 #include <QTextEdit>
 #include <QTimeEdit>
 #include <QWidget>
+#include <QTabWidget>
+#include <QLabel>
 
 namespace NTowel42Utils
 {
     void setReadOnlyInternal( QWidget *parentWidget, QWidget *childWidget, bool readOnly )
     {
-        auto groupBox = dynamic_cast< QGroupBox * >( childWidget );
-        auto lineEdit = dynamic_cast< QLineEdit * >( childWidget );
-        auto spinBox = dynamic_cast< QAbstractSpinBox * >( childWidget );
-        auto plainTextEdit = dynamic_cast< QPlainTextEdit * >( childWidget );
-        auto button = dynamic_cast< QAbstractButton * >( childWidget );
-        auto textEdit = dynamic_cast< QTextEdit * >( childWidget );
+        auto idx = childWidget->metaObject()->indexOfProperty( "readOnly" );
+        if ( idx != -1 )
+        {
+            childWidget->setProperty( "readOnly", readOnly );
+            return;
+        }
 
-        if ( groupBox )
+        auto groupBox = dynamic_cast< QGroupBox * >( childWidget );
+        auto button = dynamic_cast< QAbstractButton * >( childWidget );
+        auto tabWidget = dynamic_cast< QTabWidget * >( childWidget );
+        auto label = dynamic_cast< QLabel * >( childWidget );
+        auto comboBox = dynamic_cast< QComboBox * >( childWidget );
+
+        if ( label )
         {
-            if ( groupBox->isCheckable() )
-                groupBox->setDisabled( readOnly );
-            else
-                setReadOnly( groupBox, readOnly );
+            return;
         }
-        else if ( lineEdit )
+        else if ( groupBox )
         {
-            lineEdit->setReadOnly( readOnly );
-        }
-        else if ( plainTextEdit )
-        {
-            plainTextEdit->setReadOnly( readOnly );
-        }
-        else if ( textEdit )
-        {
-            textEdit->setReadOnly( readOnly );
-        }
-        else if ( spinBox )
-        {
-            spinBox->setReadOnly( true );
+            setReadOnly( groupBox, readOnly );
         }
         else if ( button )
         {
             if ( !dynamic_cast< QDialogButtonBox * >( parentWidget ) )
                 button->setDisabled( readOnly );
         }
+        else if ( tabWidget )
+        {
+            for ( auto ii = 0; ii < tabWidget->count(); ++ii )
+            {
+                setReadOnly( tabWidget->widget( ii ), readOnly );
+            }
+        }
+        else if ( comboBox )
+        {
+            qWarning() << "Use CSetReadOnlyComboBox";
+            if ( comboBox->lineEdit() )
+                comboBox->lineEdit()->setReadOnly( true );
+        }
         else
         {
-            auto idx = childWidget->metaObject()->indexOfProperty( "readOnly" );
-            if ( idx == -1 )
+            if ( childWidget->metaObject()->superClass()->className() == QStringLiteral( "QWidget" ) )
             {
-                childWidget->setDisabled( readOnly );
-                qDebug() << "SetReadOnly: UNHANDLED-" << childWidget << "-" << childWidget->metaObject()->className() << childWidget->objectName();
+                setReadOnly( childWidget, readOnly );
+                return;
             }
-            else
-            {
-                childWidget->setProperty( "readOnly", readOnly );
-            }
+            qDebug() << "SetReadOnly: UNHANDLED-" << childWidget << "-" << childWidget->metaObject()->className() << " - SuperClass: " << childWidget->metaObject()->superClass()->className() << " - " << childWidget->objectName();
         }
     }
 
