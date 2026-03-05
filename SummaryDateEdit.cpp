@@ -77,6 +77,9 @@ namespace NTowel42Utils
 
     void CSummaryDateEdit::stepBy( int steps )
     {
+        if ( isReadOnly() )
+            return;
+
         auto currSection = this->currentSection();
         auto curr = this->date();
         if ( currSection == QDateTimeEdit::YearSection )
@@ -98,6 +101,9 @@ namespace NTowel42Utils
 
     QAbstractSpinBox::StepEnabled CSummaryDateEdit::stepEnabled() const
     {
+        if ( isReadOnly() )
+            return StepNone;
+
         return { StepUpEnabled | StepDownEnabled };
     }
 
