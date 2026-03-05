@@ -61,8 +61,8 @@ namespace NTowel42Utils
     CButtonGroupWDescriptiveText::CButtonGroupWDescriptiveText( QWidget *parent /*= nullptr*/ ) :
         QWidget( parent )
     {
-        fBaseButtonText.push_back( toString( eYes ).value() );
-        fBaseButtonText.push_back( toString( eNo ).value() );
+        fButtonText.push_back( toString( eYes ).value() );
+        fButtonText.push_back( toString( eNo ).value() );
         fButtonsThatRequireText.insert( toString( eYes ).value() );
 
         rebuild();
@@ -130,7 +130,7 @@ namespace NTowel42Utils
     }
     void CButtonGroupWDescriptiveText::setCustomButtonList( const QStringList &buttonNames, bool rebuild )
     {
-        fBaseButtonText = buttonNames;
+        fButtonText = buttonNames;
 
         if ( fHasNA )
         {
@@ -143,8 +143,8 @@ namespace NTowel42Utils
 
     void CButtonGroupWDescriptiveText::addNAToButtonList()
     {
-        if ( !fBaseButtonText.contains( toString( eNA ).value() ) )
-            fBaseButtonText.push_back( toString( eNA ).value() );
+        if ( !fButtonText.contains( toString( eNA ).value() ) )
+            fButtonText.push_back( toString( eNA ).value() );
     }
 
     void CButtonGroupWDescriptiveText::setLongDescriptiveTextEdit( QTextEdit *pte, bool rebuild )
@@ -257,7 +257,7 @@ namespace NTowel42Utils
 
     void CButtonGroupWDescriptiveText::addButton( const QString &text, bool rebuild )
     {
-        fExtraButtonText.push_back( text );
+        fButtonText.push_back( text );
         if ( rebuild )
             this->rebuild();
     }
@@ -319,7 +319,7 @@ namespace NTowel42Utils
     {
         fButtonsThatRequireText.clear();
         fIDsThatRequireText.clear();
-        for ( auto &&ii : fBaseButtonText )
+        for ( auto &&ii : fButtonText )
         {
             fButtonsThatRequireText.insert( ii );
         }
@@ -337,13 +337,8 @@ namespace NTowel42Utils
         if ( value < 0 )
             return {};
 
-        if ( value < fBaseButtonText.count() )
-            return fBaseButtonText[ value ];
-        value -= fBaseButtonText.count();
-        if ( value < 0 )
-            return {};
-        if ( value < fExtraButtonText.count() )
-            return fExtraButtonText[ value ];
+        if ( value < fButtonText.count() )
+            return fButtonText[ value ];
         return {};
     }
 
@@ -430,10 +425,7 @@ namespace NTowel42Utils
 
     void CButtonGroupWDescriptiveText::addButtons( bool addSpacer )
     {
-        auto buttonText = fBaseButtonText;
-        buttonText << fExtraButtonText;
-
-        for ( auto &&ii : buttonText )
+        for ( auto &&ii : fButtonText )
         {
             auto button = new QRadioButton( this );
             button->setText( ii );

@@ -143,8 +143,7 @@ namespace NTowel42Utils
         bool fPlaceDescriptiveTextOnSeparateLine{ false };
 
         std::optional< QString > fLabelDesc;
-        QStringList fBaseButtonText;
-        QStringList fExtraButtonText;
+        QStringList fButtonText;
 
         // owned widgets
         QLineEdit *fDescriptiveText{ nullptr };   //
