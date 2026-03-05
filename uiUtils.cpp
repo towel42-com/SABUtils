@@ -40,6 +40,7 @@
 #include <QAbstractItemView>
 #include <QAbstractItemModel>
 #include <QGroupBox>
+#include <QDialogButtonBox>
 
 #include <functional>
 #include <unordered_set>
@@ -185,15 +186,34 @@ namespace NTowel42Utils
         return idx;
     }
 
-    void selectItemInComboBox( QComboBox *cb, const QString &text )
+    void selectItemInComboBox( QComboBox *cb, const QVariant &value, bool * other )
     {
+        if ( other )
+            *other = false;
         if ( !cb )
             return;
-        auto pos = cb->findText( text );
+        if ( value.isNull() )
+            return;
+
+        int pos = -1;
+        if ( value.canConvert< QString >() )
+        {
+            pos = cb->findText( value.toString() );
+        }
+        if ( pos == -1 )
+        {
+            pos = cb->findData( value );
+        }
         if ( pos == -1 )
         {
             if ( cb->itemText( 0 ).isEmpty() )
                 pos = 0;
+            else
+            {
+                pos = cb->findText( QObject::tr( "Other" ) );
+                if ( other )
+                    *other = pos != -1;
+            }
         }
         cb->setCurrentIndex( pos );
     }
@@ -294,5 +314,4 @@ namespace NTowel42Utils
             aOK = sb->value() != sb->minimum();
         return setIsOK( aOK, label );
     }
-
 }

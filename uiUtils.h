@@ -68,7 +68,6 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT QModelIndex selectFirstVisibleItem( QAbstractItemView *view, bool setFocus );
 
-    TOWEL42_UTILS_EXPORT void selectItemInComboBox(QComboBox * cb,const QString & text);
-
+    TOWEL42_UTILS_EXPORT void selectItemInComboBox( QComboBox *cb, const QVariant &value, bool * other = nullptr );
 }
 #endif
