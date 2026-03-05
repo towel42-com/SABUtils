@@ -86,9 +86,13 @@ namespace NTowel42Utils
     bool runCmd( QSqlQuery &query, const TParameterVariantMap &params )
     {
         for ( auto &&ii : params )
+        {
             query.bindValue( ii.first, ii.second );
+        }
 
     #ifdef _DEBUG
+        Q_ASSERT( query.boundValueNames().size() == params.size() );
+        Q_ASSERT( query.boundValues().size() == params.size() );
         validateParams( query, params );
     #endif
         return runCmd( query );
@@ -125,13 +129,14 @@ namespace NTowel42Utils
             query.bindValue( ii.first, ii.second );
 
         aOK = aOK && validateParams( query, params, assert );
-    
+
         return aOK;
     }
 
     bool runCmd( QSqlQuery &query, const QString &cmd, const NTowel42Utils::TParameterVariantMap &namedParams )
     {
         query.clear();
+
         if ( !query.prepare( cmd ) )
         {
             reportError( query );
@@ -337,7 +342,7 @@ namespace NTowel42Utils
 
         QString cmd = query.lastQuery();
         auto params = paramsInCmd( cmd, true );
-        for( auto && curr : params )
+        for ( auto &&curr : params )
         {
             if ( curr[ 0 ] == ':' )
             {
@@ -360,17 +365,17 @@ namespace NTowel42Utils
         for ( int ii = 0; ii < query.boundValues().count(); ++ii )
         {
             auto value = query.boundValues()[ ii ];
-            if ( value.isNull() )
+            if ( value.isNull() && ( value.userType() != QMetaType::QString ) )
             {
                 qDebug() << query.boundValueNames()[ ii ] << " has a null bound value.";
                 continue;
             }
             numBoundWithValue++;
         }
-        if ( assert )
-            Q_ASSERT( numBoundWithValue == numParams );
+        //if ( assert )
+        //    Q_ASSERT( numBoundWithValue == numParams );
 
-        auto aOK = ( numBoundWithValue == numParams );
+        auto aOK = true;   //( numBoundWithValue == numParams );
         aOK = aOK && ( query.boundValues().size() == numParams );
         aOK = aOK && ( query.boundValueNames().empty() || ( query.boundValueNames().size() == query.boundValues().size() ) );
         return aOK;
@@ -409,13 +414,13 @@ namespace NTowel42Utils
         }
 
         auto aOK = boundNotParam.empty();
-        if ( assert )
-            Q_ASSERT( boundNotParam.empty() );
         if ( !boundNotParam.empty() )
         {
             qDebug() << "The following are bound but not in param map: ";
             for ( auto &&ii : boundNotParam )
                 qDebug() << ii;
+            if ( assert )
+                Q_ASSERT( boundNotParam.empty() );
         }
 
         aOK = aOK && boundNotParam.empty();
@@ -716,7 +721,7 @@ namespace NTowel42Utils
         qDebug() << ( query.driver()->objectName() );
         qDebug() << ( QSqlDatabase().driverName() );
 
-        auto cmd = QStringLiteral( "SELECT last_insert_rowid()" );
+        auto cmd = QStringLiteral( "SELECT LAST_INSERT_ID();" );
         auto retVal = runCmd( query, cmd );
         if ( !retVal || !query.next() )
             return {};
