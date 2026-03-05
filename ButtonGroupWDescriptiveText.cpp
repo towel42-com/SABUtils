@@ -31,6 +31,7 @@
 #include <QLabel>
 #include <QSpacerItem>
 #include <QTextEdit>
+#include <QWizard>
 
 namespace NTowel42Utils
 {
@@ -47,6 +48,14 @@ namespace NTowel42Utils
 
     CButtonGroupWDescriptiveText::~CButtonGroupWDescriptiveText()
     {
+    }
+
+    void CButtonGroupWDescriptiveText::addWizardDefaultProperty( QWizard *wizard )
+    {
+        if ( !wizard )
+            return;
+
+        wizard->setDefaultProperty( CButtonGroupWDescriptiveText().metaObject()->className(), "value", SIGNAL( sigChanged() ) );
     }
 
     void CButtonGroupWDescriptiveText::nameObjects()

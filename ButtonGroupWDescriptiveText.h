@@ -36,6 +36,7 @@ class QLabel;
 class QHBoxLayout;
 class QVBoxLayout;
 class QTextEdit;
+class QWizard;
 
 namespace NTowel42Utils
 {
@@ -57,6 +58,7 @@ namespace NTowel42Utils
         CButtonGroupWDescriptiveText( QWidget *parent = nullptr );
         ~CButtonGroupWDescriptiveText();
 
+        static void addWizardDefaultProperty( QWizard *wizard );
         void setAcceptRejectCondemn( QTextEdit *te );   // short cut to building it all yourself
         void setCustomButtonList( const QStringList &buttonNames, bool rebuild = true );
         void setLongDescriptiveTextEdit( QTextEdit *pte, bool rebuild = true );
