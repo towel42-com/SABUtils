@@ -2726,6 +2726,9 @@ namespace NTowel42Utils
 
         QString textToIdentifier( const QString &text, bool camelCase )
         {
+            if ( text.isEmpty() )
+                return text;
+
             auto retVal = text;
             if ( retVal.isEmpty() )
                 return retVal;
@@ -2737,24 +2740,29 @@ namespace NTowel42Utils
 
             // already handled the start dont use full cppIndentRegex
             auto invalidIdentCharsRegEx = QRegularExpression( R"__([^a-zA-Z0-9_])__" );
-            if ( !invalidIdentCharsRegEx.match( retVal ).hasMatch() )
-            {
-                retVal.replace( invalidIdentCharsRegEx, "_" );
-            }
+            retVal.replace( invalidIdentCharsRegEx, "_" );
 
             if ( camelCase )
             {
             }
             else
             {
-                retVal.replace( QRegularExpression( R"__(([A-Z]))__" ), R"__(_\1)__" );
+                retVal[ 0 ] = retVal[ 0 ].toLower();
+                for ( auto &&ii = 1; ii < retVal.length(); ++ii )
+                {
+                    if ( ( retVal[ ii ] >= 'A' ) && ( retVal[ ii ] <= 'Z' ) )
+                    {
+                        retVal[ ii ] = retVal[ ii ].toLower();
+                        if ( retVal[ ii - 1 ] != '_' )
+                            retVal.insert( ii, '_' );
+                    }
+                }
             }
 
             auto cppIdentRegex = QStringLiteral( R"__(^[a-zA-Z_][a-zA-Z0-9_]*$)__" );
             //Q_ASSERT( QRegularExpression( cppIdentRegex ).match( retVal ).hasMatch() );
             return retVal;
         }
-            
 
         QString numToEnglish( int value )
         {
