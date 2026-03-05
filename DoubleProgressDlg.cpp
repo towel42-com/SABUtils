@@ -857,7 +857,7 @@ namespace NTowel42Utils
                     if ( needShow )
                     {
                         ensureSizeIsAtLeastSizeHint();
-                        fDialog->show();
+                        fDialog->open();
                         fShownOnce = true;
                     }
                 }
