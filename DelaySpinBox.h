@@ -1,8 +1,7 @@
-#ifndef __DELAYSPINBOX_H
-#define __DELAYSPINBOX_H
 // The MIT License( MIT )
 //
 // Copyright( c ) 2020-2026 Towel 42 Development, LLC and Scott Aron Bloom
+// SPDX-License-Identifier: MIT License
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to deal
@@ -21,6 +20,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+#ifndef __DELAYSPINBOX_H
+#define __DELAYSPINBOX_H
 
 #include "Towel42UtilsExport.h"
 
