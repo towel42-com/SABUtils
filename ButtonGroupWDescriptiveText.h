@@ -85,6 +85,8 @@ namespace NTowel42Utils
         static void addWizardDefaultProperty( QWizard *wizard );
         void setAcceptRejectCondemn( QTextEdit *te );   // short cut to building it all yourself
         void setCustomButtonList( const QStringList &buttonNames, bool rebuild = true );
+
+    public:
         void setLongDescriptiveTextEdit( QTextEdit *pte, bool rebuild = true );
         void setHasNA( bool hasNA, bool rebuild = true );
         void setShowDescriptiveText( bool showDescriptiveText, bool rebuild = true );
@@ -129,9 +131,8 @@ namespace NTowel42Utils
     private:
         bool aOK( bool *textMissing ) const;
         void rebuild();
-        void addButtons( const QStringList &buttonText, bool addSpacer );
-
-    private:
+        void addButtons( bool addSpacer );
+        void addNAToButtonList();
         void rebuildIDRequiredTextMap();
 
         void nameObjects();

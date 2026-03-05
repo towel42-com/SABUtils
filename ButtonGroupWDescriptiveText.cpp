@@ -133,10 +133,18 @@ namespace NTowel42Utils
         fBaseButtonText = buttonNames;
 
         if ( fHasNA )
-            fBaseButtonText.push_back( toString( eNA ).value() );
+        {
+            addNAToButtonList();
+        }
 
         if ( rebuild )
             this->rebuild();
+    }
+
+    void CButtonGroupWDescriptiveText::addNAToButtonList()
+    {
+        if ( !fBaseButtonText.contains( toString( eNA ).value() ) )
+            fBaseButtonText.push_back( toString( eNA ).value() );
     }
 
     void CButtonGroupWDescriptiveText::setLongDescriptiveTextEdit( QTextEdit *pte, bool rebuild )
@@ -154,7 +162,7 @@ namespace NTowel42Utils
     void CButtonGroupWDescriptiveText::setHasNA( bool hasNA, bool rebuild )
     {
         fHasNA = hasNA;
-        fBaseButtonText.push_back( toString( eNA ).value() );
+        addNAToButtonList();
 
         if ( rebuild )
             this->rebuild();
@@ -420,8 +428,11 @@ namespace NTowel42Utils
         }
     }
 
-    void CButtonGroupWDescriptiveText::addButtons( const QStringList &buttonText, bool addSpacer )
+    void CButtonGroupWDescriptiveText::addButtons( bool addSpacer )
     {
+        auto buttonText = fBaseButtonText;
+        buttonText << fExtraButtonText;
+
         for ( auto &&ii : buttonText )
         {
             auto button = new QRadioButton( this );
@@ -450,7 +461,7 @@ namespace NTowel42Utils
     void CButtonGroupWDescriptiveText::rebuild()
     {
         std::optional< int > currentCheckedId;
-        if ( fButtonGroup )
+        if ( fButtonGroup && ( fButtonGroup->checkedId() != -1 ) )
             currentCheckedId = fButtonGroup->checkedId();
 
         delete fDescriptiveText;
@@ -497,9 +508,7 @@ namespace NTowel42Utils
         fButtonGroup = new QButtonGroup( this );
         connect( fButtonGroup, &QButtonGroup::buttonClicked, this, &CButtonGroupWDescriptiveText::slotButtonClicked );
 
-        auto buttonText = fBaseButtonText << fExtraButtonText;
-
-        addButtons( buttonText, fPlaceDescriptiveTextOnSeparateLine || fLongDescriptiveTextEdit || !fShowDescriptiveText );
+        addButtons( fPlaceDescriptiveTextOnSeparateLine || fLongDescriptiveTextEdit || !fShowDescriptiveText );
 
         if ( currentCheckedId.has_value() )
         {
