@@ -84,8 +84,7 @@ namespace NTowel42Utils
         TFormatMap mediaEncoderFormatExtensions() const { return fMediaEncoderFormatExtensions; }
         TFormatMap mediaDecoderFormatExtensions() const { return fMediaDecoderFormatExtensions; }
 
-        std::set< QString > getCodecAliases( const QString &formatName ) const;
-        ;   // gets the tersename, the verbose name, the codecname, the encoder name and the decoder name
+        std::set< QString > getCodecAliases( const QString &formatName ) const; // gets the tersename, the verbose name, the codecname, the encoder name and the decoder name
         bool isHEVCCodec( const QString &codec ) const { return isCodec( "hevc", codec ); }
         bool isCodec( const QString &checkCodecName, const QString &mediaCodecName ) const;
 

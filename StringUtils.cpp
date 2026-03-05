@@ -613,7 +613,8 @@ namespace NTowel42Utils
                 {
                     *( s - 1 ) = '\0';
                     while ( ( ( c = (char)fgetc( fp ) ) != EOF ) && c != '\n' )
-                        ;
+                    {
+                    }
                 }
                 else if ( processing_token && ( ( c == '\t' ) || ( c == ' ' ) || ( c == '\n' ) ) )
                 {
