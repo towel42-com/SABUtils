@@ -80,7 +80,7 @@ namespace NTowel42Utils
         }
         else if ( comboBox )
         {
-            qWarning() << "Use CSetReadOnlyComboBox";
+            qWarning() << "Use CSetReadOnlyComboBox" << comboBox;
             if ( comboBox->lineEdit() )
                 comboBox->lineEdit()->setReadOnly( true );
         }
