@@ -1096,6 +1096,20 @@ namespace NTowel42Utils
             return value.toString();
     }
 
+    bool objectInheritsFromClass( const QObject *object, const QByteArray &classX, const std::optional< QByteArray > &classY )
+    {
+        const QMetaObject *metaObject = object->metaObject();
+        while ( metaObject )
+        {
+            if ( metaObject->className() == classX )
+                return true;
+            if ( classY.has_value() && ( metaObject->className() == classY.value() ) )
+                return false;
+            metaObject = metaObject->superClass();
+        }
+        return false;
+    }
+
     QTreeWidgetItem *nextVisibleItem( QTreeWidgetItem *item )
     {
         if ( !item )
