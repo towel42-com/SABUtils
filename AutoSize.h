@@ -25,8 +25,10 @@
 #define __AUTOSIZE_H
 
 #include "Towel42UtilsExport.h"
-
+#include <QWidget>
 #include <optional>
+#include <type_traits>
+#include <QString>
 
 class QTableView;
 class QTreeView;
@@ -35,6 +37,9 @@ class QHeaderView;
 class QComboBox;
 class QWidget;
 class QAbstractScrollArea;
+class QString;
+class QLabel;
+class QLineEdit;
 
 namespace NTowel42Utils
 {
@@ -44,7 +49,30 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT std::optional< int > autoSize( QAbstractItemView *view, QHeaderView *header, int minWidth = -1 );
     TOWEL42_UTILS_EXPORT std::optional< int > autoSize( QComboBox *comboBox, int minNumChars = -1 );
 
-    TOWEL42_UTILS_EXPORT std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, std::optional< int > hintWidth );
+    TOWEL42_UTILS_EXPORT std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, std::optional< int > hintWidth, bool shrinkIfNecessary );
+
+    // sets the minimum size so the text is visible
+    TOWEL42_UTILS_EXPORT void setMinimumWidth( QWidget *widget, const QString &textToSizeTo, const std::optional< QString > &extraText );
+    TOWEL42_UTILS_EXPORT void setMinimumWidth( QWidget *widget, const std::optional< QString > &extraText = {} );
+    TOWEL42_UTILS_EXPORT void setMinimumWidth( QLabel *label, const std::optional< QString > &extraText = {} );
+    TOWEL42_UTILS_EXPORT void setMinimumWidth( QLineEdit *lineEdit, const std::optional< QString > &extraText = {} );
+
+    template< typename T >
+    void setMinimumWidth( QWidget *widget, const std::optional< QString > &extraText = {} )   // finds all children of type className and sets their minimum size
+    {
+        if ( !widget )
+            return;
+        auto children = widget->findChildren< T >();
+        for ( auto &&ii : children )
+        {
+            if ( qobject_cast< QLabel * >( ii ) )
+                setMinimumWidth( (QLabel *)ii, extraText );
+            else if ( qobject_cast< QLineEdit * >( ii ) )
+                setMinimumWidth( (QLineEdit *)ii, extraText );
+            else
+                setMinimumWidth( ii, extraText );
+        }
+    }
 }
 
 #endif

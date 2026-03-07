@@ -29,7 +29,11 @@
 #include <QHeaderView>
 #include <QTreeView>
 #include <QScrollBar>
+#include <QLabel>
 #include <QApplication>
+#include <QLineEdit>
+#include <QFontMetrics>
+#include <QFont>
 
 #include <optional>
 
@@ -111,7 +115,7 @@ namespace NTowel42Utils
         if ( prevPolicy == QComboBox::AdjustToContents )
             comboBox->setSizeAdjustPolicy( QComboBox::AdjustToContentsOnFirstShow );
         comboBox->setSizeAdjustPolicy( QComboBox::AdjustToContents );
-        qApp->processEvents( QEventLoop::ExcludeUserInputEvents );
+        qApp->processEvents();
 
         if ( ( minNumChars == -1 ) && !comboBox->placeholderText().isEmpty() && ( comboBox->count() == 0 ) )
         {
@@ -126,7 +130,7 @@ namespace NTowel42Utils
         return comboBox->width();
     }
 
-    std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, std::optional< int > widthHint )
+    std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, std::optional< int > widthHint, bool shrinkIfNecessary )
     {
         if ( !scrollArea )
             return {};
@@ -134,62 +138,67 @@ namespace NTowel42Utils
         if ( !scrollArea->horizontalScrollBar() )
             return {};
 
-        QWidget *resizeWidget = scrollArea;
-        while ( resizeWidget && !resizeWidget->isWindow() && resizeWidget->parentWidget() )
-        {
-            resizeWidget = resizeWidget->parentWidget();
-        }
+        auto resizeWidget = scrollArea->window();
 
-        if ( !resizeWidget )
+        if ( !resizeWidget || NTowel42Utils::objectInheritsFromClass( resizeWidget, QByteArray( "QMainWindow" ) ) )
             return {};
 
         auto currPolicy = scrollArea->horizontalScrollBarPolicy();
         scrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAsNeeded );
-        QSize lhsSize;
-        QSize rhsSize;
 
-        if ( widthHint.has_value() && ( resizeWidget->width() != widthHint.value() ) )
+        if ( widthHint.has_value() && ( resizeWidget->width() != widthHint.value() ) && ( shrinkIfNecessary || ( resizeWidget->width() > widthHint.value() ) ) )
         {
             auto sz = resizeWidget->size();
             sz.setWidth( widthHint.value() );
             resizeWidget->resize( sz );
-            qApp->processEvents( QEventLoop::ExcludeUserInputEvents );
+            qApp->processEvents();
         }
 
         // grow/shrink it by 5% to find the initial boundaries
+        QSize lhsSize;
+        QSize rhsSize;
         auto percent = .05;
         int resizeCount = 0;
         if ( scrollArea->horizontalScrollBar()->isVisible() )
         {
             lhsSize = resizeWidget->size();
             bool first = true;
+            auto prevSize = resizeWidget->size();
             while ( scrollArea->horizontalScrollBar()->isVisible() )
             {
                 lhsSize = resizeWidget->size();
+                if ( !first && prevSize == lhsSize )
+                    break;
+                prevSize = lhsSize;
                 auto newSize = lhsSize;
                 auto delta = first ? 1 : newSize.width() * percent;
                 newSize.setWidth( newSize.width() + delta );
                 first = false;
                 resizeWidget->resize( newSize );
                 resizeCount++;
-                qApp->processEvents( QEventLoop::ExcludeUserInputEvents );
+                qApp->processEvents();
             }
             rhsSize = resizeWidget->size();
         }
-        else
+        else if ( shrinkIfNecessary )
         {
             rhsSize = resizeWidget->size();
             bool first = true;
+            auto prevSize = resizeWidget->size();
             while ( !scrollArea->horizontalScrollBar()->isVisible() )
             {
                 rhsSize = resizeWidget->size();
+                if ( !first && prevSize == rhsSize )
+                    break;
+                prevSize = rhsSize;
+
                 auto newSize = rhsSize;
                 auto delta = first ? 1 : newSize.width() * percent;
                 newSize.setWidth( newSize.width() - delta );
                 first = false;
                 resizeWidget->resize( newSize );
                 resizeCount++;
-                qApp->processEvents( QEventLoop::ExcludeUserInputEvents );
+                qApp->processEvents();
             }
             lhsSize = resizeWidget->size();
         }
@@ -198,16 +207,29 @@ namespace NTowel42Utils
         if ( resizeWidget->size() != rhsSize )
             resizeWidget->resize( rhsSize );
 
+        auto prevSize = resizeWidget->size();
+        bool first = true;
         while ( lhsSize.width() < rhsSize.width() && ( ( rhsSize.width() - lhsSize.width() ) > 1 ) )
         {
             auto mid = ( rhsSize.width() - lhsSize.width() ) / 2;
             if ( mid == 0 )
                 break;
+
+            if ( !shrinkIfNecessary )
+            {
+                if ( mid < 0 )
+                    break;
+            }
+            if ( !first && lhsSize == prevSize )
+                break;
+            prevSize = lhsSize;
+
+            first = false;
             auto newSize = lhsSize;
             newSize.setWidth( newSize.width() + mid );
             resizeWidget->resize( newSize );
             resizeCount++;
-            qApp->processEvents( QEventLoop::ExcludeUserInputEvents );
+            qApp->processEvents();
             if ( scrollArea->horizontalScrollBar()->isVisible() )
                 lhsSize = newSize;
             else
@@ -216,17 +238,63 @@ namespace NTowel42Utils
 
         auto isVisible = scrollArea->horizontalScrollBar()->isVisible();
         auto delta = isVisible ? 1 : -1;
+        first = true;
+        prevSize = resizeWidget->size();
         while ( isVisible ? scrollArea->horizontalScrollBar()->isVisible() : !scrollArea->horizontalScrollBar()->isVisible() )
         {
+            if ( !shrinkIfNecessary && ( delta < 0 ) )
+                break;
+
             auto newSize = resizeWidget->size();
+            if ( !first && newSize == prevSize )
+                break;
+            prevSize = newSize;
+            first = false;
             newSize.setWidth( newSize.width() + delta );
             resizeWidget->resize( newSize );
             resizeCount++;
-            qApp->processEvents( QEventLoop::ExcludeUserInputEvents );
+            qApp->processEvents();
         }
         scrollArea->setHorizontalScrollBarPolicy( currPolicy );
         qDebug() << "It took " << resizeCount << " total";
         qDebug() << "Final Width: " << resizeWidget->size().width();
         return resizeWidget->size().width();
+    }
+
+    void setMinimumWidth( QWidget *widget, const QString &textToSizeTo, const std::optional< QString > &extraText )
+    {
+        if ( !widget )
+            return;
+
+        QFontMetrics fm( widget->font() );
+        auto text = textToSizeTo;
+        if ( extraText.has_value() )
+            text = extraText.value();
+        auto rect = fm.boundingRect( text );
+        auto width = rect.width();
+        if ( text.isEmpty() )
+            width = 0;
+        widget->setMinimumWidth( width );
+    }
+
+    void setMinimumWidth( QWidget *widget, const std::optional< QString > &extraText )
+    {
+        setMinimumWidth( widget, QString(), extraText );
+    }
+
+    void setMinimumWidth( QLabel *label, const std::optional< QString > &extraText )
+    {
+        if ( !label )
+            return;
+
+        setMinimumWidth( (QWidget *)label, label->text(), extraText );
+    }
+
+    void setMinimumWidth( QLineEdit *lineEdit, const std::optional< QString > &extraText /*= {} */ )
+    {
+        if ( !lineEdit )
+            return;
+
+        setMinimumWidth( (QWidget *)lineEdit, lineEdit->text(), extraText );
     }
 }
