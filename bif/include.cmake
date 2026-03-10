@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 set(_PROJECT_NAME bif)
-set(USE_QT TRUE)
 set(FOLDER_NAME SharedLibs)
 
 IF(WIN32)
@@ -61,4 +60,11 @@ set(qtproject_UIS
 
 
 set(qtproject_QRC
+)
+
+
+SET( project_pri_DEPS
+    Qt6::Core
+    Qt6::Gui
+    ${project_pri_DEPS}
 )

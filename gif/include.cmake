@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 set(_PROJECT_NAME gif)
-set(USE_QT TRUE)
 set(FOLDER_NAME SharedLibs)
 
 set(qtproject_SRCS
@@ -51,3 +50,7 @@ SET( project_pub_DEPS
      Towel42Utils
 )
 
+SET( project_pri_DEPS
+    Qt6::Core
+    ${project_pri_DEPS}
+)
