@@ -78,8 +78,8 @@ MACRO(CheckForCoreSupport whichLibVAR whichLibName)
     if ( NOT TOWEL42_QCORE_SUPPORT )
         if ( ${whichLibVAR} )
             MESSAGE( WARNING "${whichLibName} Support requires QtCore Support, set TOWEL42_QCORE_SUPPORT to true to prevent this warning" )
-            set( TOWEL42_QCORE_SUPPORT true )
-            set( TOWEL42_QCORE_SUPPORT true PARENT_SCOPE )
+            set( TOWEL42_QCORE_SUPPORT ON )
+            set( TOWEL42_QCORE_SUPPORT ON PARENT_SCOPE )
         endif()
     endif()
 ENDMACRO()
@@ -98,6 +98,7 @@ CheckForCoreSupport( TOWEL42_QXML_SUPPORT "QXml" )
 CheckForCoreSupport( TOWEL42_ZIP_SUPPORT "ZIP" )
 
 if ( TOWEL42_QCORE_SUPPORT )
+    add_definitions( -DTOWEL42_QCORE_SUPPORT=1)
     find_package(Qt6 COMPONENTS Core REQUIRED)
     IF(WIN32)
             set( QT_OS_SRCS 
@@ -177,10 +178,10 @@ if ( TOWEL42_QCORE_SUPPORT )
     if ( TOWEL42_QCORE_SUPPORT )
         file(GLOB qtproject_QRC_SOURCES "resources/*")
     endif()
-
 endif()
 
 if ( TOWEL42_QWIDGET_SUPPORT )
+    add_definitions( -DTOWEL42_QWIDGET_SUPPORT=1)
     find_package(Qt6 COMPONENTS Widgets Gui REQUIRED)
     set(qtproject_SRCS
         ${qtproject_SRCS}
@@ -270,6 +271,7 @@ if ( TOWEL42_BIFSUPPORT )
         MESSAGE( FATAL_ERROR "BIF Support requires QWidget Support" )
     endif()
 
+    add_definitions( -DTOWEL42_BIFSUPPORT=1)
     set(qtproject_SRCS
         ${qtproject_SRCS}
         BIFFile.cpp
@@ -315,6 +317,7 @@ if ( TOWEL42_GIFSUPPORT )
         MESSAGE( FATAL_ERROR "GIF Support requires QWidget Support" )
     endif()
     
+    add_definitions( -DTOWEL42_GIFSUPPORT=1)
     set(qtproject_SRCS
         ${qtproject_SRCS}
         GIFWriter.cpp
@@ -341,6 +344,7 @@ endif()
 
 if ( TOWEL42_MKVUTILS )
     find_package(Qt6 COMPONENTS Multimedia REQUIRED)
+    add_definitions( -DTOWEL42_MKVUTILS=1)
     set(qtproject_SRCS
         ${qtproject_SRCS}
         MediaInfo.cpp
@@ -371,6 +375,7 @@ endif()
 
 if ( TOWEL42_QAXOBJECT_SUPPORT )
     find_package(Qt6 COMPONENTS AxContainer REQUIRED)
+    add_definitions( -DTOWEL42_QAXOBJECT_SUPPORT=1)
 
     set(qtproject_SRCS
         ${qtproject_SRCS}
@@ -391,6 +396,7 @@ endif()
 
 if ( TOWEL42_QNETWORK_SUPPORT )
     find_package(Qt6 COMPONENTS Network REQUIRED)
+    add_definitions( -DTOWEL42_QNETWORK_SUPPORT=1)
     set(qtproject_SRCS
         ${qtproject_SRCS}
         DownloadFile.cpp
@@ -414,6 +420,7 @@ endif()
 
 if ( TOWEL42_QCONCURRENT_SUPPORT )
     find_package(Qt6 COMPONENTS Concurrent REQUIRED)
+    add_definitions( -DTOWEL42_QCONCURRENT_SUPPORT=1)
     set(qtproject_SRCS
         ${qtproject_SRCS}
         ThreadedProgressDialog.cpp
@@ -432,6 +439,7 @@ if ( TOWEL42_QCONCURRENT_SUPPORT )
 endif()
 
 IF ( TOWEL42_ZIP_SUPPORT )
+    add_definitions( -DTOWEL42_ZIP_SUPPORT=1)
     find_package(Qt6 COMPONENTS Core REQUIRED)
     set(qtproject_H
         ${qtproject_H}
@@ -455,6 +463,7 @@ IF ( TOWEL42_ZIP_SUPPORT )
 endif()
 
 if ( TOWEL42_QSQL_SUPPORT )
+    add_definitions( -DTOWEL42_QSQL_SUPPORT=1)
     find_package(Qt6 COMPONENTS Sql REQUIRED)
     set(qtproject_H
         ${qtproject_H}
@@ -478,6 +487,7 @@ endif()
 
 if ( TOWEL42_QSVG_SUPPORT )
     find_package(Qt6 COMPONENTS Svg REQUIRED)
+    add_definitions( -DTOWEL42_QSVG_SUPPORT=1)
     set(qtproject_H
         ${qtproject_H}
     )
