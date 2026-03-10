@@ -175,7 +175,7 @@ namespace NTowel42Utils
         {
             auto out = process.readAllStandardOutput();
             auto err = process.readAllStandardError();
-            msg = QString( "Error running ffprobe '%1' - " ).arg( ffprobeExe ).arg( QString( err ) );
+            msg = QString( "Error running ffprobe '%1' - " ).arg( ffprobeExe ).arg( QString::fromLocal8Bit( err ) );
             return {};
         }
         auto data = process.readAll();

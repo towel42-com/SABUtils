@@ -187,7 +187,7 @@ namespace NTowel42Utils
     int CGitHubGetVersions::getTimeOutDelay() const
     {
         int delay = 10000;
-        QString value = qgetenv( "TOWEL42_TIMEOUT" );
+        auto value = qgetenv( "TOWEL42_TIMEOUT" );
         if ( !value.isEmpty() )
         {
             bool aOK;

@@ -461,10 +461,10 @@ namespace NTowel42Utils
             process.start( bifTool, args );
             if ( !process.waitForFinished( -1 ) || ( process.exitStatus() != QProcess::NormalExit ) || ( process.exitCode() != 0 ) )
             {
-                msg = QString( "Error running biftool '%1' - " ).arg( bifTool ).arg( QString( process.readAllStandardError() ) );
+                msg = QString( "Error running biftool '%1' - " ).arg( bifTool ).arg( QString::fromLocal8Bit( process.readAllStandardError() ) );
                 return false;
             }
-            msg = process.readAll();
+            msg = QString::fromLocal8Bit( process.readAll() );
 
             auto tmpFile = QFileInfo( dir.dirName() + ".bif" );
             if ( !tmpFile.exists() )
