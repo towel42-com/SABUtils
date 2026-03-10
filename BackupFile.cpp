@@ -95,7 +95,7 @@ namespace NTowel42Utils
                     {
                         auto baseName = QFileInfo( backupFileTemplate ).baseName();
                         auto suffix = QFileInfo( backupFileTemplate ).suffix();
-                        backupFile = QString( "%1 (%2).%3" ).arg( baseName ).arg( backupNum++ ).arg( suffix );
+                        backupFile = QStringLiteral( "%1 (%2).%3" ).arg( baseName ).arg( backupNum++ ).arg( suffix );
                         backupFI = QFileInfo( backupFile );
                     }
                 }

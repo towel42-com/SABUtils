@@ -69,9 +69,9 @@ namespace NTowel42Utils
                 reinitThread();
             }
             if ( fStopped )
-                fRetVal = std::make_pair( false, QString( "File Checking Stopped" ) );
+                fRetVal = std::make_pair( false, QStringLiteral( "File Checking Stopped" ) );
             if ( fTimedOut )
-                fRetVal = std::make_pair( false, QString( "Path checking timed out, check network connection" ) );
+                fRetVal = std::make_pair( false, QStringLiteral( "Path checking timed out, check network connection" ) );
         }
 
         void initThread()
@@ -254,12 +254,12 @@ namespace NTowel42Utils
         fImpl->dumpDebug( "checkPathInternal finished: " );
         if ( fImpl->fStopped )
         {
-            fImpl->fRetVal = std::make_pair( false, QString( "Background Checking Stopped" ) );
+            fImpl->fRetVal = std::make_pair( false, QStringLiteral( "Background Checking Stopped" ) );
             return;
         }
         if ( fImpl->fTimedOut )
         {
-            fImpl->fRetVal = std::make_pair( false, QString( "Background Checking timed out" ) );
+            fImpl->fRetVal = std::make_pair( false, QStringLiteral( "Background Checking timed out" ) );
             return;
         }
 

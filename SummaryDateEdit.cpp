@@ -46,7 +46,7 @@ namespace NTowel42Utils
             return QDateEdit::textFromDateTime( dt );
 
         auto quarter = 1 + ( ( dt.date().month() - 1 ) / 3 );
-        return QString( "Q%1 %2" ).arg( quarter ).arg( dt.date().year() );
+        return QStringLiteral( "Q%1 %2" ).arg( quarter ).arg( dt.date().year() );
     }
 
     QDateTime CSummaryDateEdit::dateTimeFromText( const QString &text ) const

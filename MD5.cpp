@@ -47,7 +47,7 @@ namespace NTowel42Utils
         }
         md5Str = md5Str.toUpper();
         if ( md5Str.length() < 32 )
-            md5Str = QString( "%1" ).arg( QString::fromLatin1( md5Str ), 32, QLatin1Char( '0' ) ).toLatin1();
+            md5Str = QStringLiteral( "%1" ).arg( QString::fromLatin1( md5Str ), 32, QLatin1Char( '0' ) ).toLatin1();
         if ( md5Str.length() == 32 )
         {
             md5Str = md5Str.mid( 0, 8 ) + "-" + md5Str.mid( 8, 4 ) + "-" + md5Str.mid( 12, 4 ) + "-" + md5Str.mid( 16, 4 ) + "-" + md5Str.mid( 20 );

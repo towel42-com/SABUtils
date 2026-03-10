@@ -35,7 +35,7 @@ namespace NTowel42Utils
             if ( !dir.exists() || !dir.isReadable() )
             {
                 if ( errorMsg )
-                    *errorMsg = QString( "Directory '%1' does not exist." ).arg( dir.absolutePath() );
+                    *errorMsg = QStringLiteral( "Directory '%1' does not exist." ).arg( dir.absolutePath() );
                 return {};
             }
             if ( skipDir && skipDir( dir ) )

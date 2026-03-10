@@ -102,12 +102,12 @@ namespace NTowel42Utils
                 {
                     QString channelString;
                     if ( channelCount > 2 )
-                        channelString = QString( " %2.1" ).arg( channelCount - 1 );
+                        channelString = QStringLiteral( " %2.1" ).arg( channelCount - 1 );
                     else if ( channelCount == 2 )
-                        channelString = QString( "stereo" );
+                        channelString = QStringLiteral( "stereo" );
                     else
-                        channelString = QString( "mono" );
-                    codec = QString( "%1 %2" ).arg( codec ).arg( channelString ).trimmed();
+                        channelString = QStringLiteral( "mono" );
+                    codec = QStringLiteral( "%1 %2" ).arg( codec ).arg( channelString ).trimmed();
                 }
                 if ( !aOK )
                     return false;
@@ -138,7 +138,7 @@ namespace NTowel42Utils
                 auto height = value( mediaInfoTagName( EMediaTags::eHeight ) );
                 if ( !width.isEmpty() && !height.isEmpty() )
                 {
-                    auto value = QString( "%1x%2" ).arg( width ).arg( height );
+                    auto value = QStringLiteral( "%1x%2" ).arg( width ).arg( height );
                     addData( "Resolution", value );
                 }
                 else
@@ -1100,7 +1100,7 @@ namespace NTowel42Utils
                 values[ defStreamNum ] = "*" + values[ defStreamNum ];
             //auto value = values.join( ", " );
             //if ( values.count() > 1 )
-            //    value = QString( "(%1) %2" ).arg( values.count() ).arg( value );
+            //    value = QStringLiteral( "(%1) %2" ).arg( values.count() ).arg( value );
             //if ( values.count() == 1 )
             //    return values.front();
             return values;
@@ -1258,7 +1258,7 @@ namespace NTowel42Utils
                 {
                     auto disposition = stream[ "disposition" ].toObject();
                     auto defaultDisp = disposition[ "default" ].toInt() != 0;
-                    streamData->replaceData( "Disposition_Default", QString( "%1" ).arg( defaultDisp ) );
+                    streamData->replaceData( "Disposition_Default", QStringLiteral( "%1" ).arg( defaultDisp ) );
                     streamData->setIsDefault( defaultDisp );
                     if ( defaultDisp )
                         fDefaultStreams[ streamType ] = streamNum;
@@ -1919,7 +1919,7 @@ namespace NTowel42Utils
     void CMediaInfoMgr::updateStatus()
     {
         fMutex.lock();
-        auto msg = QString( "%1 files remaining to be processed." ).arg( fQueuedMediaInfo.size() );
+        auto msg = QStringLiteral( "%1 files remaining to be processed." ).arg( fQueuedMediaInfo.size() );
         fMutex.unlock();
         emit sigStatusMessage( msg );
     }

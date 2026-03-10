@@ -101,7 +101,7 @@ namespace NTowel42Utils
             {
                 if ( !first )
                     retVal += " ";
-                retVal += QString( "%1" ).arg( static_cast< uint8_t >( ii ), 2, 16, QChar( '0' ) ).toUpper();
+                retVal += QStringLiteral( "%1" ).arg( static_cast< uint8_t >( ii ), 2, 16, QChar( '0' ) ).toUpper();
                 first = false;
             }
             return retVal;
@@ -116,16 +116,16 @@ namespace NTowel42Utils
         {
             if ( !outFile || !outFile->isOpen() || !outFile->isWritable() )
             {
-                msg = QString( "Outfile is not open" );
+                msg = QStringLiteral( "Outfile is not open" );
                 if ( desc )
-                    msg += QString( " to write '%1'" ).arg( desc.value() );
+                    msg += QStringLiteral( " to write '%1'" ).arg( desc.value() );
                 return false;
             }
             auto value = outFile->write( fByteArray );
             if ( value != fByteArray.length() )
             {
                 if ( desc.has_value() )
-                    msg = QString( "Could not write out '%1'" ).arg( desc.value() );
+                    msg = QStringLiteral( "Could not write out '%1'" ).arg( desc.value() );
                 return false;
             }
             return true;
@@ -155,7 +155,7 @@ namespace NTowel42Utils
             auto allFiles = NFileUtils::findAllFiles( dir, { filter }, false, true, &msg );
             if ( !allFiles.has_value() || allFiles.value().isEmpty() )
             {
-                msg = QString( "No images exists in dir '%1' of the format 'img_*.jpg'." ).arg( dir.absolutePath() );
+                msg = QStringLiteral( "No images exists in dir '%1' of the format 'img_*.jpg'." ).arg( dir.absolutePath() );
                 return;
             }
 
@@ -173,7 +173,7 @@ namespace NTowel42Utils
                 auto currFrame = SBIFImage( ii.absoluteFilePath(), imageNum );
                 if ( !currFrame.imageValid() )
                 {
-                    msg = QString( "Could not read JPG file '%1'" ).arg( ii.absoluteFilePath() );
+                    msg = QStringLiteral( "Could not read JPG file '%1'" ).arg( ii.absoluteFilePath() );
                     return;
                 }
 
@@ -289,7 +289,7 @@ namespace NTowel42Utils
             QFile outFile( fileName );
             if ( !outFile.open( QFile::WriteOnly | QFile::Truncate ) )
             {
-                msg = QString( "Could not open '%1' for writing" ).arg( fileName );
+                msg = QStringLiteral( "Could not open '%1' for writing" ).arg( fileName );
                 return false;
             }
 
@@ -405,28 +405,28 @@ namespace NTowel42Utils
         {
             if ( !dir.exists() || !dir.isReadable() )
             {
-                msg = QString( "Directory '%1' does not exist." ).arg( dir.absolutePath() );
+                msg = QStringLiteral( "Directory '%1' does not exist." ).arg( dir.absolutePath() );
                 return false;
             }
 
             QFileInfo fi( bifTool );
             if ( !fi.exists() || !fi.isExecutable() )
             {
-                msg = QString( "biftool '%1' does not exist." ).arg( bifTool );
+                msg = QStringLiteral( "biftool '%1' does not exist." ).arg( bifTool );
                 return false;
             }
 
             auto files = dir.entryList( { "img_*.jpg" }, QDir::Files, QDir::SortFlag::Name );
             if ( files.isEmpty() )
             {
-                msg = QString( "No images exists in dir '%1' of the format 'img_*.jpg'." ).arg( dir.absolutePath() );
+                msg = QStringLiteral( "No images exists in dir '%1' of the format 'img_*.jpg'." ).arg( dir.absolutePath() );
                 return false;
             }
 
             auto num = extractImageNum( files.front() );
             if ( num == -1 )
             {
-                msg = QString( "Image number could not be determined on file '%1'" ).arg( files.front() );
+                msg = QStringLiteral( "Image number could not be determined on file '%1'" ).arg( files.front() );
                 return false;
             }
             if ( num == 1 )
@@ -436,20 +436,20 @@ namespace NTowel42Utils
                     auto num = extractImageNum( ii );
                     if ( num <= 0 )
                     {
-                        msg = QString( "Image number could not be determined on file '%1'" ).arg( ii );
+                        msg = QStringLiteral( "Image number could not be determined on file '%1'" ).arg( ii );
                         return false;
                     }
                     auto absPath = dir.absoluteFilePath( ii );
-                    auto newName = dir.absoluteFilePath( QString( "%1.jpg" ).arg( num - 1, 5, 10, QChar( '0' ) ) );
+                    auto newName = dir.absoluteFilePath( QStringLiteral( "%1.jpg" ).arg( num - 1, 5, 10, QChar( '0' ) ) );
 
                     if ( !NFileUtils::backup( newName ) )
                     {
-                        msg = QString( "Could not backup '%1'" ).arg( newName );
+                        msg = QStringLiteral( "Could not backup '%1'" ).arg( newName );
                         return false;
                     }
                     if ( !QFile::rename( absPath, newName ) )
                     {
-                        msg = QString( "Could not rename image file from '%1' to '%2'" ).arg( absPath ).arg( newName );
+                        msg = QStringLiteral( "Could not rename image file from '%1' to '%2'" ).arg( absPath ).arg( newName );
                         return false;
                     }
                 }
@@ -461,7 +461,7 @@ namespace NTowel42Utils
             process.start( bifTool, args );
             if ( !process.waitForFinished( -1 ) || ( process.exitStatus() != QProcess::NormalExit ) || ( process.exitCode() != 0 ) )
             {
-                msg = QString( "Error running biftool '%1' - " ).arg( bifTool ).arg( QString::fromLocal8Bit( process.readAllStandardError() ) );
+                msg = QStringLiteral( "Error running biftool '%1' - " ).arg( bifTool ).arg( QString::fromLocal8Bit( process.readAllStandardError() ) );
                 return false;
             }
             msg = QString::fromLocal8Bit( process.readAll() );
@@ -469,18 +469,18 @@ namespace NTowel42Utils
             auto tmpFile = QFileInfo( dir.dirName() + ".bif" );
             if ( !tmpFile.exists() )
             {
-                msg = QString( "Generated BIF file '%1' does not exist." ).arg( tmpFile.absoluteFilePath() );
+                msg = QStringLiteral( "Generated BIF file '%1' does not exist." ).arg( tmpFile.absoluteFilePath() );
                 return false;
             }
             if ( !NFileUtils::backup( outFile ) )
             {
-                msg = QString( "Could not backup file '%1'." ).arg( outFile );
+                msg = QStringLiteral( "Could not backup file '%1'." ).arg( outFile );
                 return false;
             }
 
             if ( !QFile::rename( tmpFile.absoluteFilePath(), outFile ) )
             {
-                msg = QString( "Could not move generated BIF file '%1' to '%2' does not exist." ).arg( tmpFile.absoluteFilePath() ).arg( outFile );
+                msg = QStringLiteral( "Could not move generated BIF file '%1' to '%2' does not exist." ).arg( tmpFile.absoluteFilePath() ).arg( outFile );
                 return false;
             }
             return true;
@@ -787,7 +787,7 @@ namespace NTowel42Utils
         {
             if ( !outFile || !outFile->isOpen() || !outFile->isWritable() )
             {
-                msg = QString( "Outfile is not open to write index for image #%1" ).arg( fBIFNum.fValue );
+                msg = QStringLiteral( "Outfile is not open to write index for image #%1" ).arg( fBIFNum.fValue );
                 return false;
             }
 
@@ -795,7 +795,7 @@ namespace NTowel42Utils
             auto num = outFile->write( indexData() );
             if ( num != len )
             {
-                msg = QString( "Problem writing out image index '%1'" ).arg( fBIFNum.fValue );
+                msg = QStringLiteral( "Problem writing out image index '%1'" ).arg( fBIFNum.fValue );
             }
             return num == len;
         }
@@ -804,13 +804,13 @@ namespace NTowel42Utils
         {
             if ( !outFile || !outFile->isOpen() || !outFile->isWritable() )
             {
-                msg = QString( "Outfile is not open to write image index '%1'" ).arg( fBIFNum.fValue );
+                msg = QStringLiteral( "Outfile is not open to write image index '%1'" ).arg( fBIFNum.fValue );
                 return false;
             }
 
             if ( !fImage.has_value() || fImage.value().second.isNull() )
             {
-                msg = QString( "Image %1 not loaded or invalid" ).arg( fBIFNum.fValue );
+                msg = QStringLiteral( "Image %1 not loaded or invalid" ).arg( fBIFNum.fValue );
                 return false;
             }
 
@@ -818,7 +818,7 @@ namespace NTowel42Utils
             auto num = outFile->write( fImage.value().first );
             if ( num != len )
             {
-                msg = QString( "Problem writing out image index '%1'" ).arg( fBIFNum.fValue );
+                msg = QStringLiteral( "Problem writing out image index '%1'" ).arg( fBIFNum.fValue );
             }
             return num == len;
         }

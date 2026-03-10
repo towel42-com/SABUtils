@@ -255,7 +255,7 @@ namespace NTowel42Utils
                 retVal.replace( QRegularExpression( R"(dd([\:.])?)" ), QString() );
             else
             {
-                retVal.replace( "dd", QString( "%1" ).arg( days, ( firstValue ? 1 : 2 ), 10, QChar( '0' ) ) );
+                retVal.replace( "dd", QStringLiteral( "%1" ).arg( days, ( firstValue ? 1 : 2 ), 10, QChar( '0' ) ) );
                 firstValue = false;
             }
 
@@ -263,7 +263,7 @@ namespace NTowel42Utils
                 retVal.replace( QRegularExpression( R"(hh([\:.])?)" ), QString() );
             else
             {
-                retVal.replace( "hh", QString( "%1" ).arg( hours, ( firstValue ? 1 : 2 ), 10, QChar( '0' ) ) );
+                retVal.replace( "hh", QStringLiteral( "%1" ).arg( hours, ( firstValue ? 1 : 2 ), 10, QChar( '0' ) ) );
                 firstValue = false;
             }
 
@@ -271,12 +271,12 @@ namespace NTowel42Utils
                 retVal.replace( QRegularExpression( R"(mm([\:.])?)" ), QString() );
             else
             {
-                retVal.replace( "mm", QString( "%1" ).arg( mins, ( firstValue ? 1 : 2 ), 10, QChar( '0' ) ) );
+                retVal.replace( "mm", QStringLiteral( "%1" ).arg( mins, ( firstValue ? 1 : 2 ), 10, QChar( '0' ) ) );
                 firstValue = false;
             }
 
-            retVal.replace( "ss", QString( "%1" ).arg( secs, ( firstValue ? 1 : 2 ), 10, QChar( '0' ) ) );
-            retVal.replace( "zzz", QString( "%1" ).arg( fracSeconds, ( fMicroSecondsAvailable ? 6 : 3 ), 10, QChar( '0' ) ) );
+            retVal.replace( "ss", QStringLiteral( "%1" ).arg( secs, ( firstValue ? 1 : 2 ), 10, QChar( '0' ) ) );
+            retVal.replace( "zzz", QStringLiteral( "%1" ).arg( fracSeconds, ( fMicroSecondsAvailable ? 6 : 3 ), 10, QChar( '0' ) ) );
             retVal.replace( "SS", locale.toString( static_cast< qulonglong >( totalSeconds ) ) );
 
             return retVal;

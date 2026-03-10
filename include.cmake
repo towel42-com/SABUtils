@@ -367,7 +367,7 @@ if ( TOWEL42_MKVUTILS )
 
     SET( project_pub_DEPS
         ${project_pub_DEPS}
-        mediainfo
+        MediaInfo
         MKVReader
         Qt6::Multimedia
     )

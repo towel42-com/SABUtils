@@ -112,7 +112,7 @@ namespace NTowel42Utils
     bool setIsOK( bool aOK, QWidget *widget, const QString &widgetName )
     {
         if ( !aOK )
-            widget->setStyleSheet( QString( "%1 { color : red; }" ).arg( widgetName ) );
+            widget->setStyleSheet( QStringLiteral( "%1 { color : red; }" ).arg( widgetName ) );
         else
             widget->setStyleSheet( QString() );
         return aOK;

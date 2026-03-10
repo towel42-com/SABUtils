@@ -65,7 +65,7 @@ namespace NTowel42Utils
 
         if ( requireLocal )
         {
-            auto libs = QStringList( { QString( "libssl-1_1" QT_SSL_SUFFIX ), QString( "libcrypto-1_1" QT_SSL_SUFFIX ) } );
+            auto libs = QStringList( { QStringLiteral( "libssl-1_1" QT_SSL_SUFFIX ), QStringLiteral( "libcrypto-1_1" QT_SSL_SUFFIX ) } );
             auto appDir = QDir( QApplication::applicationDirPath() );
             for ( auto &&currLib : libs )
             {

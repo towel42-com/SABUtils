@@ -104,7 +104,7 @@ namespace NTowel42Utils
         {
         }
         SGitHubRelease( const QJsonObject &version );
-        QString getTitle() const { return QString( "%1 - %2" ).arg( fTagName ).arg( fDescription ); }
+        QString getTitle() const { return QStringLiteral( "%1 - %2" ).arg( fTagName ).arg( fDescription ); }
 
         bool operator>( const SGitHubRelease &rhs ) const;
         bool operator<( const SGitHubRelease &rhs ) const;

@@ -2001,7 +2001,7 @@ namespace NTowel42Utils
                 QString realHSC = QRegularExpression::escape( QString::fromLatin1( hsc ) );
                 if ( realHSC != origHSC )
                 {
-                    realHSC = QRegularExpression::escape( QString( "\\%1" ).arg( QString::fromLatin1( hsc ) ) );
+                    realHSC = QRegularExpression::escape( QStringLiteral( "\\%1" ).arg( QString::fromLatin1( hsc ) ) );
                 }
                 retVal = splitStringRegEx( pattern, realHSC.toStdString() );
 
@@ -2012,7 +2012,7 @@ namespace NTowel42Utils
                     {
                         if ( msg )
                         {
-                            *msg = QString( "Invalid sub-regular expression '%1' post splitting on the hierarchy separator: '%2' - %3(%4)" ).arg( QString::fromStdString( ii ) ).arg( QString::fromLatin1( hsc ) ).arg( regExp.errorString() ).arg( regExp.patternErrorOffset() ).toStdString();
+                            *msg = QStringLiteral( "Invalid sub-regular expression '%1' post splitting on the hierarchy separator: '%2' - %3(%4)" ).arg( QString::fromStdString( ii ) ).arg( QString::fromLatin1( hsc ) ).arg( regExp.errorString() ).arg( regExp.patternErrorOffset() ).toStdString();
                             aOK = false;
                             return {};
                         }
@@ -2718,7 +2718,7 @@ namespace NTowel42Utils
                 auto curr = ii;
                 curr.replace( R"__(")__", R"__(\")__" );
                 if ( curr.contains( "," ) )
-                    curr = QString( R"__("%1")__" ).arg( curr );
+                    curr = QStringLiteral( R"__("%1")__" ).arg( curr );
                 retVal += curr;
             }
             return retVal;

@@ -92,7 +92,7 @@ namespace NTowel42Utils
 
     struct SBarInfo
     {
-        SBarInfo( CDoubleProgressDlgImpl *impl, int min = 0, int max = 100, const QString &format = QString( "  %v of %m (%p%)  " ) ) :
+        SBarInfo( CDoubleProgressDlgImpl *impl, int min = 0, int max = 100, const QString &format = QStringLiteral( "  %v of %m (%p%)  " ) ) :
             fRange( { min, max } ),
             fFormat( format ),
             fDefaultFormat( format ),

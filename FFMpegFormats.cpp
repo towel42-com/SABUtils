@@ -728,7 +728,7 @@ namespace NTowel42Utils
             return;
 
         if ( dlg )
-            dlg->setLabelText( QString( "Loading Codecs" ) );
+            dlg->setLabelText( QStringLiteral( "Loading Codecs" ) );
 
         QProcess process;
         process.start(
@@ -797,7 +797,7 @@ namespace NTowel42Utils
             auto desc = match.captured( "desc" ).trimmed();
 
             if ( dlg )
-                dlg->setLabelText( QString( "Loading Codec: %1" ).arg( name ) );
+                dlg->setLabelText( QStringLiteral( "Loading Codec: %1" ).arg( name ) );
 
             auto objectsRegExp = QRegularExpression( R"((\((?<codertype>encoders|decoders)\:\s*(?<codingCodecs>[^\)\r\n]+)\s*\)\s*))" );
 
@@ -911,7 +911,7 @@ namespace NTowel42Utils
             return;
 
         if ( dlg )
-            dlg->setLabelText( QString( "Loading %1" ).arg( isEncoding ? "Encoding Codecs" : "Decoding Codecs" ) );
+            dlg->setLabelText( QStringLiteral( "Loading %1" ).arg( isEncoding ? "Encoding Codecs" : "Decoding Codecs" ) );
 
         QProcess process;
         process.start( fFFMpegExe, QStringList() << "-hide_banner" << ( isEncoding ? "-encoders" : "-decoders" ) );
@@ -973,7 +973,7 @@ namespace NTowel42Utils
             auto desc = name + " - " + match.captured( "desc" ).trimmed();
 
             if ( dlg )
-                dlg->setLabelText( QString( "Loading %1: %2" ).arg( isEncoding ? "Encoding Codec" : "Decoding Codec" ).arg( name ) );
+                dlg->setLabelText( QStringLiteral( "Loading %1: %2" ).arg( isEncoding ? "Encoding Codec" : "Decoding Codec" ).arg( name ) );
 
             switch ( type[ 0 ].toLatin1() )
             {
@@ -1066,7 +1066,7 @@ namespace NTowel42Utils
             auto match = ii.next();
             auto type = match.captured( "hwaccel" ).trimmed().toLower();
             if ( dlg )
-                dlg->setLabelText( QString( "Loading HW Accelerator: %1" ).arg( type ) );
+                dlg->setLabelText( QStringLiteral( "Loading HW Accelerator: %1" ).arg( type ) );
 
             QString verbose;
             if ( type == "none" )

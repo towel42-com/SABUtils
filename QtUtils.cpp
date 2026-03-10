@@ -267,7 +267,7 @@ namespace NTowel42Utils
         int retVal = getInt( value, &aOK );
         if ( !aOK )
         {
-            reader.raiseError( QString( "Invalid value, expecting integer '%1'" ).arg( value.toString() ) );
+            reader.raiseError( QStringLiteral( "Invalid value, expecting integer '%1'" ).arg( value.toString() ) );
             return 0;
         }
         return retVal;
@@ -325,7 +325,7 @@ namespace NTowel42Utils
         double retVal = getDouble( value, &aOK );
         if ( !aOK )
         {
-            reader.raiseError( QString( "Invalid value, expecting double '%1'" ).arg( value.toString() ) );
+            reader.raiseError( QStringLiteral( "Invalid value, expecting double '%1'" ).arg( value.toString() ) );
             return 0;
         }
         return retVal;
@@ -385,7 +385,7 @@ namespace NTowel42Utils
                 {
                     for ( auto &&ll : separators )
                     {
-                        retVal << QString( "%1%4%2%4%3" ).arg( ii ).arg( jj ).arg( kk ).arg( ll );
+                        retVal << QStringLiteral( "%1%4%2%4%3" ).arg( ii ).arg( jj ).arg( kk ).arg( ll );
                     }
                 }
             }
@@ -405,7 +405,7 @@ namespace NTowel42Utils
             {
                 for ( auto &&ll : separators )
                 {
-                    retVal << QString( "%1%3%2%3" ).arg( ii ).arg( jj ).arg( ll );
+                    retVal << QStringLiteral( "%1%3%2%3" ).arg( ii ).arg( jj ).arg( ll );
                 }
             }
         }
@@ -567,7 +567,7 @@ namespace NTowel42Utils
         if ( !retVal.isValid() )
         {
             if ( !optional )
-                reader.raiseError( QString( "Invalid value, expecting date '%1'" ).arg( value.toString() ) );
+                reader.raiseError( QStringLiteral( "Invalid value, expecting date '%1'" ).arg( value.toString() ) );
             return {};
         }
         return retVal;
@@ -776,7 +776,7 @@ namespace NTowel42Utils
             auto header = model->headerData( ii, Qt::Orientation::Horizontal ).toString();
             header = header.replace( "/", "" );
             if ( header.isEmpty() )
-                header = QString( "Col%1" ).arg( ii );
+                header = QStringLiteral( "Col%1" ).arg( ii );
             retVal << header;
         }
         return retVal;
@@ -976,7 +976,7 @@ namespace NTowel42Utils
 
     QString getHexValue( intptr_t value )
     {
-        auto retVal = QString( "%1" ).arg( value, 5, 16, QChar( '0' ) ).toUpper();
+        auto retVal = QStringLiteral( "%1" ).arg( value, 5, 16, QChar( '0' ) ).toUpper();
         retVal = "0x" + retVal;
         return retVal;
     }
@@ -984,7 +984,7 @@ namespace NTowel42Utils
     QString dumpArray( const char *title, const uint8_t *arr, const uint8_t *baseArray, int size, bool asRGB /*= false*/, int colsPerRow /*= 20*/ )
     {
         static int hitCount = 0;
-        auto retVal = QString( "HitCount: %1 - %2 - Array: 0x%3\n" ).arg( hitCount++ ).arg( QString::fromUtf8( title ) ).arg( arr - baseArray, 8, 16, QChar( '0' ) );
+        auto retVal = QStringLiteral( "HitCount: %1 - %2 - Array: 0x%3\n" ).arg( hitCount++ ).arg( QString::fromUtf8( title ) ).arg( arr - baseArray, 8, 16, QChar( '0' ) );
         if ( asRGB )
             colsPerRow /= 4;
         int colCount = 0;
@@ -996,24 +996,24 @@ namespace NTowel42Utils
             auto offset = &arr[ ii ] - baseArray;
             // auto memZero = (intptr_t)&arr[ii];
             if ( colCount == 0 )
-                retVal += QString( "%1-%2: " ).arg( getHexValue( offset ) );   // .arg( getHexValue( memZero ) );
+                retVal += QStringLiteral( "%1-%2: " ).arg( getHexValue( offset ) );   // .arg( getHexValue( memZero ) );
             else
                 retVal += " ";
 
             QString curr;
             if ( asRGB && ( ( ii + 3 ) < size ) )
             {
-                curr = QString( "Col: %1 - Offset: %2 - " ).arg( ii / 4 ).arg( ii );
+                curr = QStringLiteral( "Col: %1 - Offset: %2 - " ).arg( ii / 4 ).arg( ii );
 
-                curr += QString( "%1" ).arg( arr[ ii + 0 ], 2, 16, QChar( '0' ) ).toUpper();
-                curr += QString( "%1" ).arg( arr[ ii + 1 ], 2, 16, QChar( '0' ) ).toUpper();
-                curr += QString( "%1" ).arg( arr[ ii + 2 ], 2, 16, QChar( '0' ) ).toUpper();
-                curr += QString( "%1" ).arg( arr[ ii + 3 ], 2, 16, QChar( '0' ) ).toUpper();
+                curr += QStringLiteral( "%1" ).arg( arr[ ii + 0 ], 2, 16, QChar( '0' ) ).toUpper();
+                curr += QStringLiteral( "%1" ).arg( arr[ ii + 1 ], 2, 16, QChar( '0' ) ).toUpper();
+                curr += QStringLiteral( "%1" ).arg( arr[ ii + 2 ], 2, 16, QChar( '0' ) ).toUpper();
+                curr += QStringLiteral( "%1" ).arg( arr[ ii + 3 ], 2, 16, QChar( '0' ) ).toUpper();
                 ii += 3;
             }
             else
             {
-                curr = QString( "%1" ).arg( arr[ ii ], 2, 16, QChar( '0' ) ).toUpper();
+                curr = QStringLiteral( "%1" ).arg( arr[ ii ], 2, 16, QChar( '0' ) ).toUpper();
             }
             retVal += curr;
 

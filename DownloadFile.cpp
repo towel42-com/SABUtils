@@ -144,7 +144,7 @@ namespace NTowel42Utils
         fOutputFile.setFileName( fDownloadFileName + ".tmp" );
         if ( !fOutputFile.open( QIODevice::WriteOnly | QIODevice::Truncate ) )
         {
-            QMessageBox::warning( this, "Could not open", QString( "Could not open file '%1' for writing." ).arg( fDownloadFileName + ".tmp" ) );
+            QMessageBox::warning( this, "Could not open", QStringLiteral( "Could not open file '%1' for writing." ).arg( fDownloadFileName + ".tmp" ) );
             return false;
         }
 
@@ -387,7 +387,7 @@ namespace NTowel42Utils
             unit = tr( "GB/s" );
         }
 
-        fImpl->speed->setText( QString( "%1 %2" ).arg( speed, 3, 'f', 1 ).arg( unit ) );
+        fImpl->speed->setText( QStringLiteral( "%1 %2" ).arg( speed, 3, 'f', 1 ).arg( unit ) );
         // layout()->activate();
         // resize( layout()->totalMinimumSize() );
 

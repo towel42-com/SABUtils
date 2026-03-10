@@ -499,7 +499,7 @@ namespace NTowel42Utils
         CStringTupleModel( QStringList( "Key" ), parent )
     {
         for ( int ii = 1; ii <= numColumns; ++ii )
-            fColumnNames << QString( "Value%1" ).arg( ii );
+            fColumnNames << QStringLiteral( "Value%1" ).arg( ii );
     }
 
     QVariant CStringTupleModel::data( const QModelIndex &index, int role ) const

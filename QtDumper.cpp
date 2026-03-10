@@ -144,7 +144,7 @@ namespace NTowel42Utils
         QSize hint = w.sizeHint();
 
         widgetItem->appendRow( QList< QStandardItem * >() << new QStandardItem( "Object Name" ) << new QStandardItem( w.objectName().isEmpty() ? "***UNNAMED***" : w.objectName() ) );
-        widgetItem->appendRow( QList< QStandardItem * >() << new QStandardItem( "Address" ) << new QStandardItem( QString( "0x%1" ).arg( (uintptr_t)&w, QT_POINTER_SIZE * 2, 16, QChar( '0' ) ) ) );
+        widgetItem->appendRow( QList< QStandardItem * >() << new QStandardItem( "Address" ) << new QStandardItem( QStringLiteral( "0x%1" ).arg( (uintptr_t)&w, QT_POINTER_SIZE * 2, 16, QChar( '0' ) ) ) );
         widgetItem->appendRow( QList< QStandardItem * >() << new QStandardItem( "Position" ) << new QStandardItem( QString::number( geom.x() ) ) << new QStandardItem( QString::number( geom.y() ) ) );
         widgetItem->appendRow( QList< QStandardItem * >() << new QStandardItem( "Size" ) << new QStandardItem( QString::number( geom.width() ) ) << new QStandardItem( QString::number( geom.height() ) ) );
         widgetItem->appendRow( QList< QStandardItem * >() << new QStandardItem( "SizeHint" ) << new QStandardItem( QString::number( hint.width() ) ) << new QStandardItem( QString::number( hint.height() ) ) );

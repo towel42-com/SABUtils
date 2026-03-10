@@ -79,7 +79,7 @@ namespace NTowel42Utils
                 return QVariant();
 
             if ( role == Qt::DisplayRole )
-                return QString( "BIF #%1" ).arg( index.row() );
+                return QStringLiteral( "BIF #%1" ).arg( index.row() );
             else if ( role == Qt::DecorationRole )
                 return QIcon( QPixmap::fromImage( fBIFFile->image( index.row() ) ) );
             else if ( role == ECustomRoles::eImage )

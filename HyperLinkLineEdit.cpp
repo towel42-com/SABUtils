@@ -164,7 +164,7 @@ QString CHyperLinkLineEdit::addText( const QString &text, bool &urlFound ) const
 
     if ( isURL )
     {
-        auto retVal = QString( R"__(%1<a href="%2">%2</a>)__" ).arg( pre ).arg( remaining );
+        auto retVal = QStringLiteral( R"__(%1<a href="%2">%2</a>)__" ).arg( pre ).arg( remaining );
         urlFound = true;
         return retVal;
     }

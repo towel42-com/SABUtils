@@ -331,10 +331,10 @@ namespace NTowel42Utils
                 auto pos = lRetVal.indexOf( lValue );
                 if ( pos != -1 )
                 {
-                    auto lVarName = QString( "${%1}" );
+                    auto lVarName = QStringLiteral( "${%1}" );
 #ifdef Q_OS_WIN
                     if ( !forceUnix )
-                        lVarName = QString( "%%1%" );
+                        lVarName = QStringLiteral( "%%1%" );
 #else
                     (void)forceUnix;
 #endif
@@ -389,7 +389,7 @@ namespace NTowel42Utils
                 return false;
 
             auto block = QStringLiteral( "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" );
-            auto regExStr = QString( R"((//|\\\\)%1.%1.%1.%1(/|\\))" ).arg( block );
+            auto regExStr = QStringLiteral( R"((//|\\\\)%1.%1.%1.%1(/|\\))" ).arg( block );
             auto match = QRegularExpression( regExStr ).match( path );
             if ( match.hasMatch() && match.capturedStart() == 0 )
                 return true;
@@ -470,14 +470,14 @@ namespace NTowel42Utils
             size += overflow;
 
             auto suffix = suffixes[ suffixPos ];
-            auto realSuffix = QString( "%1%2%3%4" ).arg( spaceBeforeSuffix ? QStringLiteral( " " ) : QStringLiteral( "" ) ).arg( suffix ).arg( ( use1024ForKSize && typeNameSuffix == "B" ) ? QStringLiteral( "i" ) : QStringLiteral( "" ) ).arg( typeNameSuffix );
+            auto realSuffix = QStringLiteral( "%1%2%3%4" ).arg( spaceBeforeSuffix ? QStringLiteral( " " ) : QStringLiteral( "" ) ).arg( suffix ).arg( ( use1024ForKSize && typeNameSuffix == "B" ) ? QStringLiteral( "i" ) : QStringLiteral( "" ) ).arg( typeNameSuffix );
             if ( typeNameSuffix.isUpper() )
                 realSuffix = realSuffix.toUpper();
             if ( ( realSuffix.length() == 3 ) && realSuffix[ 1 ] == 'I' )
                 realSuffix[ 1 ] = realSuffix[ 1 ].toLower();
 
             QLocale locale;
-            auto retVal = QString( "%1%2%3" ).arg( locale.toString( static_cast< qulonglong >( size ) ) ).arg( remainder != 0 ? QString( ".%1" ).arg( remainder ) : QString() ).arg( realSuffix );
+            auto retVal = QStringLiteral( "%1%2%3" ).arg( locale.toString( static_cast< qulonglong >( size ) ) ).arg( remainder != 0 ? QStringLiteral( ".%1" ).arg( remainder ) : QString() ).arg( realSuffix );
             return retVal;
         }
 
@@ -960,7 +960,7 @@ namespace NTowel42Utils
                 }
                 else
                 {
-                    retVal << QString( "%1: %2" ).arg( path ).arg( fi.size() );
+                    retVal << QStringLiteral( "%1: %2" ).arg( path ).arg( fi.size() );
                 }
             }
             return retVal;
@@ -1347,7 +1347,7 @@ namespace NTowel42Utils
             if ( pos != sMap.end() )
                 return ( *pos ).second;
 
-            static QString sDoubleSeparator = QString( "%1%1" ).arg( QDir::separator() );
+            static QString sDoubleSeparator = QStringLiteral( "%1%1" ).arg( QDir::separator() );
             auto retVal = path;
             QStringList parts;
             if ( retVal.startsWith( sDoubleSeparator ) )   // network path, first part is //XXXXX not //
@@ -1456,7 +1456,7 @@ namespace NTowel42Utils
             DWORD versionInfoSize = GetFileVersionInfoSizeW( fnName.data(), nullptr );
             if ( versionInfoSize == 0 )
             {
-                qDebug() << QString( "GetFileVersionInfoSize failed with error %1" ).arg( getWindowsError( ::GetLastError() ) );
+                qDebug() << QStringLiteral( "GetFileVersionInfoSize failed with error %1" ).arg( getWindowsError( ::GetLastError() ) );
                 return { hi, low };
             }
 
@@ -1464,7 +1464,7 @@ namespace NTowel42Utils
             // load the version info
             if ( !GetFileVersionInfoW( fnName.data(), NULL, versionInfoSize, info.data() ) )
             {
-                qDebug() << QString( "GetFileVersionInfo failed with error %1\n" ).arg( getWindowsError( ::GetLastError() ) );
+                qDebug() << QStringLiteral( "GetFileVersionInfo failed with error %1\n" ).arg( getWindowsError( ::GetLastError() ) );
                 return { hi, low };
             }
 
@@ -1472,7 +1472,7 @@ namespace NTowel42Utils
             DWORD *fi;
             if ( !VerQueryValueW( info.data(), L"\\", reinterpret_cast< void ** >( &fi ), &size ) || !size )
             {
-                qDebug() << QString( "Can't obtain ProductVersion from resources" );
+                qDebug() << QStringLiteral( "Can't obtain ProductVersion from resources" );
                 return { hi, low };
             }
 

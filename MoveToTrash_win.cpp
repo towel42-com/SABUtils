@@ -87,7 +87,7 @@ namespace NTowel42Utils
                 auto pathName = getPathNameForItem( psiItem );
                 if ( !pathName.isEmpty() )
                 {
-                    pathName = QString( "%1 '%2'" ).arg( QFileInfo( pathName ).isFile() ? QStringLiteral( "file" ) : QStringLiteral( "directory" ) ).arg( pathName );
+                    pathName = QStringLiteral( "%1 '%2'" ).arg( QFileInfo( pathName ).isFile() ? QStringLiteral( "file" ) : QStringLiteral( "directory" ) ).arg( pathName );
                 }
                 auto realMsg = msg;
                 realMsg.replace( "<SOURCE>", pathName );
@@ -172,53 +172,53 @@ namespace NTowel42Utils
 
         IFACEMETHODIMP CFileOpProgSinkApp::PreRenameItem( DWORD /*dwFlags*/, IShellItem *psiItem, PCWSTR pszNewName )
         {
-            return startStatus( QString( "Renaming <SOURCE> to '%1'." ).arg( pszNewName ), psiItem );
+            return startStatus( QStringLiteral( "Renaming <SOURCE> to '%1'." ).arg( pszNewName ), psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PostRenameItem( DWORD /*dwFlags*/, IShellItem *psiItem, PCWSTR pszNewName, HRESULT hrRename, IShellItem *psiNewlyCreated )
         {
             auto pathName = getPathNameForItem( psiItem );
-            return returnFinishedStatus( hrRename, QString( "Renamed <SOURCE> to '%1'.  Final path name: '%2'." ).arg( pszNewName ).arg( getPathNameForItem( psiNewlyCreated ) ) );
+            return returnFinishedStatus( hrRename, QStringLiteral( "Renamed <SOURCE> to '%1'.  Final path name: '%2'." ).arg( pszNewName ).arg( getPathNameForItem( psiNewlyCreated ) ) );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PreMoveItem( DWORD /*dwFlags*/, IShellItem *psiItem, IShellItem *psiDestinationFolder, PCWSTR pszNewName )
         {
-            return startStatus( QString( "Moving <SOURCE> to directory '%1' as '%3'." ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszNewName ), psiItem );
+            return startStatus( QStringLiteral( "Moving <SOURCE> to directory '%1' as '%3'." ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszNewName ), psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PostMoveItem( DWORD /*dwFlags*/, IShellItem *psiItem, IShellItem *psiDestinationFolder, PCWSTR pszNewName, HRESULT hrNewName, IShellItem *psiNewlyCreated )
         {
-            return returnFinishedStatus( hrNewName, QString( "Moved <SOURCE> to directory '%1' as '%3'. Final path name '%4'." ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszNewName ).arg( getPathNameForItem( psiNewlyCreated ) ), psiItem );
+            return returnFinishedStatus( hrNewName, QStringLiteral( "Moved <SOURCE> to directory '%1' as '%3'. Final path name '%4'." ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszNewName ).arg( getPathNameForItem( psiNewlyCreated ) ), psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PreCopyItem( DWORD /*dwFlags*/, IShellItem *psiItem, IShellItem *psiDestinationFolder, PCWSTR pszNewName )
         {
-            return startStatus( QString( "Copying <SOURCE> to directory '%1' as '%2'." ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszNewName ), psiItem );
+            return startStatus( QStringLiteral( "Copying <SOURCE> to directory '%1' as '%2'." ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszNewName ), psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PostCopyItem( DWORD /*dwFlags*/, IShellItem *psiItem, IShellItem *psiDestinationFolder, PCWSTR pszNewName, HRESULT hrCopy, IShellItem *psiNewlyCreated )
         {
-            return returnFinishedStatus( hrCopy, QString( "Copied <SOURCE> to directory '%1' as '%2'. Final path name '%4'." ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszNewName ).arg( getPathNameForItem( psiNewlyCreated ) ), psiItem );
+            return returnFinishedStatus( hrCopy, QStringLiteral( "Copied <SOURCE> to directory '%1' as '%2'. Final path name '%4'." ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszNewName ).arg( getPathNameForItem( psiNewlyCreated ) ), psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PreDeleteItem( DWORD dwFlags, IShellItem *psiItem )
         {
-            return startStatus( QString( "%1 <SOURCE>." ).arg( ( dwFlags & TSF_DELETE_RECYCLE_IF_POSSIBLE ) ? QStringLiteral( "Recycling" ) : QStringLiteral( "Deleting" ) ), psiItem );
+            return startStatus( QStringLiteral( "%1 <SOURCE>." ).arg( ( dwFlags & TSF_DELETE_RECYCLE_IF_POSSIBLE ) ? QStringLiteral( "Recycling" ) : QStringLiteral( "Deleting" ) ), psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PostDeleteItem( DWORD dwFlags, IShellItem *psiItem, HRESULT hrDelete, IShellItem * /*psiNewlyCreated*/ )
         {
-            return returnFinishedStatus( hrDelete, QString( "%1 <SOURCE>." ).arg( ( dwFlags & TSF_DELETE_RECYCLE_IF_POSSIBLE ) ? QStringLiteral( "Recycled" ) : QStringLiteral( "Deleted" ) ), psiItem );
+            return returnFinishedStatus( hrDelete, QStringLiteral( "%1 <SOURCE>." ).arg( ( dwFlags & TSF_DELETE_RECYCLE_IF_POSSIBLE ) ? QStringLiteral( "Recycled" ) : QStringLiteral( "Deleted" ) ), psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PreNewItem( DWORD /*dwFlags*/, IShellItem *psiDestinationFolder, PCWSTR pszNewName )
         {
-            return startStatus( QString( "Creating '%1' in directory '%2'." ).arg( pszNewName ).arg( getPathNameForItem( psiDestinationFolder ) ) );
+            return startStatus( QStringLiteral( "Creating '%1' in directory '%2'." ).arg( pszNewName ).arg( getPathNameForItem( psiDestinationFolder ) ) );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PostNewItem( DWORD /*dwFlags*/, IShellItem *psiDestinationFolder, PCWSTR pszNewName, PCWSTR pszTemplateName, DWORD /*dwFileAttributes*/, HRESULT hrNew, IShellItem *psiNewItem )
         {
-            return returnFinishedStatus( hrNew, QString( "Created '%1' in directory '%2'. Template Name: %3.  Final Path '%4'." ).arg( pszNewName ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszTemplateName ).arg( getPathNameForItem( psiNewItem ) ) );
+            return returnFinishedStatus( hrNew, QStringLiteral( "Created '%1' in directory '%2'. Template Name: %3.  Final Path '%4'." ).arg( pszNewName ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszTemplateName ).arg( getPathNameForItem( psiNewItem ) ) );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::UpdateProgress( UINT iWorkTotal, UINT iWorkSoFar )
@@ -260,7 +260,7 @@ namespace NTowel42Utils
 
         QString getFullMsg( const QString &msg, HRESULT code )
         {
-            auto fullMessage = QString( "%1 - %2" ).arg( msg ).arg( getWindowsError( code ) );
+            auto fullMessage = QStringLiteral( "%1 - %2" ).arg( msg ).arg( getWindowsError( code ) );
             return fullMessage;
         }
 

@@ -72,14 +72,14 @@ namespace NTowel42Utils
             fFile.setFileName( fileName );
             if ( !fFile.exists() )
             {
-                fErrorMsg = QString( "File: '%1' does not exist" ).arg( fileName );
+                fErrorMsg = QStringLiteral( "File: '%1' does not exist" ).arg( fileName );
                 return false;
             }
 
             fFile.open( QFile::ReadOnly );
             if ( !fFile.isOpen() )
             {
-                fErrorMsg = QString( "File: '%1' could not be open for reading" ).arg( fileName );
+                fErrorMsg = QStringLiteral( "File: '%1' could not be open for reading" ).arg( fileName );
                 return false;
             }
 
@@ -91,7 +91,7 @@ namespace NTowel42Utils
             {
                 if ( !fFile.seek( idSize ) )
                 {
-                    fErrorMsg = QString( "Could not find id at location '%1'" ).arg( idSize );
+                    fErrorMsg = QStringLiteral( "Could not find id at location '%1'" ).arg( idSize );
                     return false;
                 }
                 std::tie( id, idSize, elementSize ) = CEBML::readElementIDSize( fFile );

@@ -344,9 +344,9 @@ namespace NTowel42Utils
     {
         QString retVal;
         if ( verbose )
-            retVal = QString( "Version: %1.%2 - Release Date: %3" );
+            retVal = QStringLiteral( "Version: %1.%2 - Release Date: %3" );
         else
-            retVal = QString( "%1.%2" );
+            retVal = QStringLiteral( "%1.%2" );
 
         retVal = retVal.arg( fMajor ).arg( fMinor );
         if ( verbose )

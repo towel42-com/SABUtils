@@ -133,9 +133,9 @@ namespace NTowel42Utils
         auto tmpFileName = tmpFile.fileName();
         tmpFile.close();
 
-        auto args = QStringList() << fileName << "--tags" << QString( "global:%1" ).arg( tmpFileName ) << "--edit"
+        auto args = QStringList() << fileName << "--tags" << QStringLiteral( "global:%1" ).arg( tmpFileName ) << "--edit"
                                   << "info"
-                                  << "--set" << QString( "title=%2" ).arg( newTitle );
+                                  << "--set" << QStringLiteral( "title=%2" ).arg( newTitle );
         auto retVal = QProcess::execute( mkvPropEdit, args );
 
         if ( retVal == -1 )
@@ -159,7 +159,7 @@ namespace NTowel42Utils
 
     std::vector< double > getChapterStarts( const QString &fileName, const QString &ffprobeExe, QString &msg )
     {
-        auto args = QStringList() << "-i" << QString( "file:\"%1\"" ).arg( fileName ) << "-threads"
+        auto args = QStringList() << "-i" << QStringLiteral( "file:\"%1\"" ).arg( fileName ) << "-threads"
                                   << "0"
                                   << "-v"
                                   << "info"
@@ -175,7 +175,7 @@ namespace NTowel42Utils
         {
             auto out = process.readAllStandardOutput();
             auto err = process.readAllStandardError();
-            msg = QString( "Error running ffprobe '%1' - " ).arg( ffprobeExe ).arg( QString::fromLocal8Bit( err ) );
+            msg = QStringLiteral( "Error running ffprobe '%1' - " ).arg( ffprobeExe ).arg( QString::fromLocal8Bit( err ) );
             return {};
         }
         auto data = process.readAll();

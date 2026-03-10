@@ -585,8 +585,8 @@ namespace
 
 #ifdef TOWEL42_QCORE_SUPPORT
     #ifdef WIN32
-        #define USER     QString( R"__(scott.TOWEL42)__" )
-        #define HOME_DIR QString( R"__(C:\Users\)__" ) + USER
+        #define USER     QStringLiteral( R"__(scott.TOWEL42)__" )
+        #define HOME_DIR QStringLiteral( R"__(C:\Users\)__" ) + USER
 
     TEST( TestUtils, DISABLED_TestWordExp )
     {
@@ -630,12 +630,12 @@ namespace
         //EXPECT_TRUE( aOK );
     }
     #elif DONTTEST
-        #define USER     QString( R"__(scott)__" )
-        #define HOME_DIR QString( R"__(/home/)__" ) + USER
+        #define USER     QStringLiteral( R"__(scott)__" )
+        #define HOME_DIR QStringLiteral( R"__(/home/)__" ) + USER
     TEST( TestUtils, TestWordExp )
     {
         bool aOK = false;
-        EXPECT_EQ( QString( "/home/" USER ), CWordExp::getHomeDir( USER, &aOK ) );
+        EXPECT_EQ( QStringLiteral( "/home/" USER ), CWordExp::getHomeDir( USER, &aOK ) );
         EXPECT_TRUE( aOK );
         EXPECT_EQ( "", CWordExp::getHomeDir( "unknown", &aOK ) );
         EXPECT_FALSE( aOK );
@@ -775,18 +775,18 @@ namespace
     TEST( TestUtils, TestByteSizeString )
     {
         // base 1000
-        EXPECT_EQ( QString( "324.579KB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, false, 3U ) );
-        EXPECT_EQ( QString( "324.58KB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, false, 2U ) );
-        EXPECT_EQ( QString( "324.6KB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, false, 1U ) );
-        EXPECT_EQ( QString( "325KB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, false, 0U ) );
-        EXPECT_EQ( QString( "1KB" ), NTowel42Utils::NFileUtils::byteSizeString( 1000, true, false, 0U ) );
+        EXPECT_EQ( QStringLiteral( "324.579KB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, false, 3U ) );
+        EXPECT_EQ( QStringLiteral( "324.58KB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, false, 2U ) );
+        EXPECT_EQ( QStringLiteral( "324.6KB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, false, 1U ) );
+        EXPECT_EQ( QStringLiteral( "325KB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, false, 0U ) );
+        EXPECT_EQ( QStringLiteral( "1KB" ), NTowel42Utils::NFileUtils::byteSizeString( 1000, true, false, 0U ) );
 
         // base 1024
-        EXPECT_EQ( QString( "316.995KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, true, 3U ) );
-        EXPECT_EQ( QString( "317KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, true, 2U ) );
-        EXPECT_EQ( QString( "317KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, true, 1U ) );
-        EXPECT_EQ( QString( "317KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, true, 0U ) );
-        EXPECT_EQ( QString( "1KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 1024, true, true, 0U ) );
+        EXPECT_EQ( QStringLiteral( "316.995KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, true, 3U ) );
+        EXPECT_EQ( QStringLiteral( "317KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, true, 2U ) );
+        EXPECT_EQ( QStringLiteral( "317KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, true, 1U ) );
+        EXPECT_EQ( QStringLiteral( "317KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 324579, true, true, 0U ) );
+        EXPECT_EQ( QStringLiteral( "1KiB" ), NTowel42Utils::NFileUtils::byteSizeString( 1024, true, true, 0U ) );
     }
 
     TEST( TestUtils, TestTimeFromMSecs )
@@ -797,20 +797,20 @@ namespace
 
     TEST( TestUtils, TestTimeString )
     {
-        EXPECT_EQ( QString( "0:00:00:01.001 (1 seconds)" ), NTowel42Utils::CTimeString( 1001 ).toString( false ) );
-        EXPECT_EQ( QString( "1.001 (1 seconds)" ), NTowel42Utils::CTimeString( 1001 ).toString() );
+        EXPECT_EQ( QStringLiteral( "0:00:00:01.001 (1 seconds)" ), NTowel42Utils::CTimeString( 1001 ).toString( false ) );
+        EXPECT_EQ( QStringLiteral( "1.001 (1 seconds)" ), NTowel42Utils::CTimeString( 1001 ).toString() );
 
-        EXPECT_EQ( QString( "0:00:00:00.001001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 1001 ) ).toString( false ) );
-        EXPECT_EQ( QString( "0.001001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 1001 ) ).toString() );
+        EXPECT_EQ( QStringLiteral( "0:00:00:00.001001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 1001 ) ).toString( false ) );
+        EXPECT_EQ( QStringLiteral( "0.001001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 1001 ) ).toString() );
 
-        EXPECT_EQ( QString( "0:00:00:00.000001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::nanoseconds( 1001 ) ).toString( false ) );
-        EXPECT_EQ( QString( "0.000001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::nanoseconds( 1001 ) ).toString() );
+        EXPECT_EQ( QStringLiteral( "0:00:00:00.000001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::nanoseconds( 1001 ) ).toString( false ) );
+        EXPECT_EQ( QStringLiteral( "0.000001 (0 seconds)" ), NTowel42Utils::CTimeString( std::chrono::nanoseconds( 1001 ) ).toString() );
 
-        EXPECT_EQ( QString( "639815:08:56:40.001001 (55,280,048,200 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 55280048200001001 ) ).toString( false ) );
-        EXPECT_EQ( QString( "639815:08:56:40.001001 (55,280,048,200 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 55280048200001001 ) ).toString() );
+        EXPECT_EQ( QStringLiteral( "639815:08:56:40.001001 (55,280,048,200 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 55280048200001001 ) ).toString( false ) );
+        EXPECT_EQ( QStringLiteral( "639815:08:56:40.001001 (55,280,048,200 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 55280048200001001 ) ).toString() );
 
-        EXPECT_EQ( QString( "0:00:09:12.800482 (552 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString( false ) );
-        EXPECT_EQ( QString( "9:12.800482 (552 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString() );
+        EXPECT_EQ( QStringLiteral( "0:00:09:12.800482 (552 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString( false ) );
+        EXPECT_EQ( QStringLiteral( "9:12.800482 (552 seconds)" ), NTowel42Utils::CTimeString( std::chrono::microseconds( 552800482 ) ).toString() );
     }
 #endif
 
@@ -904,7 +904,7 @@ namespace
         EXPECT_EQ( 3, *ii++ );
         EXPECT_EQ( ints.end(), ii );
 
-        ints = NTowel42Utils::intsFromString( "E1 E2 E3", QString( R"((E|Episode\s*)?)" ), false );
+        ints = NTowel42Utils::intsFromString( "E1 E2 E3", QStringLiteral( R"((E|Episode\s*)?)" ), false );
         ASSERT_EQ( 3, ints.size() );
 
         ii = ints.begin();
@@ -913,7 +913,7 @@ namespace
         EXPECT_EQ( 3, *ii++ );
         EXPECT_EQ( ints.end(), ii );
 
-        ints = NTowel42Utils::intsFromString( "E1-E3", QString( R"((E|Episode\s*)?)" ), false );
+        ints = NTowel42Utils::intsFromString( "E1-E3", QStringLiteral( R"((E|Episode\s*)?)" ), false );
         ASSERT_EQ( 3, ints.size() );
 
         ii = ints.begin();
@@ -922,7 +922,7 @@ namespace
         EXPECT_EQ( 3, *ii++ );
         EXPECT_EQ( ints.end(), ii );
 
-        ints = NTowel42Utils::intsFromString( "E1E3", QString( R"((E|Episode\s*)?)" ), false );
+        ints = NTowel42Utils::intsFromString( "E1E3", QStringLiteral( R"((E|Episode\s*)?)" ), false );
         ASSERT_EQ( 2, ints.size() );
 
         ii = ints.begin();
@@ -953,8 +953,8 @@ namespace
 
     std::pair< QString, QString > getDollarSignReplacePattern( const QString &currencySeparator, bool precedes, const QString &symbol )
     {
-        auto pattern = QString( R"(\b(\d+)(%1(\d+))?)" ).arg( currencySeparator );
-        auto replacement = QString( "$1$2" );
+        auto pattern = QStringLiteral( R"(\b(\d+)(%1(\d+))?)" ).arg( currencySeparator );
+        auto replacement = QStringLiteral( "$1$2" );
         replacement = precedes ? ( symbol + " " + replacement ) : ( replacement + " " + symbol );
         return { pattern, replacement };
     }
@@ -963,9 +963,9 @@ namespace
     {
         auto precedes = true;
         auto currencySeparator = QStringLiteral( R"__(\.)__" );
-        auto symbol = QString( "$" );
+        auto symbol = QStringLiteral( "$" );
         if ( symbol == "$" )
-            symbol = QString( "$$" );
+            symbol = QStringLiteral( "$$" );
 
         QString pattern;
         QString replacement;
@@ -1001,7 +1001,7 @@ namespace
         auto currencySeparator = QStringLiteral( R"__(\.)__" );
         auto symbol = QStringLiteral( "€" );
         if ( symbol == QStringLiteral( "$" ) )
-            symbol = QString( "$$" );
+            symbol = QStringLiteral( "$$" );
 
         QString pattern;
         QString replacement;
@@ -1019,7 +1019,7 @@ namespace
         auto currencySeparator = QStringLiteral( R"__(\.)__" );
         auto symbol = QStringLiteral( "€" );
         if ( symbol == "$" )
-            symbol = QString( "$$" );
+            symbol = QStringLiteral( "$$" );
 
         QString pattern;
         QString replacement;
