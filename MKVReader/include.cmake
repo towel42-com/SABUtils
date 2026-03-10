@@ -29,7 +29,10 @@ set(project_SRCS
     EBML.cpp
 )
 
-set(qtproject_CPPMOC_SRCS
+set(qtproject_SRCS 
+)
+
+set(qtproject_MOC_SRCS
 )
 
 set(qtproject_H
@@ -48,3 +51,11 @@ set(qtproject_UIS
 set(qtproject_QRC
 )
 
+
+set( qtproject_QRC_SOURCES )
+
+set( project_pri_DEPS
+)
+
+set( project_pub_DEPS
+)
