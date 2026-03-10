@@ -380,25 +380,26 @@ if(NOT TinyXML_FOUND)
   list(APPEND MediaInfoLib_SRCS ${MediaInfoLib_SOURCES_PATH}/ThirdParty/tinyxml2/tinyxml2.cpp)
 endif()
 
-add_library(mediainfo ${MediaInfoLib_SRCS} ${MediaInfoLib_PUBLIC_HDRS})
-target_include_directories(mediainfo INTERFACE ${INCLUDE_INSTALL_DIR})
+SET( _LIBRARY_NAME MediaInfo )
+add_library(${_LIBRARY_NAME} ${MediaInfoLib_SRCS} ${MediaInfoLib_PUBLIC_HDRS})
+target_include_directories(${_LIBRARY_NAME} INTERFACE ${INCLUDE_INSTALL_DIR})
 
 if(BUILD_ZLIB)
-  add_dependencies(mediainfo zlibstatic)
+  add_dependencies(${_LIBRARY_NAME} zlibstatic)
 endif()
 
 # disable some features. Maybe it should be enabled.
-target_compile_definitions(mediainfo PRIVATE MEDIAINFO_LIBMMS_NO PRIVATE MEDIAINFO_GRAPHVIZ_NO)
+target_compile_definitions(${_LIBRARY_NAME} PRIVATE MEDIAINFO_LIBMMS_NO PRIVATE MEDIAINFO_GRAPHVIZ_NO)
 if(NOT CURL_FOUND)
-  target_compile_definitions(mediainfo PRIVATE MEDIAINFO_LIBCURL_NO)
+  target_compile_definitions(${_LIBRARY_NAME} PRIVATE MEDIAINFO_LIBCURL_NO)
 else()
   include_directories(${CURL_INCLUDE_DIRS})
-  target_link_libraries(mediainfo ${CURL_LIBRARIES})
+  target_link_libraries(${_LIBRARY_NAME} ${CURL_LIBRARIES})
   set(CURL_PC " libcurl")
   set(CURL_LIB " -lcurl")
 endif()
 
-target_include_directories(mediainfo PRIVATE
+target_include_directories(${_LIBRARY_NAME} PRIVATE
   ${ZENLIB_DIR}/Source
   ${MediaInfoLib_SOURCES_PATH}
   ${MediaInfoLib_SOURCES_PATH}/ThirdParty/md5/
@@ -409,40 +410,40 @@ target_include_directories(mediainfo PRIVATE
   ${MediaInfoLib_SOURCES_PATH}/ThirdParty/hmac-gladman/)
 
 if(NOT TinyXML_FOUND)
-  target_include_directories(mediainfo PRIVATE ${MediaInfoLib_SOURCES_PATH}/ThirdParty/tinyxml2/)
+  target_include_directories(${_LIBRARY_NAME} PRIVATE ${MediaInfoLib_SOURCES_PATH}/ThirdParty/tinyxml2/)
 else()
-  target_link_libraries(mediainfo "${TinyXML_LIBRARIES}")
+  target_link_libraries(${_LIBRARY_NAME} "${TinyXML_LIBRARIES}")
 endif()
 
 if(BUILD_ZENLIB)
-  target_include_directories(mediainfo PRIVATE ${ZLIB_INCLUDE_DIRS})
+  target_include_directories(${_LIBRARY_NAME} PRIVATE ${ZLIB_INCLUDE_DIRS})
 endif()
 
 IF( NOT NO_USE_MEDIAINFO_INSTALL AND NOT BUILD_SHARED_LIBS )
-    target_link_libraries(mediainfo ${ZenLib_LIBRARY} "${LIB_INSTALL_DIR}/$<TARGET_FILE_NAME:zlibstatic>")
+    target_link_libraries(${_LIBRARY_NAME} ${ZenLib_LIBRARY} "${LIB_INSTALL_DIR}/$<TARGET_FILE_NAME:zlibstatic>")
     add_custom_target(genexdebug_mediainfo COMMAND ${CMAKE_COMMAND} -E echo "${LIB_INSTALL_DIR}/$<TARGET_FILE_NAME:zlibstatic>")
 ELSE()
-    target_link_libraries(mediainfo ${ZenLib_LIBRARY} $<TARGET_FILE:zlibstatic>)
+    target_link_libraries(${_LIBRARY_NAME} ${ZenLib_LIBRARY} $<TARGET_FILE:zlibstatic>)
     add_custom_target(genexdebug_mediainfo COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:zlibstatic>")
 ENDIF()
 
 if (APPLE)
-  set_target_properties(mediainfo PROPERTIES
+  set_target_properties(${_LIBRARY_NAME} PROPERTIES
     VERSION "${MediaInfoLib_SOVERSION}.${MediaInfoLib_MAJOR_VERSION}.${MediaInfoLib_MINOR_VERSION}"
     SOVERSION ${MediaInfoLib_SOVERSION})
 else()
-  set_target_properties(mediainfo PROPERTIES
+  set_target_properties(${_LIBRARY_NAME} PROPERTIES
     VERSION "${MediaInfoLib_SOVERSION}.${MediaInfoLib_MAJOR_VERSION}${MediaInfoLib_MINOR_VERSION}.${MediaInfoLib_PATCH_VERSION}"
     SOVERSION ${MediaInfoLib_SOVERSION})
 endif()
 
 if( NOT NO_USE_MEDIAINFO_INSTALL )
-install(TARGETS mediainfo EXPORT mediainfo-export
+install(TARGETS ${_LIBRARY_NAME} EXPORT ${_LIBRARY_NAME}-export
   RUNTIME DESTINATION ${BIN_INSTALL_DIR}
   ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
   LIBRARY DESTINATION ${LIB_INSTALL_DIR})
 
-install(EXPORT mediainfo-export DESTINATION ${MediaInfoLib_CONFIG_INSTALL_DIR} FILE MediaInfoLibTargets.cmake)
+install(EXPORT ${_LIBRARY_NAME}-export DESTINATION ${MediaInfoLib_CONFIG_INSTALL_DIR} FILE MediaInfoLibTargets.cmake)
 endif()
 
 if( NOT NO_USE_MEDIAINFO_INSTALL )
@@ -483,10 +484,10 @@ install(FILES
 endif()
 
 if( NO_USE_MEDIAINFO_INSTALL )
-    INSTALL( FILES $<TARGET_FILE_DIR:mediainfo>/$<TARGET_FILE_BASE_NAME:mediainfo>.dll DESTINATION . )
-    INSTALL( FILES $<TARGET_FILE_DIR:mediainfo>/$<TARGET_FILE_BASE_NAME:mediainfo>.pdb DESTINATION . CONFIGURATIONS Debug RelWithDebInfo )
+    INSTALL( FILES $<TARGET_FILE_DIR:${_LIBRARY_NAME}>/$<TARGET_FILE_BASE_NAME:${_LIBRARY_NAME}>.dll DESTINATION . )
+    INSTALL( FILES $<TARGET_FILE_DIR:${_LIBRARY_NAME}>/$<TARGET_FILE_BASE_NAME:${_LIBRARY_NAME}>.pdb DESTINATION . CONFIGURATIONS Debug RelWithDebInfo )
 
-    set_target_properties( mediainfo PROPERTIES FOLDER SharedLibs/MediaInfo )
+    set_target_properties( ${_LIBRARY_NAME} PROPERTIES FOLDER SharedLibs/MediaInfo )
     set_target_properties( zen PROPERTIES FOLDER SharedLibs/MediaInfo )
     set_target_properties( zlibstatic PROPERTIES FOLDER SharedLibs/MediaInfo )
     set_target_properties( genexdebug_mediainfo PROPERTIES FOLDER SharedLibs/MediaInfo )
