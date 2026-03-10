@@ -68,12 +68,7 @@ if ( NOT TOWEL42_UTILS_DIR )
     SET( TOWEL42_UTILS_DIR ${CMAKE_CURRENT_LIST_DIR} )
 endif()
 
-add_definitions( -DTOWEL42UTILS_INTERNAL )
-
-
 include( ${CMAKE_SOURCE_DIR}/T42-CMakeUtils/Modules/EnableGoogleTesting.cmake )
-
-include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
 
 if ( TOWEL42_MKVUTILS )
     SET(NO_USE_MEDIAINFO_INSTALL ON)
@@ -85,11 +80,14 @@ endif()
 
 OPTION(TOWEL42_DEBUG_TRACE "Enable Debug Tracing to std::cout" OFF)
 
+include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
 project( ${_PROJECT_NAME} ) 
+
+add_definitions( -DTOWEL42UTILS_INTERNAL )
+
 find_package(IncludeProjectSettings REQUIRED)
 IncludeProjectSettings()
 
-find_package(Deploy REQUIRED)
 find_package(AddUnitTest REQUIRED)
 
 IF(TOWEL42_QCORE_SUPPORT)
@@ -166,6 +164,7 @@ if( TOWEL42_ENABLE_TESTING )
 endif()
 
 if ( NOT TOWEL42_NO_DEPLOY_SUBMODULES )
+    find_package(Deploy REQUIRED)
     if ( TOWEL42_UTILS_DLL )
         IF(TOWEL42_QCORE_SUPPORT)
             DeployQt( ${PROJECT_NAME} . )
