@@ -739,6 +739,16 @@ namespace NTowel42Utils
         return {};
     }
 
+    std::optional< int > enumValueForString( const TEnumValueVector &enumValues, const QString &string )
+    {
+        for ( int ii = 0; ii < enumValues.size(); ++ii )
+        {
+            if ( enumValues[ ii ].second == string )
+                return enumValues[ ii ].first;
+        }
+        return {};
+    }
+
     QString SColumnInfo::columnDef() const
     {
         QStringList retVal;

@@ -125,7 +125,7 @@ namespace NTowel42Utils
     }
 
     TOWEL42_UTILS_EXPORT QString enumStringForValue( const TEnumValueVector &enumValues, int value );
-
+    TOWEL42_UTILS_EXPORT std::optional< int > enumValueForString( const TEnumValueVector &enumValues, const QString &string );
 }
 TOWEL42_UTILS_EXPORT QDebug &operator<<( QDebug &dbg, const QSqlQuery &query );
 TOWEL42_UTILS_EXPORT QTextStream &operator<<( QTextStream &ds, const QSqlQuery &query );
