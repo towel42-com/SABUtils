@@ -42,6 +42,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QVariant>
+#include <QLocale>
 
 #ifdef QT_XMLPATTERNS_LIB
     #include <QXmlQuery>
@@ -1108,6 +1109,87 @@ namespace NTowel42Utils
             metaObject = metaObject->superClass();
         }
         return false;
+    }
+
+    std::optional< QDate > toDate( const QVariant &data )
+    {
+        //qDebug() << data;
+        if ( data.metaType().id() == QMetaType::QDate )
+            return data.toDate();
+
+        if ( data.metaType().id() == QMetaType::QDateTime )
+            return data.toDateTime().date();
+
+        if ( data.metaType().id() == QMetaType::QString )
+        {
+            // YY may be 2 or 4
+            static auto mmYYRegEx = QStringLiteral( R"__((?<mmyy>(?:\d{2})\/(?:(?:\d{2}){1,2})))__" );
+            static auto mmddYYRegex = QStringLiteral( R"__((?<mmddyy>(?:\d{2})\/(?:\d{2})\/(?:(?:\d{2}){1,2})))__" );
+            static auto isDateRegEx = QRegularExpression( QRegularExpression::anchoredPattern( mmYYRegEx + QStringLiteral( "|" ) + mmddYYRegex ) );
+
+            static QLocale locale;
+            static auto isMonthFirst = locale.dateFormat( QLocale::ShortFormat ).startsWith( 'M' );
+
+            auto text = data.toString();
+            auto match = isDateRegEx.match( text );
+            if ( !match.hasMatch() )
+                return {};
+
+            auto noDayText = match.captured( "mmyy" );
+            auto withDayText = match.captured( "mmddyy" );
+            QDate retVal;
+            if ( !noDayText.isEmpty() )
+            {
+                for ( auto &&monthFormat : { QStringLiteral( "MM" ), QStringLiteral( "M" ) } )
+                {
+                    for ( auto &&yearFormat : { QStringLiteral( "yyyy" ), QStringLiteral( "yy" ) } )
+                    {
+                        auto format = QString( "%1/%2" ).arg( monthFormat ).arg( yearFormat );
+                        retVal = QDate::fromString( noDayText, format );
+                        if ( retVal.isValid() )
+                            break;
+                    }
+                    if ( retVal.isValid() )
+                        break;
+                }
+            }
+            else
+            {
+                for ( auto &&monthFormat : { QStringLiteral( "MM" ), QStringLiteral( "M" ) } )
+                {
+                    for ( auto &&dayFormat : { QStringLiteral( "dd" ), QStringLiteral( "d" ) } )
+                    {
+                        for ( auto &&yearFormat : { QStringLiteral( "yyyy" ), QStringLiteral( "yy" ) } )
+                        {
+                            auto monthFirstFormat = QString( "%1/%2/%3" ).arg( monthFormat ).arg( dayFormat ).arg( yearFormat );
+                            auto dayFirstFormat = QString( "%1/%2/%3" ).arg( dayFormat ).arg( monthFormat ).arg( yearFormat );
+                            auto format = isMonthFirst ? monthFirstFormat : dayFirstFormat;
+
+                            retVal = QDate::fromString( withDayText, format );
+                            if ( retVal.isValid() )
+                                break;
+
+                            format = !isMonthFirst ? monthFirstFormat : dayFirstFormat;
+                            retVal = QDate::fromString( withDayText, format );
+                            if ( retVal.isValid() )
+                                break;
+                        }
+                        if ( retVal.isValid() )
+                            break;
+                    }
+                    if ( retVal.isValid() )
+                        break;
+                }
+            }
+
+            if ( retVal.isValid() )
+            {
+                //qDebug() << retVal;
+                return retVal;
+            }
+        }
+
+        return {};
     }
 
     QTreeWidgetItem *nextVisibleItem( QTreeWidgetItem *item )

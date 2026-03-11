@@ -255,6 +255,8 @@ namespace NTowel42Utils
 
     // returns true if it inherits from class X if class Y has a value, if it derives from Y first, it will rturn false;
     TOWEL42_UTILS_EXPORT bool objectInheritsFromClass( const QObject *object, const QByteArray &classX, const std::optional< QByteArray > &classY = {} );
+
+    TOWEL42_UTILS_EXPORT std::optional< QDate > toDate( const QVariant &data );
 }
 
 template< std::size_t I = 0, typename... Tp >
