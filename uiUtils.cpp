@@ -187,7 +187,7 @@ namespace NTowel42Utils
         return idx;
     }
 
-    void selectItemInComboBox( QComboBox *cb, const QVariant &value, bool * other )
+    void selectItemInComboBox( QComboBox *cb, const QVariant &value, bool *other )
     {
         if ( other )
             *other = false;
@@ -217,6 +217,18 @@ namespace NTowel42Utils
             }
         }
         cb->setCurrentIndex( pos );
+    }
+
+    void loadEnumValues( QComboBox *cb, const std::vector< std::pair< int, QString > > &enumValues, std::optional< int > blankValue )
+    {
+        if ( blankValue.has_value() )
+        {
+            cb->addItem( QString(), blankValue.value() );
+        }
+        for ( auto &&ii : enumValues )
+        {
+            cb->addItem( ii.second, ii.first );
+        }
     }
 
     bool isValid( QLineEdit *edit, QLabel *label, std::function< bool( const QString &text ) > isValidFunc /*= {} */ )

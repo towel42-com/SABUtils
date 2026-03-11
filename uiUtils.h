@@ -26,6 +26,7 @@
 
 #include "Towel42UtilsExport.h"
 #include <QModelIndex>
+#include <vector>
 
 class QString;
 class QPoint;
@@ -69,6 +70,9 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT QModelIndex selectFirstVisibleItem( QAbstractItemView *view, bool setFocus );
 
-    TOWEL42_UTILS_EXPORT void selectItemInComboBox( QComboBox *cb, const QVariant &value, bool * other = nullptr );
+    TOWEL42_UTILS_EXPORT void selectItemInComboBox( QComboBox *cb, const QVariant &value, bool *other = nullptr );
+
+    TOWEL42_UTILS_EXPORT void loadEnumValues( QComboBox *cb, const std::vector< std::pair< int, QString > > &enumValues, std::optional< int > blankValue = {} );
+
 }
 #endif
