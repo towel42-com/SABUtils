@@ -1,11 +1,7 @@
 cmake_minimum_required(VERSION 3.30)
 project(MediaInfoLib)
 
-if( NOT NO_USE_MEDIAINFO_INSTALL )
-SET(MEDIAINFO_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../MediaInfoLib)
-else()
-SET(MEDIAINFO_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../MediaInfoLib)
-endif()
+SET(MEDIAINFO_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../MediaLibs/MediaInfoLib)
 
 list(APPEND CMAKE_MODULE_PATH "${MEDIAINFO_SOURCE_DIR}/Project/CMake/cmake/modules")
 
@@ -29,13 +25,13 @@ else()
 endif()
 
 if( NOT NO_USE_MEDIAINFO_INSTALL )
-    set(ZENLIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../ZenLib)
-    set(ZLIB_PROJ_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../zlib)
-    set(ZLIB_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../zlib)
+    set(ZENLIB_DIR ${CMAKE_CURRENT_LIST_DIR}/../../MediaLibs/ZenLib)
+    set(ZLIB_PROJ_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../MediaLibs/zlib)
+    set(ZLIB_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../MediaLibs/zlib)
 else()
-    set(ZENLIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../ZenLib)
-    set(ZLIB_PROJ_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../zlib)
-    set(ZLIB_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../zlib)
+    set(ZENLIB_DIR ${CMAKE_CURRENT_LIST_DIR}/../../MediaLibs/ZenLib)
+    set(ZLIB_PROJ_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../MediaLibs.ProjectFiles/zlib)
+    set(ZLIB_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../MediaLibs/zlib)
 endif()
 
 set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
@@ -87,11 +83,7 @@ else()
   set(MediaInfoLib_CONFIG_INSTALL_DIR "${LIB_INSTALL_DIR}/cmake/mediainfolib")
 endif()
 
-if( NOT NO_USE_MEDIAINFO_INSTALL )
-    set(MediaInfoLib_SOURCES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../Source)
-else()
-    set(MediaInfoLib_SOURCES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../MediaInfoLib/Source)
-endif()
+set(MediaInfoLib_SOURCES_PATH ${MEDIAINFO_SOURCE_DIR}/Source)
 
 # On Windows debug library should have 'd' postfix.
 if(WIN32)
