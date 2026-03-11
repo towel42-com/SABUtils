@@ -2,11 +2,11 @@
     path = googletest
     url = ssh://git@github.com/google/googletest.git
     branch = main
-[submodule "MediaInfo/ZenLib"]
+[submodule "ZenLib"]
 	path = MediaLibs/ZenLib
 	url = ssh://git@github.com/towel42-com/MediaArea-ZenLib.git
     branch = master
-[submodule "MediaInfo/zlib"]
+[submodule "zlib"]
 	path = MediaLibs/zlib
 	url = ssh://git@github.com/towel42-com/MediaArea-zlib.git
     ignore = all
@@ -15,7 +15,7 @@
     path = CMakeNuGetTools
     url = ssh://git@github.com/towel42-com/CMakeNuGetTools
     branch = master
-[submodule "MediaInfo/MediaInfoLib"]
+[submodule "MediaInfoLib"]
 	path = MediaLibs/MediaInfoLib
     url = ssh://git@github.com/towel42-com/MediaInfoLib.git
     branch = master
