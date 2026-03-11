@@ -212,6 +212,7 @@ namespace NTowel42Utils
             {
                 button->setChecked( true );
                 fPreviousValue = value;
+                slotChanged();
                 return true;
             }
         }
@@ -363,6 +364,9 @@ namespace NTowel42Utils
 
     bool CButtonGroupWDescriptiveText::aOK( bool *textMissing ) const
     {
+        if ( !isEnabled() )
+            return true;
+
         auto lclTextMissing = text().isEmpty();
         if ( textMissing )
             *textMissing = lclTextMissing;
@@ -389,7 +393,7 @@ namespace NTowel42Utils
             return;
 
         bool textMissing = false;
-        bool aOK = this->aOK( &textMissing );
+        bool aOK = !this->isEnabled() || this->aOK( &textMissing );
         if ( fDescriptiveTextLabel )
             NTowel42Utils::setIsOK( aOK || !textMissing, fDescriptiveTextLabel );
         NTowel42Utils::setIsOK( aOK, fBuddyLabel );
