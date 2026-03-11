@@ -285,7 +285,7 @@ namespace NTowel42Utils
         return true;
     }
 
-    QString convertQtToSqliteDTFormat( const QString &qtFormat )
+    QString convertQtToSQLDateTimeFormat( const QString &qtFormat )
     {
         auto retVal = qtFormat;
         std::list< std::pair< QString, QString > > formats =   //
@@ -612,7 +612,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    bool renameColumn( QSqlDatabase &db, const QString &tableName, const QString &oldColumnName, const QString &newColumnName )
+    bool renameColumn( const QSqlDatabase &db, const QString &tableName, const QString &oldColumnName, const QString &newColumnName )
     {
         QSqlQuery query( db );
         auto version = sqliteVersion( query );

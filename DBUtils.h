@@ -86,7 +86,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool validateSQLITEInstalled( QString *msg );
     TOWEL42_UTILS_EXPORT bool validateDriverInstalled( const QString &driver, QString *msg );
 
-    TOWEL42_UTILS_EXPORT QString convertQtToSqliteDTFormat( const QString &qtFormat );
+    TOWEL42_UTILS_EXPORT QString convertQtToSQLDateTimeFormat( const QString &qtFormat );
 
     TOWEL42_UTILS_EXPORT SDBVersion sqliteVersion( QSqlQuery &query );
 
