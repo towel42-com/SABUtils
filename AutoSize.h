@@ -27,7 +27,7 @@
 #include "Towel42UtilsExport.h"
 #include <QWidget>
 #include <optional>
-#include <type_traits>
+#include <functional>
 #include <QString>
 
 class QTableView;
@@ -49,7 +49,8 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT std::optional< int > autoSize( QAbstractItemView *view, QHeaderView *header, int minWidth = -1 );
     TOWEL42_UTILS_EXPORT std::optional< int > autoSize( QComboBox *comboBox, int minNumChars = -1 );
 
-    TOWEL42_UTILS_EXPORT std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, std::optional< int > hintWidth, bool shrinkIfNecessary );
+    TOWEL42_UTILS_EXPORT std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, bool shrinkIfNecessary, const std::function< std::optional< int >() > &widthHintFunc );
+    TOWEL42_UTILS_EXPORT std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, bool shrinkIfNecessary, const std::optional< int > & hintWidth );
 
     // sets the minimum size so the text is visible
     TOWEL42_UTILS_EXPORT void setMinimumWidth( QWidget *widget, const QString &textToSizeTo, const std::optional< QString > &extraText );

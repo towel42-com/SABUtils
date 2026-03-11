@@ -130,7 +130,12 @@ namespace NTowel42Utils
         return comboBox->width();
     }
 
-    std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, std::optional< int > widthHint, bool shrinkIfNecessary )
+    std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, bool shrinkIfNecessary, const std::optional< int > &widthHint )
+    {
+        return resizeWidthToFitWithoutScrollbars( scrollArea, shrinkIfNecessary, [ widthHint ]() -> std::optional< int > { return widthHint; } );
+    }
+
+    std::optional< int > resizeWidthToFitWithoutScrollbars( QAbstractScrollArea *scrollArea, bool shrinkIfNecessary, const std::function< std::optional< int >() > &widthHintFunc )
     {
         if ( !scrollArea )
             return {};
@@ -146,7 +151,8 @@ namespace NTowel42Utils
         auto currPolicy = scrollArea->horizontalScrollBarPolicy();
         scrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAsNeeded );
 
-        if ( widthHint.has_value() && ( resizeWidget->width() != widthHint.value() ) && ( shrinkIfNecessary || ( resizeWidget->width() > widthHint.value() ) ) )
+        auto widthHint = widthHintFunc ? widthHintFunc() : std::optional< int >();
+        if ( widthHint.has_value() && ( widthHint.value() != resizeWidget->width() ) )
         {
             auto sz = resizeWidget->size();
             sz.setWidth( widthHint.value() );
@@ -155,6 +161,12 @@ namespace NTowel42Utils
         }
 
         // grow/shrink it by 5% to find the initial boundaries
+        if ( !shrinkIfNecessary && !scrollArea->horizontalScrollBar()->isVisible() )
+        {
+            qDebug() << "Final Width: " << resizeWidget->size().width();
+            return resizeWidget->size().width();
+        }
+
         QSize lhsSize;
         QSize rhsSize;
         auto percent = .05;
@@ -180,7 +192,7 @@ namespace NTowel42Utils
             }
             rhsSize = resizeWidget->size();
         }
-        else if ( shrinkIfNecessary )
+        else
         {
             rhsSize = resizeWidget->size();
             bool first = true;
@@ -211,22 +223,19 @@ namespace NTowel42Utils
         bool first = true;
         while ( lhsSize.width() < rhsSize.width() && ( ( rhsSize.width() - lhsSize.width() ) > 1 ) )
         {
-            auto mid = ( rhsSize.width() - lhsSize.width() ) / 2;
-            if ( mid == 0 )
+            auto diff = ( rhsSize.width() - lhsSize.width() ) / 2;
+            if ( diff == 0 )
                 break;
 
-            if ( !shrinkIfNecessary )
-            {
-                if ( mid < 0 )
-                    break;
-            }
+            if ( diff < 0 )
+                break;
             if ( !first && lhsSize == prevSize )
                 break;
             prevSize = lhsSize;
 
             first = false;
             auto newSize = lhsSize;
-            newSize.setWidth( newSize.width() + mid );
+            newSize.setWidth( newSize.width() + diff );
             resizeWidget->resize( newSize );
             resizeCount++;
             qApp->processEvents();
