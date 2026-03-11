@@ -729,6 +729,16 @@ namespace NTowel42Utils
         return query.value( 0 ).toInt();
     }
 
+    QString enumStringForValue( const TEnumValueVector &enumValues, int value )
+    {
+        for ( int ii = 0; ii < enumValues.size(); ++ii )
+        {
+            if ( enumValues[ ii ].first == value )
+                return enumValues[ ii ].second;
+        }
+        return {};
+    }
+
     QString SColumnInfo::columnDef() const
     {
         QStringList retVal;

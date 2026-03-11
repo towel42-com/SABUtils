@@ -123,6 +123,9 @@ namespace NTowel42Utils
         auto var = ( *pos ).second;
         return var.value< T >();
     }
+
+    TOWEL42_UTILS_EXPORT QString enumStringForValue( const TEnumValueVector &enumValues, int value );
+
 }
 TOWEL42_UTILS_EXPORT QDebug &operator<<( QDebug &dbg, const QSqlQuery &query );
 TOWEL42_UTILS_EXPORT QTextStream &operator<<( QTextStream &ds, const QSqlQuery &query );
