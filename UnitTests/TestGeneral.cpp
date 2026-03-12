@@ -853,15 +853,15 @@ namespace
     {
         auto source = std::list< int >( { 1, 2, 3, 6, 10, 22, 23, 24, 50 } );
 
-        auto grouped = NTowel42Utils::group( source );
+        auto grouped = NTowel42Utils::groupContiguousNumbers( source );
         ASSERT_EQ( 5, grouped.size() );
 
         source.pop_back();
-        grouped = NTowel42Utils::group( source );
+        grouped = NTowel42Utils::groupContiguousNumbers( source );
         ASSERT_EQ( 4, grouped.size() );
 
         source.push_front( -1 );
-        grouped = NTowel42Utils::group( source );
+        grouped = NTowel42Utils::groupContiguousNumbers( source );
         ASSERT_EQ( 5, grouped.size() );
     }
 

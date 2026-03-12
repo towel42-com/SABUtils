@@ -516,7 +516,7 @@ namespace NTowel42Utils
 #endif
 
     template< typename T, typename = std::enable_if< std::is_integral_v< T > > >
-    std::list< std::list< T > > group( const std::list< T > &inList )
+    std::list< std::list< T > > groupContiguousNumbers( const std::list< T > &inList )
     {
         std::list< std::list< T > > retVal;
 
@@ -544,6 +544,35 @@ namespace NTowel42Utils
         return retVal;
     }
 
+    template< typename T, typename = std::enable_if< std::is_integral_v< T > > >
+    QString contiguousNumbersText( const std::list< std::list< T > > &groupedNumbers, const QString &prefix = {}, int numDigits = 1 )
+    {
+        QString retVal;
+        bool first = true;
+        for ( auto &&ii : groupedNumbers )
+        {
+            if ( ii.empty() )
+                continue;
+
+            if ( !first )
+                retVal += ",";
+            first = false;
+
+            auto numberText = [ prefix, numDigits ]( T number )
+            {
+                return QString( "%1%2" ).arg( prefix ).arg( number, numDigits, 10, QChar( '0' ) );
+            };
+
+            retVal += numberText( ii.front() );
+            if ( ii.size() > 1 )
+            {
+                if ( std::abs( ii.back() - ii.front() ) > 1 )
+                    retVal += QStringLiteral( "-" );
+                retVal += numberText( ii.back() );
+            }
+        }
+        return retVal;
+    }
 #ifdef TOWEL42_QCORE_SUPPORT
     TOWEL42_UTILS_EXPORT std::list< int > intsFromString( const QString &string, const QString &prefixRegEx = {}, bool sort = true, bool *aOK = nullptr );
 #endif
