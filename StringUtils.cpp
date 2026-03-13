@@ -3112,7 +3112,7 @@ namespace NTowel42Utils
                 if ( retVal[ ii ] != '.' )
                     continue;
 
-                if ( ( ii > 0 ) && ( ii < ( retVal.length() + 1 ) ) )
+                if ( ( ii > 0 ) && ( ii < ( retVal.length() - 1 ) ) )
                 {
                     if ( retVal[ ii - 1 ].isDigit() && retVal[ ii + 1 ].isDigit() )
                         continue;
