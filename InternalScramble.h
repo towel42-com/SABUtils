@@ -24,6 +24,7 @@
 #include <type_traits>
 #include <initializer_list>
 
+#include <QByteArray>
 namespace NTowel42Utils
 {
     template< class T >
@@ -42,32 +43,32 @@ namespace NTowel42Utils
     };
 
     template< typename T1, typename T2 >
-    inline std::enable_if_t< is_8bits_v< T1 > && is_8bits_v< T2 >, QString > descramble( const T1 &lhs, const T2 &rhs )
+    inline std::enable_if_t< is_8bits_v< T1 > && is_8bits_v< T2 >, QByteArray > descramble( const T1 &lhs, const T2 &rhs )
     {
-        return QString( NTowel42Utils::swapNibbles( lhs ) ) + QString( NTowel42Utils::swapNibbles( rhs ) );
+        return QByteArray( 1, NTowel42Utils::swapNibbles( lhs ) ) + QByteArray( 1, NTowel42Utils::swapNibbles( rhs ) );
     }
 
     template< typename T1, typename T2 >
-    inline std::enable_if_t< is_8bits_v< T1 > && std::is_same_v< QString, T2 >, QString > descramble( const T1 &lhs, const T2 &rhs )
+    inline std::enable_if_t< is_8bits_v< T1 > && std::is_same_v< QByteArray, T2 >, QByteArray > descramble( const T1 &lhs, const T2 &rhs )
     {
-        return QString( NTowel42Utils::swapNibbles( lhs ) ) + rhs;
+        return QByteArray( 1, NTowel42Utils::swapNibbles( lhs ) ) + rhs;
     }
 
     template< typename T >
-    inline QString  descramble( T lhs )
+    inline QByteArray  descramble( T lhs )
     {
         static_assert( std::is_same_v< QChar, T > || is_8bits_v< T > );
-        return QString( NTowel42Utils::swapNibbles( lhs ) );
+        return QByteArray( 1, NTowel42Utils::swapNibbles( lhs ) );
     }
 
     template< typename T, typename... Targs >
-    inline std::enable_if_t< ( sizeof...( Targs ) == 1 ), QString > descramble( T lhs, T rhs, Targs... Fargs )
+    inline std::enable_if_t< ( sizeof...( Targs ) == 1 ), QByteArray > descramble( T lhs, T rhs, Targs... Fargs )
     {
         return descramble( lhs, descramble( rhs, Fargs... ) );
     }
 
     template< typename T, typename... Targs >
-    inline std::enable_if_t< ( sizeof...( Targs ) >= 2 ), QString > descramble( T lhs, Targs... Fargs )
+    inline std::enable_if_t< ( sizeof...( Targs ) >= 2 ), QByteArray > descramble( T lhs, Targs... Fargs )
     {
         return descramble( lhs, descramble( Fargs... ) );
     }
