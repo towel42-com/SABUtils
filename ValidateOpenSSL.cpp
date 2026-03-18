@@ -51,7 +51,7 @@
     #include <QDir>
 namespace NTowel42Utils
 {
-    std::pair< bool, QString > validateOpenSSL( bool requireLocal /*= true*/ )
+    std::pair< bool, QString > validateOpenSSL( const QString &version, bool requireLocal /*= true*/ )
     {
     #if defined( Q_PROCESSOR_X86_64 )
         #define QT_SSL_SUFFIX "-x64"
@@ -63,9 +63,19 @@ namespace NTowel42Utils
         #define QT_SSL_SUFFIX
     #endif
 
+        if ( !QSslSocket::supportsSsl() )
+        {
+            return { false, QObject::tr( "Please re-install, The OpenSSL libraries could not be found" ) };
+        }
+
+        if ( QSslSocket::sslLibraryVersionString().contains( "Windows" ) )
+        {
+            return { true, QString() };
+        }
+
         if ( requireLocal )
         {
-            auto libs = QStringList( { QStringLiteral( "libssl-1_1" QT_SSL_SUFFIX ), QStringLiteral( "libcrypto-1_1" QT_SSL_SUFFIX ) } );
+            auto libs = QStringList( { QStringLiteral( "libssl-%1" QT_SSL_SUFFIX ).arg( version ), QStringLiteral( "libcrypto-%1" QT_SSL_SUFFIX ).arg( version ) } );
             auto appDir = QDir( QApplication::applicationDirPath() );
             for ( auto &&currLib : libs )
             {
@@ -77,13 +87,6 @@ namespace NTowel42Utils
                 }
             }
         }
-        if ( !QSslSocket::supportsSsl() )
-        {
-            return { false, QObject::tr( "Please re-install, The OpenSSL libraries could not be found" ) };
-        }
-
-        // tryToLoadOpenSslWin32Library(QLatin1String(),
-        //     QLatin1String), result);
 
     #undef QT_SSL_SUFFIX
 

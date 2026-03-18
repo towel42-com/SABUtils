@@ -49,5 +49,5 @@
 namespace NTowel42Utils
 {
     // if require local is true, will return false if the OpenSSL libraries are not local
-    TOWEL42_UTILS_EXPORT std::pair< bool, QString > validateOpenSSL( bool requireLocal = true );
+    TOWEL42_UTILS_EXPORT std::pair< bool, QString > validateOpenSSL( const QString & version, bool requireLocal = true );
 }
