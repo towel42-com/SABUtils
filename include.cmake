@@ -86,7 +86,6 @@ ENDMACRO()
 
 CheckForCoreSupport( TOWEL42_BIFSUPPORT "BIF" )
 CheckForCoreSupport( TOWEL42_GIFSUPPORT "GIF" )
-CheckForCoreSupport( TOWEL42_MKVUTILS "MKVUtils" )
 CheckForCoreSupport( TOWEL42_QAXOBJECT_SUPPORT "QAXObject" )
 CheckForCoreSupport( TOWEL42_QCONCURRENT_SUPPORT "QConcurrent" )
 CheckForCoreSupport( TOWEL42_QNETWORK_SUPPORT "QNetwork" )
@@ -339,37 +338,6 @@ if ( TOWEL42_GIFSUPPORT )
         ${project_pub_DEPS}
         Qt6::Widgets
         Qt6::Gui
-    )
-endif()
-
-if ( TOWEL42_MKVUTILS )
-    find_package(Qt6 COMPONENTS Multimedia REQUIRED)
-    add_definitions( -DTOWEL42_MKVUTILS=1)
-    set(qtproject_SRCS
-        ${qtproject_SRCS}
-        MediaInfo.cpp
-        MKVUtils.cpp
-        SetMKVTags.cpp
-    )
-    set(qtproject_H
-        ${qtproject_H}
-        MediaInfo.h
-        SetMKVTags.h
-    )
-    set(project_H
-        ${project_H}
-        MKVUtils.h
-    )
-    set(qtproject_UIS
-        ${qtproject_UIS}
-        SetMKVTags.ui
-    )
-
-    SET( project_pub_DEPS
-        ${project_pub_DEPS}
-        MediaInfo
-        MKVReader
-        Qt6::Multimedia
     )
 endif()
 

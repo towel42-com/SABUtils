@@ -31,7 +31,6 @@ endif()
 
 SET( TOWEL42_BIFSUPPORT OFF CACHE BOOL "Support for BIF Utilities" )
 SET( TOWEL42_GIFSUPPORT OFF CACHE BOOL "Support for GIF Utilities" )
-SET( TOWEL42_MKVUTILS OFF CACHE BOOL "Support for MKV Utilities" )
 SET( TOWEL42_NUGET_SUPPORT OFF CACHE BOOL "Enable NuGet Package Support" )
 SET( TOWEL42_QAXOBJECT_SUPPORT OFF CACHE BOOL "Enable QAxObject Utilities Support" )
 SET( TOWEL42_QCONCURRENT_SUPPORT OFF CACHE BOOL "Enable QConcurrent Utilities Support" )
@@ -49,7 +48,6 @@ message( STATUS "T42-Utils: Building for DLL=${TOWEL42_UTILS_DLL}" )
 
 message( STATUS "T42-Utils: Building TOWEL42_BIFSUPPORT=${TOWEL42_BIFSUPPORT}" )
 message( STATUS "T42-Utils: Building TOWEL42_GIFSUPPORT=${TOWEL42_GIFSUPPORT}" )
-message( STATUS "T42-Utils: Building TOWEL42_MKVUTILS=${TOWEL42_MKVUTILS}" )
 message( STATUS "T42-Utils: Building TOWEL42_NUGET_SUPPORT=${TOWEL42_NUGET_SUPPORT}" )
 message( STATUS "T42-Utils: Building TOWEL42_QAXOBJECT_SUPPORT=${TOWEL42_QAXOBJECT_SUPPORT}" )
 message( STATUS "T42-Utils: Building TOWEL42_QCONCURRENT_SUPPORT=${TOWEL42_QCONCURRENT_SUPPORT}" )
@@ -70,14 +68,6 @@ endif()
 
 include( ${CMAKE_SOURCE_DIR}/T42-CMakeUtils/Modules/EnableGoogleTesting.cmake )
 
-if ( TOWEL42_MKVUTILS )
-    SET(NO_USE_MEDIAINFO_INSTALL ON)
-    set(BUILD_SHARED_LIBS ON)
-	option(LARGE_FILES "Enable large files support" OFF)
-    add_subdirectory( MediaLibs.ProjectFiles/MediaInfoLib )
-    add_subdirectory( MKVReader )
-endif()
-
 OPTION(TOWEL42_DEBUG_TRACE "Enable Debug Tracing to std::cout" OFF)
 
 include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
@@ -94,11 +84,6 @@ IF(TOWEL42_QCORE_SUPPORT)
     find_package(Qt6SrcMoc REQUIRED)
     set(TOWEL42_MOC_OPTIONS "-DNON_VIS_BUILD=1")
 endif()    
-
-if ( TOWEL42_MKVUTILS )
-    include_directories(MediaLibs/MediaInfoLib/Source)
-    include_directories(MediaLibs/ZenLib/Source)
-endif()
 
 if( WIN32 AND TOWEL42_NUGET_SUPPORT )
     include( "${CMAKE_CURRENT_LIST_DIR}/CMakeNuGetTools/cmake/NuGetTools.cmake" )
