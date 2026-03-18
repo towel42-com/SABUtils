@@ -123,7 +123,6 @@ if ( TOWEL42_QCORE_SUPPORT )
         BackgroundFileCheck.cpp
         BackupFile.cpp
         ExcelFuncs.cpp
-        FFMpegFormats.cpp
         FileCompare.cpp
         FileUtils.cpp
         FileUtils_Remove.cpp
@@ -151,7 +150,6 @@ if ( TOWEL42_QCORE_SUPPORT )
         ${QT_OS_HEADERS}
         ${project_H}
         ExcelFuncs.h
-        FFMpegFormats.h
         FileCompare.h
         FileUtils.h
         JsonUtils.h

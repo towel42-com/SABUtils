@@ -73,10 +73,13 @@ OPTION(TOWEL42_DEBUG_TRACE "Enable Debug Tracing to std::cout" OFF)
 include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
 project( ${_PROJECT_NAME} ) 
 
-add_definitions( -DTOWEL42UTILS_INTERNAL )
-
 find_package(IncludeProjectSettings REQUIRED)
 IncludeProjectSettings()
+
+
+add_compile_definitions( 
+    $<$<BOOL:TOWEL42_DEBUG_TRACE>:TOWEL42_DEBUG_TRACE>
+)
 
 find_package(AddUnitTest REQUIRED)
 
@@ -109,6 +112,10 @@ endif()
 
 if ( TOWEL42_UTILS_DLL )
     SET( LIBTYPE SHARED )
+    add_compile_definitions( 
+        TOWEL42UTILS_INTERNAL
+        $<$<BOOL:TOWEL42_UTILS_DLL>:TOWEL42_UTILS_DLL>
+    )
 else()
     SET( LIBTYPE STATIC )
 endif()
