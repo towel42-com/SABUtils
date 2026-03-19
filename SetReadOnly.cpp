@@ -86,7 +86,9 @@ namespace NTowel42Utils
         }
         else
         {
-            if ( childWidget->metaObject()->superClass()->className() == QStringLiteral( "QWidget" ) )
+            bool isSimpleWidget = childWidget->metaObject()->superClass()->className() == QStringLiteral( "QWidget" );
+            isSimpleWidget = isSimpleWidget || childWidget->objectName() == QStringLiteral( "centralwidget" );
+            if ( isSimpleWidget )
             {
                 setReadOnly( childWidget, readOnly );
                 return;
