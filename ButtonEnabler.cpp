@@ -83,6 +83,10 @@ namespace NTowel42Utils
         slotTextChanged( le->text() );
     }
 
+    CButtonEnabler::~CButtonEnabler()
+    {
+    }
+
     void CButtonEnabler::slotReset()
     {
         setEnabled( false );

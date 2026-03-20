@@ -46,6 +46,7 @@ namespace NTowel42Utils
         CButtonEnabler( QAbstractItemView *view, QAbstractButton *btn, QObject *parent = nullptr );
         CButtonEnabler( QLineEdit *le, QAbstractButton *btn, QObject *parent = nullptr );
 
+        ~CButtonEnabler();
         void setLineEditIsFile() { fLineEditIsFile = true; };
         void setEnabled( bool enabled );
 
