@@ -53,7 +53,14 @@ namespace NTowel42Utils
         if ( parent == nullptr )
             setParent( action );
         if ( view->selectionModel() )
+        {
             connect( view->selectionModel(), &QItemSelectionModel::selectionChanged, this, &CButtonEnabler::slotSelectionChanged );
+            if ( view->selectionModel()->model() )
+                connect( view->selectionModel()->model(), &QAbstractItemModel::modelReset, this, &CButtonEnabler::slotModelReset );
+        }
+
+        if ( view->model() )
+            connect( view->model(), &QAbstractItemModel::modelReset, this, &CButtonEnabler::slotModelReset );
         slotReset();
         if ( view->selectionModel() )
             slotSelectionChanged( view->selectionModel()->selection(), QItemSelection() );
@@ -95,7 +102,10 @@ namespace NTowel42Utils
     void CButtonEnabler::setEnabled( bool enabled )
     {
         if ( fButton )
+        {
+            // qDebug() << fButton->parentWidget() << fButton;
             fButton->setEnabled( enabled );
+        }
         if ( fAction )
             fAction->setEnabled( enabled );
     }
@@ -124,6 +134,11 @@ namespace NTowel42Utils
             alreadyExists = btnFound;
         }
         return alreadyExists;
+    }
+
+    void CButtonEnabler::slotModelReset()
+    {
+        slotSelectionChanged( {}, {} );
     }
 
     void CButtonEnabler::slotSelectionChanged( const QItemSelection &selected, const QItemSelection & )

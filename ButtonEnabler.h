@@ -56,6 +56,7 @@ namespace NTowel42Utils
         void slotReset();
     private Q_SLOTS:
         void slotSelectionChanged( const QItemSelection &selected, const QItemSelection & );
+        void slotModelReset();
         void slotTextChanged( const QString &changed );
 
     private:
