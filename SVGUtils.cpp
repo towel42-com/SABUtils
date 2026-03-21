@@ -4,6 +4,9 @@
 #include <QImage>
 #include <QPainter>
 #include <QPixmap>
+#include <QTextStream>
+#include <QIODevice>
+#include <QXmlStreamReader>
 
 namespace NTowel42Utils
 {
@@ -35,4 +38,28 @@ namespace NTowel42Utils
         QSvgRenderer renderer( svgData );
         return getSVG( &renderer, sz );
     }
+
+    bool isSVG( const QByteArray &data )
+    {
+        QTextStream ts( data );
+        return isSVG( ts.device() );
+
+    }
+
+    bool isSVG( QIODevice *device )
+    {
+        if ( !device->isOpen() )
+        {
+            if ( !device->open( QIODevice::ReadOnly ) )
+                return false;
+        }
+        QXmlStreamReader xml( device );
+        while ( !xml.atEnd() && !xml.isStartElement() )
+        {
+            xml.readNext();
+        }
+
+        return ( xml.isStartElement() && xml.name().toString().compare( "svg", Qt::CaseInsensitive ) == 0 );
+    }
+
 }
