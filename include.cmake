@@ -202,6 +202,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         QtDumper.cpp
         SetReadOnly.cpp
         SetReadOnlyComboBox.cpp
+        SetReadOnlyGroupBox.cpp
         ScrollMessageBox.cpp
         SelectFileUrl.cpp
         SpinBox64.cpp
@@ -228,6 +229,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         LineEditWithSuffix.h
         MenuBarEx.h
         SetReadOnlyComboBox.h
+        SetReadOnlyGroupBox.h
         SummaryDateEdit.h
         ScrollMessageBox.h
         SelectFileUrl.h

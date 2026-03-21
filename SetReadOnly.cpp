@@ -64,6 +64,8 @@ namespace NTowel42Utils
         }
         else if ( groupBox )
         {
+            if ( groupBox->isCheckable() )
+                qWarning() << "Use CSetReadOnlyGroupBox" << groupBox;
             setReadOnly( groupBox, readOnly );
         }
         else if ( button )
