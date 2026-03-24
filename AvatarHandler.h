@@ -59,6 +59,9 @@ namespace NTowel42Utils
         void setAvatarFile( const QString &fileName );
         void setAvatarPixmap( const QPixmap &pixmap );
 
+    private:
+        void resetMinimumSize();
+
         std::optional< QByteArray > fAvatarData;
         bool fReadOnly{ false };
     };

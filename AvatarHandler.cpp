@@ -91,7 +91,8 @@ namespace NTowel42Utils
     {
         setToolButtonStyle( fReadOnly ? Qt::ToolButtonIconOnly : Qt::ToolButtonTextUnderIcon );
         setAutoRaise( !fReadOnly );
-        setCursor( fReadOnly ? Qt::ForbiddenCursor : Qt::ArrowCursor ); 
+        setCursor( fReadOnly ? Qt::ForbiddenCursor : Qt::ArrowCursor );
+        resetMinimumSize();
     }
 
     QByteArray CAvatarHandler::avatarData() const
@@ -139,18 +140,7 @@ namespace NTowel42Utils
 
     QSize CAvatarHandler::computeMinimumSize() const
     {
-        const QWidget *curr = this;
-        const QLayout *layout = curr->layout();
-
-        while ( !layout && curr )
-        {
-            curr = curr->parentWidget();
-            layout = curr ? curr->layout() : nullptr;
-        }
         int spacing = 6;
-        if ( layout )
-            spacing = layout->spacing();
-
         auto height = 2 * spacing + kImageSize.height() + spacing;
         auto width = spacing + kImageSize.width() + spacing;
 
@@ -176,10 +166,16 @@ namespace NTowel42Utils
 
         auto pm = pixmap;
         if ( pm.size() != kImageSize )
-            pm = pixmap.scaled( kImageSize, Qt::KeepAspectRatio );
+            pm = pm.scaled( kImageSize, Qt::KeepAspectRatio );
 
         setIcon( QIcon( pm ) );
-        setIconSize( pm.size() );
+        setIconSize( kImageSize );
+        resetMinimumSize();
+    }
+
+    void CAvatarHandler::resetMinimumSize()
+    {
         setMinimumSize( computeMinimumSize() );
     }
+
 }
