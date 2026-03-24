@@ -49,6 +49,7 @@ namespace NTowel42Utils
         if ( idx != -1 )
         {
             childWidget->setProperty( "readOnly", readOnly );
+            childWidget->setCursor( readOnly ? Qt::ForbiddenCursor : Qt::ArrowCursor );
             return;
         }
 
@@ -71,7 +72,10 @@ namespace NTowel42Utils
         else if ( button )
         {
             if ( !dynamic_cast< QDialogButtonBox * >( parentWidget ) )
-                button->setDisabled( readOnly );
+            {
+                if ( button->cursor() == Qt::ArrowCursor )
+                    button->setDisabled( readOnly );
+            }
         }
         else if ( tabWidget )
         {
@@ -84,7 +88,10 @@ namespace NTowel42Utils
         {
             qWarning() << "Use CSetReadOnlyComboBox" << comboBox;
             if ( comboBox->lineEdit() )
+            {
                 comboBox->lineEdit()->setReadOnly( true );
+                comboBox->lineEdit()->setCursor( readOnly ? Qt::ForbiddenCursor : Qt::ArrowCursor );
+            }
         }
         else
         {
@@ -96,6 +103,8 @@ namespace NTowel42Utils
                 return;
             }
             qDebug() << "SetReadOnly: UNHANDLED-" << childWidget << "-" << childWidget->metaObject()->className() << " - SuperClass: " << childWidget->metaObject()->superClass()->className() << " - " << childWidget->objectName();
+            childWidget->setCursor( readOnly ? Qt::ForbiddenCursor : Qt::ArrowCursor );
+
         }
     }
 

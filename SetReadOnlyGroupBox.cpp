@@ -35,6 +35,7 @@ namespace NTowel42Utils
     void CSetReadOnlyGroupBox::setReadOnly( bool readOnly )
     {
         fReadOnly = readOnly;
+        setCursor( readOnly ? Qt::ForbiddenCursor : Qt::ArrowCursor );
         NTowel42Utils::setReadOnly( this, readOnly );
     }
 

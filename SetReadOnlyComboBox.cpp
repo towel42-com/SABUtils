@@ -34,6 +34,8 @@ namespace NTowel42Utils
     void CSetReadOnlyComboBox::setReadOnly( bool readOnly )
     {
         fReadOnly = readOnly;
+        setCursor( readOnly ? Qt::ForbiddenCursor : Qt::ArrowCursor );
+
         if ( lineEdit() )
             lineEdit()->setReadOnly( readOnly );
         setEditable( !readOnly );
