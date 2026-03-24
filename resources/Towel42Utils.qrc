@@ -13,6 +13,7 @@
         <file>search.png</file>
         <file>eye.png</file>
         <file>unknownStatus.png</file>
+        <file>t42-logo.svg</file>
         <file>CustomerData.db</file>
     </qresource>
 </RCC>
