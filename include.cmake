@@ -186,6 +186,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         AutoFetch.cpp
         AutoTabStop.cpp
         AutoWaitCursor.cpp
+        AvatarHandler.cpp
         ButtonEnabler.cpp
         ButtonGroupWDescriptiveText.cpp
         CollapsableGroupBox.cpp
@@ -217,6 +218,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         ${qtproject_H}
         AutoTabStop.h
         AutoWaitCursor.h
+        AvatarHandler.h
         ButtonEnabler.h
         ButtonGroupWDescriptiveText.h
         CollapsableGroupBox.h
