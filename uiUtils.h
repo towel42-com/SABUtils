@@ -27,6 +27,8 @@
 #include "Towel42UtilsExport.h"
 #include <QModelIndex>
 #include <vector>
+#include <QPixmap>
+#include <optional>
 
 class QString;
 class QPoint;
@@ -73,6 +75,9 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT void selectItemInComboBox( QComboBox *cb, const QVariant &value, bool *other = nullptr );
 
     TOWEL42_UTILS_EXPORT void loadEnumValues( QComboBox *cb, const std::vector< std::pair< int, QString > > &enumValues, std::optional< int > blankValue = {} );
+
+    TOWEL42_UTILS_EXPORT std::optional< QPixmap > pixmapForImageData( const QByteArray &data, const std::optional< QSize > &sz = {} );
+    TOWEL42_UTILS_EXPORT std::optional< QPixmap > pixmapForImageFile( const QString &path, const std::optional< QSize > &sz = {} );
 
 }
 #endif

@@ -23,6 +23,7 @@
 
 #include "uiUtils.h"
 #include "utils.h"
+#include "SVGUtils.h"
 
 #include <QFontMetrics>
 #include <QDesktopServices>
@@ -42,6 +43,7 @@
 #include <QAbstractItemModel>
 #include <QGroupBox>
 #include <QDialogButtonBox>
+#include <QFile>
 
 #include <functional>
 #include <unordered_set>
@@ -326,5 +328,41 @@ namespace NTowel42Utils
         else
             aOK = sb->value() != sb->minimum();
         return setIsOK( aOK, label );
+    }
+
+    std::optional< QPixmap > pixmapForImageData( const QByteArray &data, const std::optional< QSize > &sz )
+    {
+        if ( data.isNull() || data.isEmpty() )
+            return {};
+
+        std::optional< QPixmap > pixmap;
+        auto isSVG = NTowel42Utils::isSVG( data );
+        if ( isSVG )
+        {
+            pixmap = NTowel42Utils::getSVG( data, sz );
+        }
+        else
+        {
+            QPixmap tmpPixmap;
+            if ( tmpPixmap.loadFromData( data ) )
+            {
+                if ( sz.has_value() )
+                    tmpPixmap = tmpPixmap.scaled( sz.value(), Qt::KeepAspectRatio );
+                pixmap = tmpPixmap;
+            }
+        }
+        return pixmap;
+    }
+
+    std::optional< QPixmap > pixmapForImageFile( const QString &path, const std::optional< QSize > &sz )
+    {
+        auto file = QFile( path );
+        if ( !file.open( QFile::ReadOnly ) )
+            return {};
+        auto data = file.readAll();
+        if ( data.isNull() )
+            return {};
+
+        return pixmapForImageData( data, sz );
     }
 }
