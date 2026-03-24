@@ -49,6 +49,7 @@ set(project_SRCS
     RegExUtils.cpp
     StringComparisonClasses.cpp
     StringUtils.cpp
+    VersionInfoData.cpp
     ${OS_SRCS}
 )
 
@@ -68,6 +69,7 @@ set(project_H
     StringComparisonClasses.h
     StringUtils.h
     Towel42UtilsExport.h
+    VersionInfoData.h
     ${OS_HEADERS}
 )
 
@@ -182,6 +184,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
     find_package(Qt6 COMPONENTS Widgets Gui REQUIRED)
     set(qtproject_SRCS
         ${qtproject_SRCS}
+        About.cpp
         AutoSize.cpp
         AutoFetch.cpp
         AutoTabStop.cpp
@@ -242,6 +245,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
     )
     set(project_H
         ${project_H}
+        About.h
         AutoFetch.h
         AutoSize.h
         BackupFile.h
