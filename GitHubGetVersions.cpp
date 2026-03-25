@@ -1,29 +1,7 @@
 // The MIT License( MIT )
 //
-// Copyright( c ) 2026 Towel 42 Development, LLC and Scott Aron Bloom
+// Copyright( c ) 2022-2026 Towel 42 Development, LLC and Scott Aron Bloom
 // SPDX-License-Identifier : MIT License
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files( the "Software" ), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sub-license, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions :
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-//
-// The MIT License( MIT )
-//
-// Copyright( c ) 2022 Scott Aron Bloom
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files( the "Software" ), to deal
@@ -45,6 +23,7 @@
 
 #include "GitHubGetVersions.h"
 #include "FileUtils.h"
+#include "VersionInfoData.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -60,22 +39,24 @@
 #include <QJsonParseError>
 #include <QCoreApplication>
 
+#ifdef _DEBUG
+    #define FORCE_OOD
+#endif
+
 namespace NTowel42Utils
 {
 
-    CGitHubGetVersions::CGitHubGetVersions( const QByteArray &githubToken, QObject *parent /*= nullptr */ ) :
-        CGitHubGetVersions( QString(), githubToken, parent )
+    CGitHubGetVersions::CGitHubGetVersions( QObject *parent /*= nullptr */ ) :
+        CGitHubGetVersions( qApp->organizationDomain(), parent )
     {
-        fURLPath = determineReleasesPath();
     }
 
-    CGitHubGetVersions::CGitHubGetVersions( const QString &urlPath, const QByteArray &githubToken, QObject *parent /*= nullptr */ ) :
+    CGitHubGetVersions::CGitHubGetVersions( const QString &urlPath, QObject *parent /*= nullptr */ ) :
         QObject( parent ),
         fCurrentVersion(),
         fManager( nullptr ),
         fHasError( false ),
-        fURLPath( urlPath ),
-        fGitHubToken( githubToken )
+        fBaseGitURL( urlPath )
     {
         fManager = new QNetworkAccessManager( this );
         connect( fManager, &QNetworkAccessManager::authenticationRequired, this, &CGitHubGetVersions::slotAuthenticationRequired );
@@ -91,11 +72,15 @@ namespace NTowel42Utils
     {
     }
 
-    void CGitHubGetVersions::setCurrentVersion( int major, int minor, const QDateTime &dt )
+    void CGitHubGetVersions::setCurrentVersion( std::shared_ptr< CVersionInfoData > versionInfo )
     {
-        fCurrentVersion.fMajor = major;
-        fCurrentVersion.fMinor = minor;
-        fCurrentVersion.fReleaseDate = dt;
+        if ( !versionInfo )
+            return;
+        SVersion version;
+        version.fMajor = versionInfo->majorVersion();
+        version.fMinor = versionInfo->minorVersion();
+        version.fReleaseDate = versionInfo->buildDateTime( false );
+        fCurrentVersion = version;
     }
 
     void CGitHubGetVersions::slotAuthenticationRequired( QNetworkReply * /*reply*/, QAuthenticator * /*authenticator*/ )
@@ -144,17 +129,27 @@ namespace NTowel42Utils
 
             if ( error.error != QJsonParseError::NoError )
             {
-                fErrorString += QObject::tr( "Error in Reply from server %1: '%2' @ %3" ).arg( fURLPath ).arg( error.errorString() ).arg( error.offset );
+                fErrorString += QObject::tr( "Error in Reply from server %1: '%2' @ %3" ).arg( githubReleaseUrl().toString() ).arg( error.errorString() ).arg( error.offset );
                 fHasError = true;
             }
-            if ( !json.isArray() )
+            if ( fLatestRequest && !json.isObject() )
             {
-                fErrorString += QObject::tr( "Error in Reply: '%1' @ %2" ).arg( error.errorString() ).arg( error.offset );
+                fErrorString += QObject::tr( "Error in Reply: Invalid JSON Object" );
+                fHasError = true;
+            }
+            else if ( !fLatestRequest && !json.isArray() )
+            {
+                fErrorString += QObject::tr( "Error in Reply: Invalid JSON Array" );
                 fHasError = true;
             }
 
             if ( !fHasError )
-                loadResults( json.array() );
+            {
+                if ( fLatestRequest )
+                    loadResult( json.object(), true );
+                else
+                    loadResults( json.array() );
+            }
         }
 
         if ( fHasError )
@@ -166,18 +161,18 @@ namespace NTowel42Utils
 
     void CGitHubGetVersions::requestLatestVersion()
     {
-        QUrl url( fURLPath );
+        Q_ASSERT( fCurrentVersion.has_value() );
+        fLatestRequest = true;
+        QUrl url( githubReleaseUrl() );
 
         fErrorString = "";
         fHasError = false;
 
         QNetworkRequest request;
         request.setUrl( url );
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 15, 0 )
         request.setTransferTimeout( getTimeOutDelay() );
-#endif
 
-        emit sigLogMessage( tr( "Requesting version info from - %1" ).arg( fURLPath ) );
+        emit sigLogMessage( tr( "Requesting version info from - %1" ).arg( githubReleaseUrl().toString() ) );
 
         request.setRawHeader( QByteArray( "Accept" ), QByteArray( "application/vnd.github+json" ) );
         // request.setRawHeader( QByteArray( "Authorization" ), QByteArray( "token " ) + fGitHubToken );
@@ -198,6 +193,30 @@ namespace NTowel42Utils
         return delay;
     }
 
+    bool CGitHubGetVersions::loadResult( const QJsonObject &version, bool topLevelResult )
+    {
+        if ( fHasError )
+            return false;
+        if ( topLevelResult )
+        {
+            emit sigLogMessage( tr( "Versions finished downloading from github - Latest version found" ) );
+            fReleases.clear();
+            fLatestUpdate.reset();
+        }
+        auto curr = std::make_shared< SGitHubRelease >( version );
+        if ( !curr->fAOK )
+        {
+            fErrorString += QObject::tr( "Error in Reply: Invalid JSON Data" );
+            fHasError = true;
+            return false;
+        }
+        fReleases.push_back( curr );
+
+        if ( topLevelResult )
+            postLoadResults();
+        return true;
+    }
+
     void CGitHubGetVersions::loadResults( const QJsonArray &versions )
     {
         if ( fHasError )
@@ -209,11 +228,14 @@ namespace NTowel42Utils
         fLatestUpdate.reset();
         for ( auto &&version : versions )
         {
-            auto curr = std::make_shared< SGitHubRelease >( version.toObject() );
-            if ( !curr->fAOK )
-                continue;
-            fReleases.push_back( curr );
+            if ( !loadResult( version.toObject(), false ) )
+                return;
         }
+        postLoadResults();
+    }
+
+    void CGitHubGetVersions::postLoadResults()
+    {
         fReleases.sort(
             []( std::shared_ptr< SGitHubRelease > lhs, std::shared_ptr< SGitHubRelease > rhs ) -> bool
             {
@@ -225,28 +247,42 @@ namespace NTowel42Utils
                 return lhsVal > rhsVal;
             } );
 
-        emit sigLogMessage( tr( "Searching for a newer version than '%1'" ).arg( fCurrentVersion.toString( true ) ) );
+        if ( !fCurrentVersion.has_value() )
+        {
+            emit sigLogMessage( tr( "Current Version not set" ).arg( fCurrentVersion.value().toString( true ) ) );
+            return;
+        }
+
+        emit sigLogMessage( tr( "Searching for a newer version than '%1'" ).arg( fCurrentVersion.value().toString( true ) ) );
+
         for ( auto &&curr : fReleases )
         {
             if ( fLatestUpdate.has_value() )
                 break;
 
-            if ( curr->supportsOS() && ( curr->fVersion > fCurrentVersion ) )
+            if ( curr->supportsOS() )
             {
-                emit sigLogMessage( tr( "Newer version found '%1'" ).arg( curr->fVersion.toString( true ) ) );
-                auto text = curr->fVersion.toString( true ) + "\n";
-                for ( auto &&asset : curr->fAssets )
+                bool isNewer = ( curr->fVersion > fCurrentVersion.value() );
+#ifdef FORCE_OOD
+                isNewer = !fLatestUpdate.has_value();
+#endif
+                if ( isNewer )
                 {
-                    text += "\tDownload: " + asset->fUrl.first + " (" + asset->getSize() + ")\n";
+                    emit sigLogMessage( tr( "Newer version found '%1'" ).arg( curr->fVersion.toString( true ) ) );
+                    auto text = curr->fVersion.toString( true ) + "\n";
+                    for ( auto &&asset : curr->fAssets )
+                    {
+                        text += "\tDownload: " + asset->fUrl.first + " (" + asset->getSize() + ")\n";
+                    }
+                    fLatestUpdate = { text, curr };
                 }
-                fLatestUpdate = { text, curr };
             }
         }
 
         if ( !fLatestUpdate.has_value() )
         {
             emit sigLogMessage( tr( "Newer version not found" ) );
-            fLatestUpdate = { "You are running the latest version of the release: " + fCurrentVersion.toString( true ), nullptr };
+            fLatestUpdate = { "You are running the latest version of the release: " + fCurrentVersion.value().toString( true ), nullptr };
         }
     }
 
@@ -275,9 +311,9 @@ namespace NTowel42Utils
         return fLatestUpdate.value().second;
     }
 
-    QString CGitHubGetVersions::determineReleasesPath()
+    QUrl CGitHubGetVersions::githubReleaseUrl() const
     {
-        QString retVal = qApp->organizationDomain();
+        QString retVal = fBaseGitURL;
         if ( !retVal.startsWith( "https://" ) )
             retVal = "https://" + retVal;
 
@@ -285,6 +321,8 @@ namespace NTowel42Utils
             retVal += "/";
         if ( !retVal.endsWith( "releases" ) )
             retVal += "releases";
+        if ( fLatestRequest )
+            retVal += "/latest";
         auto url = QUrl( retVal );
 
         auto path = url.path();
@@ -297,7 +335,7 @@ namespace NTowel42Utils
 
         url.setHost( host );
 
-        return url.toString();
+        return url;
     }
 
     bool SVersion::setVersionInfo( const QString &tagName, const QString &createdDate )
@@ -305,39 +343,63 @@ namespace NTowel42Utils
         fReleaseDate = QDateTime::fromString( createdDate, Qt::ISODate );
         if ( !fReleaseDate.isValid() )
             return false;
-        if ( !tagName.startsWith( "v" ) )
-            return false;
-        auto pos = tagName.indexOf( '.' );
-        if ( pos == -1 )
-            return false;
-        bool aOK = false;
-        fMajor = tagName.mid( 1, pos - 1 ).toInt( &aOK );
-        if ( !aOK )
-            return false;
-        fMinor = tagName.mid( pos + 1 ).toInt( &aOK );
-        if ( !aOK )
-            return false;
 
-        return aOK;
+        auto tag = tagName;
+        if ( tag.startsWith( "v" ) )
+            tag = tag.mid( 1 );
+        auto versionText = tag.split( '.' );
+        std::list< int > version;
+        for ( auto &&ii : versionText )
+        {
+            bool aOK;
+            auto curr = ii.toInt( &aOK );
+            if ( !aOK )
+                return false;
+            version.push_back( curr );
+        }
+
+        auto pos = version.begin();
+        if ( pos == version.end() )
+            return false;
+        fMajor = *pos;
+        pos++;
+        if ( pos == version.end() )
+            return false;
+        fMinor = *pos;
+        return true;
     }
+
+    int compare( const SVersion &lhs, const SVersion &rhs )
+    {
+        if ( lhs.fMajor != rhs.fMajor )
+            return ( lhs.fMajor < rhs.fMajor ) ? -1 : 1;
+        if ( lhs.fMinor != rhs.fMinor )
+            return ( lhs.fMinor < rhs.fMinor ) ? -1 : 1;
+        if ( lhs.fReleaseDate != rhs.fReleaseDate )
+            return ( lhs.fReleaseDate < rhs.fReleaseDate ) ? -1 : 1;
+        return 0;
+    }
+
+#if __cplusplus >= 202002L
+    int operator<= > ( const SVersion &lhs, const SVersion &rhs )
+    {
+        return compare( lhs, rhs );
+    }
+#endif
 
     bool operator>( const SVersion &lhs, const SVersion &rhs )
     {
-        if ( lhs.fMajor != rhs.fMajor )
-            return lhs.fMajor > rhs.fMajor;
-        if ( lhs.fMinor != rhs.fMinor )
-            return lhs.fMinor > rhs.fMinor;
-        return lhs.fReleaseDate > rhs.fReleaseDate;
+        return compare( lhs, rhs ) > 0;
     }
 
     bool operator<( const SVersion &lhs, const SVersion &rhs )
     {
-        return !operator==( lhs, rhs ) && !operator>( lhs, rhs );
+        return compare( lhs, rhs ) < 0;
     }
 
     bool operator==( const SVersion &lhs, const SVersion &rhs )
     {
-        return ( lhs.fMajor == rhs.fMajor ) && ( lhs.fMinor != rhs.fMinor ) && ( lhs.fReleaseDate == rhs.fReleaseDate );
+        return compare( lhs, rhs ) == 0;
     }
 
     QString SVersion::toString( bool verbose ) const

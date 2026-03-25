@@ -1,6 +1,7 @@
 // The MIT License( MIT )
+// The MIT License( MIT )
 //
-// Copyright( c ) 2026 Towel 42 Development, LLC and Scott Aron Bloom
+// Copyright( c ) 2022-2026 Towel 42 Development, LLC and Scott Aron Bloom
 // SPDX-License-Identifier : MIT License
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,27 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
-// The MIT License( MIT )
-//
-// Copyright( c ) 2022 Scott Aron Bloom
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files( the "Software" ), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sub-license, and/or sell
-// copies of the Software, and to permit persons to whom the Software iRHS
-// furnished to do so, subject to the following conditions :
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
 
 #ifndef __GITHUBGETVERSIONS_H
 #define __GITHUBGETVERSIONS_H
@@ -64,6 +44,8 @@ class QNetworkProxy;
 
 namespace NTowel42Utils
 {
+    class CVersionInfoData;
+
     struct TOWEL42_UTILS_EXPORT SVersion
     {
         SVersion() {};
@@ -75,6 +57,11 @@ namespace NTowel42Utils
         QDateTime fReleaseDate;
     };
 
+    TOWEL42_UTILS_EXPORT int compare( const SVersion &lhs, const SVersion &rhs );
+
+#if __cplusplus >= 202002L
+    TOWEL42_UTILS_EXPORT int operator<= > ( const SVersion &lhs, const SVersion &rhs );
+#endif
     TOWEL42_UTILS_EXPORT bool operator<( const SVersion &lhs, const SVersion &rhs );
     TOWEL42_UTILS_EXPORT bool operator>( const SVersion &lhs, const SVersion &rhs );
     TOWEL42_UTILS_EXPORT bool operator==( const SVersion &lhs, const SVersion &rhs );
@@ -82,7 +69,6 @@ namespace NTowel42Utils
     struct TOWEL42_UTILS_EXPORT SGitHubAsset
     {
         SGitHubAsset( const QJsonObject &assetInfo );
-
         QString getSize() const;
 
         bool supportsOS() const;
@@ -129,15 +115,14 @@ namespace NTowel42Utils
         Q_OBJECT;
 
     public:
-        CGitHubGetVersions( const QByteArray &githubToken, QObject *parent = nullptr );
-        CGitHubGetVersions( const QString &urlPath, const QByteArray &githubToken, QObject *parent = nullptr );
-
-        static QString determineReleasesPath();   // uses QApplication::organizationDomain
-
+        CGitHubGetVersions( QObject *parent = nullptr );   // uses determineReleasePath
+        CGitHubGetVersions( const QString &baseGitURL, QObject *parent = nullptr );
         ~CGitHubGetVersions();
 
-        void setCurrentVersion( int major, int minor, const QDateTime &buildDT );
+        void setCurrentVersion( std::shared_ptr< CVersionInfoData > versionInfo );
         void requestLatestVersion();
+
+        QUrl githubReleaseUrl() const;   // uses QApplication::organizationDomain or baseGitURL
 
         bool hasUpdate() const;
         QString updateVersion() const;
@@ -145,6 +130,10 @@ namespace NTowel42Utils
 
         bool hasError() const { return fHasError; }
         QString errorString() const { return fErrorString; }
+
+        void setForcedCheck( bool forcedCheck ) { fForcedCheck = forcedCheck; }
+        bool forcedCheck() const { return fForcedCheck ; }
+
     private Q_SLOTS:
         void slotFinished( QNetworkReply *reply );
         void slotAuthenticationRequired( QNetworkReply *reply, QAuthenticator *authenticator );
@@ -160,9 +149,11 @@ namespace NTowel42Utils
     private:
         int getTimeOutDelay() const;
         void loadResults( const QJsonArray &results );
+        bool loadResult( const QJsonObject &result, bool topLevelResult );
+        void postLoadResults();
 
-        SVersion fCurrentVersion;
-        QString fURLPath;
+        std::optional< SVersion > fCurrentVersion;
+        QString fBaseGitURL;
         QByteArray fGitHubToken;
 
         QNetworkAccessManager *fManager{ nullptr };
@@ -171,6 +162,9 @@ namespace NTowel42Utils
 
         std::optional< std::pair< QString, std::shared_ptr< SGitHubRelease > > > fLatestUpdate;
         std::list< std::shared_ptr< SGitHubRelease > > fReleases;
+
+        bool fLatestRequest{ false };
+        bool fForcedCheck{ false };
     };
 }
 
