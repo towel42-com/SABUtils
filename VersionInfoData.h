@@ -63,7 +63,8 @@ namespace NTowel42Utils
     public:
         virtual int majorVersion() const = 0;
         virtual int minorVersion() const = 0;
-        virtual QString patchVersion() const = 0;
+        virtual int patchVersion() const = 0;
+        virtual QString gitVersion() const = 0;
         virtual uint16_t patchVersionLow() const = 0;
         virtual uint16_t patchVersionHigh() const = 0;
         virtual bool modified() const = 0;
@@ -84,7 +85,7 @@ namespace NTowel42Utils
 
         virtual QDateTime buildDateTime( bool localTime ) const;
         virtual QString getBuildDateText( bool localTime, bool includeTZ, bool sortableDate ) const;
-        virtual QString getVersionText( bool full ) const;
+        virtual QString getVersionText() const;
         virtual QString getVersionTextEX( bool localTime, bool full, bool sortableDate ) const;
         virtual QString getWindowTitle( bool verbose = true, bool homePage = true ) const;
         virtual void setupApplication( bool useProductHomepage ) const;

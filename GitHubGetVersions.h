@@ -54,6 +54,7 @@ namespace NTowel42Utils
         QString toString( bool verbose ) const;
         int fMajor{ -1 };
         int fMinor{ -1 };
+        int fPatch{ -1 };
         QDateTime fReleaseDate;
     };
 

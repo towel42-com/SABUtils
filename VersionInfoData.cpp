@@ -82,14 +82,15 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    QString CVersionInfoData::getVersionText( bool full ) const
+    QString CVersionInfoData::getVersionText() const
     {
-        auto retVal = QString::number( majorVersion() ) + QStringLiteral( "." );
-        if ( forceMinorVersionTwoDigits() && ( minorVersion() < 10 ) )
-            retVal += '0';
-        retVal += QString::number( minorVersion() );
-        if ( full )
-            retVal += QStringLiteral( "." ) + patchVersion();
+        auto version = QStringList()   //
+                       << QString::number( majorVersion() )   //
+                       << QString( "%1" ).arg( minorVersion(), forceMinorVersionTwoDigits() ? 2 : 0, 10, QChar( '0' ) )   //
+                       << QString( "%1" ).arg( patchVersion(), forceMinorVersionTwoDigits() ? 2 : 0, 10, QChar( '0' ) )   //
+                       << gitVersion()   //
+            ;
+        auto retVal = version.join( "." );
         if ( modified() )
             retVal += QStringLiteral( "*" );
         if ( !ahead().isEmpty() && !modified() )
@@ -100,7 +101,7 @@ namespace NTowel42Utils
 
     QString CVersionInfoData::getVersionTextEX( bool localTime, bool full, bool sortableDate ) const
     {
-        auto retVal = getVersionText( full );
+        auto retVal = getVersionText();
         if ( full )
         {
             auto dateString = getBuildDateText( localTime, full, sortableDate );

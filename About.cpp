@@ -71,7 +71,7 @@ namespace NTowel42Utils
         auto caption = QObject::tr( "<h3>About %1</h3>"
                                     "<p>%1</p><p>Version: %2</p><p>Build Date: %3</p>" )
                            .arg( versionInfo->appName() )
-                           .arg( versionInfo->getVersionText( true ) )
+                           .arg( versionInfo->getVersionText() )
                            .arg( versionInfo->getBuildDateText( true, false, false ) );
 
         auto homePage = versionInfo->homePage();

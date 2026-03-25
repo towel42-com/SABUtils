@@ -40,7 +40,7 @@
 #include <QCoreApplication>
 
 #ifdef _DEBUG
-    #define FORCE_OOD
+    //#define FORCE_OOD
 #endif
 
 namespace NTowel42Utils
@@ -79,6 +79,7 @@ namespace NTowel42Utils
         SVersion version;
         version.fMajor = versionInfo->majorVersion();
         version.fMinor = versionInfo->minorVersion();
+        version.fPatch = versionInfo->patchVersion();
         version.fReleaseDate = versionInfo->buildDateTime( false );
         fCurrentVersion = version;
     }
@@ -366,6 +367,10 @@ namespace NTowel42Utils
         if ( pos == version.end() )
             return false;
         fMinor = *pos;
+        pos++;
+        if ( pos == version.end() )
+            return true;
+        fPatch = *pos;
         return true;
     }
 
@@ -375,6 +380,8 @@ namespace NTowel42Utils
             return ( lhs.fMajor < rhs.fMajor ) ? -1 : 1;
         if ( lhs.fMinor != rhs.fMinor )
             return ( lhs.fMinor < rhs.fMinor ) ? -1 : 1;
+        if ( lhs.fPatch != rhs.fPatch )
+            return ( lhs.fPatch < rhs.fPatch ) ? -1 : 1;
         if ( lhs.fReleaseDate != rhs.fReleaseDate )
             return ( lhs.fReleaseDate < rhs.fReleaseDate ) ? -1 : 1;
         return 0;
@@ -406,11 +413,11 @@ namespace NTowel42Utils
     {
         QString retVal;
         if ( verbose )
-            retVal = QStringLiteral( "Version: %1.%2 - Release Date: %3" );
+            retVal = QStringLiteral( "Version: %1.%2.%3 - Release Date: %4" );
         else
-            retVal = QStringLiteral( "%1.%2" );
+            retVal = QStringLiteral( "%1.%2.%3" );
 
-        retVal = retVal.arg( fMajor ).arg( fMinor );
+        retVal = retVal.arg( fMajor ).arg( fMinor ).arg( fPatch );
         if ( verbose )
             retVal = retVal.arg( fReleaseDate.toString() );
         return retVal;
