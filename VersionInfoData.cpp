@@ -82,18 +82,23 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    QString CVersionInfoData::getVersionText() const
+    QString CVersionInfoData::getVersionText( bool verbose ) const
     {
         auto version = QStringList()   //
                        << QString::number( majorVersion() )   //
                        << QString( "%1" ).arg( minorVersion(), forceMinorVersionTwoDigits() ? 2 : 0, 10, QChar( '0' ) )   //
                        << QString( "%1" ).arg( patchVersion(), forceMinorVersionTwoDigits() ? 2 : 0, 10, QChar( '0' ) )   //
-                       << gitVersion()   //
             ;
         auto retVal = version.join( "." );
-        if ( modified() )
-            retVal += QStringLiteral( "*" );
-        if ( !ahead().isEmpty() && !modified() )
+        if ( verbose )
+            retVal += "." + getGitVersionAndStatus();
+        return retVal;
+    }
+
+    QString CVersionInfoData::getGitVersionAndStatus() const
+    {
+        QString retVal = gitVersion();
+        if ( modified() || !ahead().isEmpty() )
             retVal += QStringLiteral( "*" );
         retVal += ahead();
         return retVal;
@@ -101,7 +106,7 @@ namespace NTowel42Utils
 
     QString CVersionInfoData::getVersionTextEX( bool localTime, bool full, bool sortableDate ) const
     {
-        auto retVal = getVersionText();
+        auto retVal = getVersionText( true );
         if ( full )
         {
             auto dateString = getBuildDateText( localTime, full, sortableDate );
@@ -135,4 +140,83 @@ namespace NTowel42Utils
         qApp->setOrganizationName( vendor() );
         qApp->setOrganizationDomain( useProductHomepage ? productHomePage() : homePage() );
     }
+
+    int compare( const SVersion &lhs, const SVersion &rhs )
+    {
+        if ( lhs.fMajor != rhs.fMajor )
+            return ( lhs.fMajor < rhs.fMajor ) ? -1 : 1;
+        if ( lhs.fMinor != rhs.fMinor )
+            return ( lhs.fMinor < rhs.fMinor ) ? -1 : 1;
+        if ( lhs.fPatch != rhs.fPatch )
+            return ( lhs.fPatch < rhs.fPatch ) ? -1 : 1;
+        if ( lhs.fReleaseDate != rhs.fReleaseDate )
+            return ( lhs.fReleaseDate < rhs.fReleaseDate ) ? -1 : 1;
+        return 0;
+    }
+
+#if __cplusplus >= 202002L
+    int operator<=> ( const SVersion &lhs, const SVersion &rhs )
+    {
+        return compare( lhs, rhs );
+    }
+#endif
+
+    bool operator>( const SVersion &lhs, const SVersion &rhs )
+    {
+        return compare( lhs, rhs ) > 0;
+    }
+
+    bool operator<( const SVersion &lhs, const SVersion &rhs )
+    {
+        return compare( lhs, rhs ) < 0;
+    }
+
+    bool operator==( const SVersion &lhs, const SVersion &rhs )
+    {
+        return compare( lhs, rhs ) == 0;
+    }
+
+    bool operator!=( const SVersion &lhs, const SVersion &rhs )
+    {
+        return !operator==( lhs, rhs );
+    }
+
+ SVersion::SVersion( const QString &tagName, const QString &createdDate )
+    {
+        setVersionInfo( tagName, createdDate );
+    }
+
+ SVersion::SVersion( int major, int minor, int patch ) :
+        fMajor( major ),
+        fMinor( minor ),
+        fPatch( patch )
+    {
+    }
+
+    QString SVersion::toString( bool verbose ) const
+    {
+        QString retVal;
+        if ( verbose )
+            retVal = QStringLiteral( "Version: %1.%2.%3 - Release Date: %4" );
+        else
+            retVal = QStringLiteral( "%1.%2.%3" );
+
+        retVal = retVal.arg( fMajor ).arg( fMinor ).arg( fPatch );
+        if ( verbose )
+            retVal = retVal.arg( fReleaseDate.toString() );
+        return retVal;
+    }
+
+QString SThirdPartyData::row() const
+    {
+        return QString( R"(<tr>)"
+                        R"(<td style="white-space=nowrap;">%1</td>)"
+                        R"(<td style="white-space=nowrap;">%2</td>)"
+                        R"(<td style="white-space=nowrap;"><a href="%3">%4</a></td>)"
+                        R"(<td style="white-space=nowrap;"><a href="%5">%6</a></td>)"
+                        R"(<td style="white-space=nowrap;"><a href="%7">%8</a></td>)"
+                        R"(</tr>)" )
+            .arg( fCompany, fProduct, fLicenseURL, fLicense, fSourceURL, fSource, fPatchURL, fPatchDesc );
+    }
+
 }

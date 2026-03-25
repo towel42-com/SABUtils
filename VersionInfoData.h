@@ -35,19 +35,34 @@ class QCoreApplication;
 
 namespace NTowel42Utils
 {
+    struct TOWEL42_UTILS_EXPORT SVersion
+    {
+        SVersion() {};
+        SVersion( const QString &tagName, const QString &createdDate );;
+        SVersion( int major, int minor, int patch );
+        bool setVersionInfo( const QString &tagName, const QString &createdDate );
+
+        QString toString( bool verbose ) const;
+        int fMajor{ -1 };
+        int fMinor{ -1 };
+        int fPatch{ -1 };
+        QDateTime fReleaseDate;
+        QString fComment;
+    };
+
+    TOWEL42_UTILS_EXPORT int compare( const SVersion &lhs, const SVersion &rhs );
+
+#if __cplusplus >= 202002L
+    TOWEL42_UTILS_EXPORT int operator<= > ( const SVersion &lhs, const SVersion &rhs );
+#else
+    TOWEL42_UTILS_EXPORT bool operator<( const SVersion &lhs, const SVersion &rhs );
+    TOWEL42_UTILS_EXPORT bool operator>( const SVersion &lhs, const SVersion &rhs );
+    TOWEL42_UTILS_EXPORT bool operator==( const SVersion &lhs, const SVersion &rhs );
+    TOWEL42_UTILS_EXPORT bool operator!=( const SVersion &lhs, const SVersion &rhs );
+#endif
     struct TOWEL42_UTILS_EXPORT SThirdPartyData
     {
-        QString row() const
-        {
-            return QString( R"(<tr>)"
-                            R"(<td style="white-space=nowrap;">%1</td>)"
-                            R"(<td style="white-space=nowrap;">%2</td>)"
-                            R"(<td style="white-space=nowrap;"><a href="%3">%4</a></td>)"
-                            R"(<td style="white-space=nowrap;"><a href="%5">%6</a></td>)"
-                            R"(<td style="white-space=nowrap;"><a href="%7">%8</a></td>)"
-                            R"(</tr>)" )
-                .arg( fCompany, fProduct, fLicenseURL, fLicense, fSourceURL, fSource, fPatchURL, fPatchDesc );
-        }
+        QString row() const;
         QString fCompany;
         QString fProduct;
         QString fLicense;
@@ -77,26 +92,27 @@ namespace NTowel42Utils
         virtual QString copyright() const = 0;
         virtual QString buildDateUTC() const = 0;
         virtual QString buildTimeUTC() const = 0;
-        virtual bool forceMinorVersionTwoDigits() const { return true; }
+        virtual bool forceMinorVersionTwoDigits() const { return false; }
         virtual QString aboutText() const { return fAboutText; }
-        virtual QString logoPath() const { return fLogoPath; }
-        virtual QSize logoSize() const { return QSize( 128, 128 ); }
+        virtual QString avatarPath() const { return fAvatarPath; }
+        virtual QSize avatarSize() const { return QSize( 128, 128 ); }
         virtual const std::list< SThirdPartyData > &thirdPartyData() const { return fThirdPartyData; }
 
         virtual QDateTime buildDateTime( bool localTime ) const;
         virtual QString getBuildDateText( bool localTime, bool includeTZ, bool sortableDate ) const;
-        virtual QString getVersionText() const;
+        virtual QString getVersionText( bool verbose ) const;   // verbose adds git version and status
+        virtual QString getGitVersionAndStatus() const;
         virtual QString getVersionTextEX( bool localTime, bool full, bool sortableDate ) const;
         virtual QString getWindowTitle( bool verbose = true, bool homePage = true ) const;
         virtual void setupApplication( bool useProductHomepage ) const;
 
         void setAboutText( const QString &text ) { fAboutText = text; }
-        void setLogoPath( const QString &path ) { fLogoPath = path; }
+        void setAvatarPath( const QString &path ) { fAvatarPath = path; }
         void setThirdPartyData( const std::list< SThirdPartyData > &thirdPartyData ) { fThirdPartyData = thirdPartyData; }
 
     private:
         QString fAboutText;
-        QString fLogoPath;
+        QString fAvatarPath;
         std::list< SThirdPartyData > fThirdPartyData;
     };
 }

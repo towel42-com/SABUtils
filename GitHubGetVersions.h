@@ -27,6 +27,7 @@
 #define __GITHUBGETVERSIONS_H
 
 #include "Towel42UtilsExport.h"
+#include "VersionInfoData.h"
 #include <QObject>
 #include <QUrl>
 #include <QDateTime>
@@ -46,27 +47,7 @@ namespace NTowel42Utils
 {
     class CVersionInfoData;
 
-    struct TOWEL42_UTILS_EXPORT SVersion
-    {
-        SVersion() {};
-        bool setVersionInfo( const QString &tagName, const QString &createdDate );
-
-        QString toString( bool verbose ) const;
-        int fMajor{ -1 };
-        int fMinor{ -1 };
-        int fPatch{ -1 };
-        QDateTime fReleaseDate;
-    };
-
-    TOWEL42_UTILS_EXPORT int compare( const SVersion &lhs, const SVersion &rhs );
-
-#if __cplusplus >= 202002L
-    TOWEL42_UTILS_EXPORT int operator<= > ( const SVersion &lhs, const SVersion &rhs );
-#endif
-    TOWEL42_UTILS_EXPORT bool operator<( const SVersion &lhs, const SVersion &rhs );
-    TOWEL42_UTILS_EXPORT bool operator>( const SVersion &lhs, const SVersion &rhs );
-    TOWEL42_UTILS_EXPORT bool operator==( const SVersion &lhs, const SVersion &rhs );
-
+    struct SVersion;
     struct TOWEL42_UTILS_EXPORT SGitHubAsset
     {
         SGitHubAsset( const QJsonObject &assetInfo );
@@ -82,15 +63,10 @@ namespace NTowel42Utils
 
     struct TOWEL42_UTILS_EXPORT SGitHubRelease
     {
-        SGitHubRelease( const SGitHubRelease &rhs ) :
-            fTagName( rhs.fTagName ),
-            fDescription( rhs.fDescription ),
-            fPreRelease( rhs.fPreRelease ),
-            fVersion( rhs.fVersion ),
-            fAOK( rhs.fAOK )
-        {
-        }
+        SGitHubRelease( const SGitHubRelease &rhs );
+        SGitHubRelease( SGitHubRelease &&rhs );
         SGitHubRelease( const QJsonObject &version );
+
         QString getTitle() const { return QStringLiteral( "%1 - %2" ).arg( fTagName ).arg( fDescription ); }
 
         bool operator>( const SGitHubRelease &rhs ) const;
@@ -105,7 +81,7 @@ namespace NTowel42Utils
         QString fTagName;   // vMajor.Minor
         QString fDescription;
         bool fPreRelease{ false };
-        SVersion fVersion;
+        std::unique_ptr< SVersion > fVersion;
 
         bool fAOK{ false };
         std::list< std::shared_ptr< SGitHubAsset > > fAssets;

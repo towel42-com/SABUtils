@@ -22,6 +22,7 @@
 // SOFTWARE.
 
 #include "GitHubGetVersions.h"
+#include "VersionInfoData.h"
 #include "FileUtils.h"
 #include "VersionInfoData.h"
 
@@ -40,7 +41,7 @@
 #include <QCoreApplication>
 
 #ifdef _DEBUG
-    //#define FORCE_OOD
+//#define FORCE_OOD
 #endif
 
 namespace NTowel42Utils
@@ -263,14 +264,14 @@ namespace NTowel42Utils
 
             if ( curr->supportsOS() )
             {
-                bool isNewer = ( curr->fVersion > fCurrentVersion.value() );
+                bool isNewer = ( *curr->fVersion > fCurrentVersion.value() );
 #ifdef FORCE_OOD
                 isNewer = !fLatestUpdate.has_value();
 #endif
                 if ( isNewer )
                 {
-                    emit sigLogMessage( tr( "Newer version found '%1'" ).arg( curr->fVersion.toString( true ) ) );
-                    auto text = curr->fVersion.toString( true ) + "\n";
+                    emit sigLogMessage( tr( "Newer version found '%1'" ).arg( curr->fVersion->toString( true ) ) );
+                    auto text = curr->fVersion->toString( true ) + "\n";
                     for ( auto &&asset : curr->fAssets )
                     {
                         text += "\tDownload: " + asset->fUrl.first + " (" + asset->getSize() + ")\n";
@@ -374,55 +375,6 @@ namespace NTowel42Utils
         return true;
     }
 
-    int compare( const SVersion &lhs, const SVersion &rhs )
-    {
-        if ( lhs.fMajor != rhs.fMajor )
-            return ( lhs.fMajor < rhs.fMajor ) ? -1 : 1;
-        if ( lhs.fMinor != rhs.fMinor )
-            return ( lhs.fMinor < rhs.fMinor ) ? -1 : 1;
-        if ( lhs.fPatch != rhs.fPatch )
-            return ( lhs.fPatch < rhs.fPatch ) ? -1 : 1;
-        if ( lhs.fReleaseDate != rhs.fReleaseDate )
-            return ( lhs.fReleaseDate < rhs.fReleaseDate ) ? -1 : 1;
-        return 0;
-    }
-
-#if __cplusplus >= 202002L
-    int operator<= > ( const SVersion &lhs, const SVersion &rhs )
-    {
-        return compare( lhs, rhs );
-    }
-#endif
-
-    bool operator>( const SVersion &lhs, const SVersion &rhs )
-    {
-        return compare( lhs, rhs ) > 0;
-    }
-
-    bool operator<( const SVersion &lhs, const SVersion &rhs )
-    {
-        return compare( lhs, rhs ) < 0;
-    }
-
-    bool operator==( const SVersion &lhs, const SVersion &rhs )
-    {
-        return compare( lhs, rhs ) == 0;
-    }
-
-    QString SVersion::toString( bool verbose ) const
-    {
-        QString retVal;
-        if ( verbose )
-            retVal = QStringLiteral( "Version: %1.%2.%3 - Release Date: %4" );
-        else
-            retVal = QStringLiteral( "%1.%2.%3" );
-
-        retVal = retVal.arg( fMajor ).arg( fMinor ).arg( fPatch );
-        if ( verbose )
-            retVal = retVal.arg( fReleaseDate.toString() );
-        return retVal;
-    }
-
     SGitHubRelease::SGitHubRelease( const QJsonObject &version )
     {
         fTagName = version[ "tag_name" ].toString();
@@ -430,9 +382,7 @@ namespace NTowel42Utils
         fPreRelease = version[ "prerelease" ].toBool();
         auto createdAt = version[ "created_at" ].toString();
 
-        if ( !fVersion.setVersionInfo( fTagName, createdAt ) )
-            return;
-
+        fVersion = std::make_unique< SVersion >( fTagName, createdAt );
         auto assets = version[ "assets" ].toArray();
         for ( auto &&ii : assets )
         {
@@ -443,6 +393,24 @@ namespace NTowel42Utils
             fAssets.push_back( assetInfo );
         }
         fAOK = !fAssets.empty();
+    }
+
+    SGitHubRelease::SGitHubRelease( const SGitHubRelease &rhs ) :
+        fTagName( rhs.fTagName ),
+        fDescription( rhs.fDescription ),
+        fPreRelease( rhs.fPreRelease ),
+        fVersion( std::make_unique< SVersion >( *rhs.fVersion ) ),
+        fAOK( rhs.fAOK )
+    {
+    }
+
+    SGitHubRelease::SGitHubRelease( SGitHubRelease &&rhs ) :
+        fTagName( rhs.fTagName ),
+        fDescription( rhs.fDescription ),
+        fPreRelease( rhs.fPreRelease ),
+        fVersion( std::move( rhs.fVersion ) ),
+        fAOK( rhs.fAOK )
+    {
     }
 
     bool SGitHubRelease::operator>( const SGitHubRelease &rhs ) const
