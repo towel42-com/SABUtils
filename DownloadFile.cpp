@@ -250,7 +250,8 @@ namespace NTowel42Utils
         fImpl->currentProgressBar->setValue( 100 );
         fImpl->currentProgressBar->setValue( fImpl->currentProgressBar->maximum() );
         fImpl->speed->setText( "Download canceled" );
-        fReply->abort();
+        if ( fReply )
+            fReply->abort();
         reject();
     }
 
