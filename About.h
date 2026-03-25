@@ -1,5 +1,5 @@
-#ifndef __UI_ABOUT_H
-#define __UI_ABOUT_H
+#ifndef __ABOUT_H
+#define __ABOUT_H
 // The MIT License( MIT )
 //
 // Copyright( c ) 2026 Towel 42 Development, LLC and Scott Aron Bloom
@@ -32,6 +32,6 @@ class QString;
 
 namespace NTowel42Utils
 {
-    TOWEL42_UTILS_EXPORT void showAbout( std::shared_ptr< SVersionInfoData > versionInfo, QWidget *parent = nullptr );
+    TOWEL42_UTILS_EXPORT void showAbout( std::shared_ptr< CVersionInfoData > versionInfo, QWidget *parent = nullptr );
 }
 #endif

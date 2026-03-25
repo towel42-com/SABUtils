@@ -29,6 +29,7 @@
 #include <cstdint>
 #include <QString>
 #include <QDateTime>
+#include <QSize>
 class QWidget;
 class QCoreApplication;
 
@@ -57,7 +58,7 @@ namespace NTowel42Utils
         QString fPatchURL;
     };
 
-    class TOWEL42_UTILS_EXPORT SVersionInfoData
+    class TOWEL42_UTILS_EXPORT CVersionInfoData
     {
     public:
         virtual int majorVersion() const = 0;
@@ -78,6 +79,7 @@ namespace NTowel42Utils
         virtual bool forceMinorVersionTwoDigits() const { return true; }
         virtual QString aboutText() const { return fAboutText; }
         virtual QString logoPath() const { return fLogoPath; }
+        virtual QSize logoSize() const { return QSize( 128, 128 ); }
         virtual const std::list< SThirdPartyData > &thirdPartyData() const { return fThirdPartyData; }
 
         virtual QDateTime buildDateTime( bool localTime ) const;

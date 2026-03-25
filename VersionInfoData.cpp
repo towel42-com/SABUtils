@@ -33,7 +33,7 @@
 namespace NTowel42Utils
 {
 
-    QDateTime SVersionInfoData::buildDateTime( bool localTime ) const
+    QDateTime CVersionInfoData::buildDateTime( bool localTime ) const
     {
         static QDateTime sBuildDateTime;
         if ( !sBuildDateTime.isValid() )
@@ -49,7 +49,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    QString SVersionInfoData::getBuildDateText( bool localTime, bool includeTZ, bool sortableDate ) const
+    QString CVersionInfoData::getBuildDateText( bool localTime, bool includeTZ, bool sortableDate ) const
     {
         QString retVal = QStringLiteral( " Build Date: " );
         auto format = QLocale().dateFormat();
@@ -82,7 +82,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    QString SVersionInfoData::getVersionText( bool full ) const
+    QString CVersionInfoData::getVersionText( bool full ) const
     {
         auto retVal = QString::number( majorVersion() ) + QStringLiteral( "." );
         if ( forceMinorVersionTwoDigits() && ( minorVersion() < 10 ) )
@@ -98,7 +98,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    QString SVersionInfoData::getVersionTextEX( bool localTime, bool full, bool sortableDate ) const
+    QString CVersionInfoData::getVersionTextEX( bool localTime, bool full, bool sortableDate ) const
     {
         auto retVal = getVersionText( full );
         if ( full )
@@ -112,7 +112,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    QString SVersionInfoData::getWindowTitle( bool verbose /*= true*/, bool homePage /*= true */ ) const
+    QString CVersionInfoData::getWindowTitle( bool verbose /*= true*/, bool homePage /*= true */ ) const
     {
         auto retVal = appName();
         if ( verbose )
@@ -127,7 +127,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    void SVersionInfoData::setupApplication( bool useProductHomepage ) const
+    void CVersionInfoData::setupApplication( bool useProductHomepage ) const
     {
         qApp->setApplicationName( appName() );
         qApp->setApplicationVersion( getVersionTextEX( false, true, false ) );

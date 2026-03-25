@@ -32,7 +32,7 @@
 
 namespace NTowel42Utils
 {
-    void showThirdPartyLicenses( std::shared_ptr< SVersionInfoData > versionInfo, QWidget *parent )
+    void showThirdPartyLicenses( std::shared_ptr< CVersionInfoData > versionInfo, QWidget *parent )
     {
         auto title = QObject::tr( "3rd Party Licenses" );
         auto caption = QObject::tr( "<h3>%1 - 3rd Party Licenses</h3>" ).arg( versionInfo->appName() );
@@ -65,7 +65,7 @@ namespace NTowel42Utils
         msgBox->exec();
     }
 
-    void showAbout( std::shared_ptr< SVersionInfoData > versionInfo, QWidget *parent )
+    void showAbout( std::shared_ptr< CVersionInfoData > versionInfo, QWidget *parent )
     {
         auto title = QObject::tr( "About %1" ).arg( versionInfo->appName() );
         auto caption = QObject::tr( "<h3>About %1</h3>"
@@ -105,7 +105,7 @@ namespace NTowel42Utils
         }
 
         msgBox->setEscapeButton( msgBox->addButton( QMessageBox::Ok ) );
-        auto img = NTowel42Utils::pixmapForImageFile( versionInfo->logoPath(), QSize( 512, 512 ) );
+        auto img = NTowel42Utils::pixmapForImageFile( versionInfo->logoPath(), QSize( 128, 128 ) );
         if ( img.has_value() )
             msgBox->setIconPixmap( img.value() );
 
