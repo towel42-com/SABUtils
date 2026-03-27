@@ -1,7 +1,8 @@
 <RCC>
     <qresource prefix="/Towel42UtilsResources">
         <file>add.png</file>
-        <file>avatar.png</file>
+        <file>blank-avatar.png</file>
+        <file>blank-image.png</file>
         <file>delete.png</file>
         <file>edit.png</file>
         <file>error.png</file>
