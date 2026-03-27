@@ -95,7 +95,7 @@ namespace NTowel42Utils
         resetMinimumSize();
     }
 
-    QByteArray CAvatarHandler::avatarData() const
+    std::pair< QByteArray, QVariant > CAvatarHandler::avatarData() const
     {
         if ( !fAvatarData.has_value() )
             return {};
@@ -114,10 +114,10 @@ namespace NTowel42Utils
             return;
         }
 
-        setAvatarData( data );
+        setAvatarData( data, {} );
     }
 
-    void CAvatarHandler::setAvatarData( const QByteArray &avatarData )
+    void CAvatarHandler::setAvatarData( const QByteArray &avatarData, const QVariant & extraData )
     {
         fAvatarData.reset();
         QPixmap pixmap;
@@ -134,7 +134,7 @@ namespace NTowel42Utils
         if ( pixmap.isNull() )
             fAvatarData.reset();
         else
-            fAvatarData = avatarData;
+            fAvatarData = { avatarData, extraData };
         setAvatarPixmap( pixmap );
     }
 

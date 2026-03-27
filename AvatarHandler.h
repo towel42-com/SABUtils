@@ -42,8 +42,8 @@ namespace NTowel42Utils
         CAvatarHandler( QWidget *parent = nullptr );
         ~CAvatarHandler();
 
-        QByteArray avatarData() const;
-        void setAvatarData( const QByteArray &AvatarData );
+        std::pair< QByteArray, QVariant > avatarData() const;
+        void setAvatarData( const QByteArray &avatarData, const QVariant &extraData = {} );
 
     Q_SIGNALS:
         void sigReadOnlyChanged();
@@ -62,7 +62,7 @@ namespace NTowel42Utils
     private:
         void resetMinimumSize();
 
-        std::optional< QByteArray > fAvatarData;
+        std::optional< std::pair< QByteArray, QVariant > > fAvatarData;
         bool fReadOnly{ false };
     };
 }
