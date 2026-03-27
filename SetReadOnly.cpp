@@ -58,6 +58,7 @@ namespace NTowel42Utils
         auto tabWidget = dynamic_cast< QTabWidget * >( childWidget );
         auto label = dynamic_cast< QLabel * >( childWidget );
         auto comboBox = dynamic_cast< QComboBox * >( childWidget );
+        auto itemView = dynamic_cast< QAbstractItemView * >( childWidget );
 
         if ( label )
         {
@@ -93,6 +94,11 @@ namespace NTowel42Utils
                 comboBox->lineEdit()->setCursor( readOnly ? Qt::ForbiddenCursor : Qt::ArrowCursor );
             }
         }
+        else if ( itemView )
+        {
+            itemView->setSelectionMode( readOnly ? QAbstractItemView::SelectionMode::NoSelection : QAbstractItemView::SelectionMode::SingleSelection );
+            itemView->setCursor( readOnly ? Qt::ForbiddenCursor : Qt::ArrowCursor );
+        }
         else
         {
             bool isSimpleWidget = childWidget->metaObject()->superClass()->className() == QStringLiteral( "QWidget" );
@@ -104,7 +110,6 @@ namespace NTowel42Utils
             }
             qDebug() << "SetReadOnly: UNHANDLED-" << childWidget << "-" << childWidget->metaObject()->className() << " - SuperClass: " << childWidget->metaObject()->superClass()->className() << " - " << childWidget->objectName();
             childWidget->setCursor( readOnly ? Qt::ForbiddenCursor : Qt::ArrowCursor );
-
         }
     }
 
