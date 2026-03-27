@@ -191,7 +191,7 @@ namespace NTowel42Utils
     {
         QStringList retVal;
 
-        QRegularExpression regEx( R"__((\?)|(\:\w*))__" );
+        QRegularExpression regEx( R"__((\?)|(\:\w+))__" );
         if ( !regEx.isValid() )
             return retVal;
 
