@@ -723,8 +723,8 @@ namespace NTowel42Utils
         qDebug() << ( QSqlDatabase().driverName() );
 
         auto cmd = QStringLiteral( "SELECT LAST_INSERT_ID();" );
-        auto retVal = runCmd( query, cmd );
-        if ( !retVal || !query.next() )
+        auto aOK = runCmd( query, cmd ) && query.next();
+        if ( aOK )
             return {};
         return query.value( 0 ).toInt();
     }
