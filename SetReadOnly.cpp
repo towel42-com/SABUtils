@@ -124,5 +124,10 @@ namespace NTowel42Utils
         {
             setReadOnlyInternal( parentWidget, child, readOnly );
         }
+
+        if ( children.isEmpty() )
+        {
+            setReadOnlyInternal( parentWidget, parentWidget, readOnly );
+        }
     }
 }

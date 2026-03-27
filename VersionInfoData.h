@@ -94,8 +94,8 @@ namespace NTowel42Utils
         virtual QString buildTimeUTC() const = 0;
         virtual bool forceMinorVersionTwoDigits() const { return false; }
         virtual QString aboutText() const { return fAboutText; }
-        virtual QString avatarPath() const { return fAvatarPath; }
-        virtual QSize avatarSize() const { return QSize( 128, 128 ); }
+        virtual QString logoPath() const { return fLogoPath; }
+        virtual QSize logoSize() const { return QSize( 128, 128 ); }
         virtual const std::list< SThirdPartyData > &thirdPartyData() const { return fThirdPartyData; }
 
         virtual QDateTime buildDateTime( bool localTime ) const;
@@ -107,12 +107,12 @@ namespace NTowel42Utils
         virtual void setupApplication( bool useProductHomepage ) const;
 
         void setAboutText( const QString &text ) { fAboutText = text; }
-        void setAvatarPath( const QString &path ) { fAvatarPath = path; }
+        void setLogoPath( const QString &path ) { fLogoPath = path; }
         void setThirdPartyData( const std::list< SThirdPartyData > &thirdPartyData ) { fThirdPartyData = thirdPartyData; }
 
     private:
         QString fAboutText;
-        QString fAvatarPath;
+        QString fLogoPath;
         std::list< SThirdPartyData > fThirdPartyData;
     };
 }

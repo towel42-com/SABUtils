@@ -105,7 +105,7 @@ namespace NTowel42Utils
         }
 
         msgBox->setEscapeButton( msgBox->addButton( QMessageBox::Ok ) );
-        auto img = NTowel42Utils::pixmapForImageFile( versionInfo->avatarPath(), QSize( 128, 128 ) );
+        auto img = NTowel42Utils::pixmapForImageFile( versionInfo->logoPath(), QSize( 128, 128 ) );
         if ( img.has_value() )
             msgBox->setIconPixmap( img.value() );
 
