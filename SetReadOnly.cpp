@@ -113,21 +113,22 @@ namespace NTowel42Utils
         }
     }
 
-    void setReadOnly( QWidget *parentWidget, bool readOnly )
+    void setReadOnly( QWidget *parentWidget, bool readOnly, bool recursive /*= true*/ )
     {
         if ( !parentWidget )
             return;
+
+        if ( !recursive )
+        {
+            setReadOnlyInternal( parentWidget, parentWidget, readOnly );
+            return;
+        }
 
         std::unordered_map< QObject *, bool > handled;
         QList< QWidget * > children = parentWidget->findChildren< QWidget * >( Qt::FindChildOption::FindDirectChildrenOnly );
         for ( QWidget *child : children )
         {
             setReadOnlyInternal( parentWidget, child, readOnly );
-        }
-
-        if ( children.isEmpty() )
-        {
-            setReadOnlyInternal( parentWidget, parentWidget, readOnly );
         }
     }
 }

@@ -30,6 +30,6 @@ class QWidget;
 
 namespace NTowel42Utils
 {
-    TOWEL42_UTILS_EXPORT void setReadOnly( QWidget *parentWidget, bool readOnly );
+    TOWEL42_UTILS_EXPORT void setReadOnly( QWidget *parentWidget, bool readOnly, bool recursive=true );
 }
 #endif

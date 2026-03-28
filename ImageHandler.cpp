@@ -146,8 +146,8 @@ namespace NTowel42Utils
         fImageButton->setAutoRaise( !fReadOnly );
         fImageButton->setCursor( fReadOnly ? Qt::ForbiddenCursor : Qt::ArrowCursor );
 
-        NTowel42Utils::setReadOnly( fClearButton, fReadOnly );
-        NTowel42Utils::setReadOnly( fDescription, fReadOnly );
+        NTowel42Utils::setReadOnly( fClearButton, fReadOnly, false );
+        NTowel42Utils::setReadOnly( fDescription, fReadOnly, false );
 
         fLayoutDirty = true;
         layout();
