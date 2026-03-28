@@ -260,7 +260,6 @@ if ( TOWEL42_QWIDGET_SUPPORT )
     set(qtproject_UIS
         ${qtproject_UIS}
         DownloadFile.ui
-        ImageHandler.ui
         ScrollMessageBox.ui
     )
     
