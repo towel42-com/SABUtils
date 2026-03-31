@@ -48,6 +48,7 @@
 
 #include "Towel42UtilsExport.h"
 #include <unordered_set>
+#ifdef TOWEL42_QCORE_SUPPORT
 class QString;
 namespace NTowel42Utils
 {
@@ -63,4 +64,13 @@ namespace NTowel42Utils
 
     using TCaseInsensitiveHash = std::unordered_set< QString, CCaseInsensitiveHash, CCaseInsensitiveEqual >;
 }
+
+    #ifdef TOWEL42_QWIDGET_SUPPORT
+        #include "WidgetUtilsFwd.h"
+    #endif
+    #ifdef TOWEL42_QSQL_SUPPORT
+        #include "DBUtilsFwd.h"
+    #endif
+
+#endif
 #endif

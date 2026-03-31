@@ -70,6 +70,8 @@ set(project_H
     StringUtils.h
     Towel42UtilsExport.h
     VersionInfoData.h
+    Towel42UtilsFwd.h
+
     ${OS_HEADERS}
 )
 
@@ -258,6 +260,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         SpinBox64_StepType.h
         uiUtils.h
         WidgetChanged.h
+        WidgetUtilsFwd.h
     )
     set(qtproject_UIS
         ${qtproject_UIS}
