@@ -59,6 +59,9 @@ namespace NTowel42Utils
         void slotModelReset();
         void slotTextChanged( const QString &changed );
 
+    Q_SIGNALS:
+        void sigSelectionChanged( bool buttonEnabled );
+        void sigTextChanged( bool buttonEnabled );
     private:
         QPointer< QAbstractButton > fButton{ nullptr };
         QAction *fAction{ nullptr };

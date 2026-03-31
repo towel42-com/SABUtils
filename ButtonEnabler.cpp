@@ -154,6 +154,7 @@ namespace NTowel42Utils
             }
         }
         setEnabled( enabled );
+        emit sigSelectionChanged( enabled );
     }
 
     void CButtonEnabler::slotTextChanged( const QString &txt )
@@ -164,5 +165,6 @@ namespace NTowel42Utils
             enabled = QFile( txt ).exists();
         }
         setEnabled( enabled );
+        emit sigTextChanged( enabled );
     }
 }
