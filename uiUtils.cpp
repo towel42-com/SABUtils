@@ -44,7 +44,10 @@
 #include <QGroupBox>
 #include <QDialogButtonBox>
 #include <QFile>
-
+#include <QImage>
+#include <QImageReader>
+#include <QBuffer>
+#include <QTransform>
 #include <functional>
 #include <unordered_set>
 #include <set>
@@ -343,12 +346,34 @@ namespace NTowel42Utils
         }
         else
         {
-            QPixmap tmpPixmap;
-            if ( tmpPixmap.loadFromData( data ) )
+            QBuffer buf( &const_cast< QByteArray & >( data ) );
+            auto imageReader = QImageReader();
+            imageReader.setAutoTransform( true );
+            imageReader.setDevice( &buf );
+
+            auto image = imageReader.read();
+            if ( !image.isNull() )
             {
+                //auto transforms = imageReader.transformation();
+                //int rotationAngle = 0;
+                //if ( ( transforms & QImageIOHandler::TransformationRotate90 ) != 0 )
+                //    rotationAngle = 90;
+                //else if ( ( transforms & QImageIOHandler::TransformationRotate180 ) != 0 )
+                //    rotationAngle = 180;
+                //else if ( ( transforms & QImageIOHandler::TransformationRotate270 ) != 0 )
+                //    rotationAngle = 270;
+
+                //if ( rotationAngle != 0 )
+                //{
+                //    QTransform transform;
+                //    transform.rotate( rotationAngle );
+                //    image = image.transformed( transform );
+                //}
+
+                auto pm = QPixmap::fromImage( image );
                 if ( sz.has_value() )
-                    tmpPixmap = tmpPixmap.scaled( sz.value(), Qt::KeepAspectRatio );
-                pixmap = tmpPixmap;
+                    pm = pm.scaled( sz.value(), Qt::KeepAspectRatio );
+                pixmap = pm;
             }
         }
         return pixmap;
