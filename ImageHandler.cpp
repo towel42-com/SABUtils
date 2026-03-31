@@ -42,6 +42,9 @@
 #include <QIcon>
 #include <QRect>
 
+#include <QVBoxLayout>
+#include <QDialogButtonBox>
+
 namespace NTowel42Utils
 {
     static const QSize kImageSize( 100, 100 );
@@ -49,21 +52,20 @@ namespace NTowel42Utils
     CImageHandler::CImageHandler( QWidget *parent /*= nullptr*/ ) :
         QWidget( parent )
     {
-        setupUi();
-
         connect( this, &CImageHandler::sigReadOnlyChanged, this, &CImageHandler::slotReadOnlyChanged );
         connect( this, &CImageHandler::sigImageTypeChanged, this, &CImageHandler::slotImageTypeChanged );
+
+        setupUi();
+
         connect( fImageButton, &QToolButton::clicked, this, &CImageHandler::slotSelectImage );
         connect( fClearButton, &QPushButton::clicked, [ & ]() { this->loadDefaultImage(); } );
+        setImageType( EImageType::eImage );
     }
 
     void CImageHandler::setupUi()
     {
         fLayoutDirty = true;
         setObjectName( "NTowel42Utils__CImageHandler" );
-        //auto verticalLayout = new QVBoxLayout( this );
-        //verticalLayout->setObjectName( "verticalLayout" );
-        //verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 
         fFrame = new QFrame( this );
         fFrame->setObjectName( "fFrame" );
@@ -73,37 +75,41 @@ namespace NTowel42Utils
         fImageButton = new QToolButton( this );
         fImageButton->setObjectName( "fImageToolButton" );
 
-        //verticalLayout->addWidget( fImageButton, Qt::AlignCenter );
-
         fClearButton = new QPushButton( this );
         fClearButton->setObjectName( "fClearButton" );
         QIcon icon( QIcon::fromTheme( QIcon::ThemeIcon::EditClear ) );
         fClearButton->setIcon( icon );
-        fClearButton->setToolTip( tr( "Clear Image" ) );
-        fClearButton->setText( tr( "Clear Image" ) );
-        //verticalLayout->addWidget( fClearButton, Qt::AlignCenter );
 
         fDescription = new QLineEdit( this );
         fDescription->setObjectName( "fDescription" );
         fDescription->setPlaceholderText( tr( "Description:" ) );
-        //verticalLayout->addWidget( fDescription, Qt::AlignCenter );
 
-        //auto verticalSpacer = new QSpacerItem( 20, 40, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding );
-        //verticalLayout->addItem( verticalSpacer );
-
-        setImageType( EImageType::eImage );
+        setImageType( EImageType::eImage, true );
         slotReadOnlyChanged();
         layout();
     }
 
-    void CImageHandler::setImageType( EImageType type )
+    void CImageHandler::setImageType( EImageType type, bool force )
     {
-        if ( fImageType != type )
+        if ( force || ( fImageType != type ) )
         {
             fImageType = type;
             emit sigImageTypeChanged();
+
+            auto clearText = tr( "Clear %1" ).arg( imageTypeText() );
+            fClearButton->setToolTip( clearText );
+            fClearButton->setText( clearText );
         }
     }
+
+    void CImageHandler::setReadOnly( bool readOnly )
+    {
+        if ( fReadOnly == readOnly )
+            return;
+        fReadOnly = readOnly;
+        emit sigReadOnlyChanged();
+    }
+
     void CImageHandler::loadDefaultImage()
     {
         fLayoutDirty = true;
@@ -320,6 +326,11 @@ namespace NTowel42Utils
         return { width, height };
     }
 
+    QString CImageHandler::imageTypeText() const
+    {
+        return ( fImageType == EImageType::eImage ) ? tr( "Image" ) : tr( "Avatar" );
+    }
+
     SImageData::SImageData( const QVariant &variant, const QByteArray &data, const QString &description ) :
         fExtraData( variant ),
         fData( data ),
@@ -353,6 +364,72 @@ namespace NTowel42Utils
     std::size_t SSizeHash::operator()( const QSize &sz ) const
     {
         return NTowel42Utils::cantorHash( sz.width(), sz.height() );
+    }
+
+    CImageHandlerDlg::CImageHandlerDlg( QWidget *parent /*= nullptr*/, Qt::WindowFlags flags /*= Qt::WindowFlags() */ ) :
+        QDialog( parent, flags )
+    {
+        setupUi();
+    }
+
+    void CImageHandlerDlg::setupUi()
+    {
+        if ( objectName().isEmpty() )
+            setObjectName( "NTowel42Utils__CImageHandlerDlg" );
+        auto layout = new QVBoxLayout( this );
+        layout->setObjectName( "fLayout" );
+
+        fImageHandler = new CImageHandler( this );
+        fImageHandler->setObjectName( "fImageHandler" );
+        layout->addWidget( fImageHandler );
+
+        auto buttonBox = new QDialogButtonBox( this );
+        buttonBox->setObjectName( "fButtonBox" );
+        buttonBox->setOrientation( Qt::Orientation::Horizontal );
+        buttonBox->setStandardButtons( QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Ok );
+        QObject::connect( buttonBox, &QDialogButtonBox::accepted, this, qOverload<>( &QDialog::accept ) );
+        QObject::connect( buttonBox, &QDialogButtonBox::rejected, this, qOverload<>( &QDialog::reject ) );
+
+        layout->addWidget( buttonBox );
+
+        connect( fImageHandler, &CImageHandler::sigImageTypeChanged, [ & ]() { setWindowTitle( tr( "Select %1:" ).arg( fImageHandler->imageTypeText() ) ); } );
+
+        setMinimumSize( minimumSizeHint() );
+        setMaximumSize( minimumSizeHint() );
+    }
+
+    CImageHandlerDlg::~CImageHandlerDlg()
+    {
+    }
+
+    std::shared_ptr< NTowel42Utils::SImageData > CImageHandlerDlg::imageData() const
+    {
+        return fImageHandler->imageData();
+    }
+
+    void CImageHandlerDlg::setImageData( std::shared_ptr< SImageData > imageData )
+    {
+        fImageHandler->setImageData( imageData );
+    }
+
+    void CImageHandlerDlg::setImageType( EImageType type )
+    {
+        fImageHandler->setImageType( type );
+    }
+
+    NTowel42Utils::EImageType CImageHandlerDlg::imageType() const
+    {
+        return fImageHandler->imageType();
+    }
+
+    void CImageHandlerDlg::setReadOnly( bool readOnly )
+    {
+        fImageHandler->setReadOnly( readOnly );
+    }
+
+    bool CImageHandlerDlg::readOnly() const
+    {
+        return fImageHandler->readOnly();
     }
 
 }

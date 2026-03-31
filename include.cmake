@@ -189,7 +189,6 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         AutoFetch.cpp
         AutoTabStop.cpp
         AutoWaitCursor.cpp
-        ImageHandler.cpp
         ButtonEnabler.cpp
         ButtonGroupWDescriptiveText.cpp
         CollapsableGroupBox.cpp
@@ -199,6 +198,8 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         DoubleProgressDlg.cpp
         FileBasedCache.cpp
         HyperLinkLineEdit.cpp
+        ImageHandler.cpp
+        ImageListWidget.cpp
         ImageScrollBar.cpp
         LineEditWithSuffix.cpp
         MenuBarEx.cpp
@@ -221,7 +222,6 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         ${qtproject_H}
         AutoTabStop.h
         AutoWaitCursor.h
-        ImageHandler.h
         ButtonEnabler.h
         ButtonGroupWDescriptiveText.h
         CollapsableGroupBox.h
@@ -230,6 +230,8 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         DelaySpinBox.h
         DoubleProgressDlg.h
         HyperLinkLineEdit.h
+        ImageHandler.h
+        ImageListWidget.h
         ImageScrollBar.h
         LineEditWithSuffix.h
         MenuBarEx.h

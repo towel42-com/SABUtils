@@ -27,6 +27,7 @@
 #include "Towel42UtilsExport.h"
 
 #include <QWidget>
+#include <QDialog>
 #include <QByteArray>
 #include <QVariant>
 #include <memory>
@@ -52,10 +53,10 @@ namespace NTowel42Utils
     struct TOWEL42_UTILS_EXPORT SImageData
     {
         SImageData() = default;
-        SImageData( const QVariant & extraData, const QByteArray &data, const QString &description );
+        SImageData( const QVariant &extraData, const QByteArray &data, const QString &description );
 
         std::optional< QPixmap > pixmap( const std::optional< QSize > &sz = {} ) const;
-        void addSize(const QSize & sz);
+        void addSize( const QSize &sz );
         QVariant fExtraData;   // often the ID in a database
         QByteArray fData;
         QString fDescription;
@@ -72,11 +73,16 @@ namespace NTowel42Utils
         CImageHandler( QWidget *parent = nullptr );
         ~CImageHandler();
 
+        QString imageTypeText() const;
+
         std::shared_ptr< SImageData > imageData() const;
         void setImageData( std::shared_ptr< SImageData > imageData );
 
-        void setImageType( EImageType type );
+        void setImageType( EImageType type, bool force = false );
         EImageType imageType() const { return fImageType; }
+
+        bool readOnly() const { return fReadOnly; }
+        void setReadOnly( bool readOnly );
     Q_SIGNALS:
         void sigReadOnlyChanged();
         void sigImageTypeChanged();
@@ -106,6 +112,33 @@ namespace NTowel42Utils
         QToolButton *fImageButton{ nullptr };
         QPushButton *fClearButton{ nullptr };
         QLineEdit *fDescription{ nullptr };
+    };
+
+    class TOWEL42_UTILS_EXPORT CImageHandlerDlg : public QDialog
+    {
+        Q_OBJECT
+        Q_PROPERTY( bool readOnly READ readOnly WRITE setReadOnly );
+        Q_PROPERTY( EImageType imageType READ imageType WRITE setImageType );
+
+    public:
+        CImageHandlerDlg( QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags() );
+
+    public:
+        void setupUi();
+
+        ~CImageHandlerDlg();
+
+        std::shared_ptr< SImageData > imageData() const;
+        void setImageData( std::shared_ptr< SImageData > imageData );
+
+        void setImageType( EImageType type );
+        EImageType imageType() const;
+
+        void setReadOnly( bool readOnly );
+        bool readOnly() const;
+
+    private:
+        CImageHandler *fImageHandler{ nullptr };
     };
 }
 #endif
