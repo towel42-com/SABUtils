@@ -41,8 +41,8 @@
 #include <QFrame>
 #include <QIcon>
 #include <QRect>
+#include <QTimer>
 
-#include <QVBoxLayout>
 #include <QDialogButtonBox>
 
 namespace NTowel42Utils
@@ -245,9 +245,7 @@ namespace NTowel42Utils
         if ( !fLayoutDirty )
             return;
 
-        auto size = computeSize();
-        setMinimumSize( size );
-        setMaximumSize( size );
+        setFixedSize( computeSize() );
         fLayoutDirty = false;
     }
 
@@ -331,8 +329,7 @@ namespace NTowel42Utils
         return ( fImageType == EImageType::eImage ) ? tr( "Image" ) : tr( "Avatar" );
     }
 
-    SImageData::SImageData( const QVariant &variant, const QByteArray &data, const QString &description ) :
-        fExtraData( variant ),
+    SImageData::SImageData( const QByteArray &data, const QString &description ) :
         fData( data ),
         fDescription( description )
     {
@@ -348,6 +345,21 @@ namespace NTowel42Utils
         auto currPM = NTowel42Utils::pixmapForImageData( fData, sz );
         fPixmaps[ sizeKey ] = currPM;
         return currPM;
+    }
+
+    void SImageData::setData( int role, const QVariant &value )
+    {
+        fExtraData[ QString::number( role ) ] = value;
+    }
+
+    QVariant SImageData::data( int role, const QVariant &defaultValue /*= {} */ )
+    {
+        auto pos = fExtraData.find( QString::number( role ) );
+
+        if ( pos == fExtraData.end() )
+            return defaultValue;
+
+        return ( *pos );
     }
 
     void SImageData::addSize( const QSize &sz )
@@ -372,6 +384,13 @@ namespace NTowel42Utils
         setupUi();
     }
 
+    CImageHandlerDlg::CImageHandlerDlg( bool selectFileOnOpen, QWidget *parent /*= nullptr*/, Qt::WindowFlags flags /*= Qt::WindowFlags() */ ) :
+        CImageHandlerDlg( parent, flags )
+    {
+        if ( selectFileOnOpen )
+            QTimer::singleShot( 0, fImageHandler, &CImageHandler::slotSelectImage );
+    }
+
     void CImageHandlerDlg::setupUi()
     {
         if ( objectName().isEmpty() )
@@ -394,8 +413,7 @@ namespace NTowel42Utils
 
         connect( fImageHandler, &CImageHandler::sigImageTypeChanged, [ & ]() { setWindowTitle( tr( "Select %1:" ).arg( fImageHandler->imageTypeText() ) ); } );
 
-        setMinimumSize( minimumSizeHint() );
-        setMaximumSize( minimumSizeHint() );
+        setFixedSize( minimumSizeHint() );
     }
 
     CImageHandlerDlg::~CImageHandlerDlg()

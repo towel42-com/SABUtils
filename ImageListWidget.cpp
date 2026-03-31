@@ -38,7 +38,9 @@
 namespace NTowel42Utils
 {
     CImageListWidget::CImageListWidget( QWidget *parent /*= nullptr*/ ) :
-        QWidget( parent )
+        QWidget( parent ),
+        fCaption( tr( "Select Image:" ) )
+
     {
         setupUi();
 
@@ -46,7 +48,7 @@ namespace NTowel42Utils
         connect( fDelImage, &QToolButton::clicked, this, &CImageListWidget::slotDelImage );
         connect( fMoveUp, &QToolButton::clicked, this, &CImageListWidget::slotMoveImageUp );
         connect( fMoveDown, &QToolButton::clicked, this, &CImageListWidget::slotMoveImageDown );
-        setReadOnly( false );
+        setReadOnly( false, true );
     }
 
     CImageListWidget::~CImageListWidget()
@@ -72,6 +74,7 @@ namespace NTowel42Utils
         fImages->setObjectName( "fImages" );
         fImages->setIconSize( QSize( 128, 128 ) );
         fImages->setViewMode( QListView::ViewMode::IconMode );
+        fImages->setDragDropOverwriteMode( false );
 
         gridLayout->addWidget( fImages, rowNum, 0, 5, 1 );
 
@@ -117,10 +120,16 @@ namespace NTowel42Utils
 
     void CImageListWidget::setReadOnly( bool readOnly )
     {
-        if ( fReadOnly == readOnly )
+        setReadOnly( readOnly, false );
+    }
+
+    void CImageListWidget::setReadOnly( bool readOnly, bool force )
+    {
+        if ( !force && ( fReadOnly == readOnly ) )
             return;
 
         fReadOnly = readOnly;
+        NTowel42Utils::setReadOnly( this, readOnly );
         if ( !fReadOnly )
         {
             new NTowel42Utils::CButtonEnabler( fImages, fDelImage, this );
@@ -139,9 +148,33 @@ namespace NTowel42Utils
                 delete enabler;
             }
         }
-        fImages->setEditTriggers( fReadOnly ? QAbstractItemView::EditTrigger::NoEditTriggers : ( QAbstractItemView::EditTrigger::DoubleClicked | QAbstractItemView::EditTrigger::SelectedClicked ) );
+        fImages->setEditTriggers( QAbstractItemView::EditTrigger::NoEditTriggers );
+        fImages->setDropIndicatorShown( !fReadOnly );
+        fImages->setDragEnabled( !fReadOnly );
+        fImages->setDragDropMode( fReadOnly ? QAbstractItemView::NoDragDrop : QAbstractItemView::DragDrop );
 
-        NTowel42Utils::setReadOnly( this, readOnly );
+        if ( fReadOnly )
+            disconnect( fImages, &QListWidget::itemDoubleClicked, this, &CImageListWidget::slotEditItem );
+        else
+            connect( fImages, &QListWidget::itemDoubleClicked, this, &CImageListWidget::slotEditItem );
+    }
+
+    void CImageListWidget::setCaption( const QString &caption )
+    {
+        fCaption = caption;
+        if ( fCaption.isEmpty() )
+            fCaption = tr( "Select Image:" );
+
+        if ( !fCaption.endsWith( ':' ) )
+            fCaption += QChar( ':' );
+        fLabel->setText( fCaption );
+    }
+
+    QString CImageListWidget::caption() const
+    {
+        if ( fCaption.isEmpty() )
+            return tr( "Select Image:" );
+        return fCaption;
     }
 
     void CImageListWidget::slotSelectionChanged( bool enabled )
@@ -153,54 +186,77 @@ namespace NTowel42Utils
         fMoveDown->setEnabled( downEnabled );
     }
 
-    std::list< std::shared_ptr< NTowel42Utils::SImageData > > CImageListWidget::getImages() const
+    TImageDataList CImageListWidget::getImages() const
     {
-        std::list< std::shared_ptr< NTowel42Utils::SImageData > > retVal;
+        std::list< QListWidgetItem * > items;
         for ( auto ii = 0; ii < fImages->count(); ++ii )
         {
             auto curr = fImages->item( ii );
             if ( !curr )
                 continue;
-            auto data = curr->data( Qt::UserRole + 1 ).toByteArray();
-            auto extraData = curr->data( Qt::UserRole + 2 );
-            auto desc = curr->text();
+            items.push_back( curr );
+        }
+        items.sort(
+            [ this ]( QListWidgetItem *lhs, QListWidgetItem *rhs )
+            {
+                auto lhsIndex = fImages->model()->index( fImages->row( lhs ), 0 );
+                auto rhsIndex = fImages->model()->index( fImages->row( rhs ), 0 );
 
-            auto imageData = std::make_shared< NTowel42Utils::SImageData >( extraData, data, desc );
-            retVal.push_back( imageData );
+                auto lhsRect = fImages->visualRect( lhsIndex );
+                auto rhsRect = fImages->visualRect( rhsIndex );
+
+                if ( lhsRect.y() != rhsRect.y() )
+                    return lhsRect.y() < rhsRect.y();
+
+                return lhsRect.x() < rhsRect.x();
+            } );
+
+        TImageDataList retVal;
+        for ( auto && ii : items )
+        {
+            auto currImageData = imageDataForItem( ii );
+            if ( !currImageData )
+                continue;
+            retVal.push_back( currImageData );
         }
         return retVal;
     }
 
-    void CImageListWidget::loadImages( const std::list< std::shared_ptr< NTowel42Utils::SImageData > > &images )
+    void CImageListWidget::setAutoNameImages( bool autoName )
+    {
+        fAutoName = autoName;
+    }
+
+    std::shared_ptr< NTowel42Utils::SImageData > CImageListWidget::imageDataForItem( QListWidgetItem *curr ) const
+    {
+        if ( !curr )
+            return {};
+        auto data = curr->data( Qt::UserRole + 1 ).toByteArray();
+        auto extraData = curr->data( Qt::UserRole + 2 );
+        auto desc = curr->text();
+
+        auto imageData = std::make_shared< NTowel42Utils::SImageData >( data, desc );
+        imageData->setData( Qt::UserRole + 2, extraData );
+        return imageData;
+    }
+
+    void CImageListWidget::loadImages( const TImageDataList &images, const std::function< bool( TImageData image ) > &addImage /*= {}*/ )
     {
         for ( auto &&imageData : images )
         {
+            if ( addImage && !addImage( imageData ) )
+                continue;
+
             loadImage( imageData );
         }
     }
 
-    void CImageListWidget::slotAddImage()
-    {
-        if ( fReadOnly )
-            return;
-
-        auto dlg = new CImageHandlerDlg( this );
-        connect( dlg, &CImageHandlerDlg::accepted, [this, dlg]()
-                 {
-                     auto imageData = dlg->imageData();
-                     loadImage( imageData );
-                     dlg->deleteLater();
-            } );
-        connect( dlg, &CImageHandlerDlg::rejected, [ this, dlg ]() { dlg->deleteLater(); } );
-        dlg->open();
-    }
-
-    void CImageListWidget::loadImage( std::shared_ptr< NTowel42Utils::SImageData > imageData )
+    void CImageListWidget::loadImage( std::shared_ptr< NTowel42Utils::SImageData > imageData, QListWidgetItem *item /*= nullptr*/ )
     {
         auto pm = imageData->pixmap();
         if ( !pm.has_value() )
         {
-            QMessageBox::critical( this, tr( "Invalid image file" ), tr( "The file could not be processed" ), QMessageBox::StandardButton::Ok );
+            QMessageBox::critical( this, tr( "Invalid image file" ), tr( "The image could not be loaded" ), QMessageBox::StandardButton::Ok );
             return;
         }
 
@@ -208,13 +264,64 @@ namespace NTowel42Utils
         icon.addPixmap( pm.value() );
         if ( icon.isNull() )
         {
-            QMessageBox::critical( this, tr( "Invalid image file" ), tr( "The file could not be processed" ), QMessageBox::StandardButton::Ok );
+            QMessageBox::critical( this, tr( "Invalid image file" ), tr( "The image could not be loaded" ), QMessageBox::StandardButton::Ok );
             return;
         }
-        auto item = new QListWidgetItem( icon, imageData->fDescription, fImages );
+        if ( !item )
+            item = new QListWidgetItem( fImages );
 
+        item->setIcon( icon );
+        auto description = imageData->fDescription;
+        if ( description.isEmpty() )
+            description = tr( "Image %1" ).arg( fImages->count() );
+
+        item->setText( description );
         item->setData( Qt::UserRole + 1, imageData->fData );
-        item->setData( Qt::UserRole + 2, imageData->fExtraData );
+        item->setData( Qt::UserRole + 2, imageData->data( Qt::UserRole + 2 ) );
+    }
+
+    void CImageListWidget::slotEditItem()
+    {
+        if ( fReadOnly )
+            return;
+        auto item = fImages->currentItem();
+        if ( !item )
+            return;
+
+        auto imageData = imageDataForItem( item );
+
+        auto dlg = new CImageHandlerDlg( this );
+        dlg->setImageData( imageData );
+        dlg->setWindowTitle( caption() );
+        connect(
+            dlg, &CImageHandlerDlg::accepted,
+            [ this, item, dlg ]()
+            {
+                auto imageData = dlg->imageData();
+                loadImage( imageData, item );
+                dlg->deleteLater();
+            } );
+        connect( dlg, &CImageHandlerDlg::rejected, [ this, dlg ]() { dlg->deleteLater(); } );
+        dlg->open();
+    }
+
+    void CImageListWidget::slotAddImage()
+    {
+        if ( fReadOnly )
+            return;
+
+        auto dlg = new CImageHandlerDlg( true, this );
+        dlg->setWindowTitle( caption() );
+        connect(
+            dlg, &CImageHandlerDlg::accepted,
+            [ this, dlg ]()
+            {
+                auto imageData = dlg->imageData();
+                loadImage( imageData );
+                dlg->deleteLater();
+            } );
+        connect( dlg, &CImageHandlerDlg::rejected, [ this, dlg ]() { dlg->deleteLater(); } );
+        dlg->open();
     }
 
     void CImageListWidget::slotDelImage()

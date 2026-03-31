@@ -30,6 +30,7 @@
 #include <QDialog>
 #include <QByteArray>
 #include <QVariant>
+#include <QVariantMap>
 #include <memory>
 #include <optional>
 
@@ -53,18 +54,26 @@ namespace NTowel42Utils
     struct TOWEL42_UTILS_EXPORT SImageData
     {
         SImageData() = default;
-        SImageData( const QVariant &extraData, const QByteArray &data, const QString &description );
+        SImageData( const QByteArray &data, const QString &description );
 
         std::optional< QPixmap > pixmap( const std::optional< QSize > &sz = {} ) const;
+
+        void setData( int role, const QVariant &value );;
+        QVariant data( int role, const QVariant &defaultValue = {} );;
         void addSize( const QSize &sz );
-        QVariant fExtraData;   // often the ID in a database
         QByteArray fData;
         QString fDescription;
         mutable std::unordered_map< QSize, std::optional< QPixmap >, SSizeHash > fPixmaps;
+
+        QVariantMap fExtraData;
     };
+    using TImageData = std::shared_ptr< NTowel42Utils::SImageData >;
+    using TImageDataList = std::list< TImageData >;
 
     class TOWEL42_UTILS_EXPORT CImageHandler : public QWidget
     {
+        friend class CImageHandlerDlg;
+
         Q_OBJECT
         Q_PROPERTY( bool readOnly MEMBER fReadOnly NOTIFY sigReadOnlyChanged );
         Q_PROPERTY( EImageType imageType MEMBER fImageType NOTIFY sigImageTypeChanged );
@@ -122,6 +131,7 @@ namespace NTowel42Utils
 
     public:
         CImageHandlerDlg( QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags() );
+        CImageHandlerDlg( bool selectFileOnOpen, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags() );
 
     public:
         void setupUi();

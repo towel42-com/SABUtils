@@ -25,15 +25,14 @@
 #define IMAGELISTWIDGET_H
 
 #include "Towel42UtilsExport.h"
+#include "WidgetUtilsFwd.h"
 #include <QWidget>
-namespace Ui
-{
-    class CImageListWidget;
-}
+#include <functional>
 
 class QLabel;
 class QToolButton;
 class QListWidget;
+class QListWidgetItem;
 namespace NTowel42Utils
 {
     struct SImageData;
@@ -42,15 +41,23 @@ namespace NTowel42Utils
     {
         Q_OBJECT
         Q_PROPERTY( bool readOnly READ isReadOnly WRITE setReadOnly )
+        Q_PROPERTY( QString caption READ caption WRITE setCaption )
+        Q_PROPERTY( bool autoNameImages READ autoNameImages WRITE setAutoNameImages )
     public:
         CImageListWidget( QWidget *parent = nullptr );
         ~CImageListWidget();
 
-        void loadImages( const std::list< std::shared_ptr< NTowel42Utils::SImageData > > &images );
-        std::list< std::shared_ptr< NTowel42Utils::SImageData > > getImages() const;
+        void loadImages( const TImageDataList &images, const std::function< bool( TImageData image ) > &addImage = {} );
+        TImageDataList getImages() const;
+
+        void setAutoNameImages( bool autoName );
+        bool autoNameImages() const { return fAutoName; }
 
         void setReadOnly( bool readOnly );
         bool isReadOnly() const { return fReadOnly; }
+
+        void setCaption( const QString &caption );
+        QString caption() const;
     Q_SIGNALS:
     public Q_SLOTS:
         void slotAddImage();
@@ -58,10 +65,13 @@ namespace NTowel42Utils
         void slotMoveImageUp();
         void slotMoveImageDown();
         void slotSelectionChanged( bool enabled );
+        void slotEditItem();
 
     private:
+        void setReadOnly( bool readOnly, bool force );
+        std::shared_ptr< NTowel42Utils::SImageData > imageDataForItem( QListWidgetItem *curr ) const;
         void setupUi();
-        void loadImage( std::shared_ptr< NTowel42Utils::SImageData > imageData );
+        void loadImage( std::shared_ptr< NTowel42Utils::SImageData > imageData, QListWidgetItem *item=nullptr );
 
         bool fReadOnly{ false };
 
@@ -71,6 +81,9 @@ namespace NTowel42Utils
         QToolButton *fMoveUp{ nullptr };
         QToolButton *fMoveDown{ nullptr };
         QListWidget *fImages{ nullptr };
+
+        QString fCaption;
+        bool fAutoName{ false };
     };
 }
 #endif
