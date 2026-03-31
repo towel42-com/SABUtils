@@ -72,7 +72,7 @@ endif()
 set( testProjectName "" )
 TOWEL42_UNIT_TEST(QtBasedUtils
     main.cpp
-    "gmock;Qt6::Core"
+    "gmock;Qt6::Core;Qt6::Sql"
     testProjectName
     TestGeneral.cpp;TestExcelFuncs.cpp;${SOURCE_FILES}
     )
