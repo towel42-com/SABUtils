@@ -98,7 +98,10 @@ namespace NTowel42Utils
         bool readOnly() const { return fReadOnly; }
         void setReadOnly( bool readOnly );
 
-        static void setMaxImageSize( int64_t maxSize ) { sMaxImageSize = maxSize; }
+        static void setMaxImageSize( int64_t sz ) { sMaxImageSize = sz; }
+
+        static bool checkFileSize( QWidget *parent, const QString &fileName );
+        static bool checkImageSize( QWidget *parent, int64_t sz );
     Q_SIGNALS:
         void sigReadOnlyChanged();
         void sigImageTypeChanged();
@@ -107,8 +110,6 @@ namespace NTowel42Utils
         void slotSelectImage();
 
     private:
-        static bool checkFileSize( QWidget *parent, const QString &fileName );
-        static bool checkImageSize( QWidget *parent, int64_t sz );
 
         void slotReadOnlyChanged();
         void slotImageTypeChanged();

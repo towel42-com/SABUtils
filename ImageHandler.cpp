@@ -361,12 +361,15 @@ namespace NTowel42Utils
             return {};
 
         auto data = file.readAll();
-        auto retVal = std::make_shared< SImageData >( data, description.isEmpty() ? QFileInfo( fileName ).fileName() : description );
-        return retVal;
+        return fromData( data, description.isEmpty() ? QFileInfo( fileName ).fileName() : description );
     }
 
     std::shared_ptr< NTowel42Utils::SImageData > SImageData::fromData( const QByteArray &data, const QString &description /*= {} */ )
     {
+        if ( !CImageHandler::checkImageSize( nullptr, data.size() ) )
+        {
+            return {};
+        }
         auto retVal = std::make_shared< SImageData >( data, description );
         return retVal;
     }
