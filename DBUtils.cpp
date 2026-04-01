@@ -724,7 +724,7 @@ namespace NTowel42Utils
 
         auto cmd = QStringLiteral( "SELECT LAST_INSERT_ID();" );
         auto aOK = runCmd( query, cmd ) && query.next();
-        if ( aOK )
+        if ( !aOK )
             return {};
         return query.value( 0 ).toInt();
     }
