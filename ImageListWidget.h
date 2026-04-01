@@ -27,15 +27,34 @@
 #include "Towel42UtilsExport.h"
 #include "WidgetUtilsFwd.h"
 #include <QWidget>
+#include <QListWidget>
 #include <functional>
 
 class QLabel;
 class QToolButton;
-class QListWidget;
-class QListWidgetItem;
 namespace NTowel42Utils
 {
     struct SImageData;
+
+    class TOWEL42_UTILS_EXPORT CImageDropListWidget : public QListWidget
+    {
+        Q_OBJECT;
+        Q_PROPERTY( bool readOnly READ isReadOnly WRITE setReadOnly )
+    public:
+        CImageDropListWidget( QWidget *parent = nullptr );
+        virtual void dragEnterEvent( QDragEnterEvent *event ) override;
+        virtual void dropEvent( QDropEvent *event ) override;
+        virtual QStringList mimeTypes() const override;
+        void setReadOnly( bool readOnly );
+        bool isReadOnly() const { return fReadOnly; }
+
+    Q_SIGNALS:
+        void sigImageFileDropped( const QString &filePath );
+        void sigImageDropped( const QByteArray &data );
+
+    private:
+        bool fReadOnly{ false };
+    };
 
     class TOWEL42_UTILS_EXPORT CImageListWidget : public QWidget
     {
@@ -58,6 +77,7 @@ namespace NTowel42Utils
 
         void setCaption( const QString &caption );
         QString caption() const;
+
     Q_SIGNALS:
     public Q_SLOTS:
         void slotAddImage();
@@ -66,12 +86,14 @@ namespace NTowel42Utils
         void slotMoveImageDown();
         void slotSelectionChanged( bool enabled );
         void slotEditItem();
+        void slotImageDropped( const QByteArray &data );
+        void slotImageFileDropped( const QString &filePath );
 
     private:
         void setReadOnly( bool readOnly, bool force );
         std::shared_ptr< NTowel42Utils::SImageData > imageDataForItem( QListWidgetItem *curr ) const;
         void setupUi();
-        void loadImage( std::shared_ptr< NTowel42Utils::SImageData > imageData, QListWidgetItem *item=nullptr );
+        void loadImage( std::shared_ptr< NTowel42Utils::SImageData > imageData, QListWidgetItem *item = nullptr );
 
         bool fReadOnly{ false };
 
@@ -80,7 +102,7 @@ namespace NTowel42Utils
         QToolButton *fDelImage{ nullptr };
         QToolButton *fMoveUp{ nullptr };
         QToolButton *fMoveDown{ nullptr };
-        QListWidget *fImages{ nullptr };
+        CImageDropListWidget *fImages{ nullptr };
 
         QString fCaption;
         bool fAutoName{ false };

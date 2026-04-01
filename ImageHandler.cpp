@@ -143,14 +143,26 @@ namespace NTowel42Utils
         if ( fileName.isEmpty() )
             return;
 
-        if ( sMaxImageSize.has_value() && ( QFileInfo( fileName ).size() > sMaxImageSize.value() ) )
-        {
-            QLocale locale;
-            QMessageBox::warning( this, tr( "File Too Large" ), tr( "The selected file is larger than the maximum allowed size of %1 bytes." ).arg( locale.toString( sMaxImageSize.value() ) ), QMessageBox::StandardButton::Ok );
+        if ( !checkFileSize( window(), fileName ) )
             return;
-        }
 
         setImageFile( fileName );
+    }
+
+    bool CImageHandler::checkFileSize( QWidget *parent, const QString &fileName )
+    {
+        return checkImageSize( parent, QFileInfo( fileName ).size() );
+    }
+
+    bool CImageHandler::checkImageSize( QWidget *parent, int64_t sz )
+    {
+        if ( sMaxImageSize.has_value() && ( sz > sMaxImageSize.value() ) )
+        {
+            QLocale locale;
+            QMessageBox::warning( parent, tr( "File Too Large" ), tr( "The selected file is larger than the maximum allowed size of %1 bytes." ).arg( locale.toString( sMaxImageSize.value() ) ), QMessageBox::StandardButton::Ok );
+            return false;
+        }
+        return true;
     }
 
     void CImageHandler::slotReadOnlyChanged()
@@ -340,6 +352,23 @@ namespace NTowel42Utils
         fData( data ),
         fDescription( description )
     {
+    }
+
+    std::shared_ptr< NTowel42Utils::SImageData > SImageData::fromFile( const QString &fileName, const QString &description /*= {} */ )
+    {
+        QFile file( fileName );
+        if ( !file.open( QFile::ReadOnly ) )
+            return {};
+
+        auto data = file.readAll();
+        auto retVal = std::make_shared< SImageData >( data, description.isEmpty() ? QFileInfo( fileName ).fileName() : description );
+        return retVal;
+    }
+
+    std::shared_ptr< NTowel42Utils::SImageData > SImageData::fromData( const QByteArray &data, const QString &description /*= {} */ )
+    {
+        auto retVal = std::make_shared< SImageData >( data, description );
+        return retVal;
     }
 
     std::optional< QPixmap > SImageData::pixmap( const std::optional< QSize > &sz ) const

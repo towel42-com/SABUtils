@@ -22,7 +22,7 @@
 // SOFTWARE.
 //
 #include "ImageListWidget.h"
-#include "setReadOnly.h"
+#include "SetReadOnly.h"
 #include "ButtonEnabler.h"
 #include "ImageHandler.h"
 #include <QFileDialog>
@@ -34,6 +34,10 @@
 #include <QGridLayout>
 #include <QSpacerItem>
 #include <QIcon>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
+#include <QBuffer>
 
 namespace NTowel42Utils
 {
@@ -70,12 +74,11 @@ namespace NTowel42Utils
         int rowNum = 0;
         gridLayout->addWidget( fLabel, rowNum++, 0, 1, 2 );
 
-        fImages = new QListWidget( this );
-        fImages->setObjectName( "fImages" );
-        fImages->setIconSize( QSize( 128, 128 ) );
-        fImages->setViewMode( QListView::ViewMode::IconMode );
-        fImages->setDragDropOverwriteMode( false );
+        fImages = new CImageDropListWidget( this );
+        connect( fImages, &CImageDropListWidget::sigImageDropped, this, &CImageListWidget::slotImageDropped );
+        connect( fImages, &CImageDropListWidget::sigImageFileDropped, this, &CImageListWidget::slotImageFileDropped );
 
+        fImages->setObjectName( "fImages" );
         gridLayout->addWidget( fImages, rowNum, 0, 5, 1 );
 
         fAddImage = new QToolButton( this );
@@ -148,10 +151,6 @@ namespace NTowel42Utils
                 delete enabler;
             }
         }
-        fImages->setEditTriggers( QAbstractItemView::EditTrigger::NoEditTriggers );
-        fImages->setDropIndicatorShown( !fReadOnly );
-        fImages->setDragEnabled( !fReadOnly );
-        fImages->setDragDropMode( fReadOnly ? QAbstractItemView::NoDragDrop : QAbstractItemView::DragDrop );
 
         if ( fReadOnly )
             disconnect( fImages, &QListWidget::itemDoubleClicked, this, &CImageListWidget::slotEditItem );
@@ -212,7 +211,7 @@ namespace NTowel42Utils
             } );
 
         TImageDataList retVal;
-        for ( auto && ii : items )
+        for ( auto &&ii : items )
         {
             auto currImageData = imageDataForItem( ii );
             if ( !currImageData )
@@ -305,6 +304,23 @@ namespace NTowel42Utils
         dlg->open();
     }
 
+    void CImageListWidget::slotImageDropped( const QByteArray &data )
+    {
+        auto imageData = SImageData::fromData( data );
+        if ( !imageData )
+            return;
+        loadImage( imageData );
+
+    }
+
+    void CImageListWidget::slotImageFileDropped( const QString &filePath )
+    {
+        auto imageData = SImageData::fromFile( filePath );
+        if ( !imageData )
+            return;
+        loadImage( imageData );
+    }
+
     void CImageListWidget::slotAddImage()
     {
         if ( fReadOnly )
@@ -356,5 +372,71 @@ namespace NTowel42Utils
 
         auto item = fImages->takeItem( currentRow );
         fImages->insertItem( currentRow + 1, item );
+    }
+
+    CImageDropListWidget::CImageDropListWidget( QWidget *parent /*= nullptr */ ) :
+        QListWidget( parent )
+    {
+        setIconSize( QSize( 128, 128 ) );
+        setViewMode( QListView::ViewMode::IconMode );
+        setDragDropOverwriteMode( false );
+        setSelectionMode( QAbstractItemView::SingleSelection );
+        setEditTriggers( QAbstractItemView::EditTrigger::NoEditTriggers );
+    }
+
+    void CImageDropListWidget::setReadOnly( bool readOnly )
+    {
+        NTowel42Utils::setReadOnly( this, readOnly );
+
+        fReadOnly = readOnly;
+
+        setDragDropMode( fReadOnly ? QAbstractItemView::NoDragDrop : QAbstractItemView::DragDrop );
+        setDragEnabled( !fReadOnly );
+        setDefaultDropAction( fReadOnly ? Qt::IgnoreAction : Qt::MoveAction );
+        setAcceptDrops( !fReadOnly );
+        setDropIndicatorShown( !fReadOnly );
+        viewport()->setAcceptDrops( !fReadOnly );
+    }
+
+    void CImageDropListWidget::dragEnterEvent( QDragEnterEvent *event )
+    {
+        if ( event->mimeData()->hasUrls() || event->mimeData()->hasImage() )
+            event->accept();
+        else
+            event->ignore();
+    }
+
+    void CImageDropListWidget::dropEvent( QDropEvent *event )
+    {
+        if ( event->mimeData()->hasUrls() )
+        {
+            auto urls = event->mimeData()->urls();
+            for ( auto &&ii : urls )
+            {
+                auto url = ii.toLocalFile();
+                if ( url.isEmpty() )
+                    continue;
+                emit sigImageFileDropped( url );
+            }
+        }
+        else if ( event->mimeData()->hasImage() )
+        {
+            auto image = qvariant_cast< QImage >( event->mimeData()->imageData() );
+            if ( !image.isNull() )
+            {
+                QByteArray byteArray;
+                QBuffer buffer( &byteArray );
+                buffer.open( QIODevice::WriteOnly );
+                image.save( &buffer, "PNG" );
+                emit sigImageDropped( byteArray );
+            }
+        }
+    }
+
+    QStringList CImageDropListWidget::mimeTypes() const
+    {
+        auto retVal = QListWidget::mimeTypes();
+        retVal << QStringLiteral( "text/uri-list" ) << QStringLiteral( "image/*" );
+        return retVal;
     }
 }

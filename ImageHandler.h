@@ -57,6 +57,10 @@ namespace NTowel42Utils
         SImageData() = default;
         SImageData( const QByteArray &data, const QString &description );
 
+        static std::shared_ptr< NTowel42Utils::SImageData > fromFile( const QString &fileName, const QString &description = {} );
+        static std::shared_ptr< NTowel42Utils::SImageData > fromData( const QByteArray &data, const QString &description = {} );
+
+
         std::optional< QPixmap > pixmap( const std::optional< QSize > &sz = {} ) const;
 
         void setData( int role, const QVariant &value );
@@ -101,6 +105,11 @@ namespace NTowel42Utils
     public Q_SLOTS:
     private Q_SLOTS:
         void slotSelectImage();
+
+    private:
+        static bool checkFileSize( QWidget *parent, const QString &fileName );
+        static bool checkImageSize( QWidget *parent, int64_t sz );
+
         void slotReadOnlyChanged();
         void slotImageTypeChanged();
 
