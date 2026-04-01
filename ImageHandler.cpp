@@ -143,6 +143,13 @@ namespace NTowel42Utils
         if ( fileName.isEmpty() )
             return;
 
+        if ( sMaxImageSize.has_value() && ( QFileInfo( fileName ).size() > sMaxImageSize.value() ) )
+        {
+            QLocale locale;
+            QMessageBox::warning( this, tr( "File Too Large" ), tr( "The selected file is larger than the maximum allowed size of %1 bytes." ).arg( locale.toString( sMaxImageSize.value() ) ), QMessageBox::StandardButton::Ok );
+            return;
+        }
+
         setImageFile( fileName );
     }
 

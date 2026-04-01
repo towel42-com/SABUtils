@@ -33,6 +33,7 @@
 #include <QVariantMap>
 #include <memory>
 #include <optional>
+#include <cstdint>
 
 class QToolButton;
 class QLineEdit;
@@ -58,8 +59,8 @@ namespace NTowel42Utils
 
         std::optional< QPixmap > pixmap( const std::optional< QSize > &sz = {} ) const;
 
-        void setData( int role, const QVariant &value );;
-        QVariant data( int role, const QVariant &defaultValue = {} );;
+        void setData( int role, const QVariant &value );
+        QVariant data( int role, const QVariant &defaultValue = {} );
         void addSize( const QSize &sz );
         QByteArray fData;
         QString fDescription;
@@ -92,6 +93,8 @@ namespace NTowel42Utils
 
         bool readOnly() const { return fReadOnly; }
         void setReadOnly( bool readOnly );
+
+        static void setMaxImageSize( int64_t maxSize ) { sMaxImageSize = maxSize; }
     Q_SIGNALS:
         void sigReadOnlyChanged();
         void sigImageTypeChanged();
@@ -121,6 +124,8 @@ namespace NTowel42Utils
         QToolButton *fImageButton{ nullptr };
         QPushButton *fClearButton{ nullptr };
         QLineEdit *fDescription{ nullptr };
+
+        inline static std::optional< int64_t > sMaxImageSize;
     };
 
     class TOWEL42_UTILS_EXPORT CImageHandlerDlg : public QDialog
