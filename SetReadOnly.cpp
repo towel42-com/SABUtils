@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "setReadOnly.h"
+#include "SetReadOnly.h"
 #include "ButtonGroupWDescriptiveText.h"
 
 #include <QAbstractButton>
