@@ -337,8 +337,6 @@ namespace NTowel42Utils
         fDescription->setGeometry( QRect( lineEditPos, lineEditSize ) );
         fClearButton->setGeometry( QRect( clearButtonPos, clearButtonSize ) );
 
-        if ( height != y0 )
-            int xyz = 0;
         fFrame->setGeometry( 0, 0, width, height );
         return { width, height };
     }
