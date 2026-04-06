@@ -73,6 +73,7 @@ namespace NTowel42Utils
             SCategoryInfo( QLoggingCategory *category );
             SCategoryInfo( const QString &category );
 
+            QStringList rules( bool enabled ) const;
             QString fName;
             bool fDebug{ false };
             bool fInfo{ false };

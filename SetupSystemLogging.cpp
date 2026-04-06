@@ -208,13 +208,39 @@ namespace NTowel42Utils
                 setupSystemLogging();
         }
 
+        void setDefaultLogCategories()
+        {
+            std::unordered_set< QString > rulesSet;
+            auto rules = QStringList() << "*=false";
+            rulesSet.insert( rules.front() );
+
+            auto categoryNames = loggingCategoryNames( false );
+            for ( auto &&curr : categoryNames )
+            {
+                auto currRules = curr.rules( true );
+                for ( auto &&jj : currRules )
+                {
+                    if ( rulesSet.find( jj ) == rulesSet.end() )
+                    {
+                        rulesSet.insert( jj );
+                        rules.push_back( jj );
+                    }
+                }
+            }
+            auto rulesText = rules.join( "\n" );
+            qCDebug( t42utils_base ).noquote().nospace() << "Setting log filter rules to:\n" << rulesText;
+            QLoggingCategory::setFilterRules( rulesText );
+        }
+
         void setupSystemLogging()
         {
+            setDefaultLogCategories();
             if ( sFile )
             {
                 fclose( sFile );
                 sFile = nullptr;
             }
+
             if ( qEnvironmentVariableIsSet( "T42_ENABLE_LOG_FILE" ) )
             {
                 if ( sFileName.isEmpty() )
@@ -263,6 +289,22 @@ namespace NTowel42Utils
         SCategoryInfo::SCategoryInfo( const QString &category ) :
             SCategoryInfo( new QLoggingCategory( category.toLatin1() ), true )
         {
+        }
+
+        QStringList SCategoryInfo::rules( bool enabled ) const
+        {
+            auto categoryList = fName.split( "." );
+            auto retVal = QStringList();
+            QString fullName;
+
+            for ( auto &&ii : categoryList )
+            {
+                if ( !fullName.isEmpty() )
+                    fullName += ".";
+                fullName += ii;
+                retVal << QString( "%1=%2" ).arg( fullName ).arg( enabled ? "true" : "false" );
+            }
+            return retVal;
         }
 
     }
