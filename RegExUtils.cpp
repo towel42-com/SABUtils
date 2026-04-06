@@ -25,6 +25,7 @@
 #include "StringUtils.h"
 #ifdef TOWEL42_QCORE_SUPPORT
     #include <QRegularExpression>
+    #include "SetupSystemLogging.h"
 #endif
 
 namespace NTowel42Utils
@@ -247,7 +248,7 @@ namespace NTowel42Utils
                 auto len = match.capturedLength( 0 );
                 auto cap = match.captured( 0 );
 
-                // qDebug().noquote().nospace() << capNum++ << " Start: " << startPos << " End: " << endPos << " Length: " << len << " Text: '" << cap << "'";
+                qDebug( t42utils_regExReplace ).noquote().nospace() << capNum++ << " Start: " << startPos << " End: " << endPos << " Length: " << len << " Text: '" << cap << "'";
                 retVal += input.mid( prevPos, startPos - prevPos );
                 auto curr = replaceMatch( replacement, match );
                 if ( curr.has_value() )

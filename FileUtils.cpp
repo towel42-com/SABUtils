@@ -26,6 +26,7 @@
 #include "StringUtils.h"
 #include "utils.h"
 #include "WindowsError.h"
+#include "SetupSystemLogging.h"
 
 #include <QDebug>
 #include <QFile>
@@ -1202,7 +1203,7 @@ namespace NTowel42Utils
             for ( auto &&ii : timeStampsToGet )
             {
                 auto currTime = fi.fileTime( ii );
-                // qDebug() << "AccessTime: " << currTime;
+                qCDebug( t42utils_fileUtils ) << "AccessTime: " << currTime;
                 retVal[ ii ] = currTime;
             }
 
@@ -1456,7 +1457,7 @@ namespace NTowel42Utils
             DWORD versionInfoSize = GetFileVersionInfoSizeW( fnName.data(), nullptr );
             if ( versionInfoSize == 0 )
             {
-                qDebug() << QStringLiteral( "GetFileVersionInfoSize failed with error %1" ).arg( getWindowsError( ::GetLastError() ) );
+                qCDebug( t42utils_fileUtils ) << QStringLiteral( "GetFileVersionInfoSize failed with error %1" ).arg( getWindowsError( ::GetLastError() ) );
                 return { hi, low };
             }
 
@@ -1464,7 +1465,7 @@ namespace NTowel42Utils
             // load the version info
             if ( !GetFileVersionInfoW( fnName.data(), NULL, versionInfoSize, info.data() ) )
             {
-                qDebug() << QStringLiteral( "GetFileVersionInfo failed with error %1\n" ).arg( getWindowsError( ::GetLastError() ) );
+                qCDebug( t42utils_fileUtils ) << QStringLiteral( "GetFileVersionInfo failed with error %1\n" ).arg( getWindowsError( ::GetLastError() ) );
                 return { hi, low };
             }
 
@@ -1472,7 +1473,7 @@ namespace NTowel42Utils
             DWORD *fi;
             if ( !VerQueryValueW( info.data(), L"\\", reinterpret_cast< void ** >( &fi ), &size ) || !size )
             {
-                qDebug() << QStringLiteral( "Can't obtain ProductVersion from resources" );
+                qCDebug( t42utils_fileUtils ) << QStringLiteral( "Can't obtain ProductVersion from resources" );
                 return { hi, low };
             }
 

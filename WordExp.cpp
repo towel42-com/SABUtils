@@ -44,7 +44,6 @@
 
 #include "WordExp.h"
 #include <QDir>
-#include <QDebug>
 #include <iostream>
 #ifdef Q_OS_WINDOWS
     #include <QProcessEnvironment>

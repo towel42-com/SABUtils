@@ -22,6 +22,7 @@
 // SOFTWARE.
 
 #include "AutoTabStop.h"
+#include "SetupSystemLogging.h"
 
 #include <QString>
 #include <QDebug>
@@ -79,7 +80,7 @@ namespace NTowel42Utils
         else
             pos = widget->mapTo( window, pos );
 
-        qDebug().noquote() << prefix << widget << pos;
+        qCDebug( t42utils_autoTabStop ).noquote() << prefix << widget << pos;
     }
 
     void CAutoTabStop::dumpPos( const QWidget *widget, const std::function< QLabel *( const QWidget * ) > &getLabelForBuddyFunc /*= {}*/ )
@@ -264,25 +265,12 @@ namespace NTowel42Utils
                 ii = children.erase( ii );
         }
 
-        //qDebug() << "================================";
-        //for ( auto &&ii : children )
-        //{
-        //    CAutoTabStop::dumpPos( targetWidget, ii );
-        //}
-
         TWidgetLocationMap widgetMap;
         for ( auto &&child : children )
         {
             auto aOK = widgetMap.insert( child ).second;
             Q_ASSERT( aOK );
         }
-        //qDebug() << "================================";
-        //for ( auto &&ii : widgetMap )
-        //{
-        //    CAutoTabStop::dumpPos( targetWidget, ii );
-        //}
-
-        //qDebug() << "================================";
         return widgetMap;
     }
 

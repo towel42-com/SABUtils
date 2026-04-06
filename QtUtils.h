@@ -26,6 +26,7 @@
 
 #include "Towel42UtilsExport.h"
 #include "Towel42UtilsFwd.h"
+#include "SetupSystemLogging.h"
 #include "nodiscard.h"
 
 class QString;
@@ -238,7 +239,7 @@ namespace NTowel42Utils
         if ( ( offset + rowBytes ) > numBytes )
             return;
 
-        qDebug().noquote().nospace() << "Row: " << currRow << " : Offset: " << offset << ":\n" << dumpArray( title, (const uint8_t *)array + offset, (const uint8_t *)baseArray, rowBytes, true, colsPerRow );
+        qCDebug( t42utils_dumpRow ).noquote().nospace() << "Row: " << currRow << " : Offset: " << offset << ":\n" << dumpArray( title, (const uint8_t *)array + offset, (const uint8_t *)baseArray, rowBytes, true, colsPerRow );
     }
 
     TOWEL42_UTILS_EXPORT void dumpImage( const char *title, const uint8_t *arr, int width, int height, const uint8_t *baseArray = nullptr );

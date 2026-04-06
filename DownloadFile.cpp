@@ -24,6 +24,7 @@
 
 #include "DownloadFile.h"
 #include "BackupFile.h"
+#include "SetupSystemLogging.h"
 
 #include "ui_DownloadFile.h"
 
@@ -129,7 +130,7 @@ namespace NTowel42Utils
         request.setUrl( fFileInfo.fUrl );
         request.setAttribute( QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy );
 
-        // qDebug() << fFileInfo.fUrl << " - " << fFileInfo.fSize << fileName;
+        qCDebug( t42utils_downloadFile ) << fFileInfo.fUrl << " - " << fFileInfo.fSize << fileName;
         fReply = fManager->get( request );
         connect( fReply, &QNetworkReply::downloadProgress, this, &CDownloadFile::slotDownloadProgress );
         connect( fReply, &QNetworkReply::encrypted, this, &CDownloadFile::slotEncryptedReply );
@@ -194,34 +195,34 @@ namespace NTowel42Utils
     {
         (void)reply;
         (void)authenticator;
-        // qDebug() << "slotAuthenticationRequired:" << reply << reply->url().toString() << authenticator;
+        qCDebug( t42utils_downloadFile ) << "slotAuthenticationRequired:" << reply << reply->url().toString() << authenticator;
     }
 
     void CDownloadFile::slotEncrypted( QNetworkReply *reply )
     {
         (void)reply;
-        // qDebug() << "slotEncrypted:" << reply << reply->url().toString();
+        qCDebug( t42utils_downloadFile ) << "slotEncrypted:" << reply << reply->url().toString();
     }
 
     void CDownloadFile::slotPreSharedKeyAuthenticationRequired( QNetworkReply *reply, QSslPreSharedKeyAuthenticator *authenticator )
     {
         (void)reply;
         (void)authenticator;
-        // qDebug() << "slotPreSharedKeyAuthenticationRequired: 0x" << /*Qt::hex << */reply << reply->url().toString() << authenticator;
+        qCDebug( t42utils_downloadFile ) << "slotPreSharedKeyAuthenticationRequired: 0x" << /*Qt::hex << */ reply << reply->url().toString() << authenticator;
     }
 
     void CDownloadFile::slotProxyAuthenticationRequired( const QNetworkProxy &proxy, QAuthenticator *authenticator )
     {
         (void)proxy;
         (void)authenticator;
-        // qDebug() << "slotProxyAuthenticationRequired: 0x" << /*Qt::hex << */&proxy << authenticator;
+        qCDebug( t42utils_downloadFile ) << "slotProxyAuthenticationRequired: 0x" << /*Qt::hex << */ &proxy << authenticator;
     }
 
     void CDownloadFile::slotSSLErrors( QNetworkReply *reply, const QList< QSslError > &errors )
     {
         (void)reply;
         (void)errors;
-        // qDebug() << "slotSSLErrors: 0x" << /*Qt::hex << */reply << errors;
+        qCDebug( t42utils_downloadFile ) << "slotSSLErrors: 0x" << /*Qt::hex << */ reply << errors;
     }
 
     void CDownloadFile::slotReadyRead()
@@ -257,82 +258,82 @@ namespace NTowel42Utils
 
     void CDownloadFile::slotEncryptedReply()
     {
-        // qDebug() << "slotEncryptedReply";
+        qCDebug( t42utils_downloadFile ) << "slotEncryptedReply";
     }
 
     void CDownloadFile::slotErrorOccurred( QNetworkReply::NetworkError code )
     {
         (void)code;
-        // qDebug() << "slotErrorOccurred" << code;
+        qCDebug( t42utils_downloadFile ) << "slotErrorOccurred" << code;
     }
 
     void CDownloadFile::slotFinished()
     {
-        // qDebug() << "slotFinished";
+        qCDebug( t42utils_downloadFile ) << "slotFinished";
     }
 
     void CDownloadFile::slotMetaDataChanged()
     {
-        // qDebug() << "slotMetaDataChanged";
+        qCDebug( t42utils_downloadFile ) << "slotMetaDataChanged";
     }
 
     void CDownloadFile::slotPreSharedKeyAuthenticationRequiredReply( QSslPreSharedKeyAuthenticator *authenticator )
     {
         (void)authenticator;
-        // qDebug() << "slotPreSharedKeyAuthenticationRequiredReply" << authenticator;
+        qCDebug( t42utils_downloadFile ) << "slotPreSharedKeyAuthenticationRequiredReply" << authenticator;
     }
 
     void CDownloadFile::slotRedirectAllowed()
     {
-        // qDebug() << "slotRedirectAllowed";
+        qCDebug( t42utils_downloadFile ) << "slotRedirectAllowed";
     }
 
     void CDownloadFile::slotRedirected( const QUrl &url )
     {
         (void)url;
-        // qDebug() << "slotRedirected" << url;
+        qCDebug( t42utils_downloadFile ) << "slotRedirected" << url;
     }
 
     void CDownloadFile::slotSSLErrorsReply( const QList< QSslError > &errors )
     {
         (void)errors;
-        // qDebug() << "slotSSLErrorsReply" << errors;
+        qCDebug( t42utils_downloadFile ) << "slotSSLErrorsReply" << errors;
     }
 
     void CDownloadFile::slotUploadProgress( qint64 bytesSent, qint64 bytesTotal )
     {
         (void)bytesSent;
         (void)bytesTotal;
-        // qDebug() << "slotUploadProgress" << bytesSent << bytesTotal;
+        qCDebug( t42utils_downloadFile ) << "slotUploadProgress" << bytesSent << bytesTotal;
     }
 
     void CDownloadFile::slotAboutToClose()
     {
-        // qDebug() << "slotAboutToClose";
+        qCDebug( t42utils_downloadFile ) << "slotAboutToClose";
     }
 
     void CDownloadFile::slotBytesWritten( qint64 bytes )
     {
         (void)bytes;
-        // qDebug() << "slotBytesWritten" << bytes;
+        qCDebug( t42utils_downloadFile ) << "slotBytesWritten" << bytes;
     }
 
     void CDownloadFile::slotChannelBytesWritten( int channel, qint64 bytes )
     {
         (void)channel;
         (void)bytes;
-        // qDebug() << "slotChannelBytesWritten" << channel << bytes;
+        qCDebug( t42utils_downloadFile ) << "slotChannelBytesWritten" << channel << bytes;
     }
 
     void CDownloadFile::slotChannelReadyRead( int channel )
     {
         (void)channel;
-        // qDebug() << "slotChannelReadyRead" << channel;
+        qCDebug( t42utils_downloadFile ) << "slotChannelReadyRead" << channel;
     }
 
     void CDownloadFile::slotReadChannelFinished()
     {
-        // qDebug() << "slotReadChannelFinished";
+        qCDebug( t42utils_downloadFile ) << "slotReadChannelFinished";
     }
 
     void CDownloadFile::slotDownloadProgress( qint64 progress, qint64 total )

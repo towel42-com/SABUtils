@@ -23,6 +23,7 @@
 
 #include "QtUtils.h"
 #include "FileUtils.h"
+#include "SetupSystemLogging.h"
 
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
@@ -539,7 +540,7 @@ namespace NTowel42Utils
                 retVal = QDate::fromString( string, format );
             if ( retVal.isValid() )
             {
-                // qDebug() << string << "=" << retVal;
+                qCDebug( t42utils_getDate ) << string << "=" << retVal;
                 return retVal;
             }
         }
@@ -945,7 +946,7 @@ namespace NTowel42Utils
                 QString subStr = previousText.first + txt.mid( lineStart, pos - lineStart );
                 if ( !subStr.isEmpty() )
                 {
-                    // qDebug() << subStr;
+                    qCDebug( t42utils_appendToLog ) << subStr;
                     textEdit->appendPlainText( subStr );
                     previousText.first.clear();
                 }
@@ -1113,7 +1114,7 @@ namespace NTowel42Utils
 
     std::optional< QDate > toDate( const QVariant &data )
     {
-        //qDebug() << data;
+        qCDebug( t42utils_toDate ) << data;
         if ( data.metaType().id() == QMetaType::QDate )
             return data.toDate();
 
@@ -1184,7 +1185,7 @@ namespace NTowel42Utils
 
             if ( retVal.isValid() )
             {
-                //qDebug() << retVal;
+                qCDebug( t42utils_toDate ) << retVal;
                 return retVal;
             }
         }

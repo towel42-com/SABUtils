@@ -23,6 +23,7 @@
 
 #include "AutoSize.h"
 #include "QtUtils.h"
+#include "SetupSystemLogging.h"
 
 #include <QComboBox>
 #include <QTableView>
@@ -163,7 +164,7 @@ namespace NTowel42Utils
         // grow/shrink it by 5% to find the initial boundaries
         if ( !shrinkIfNecessary && !scrollArea->horizontalScrollBar()->isVisible() )
         {
-            qDebug() << "Final Width: " << resizeWidget->size().width();
+            qCDebug( t42utils_autoSize ) << "Final Width: " << resizeWidget->size().width();
             return resizeWidget->size().width();
         }
 
@@ -215,7 +216,7 @@ namespace NTowel42Utils
             lhsSize = resizeWidget->size();
         }
 
-        qDebug() << "It took " << resizeCount << " to find starting points";
+        qCDebug( t42utils_autoSize ) << "It took " << resizeCount << " to find starting points";
         if ( resizeWidget->size() != rhsSize )
             resizeWidget->resize( rhsSize );
 
@@ -265,8 +266,8 @@ namespace NTowel42Utils
             qApp->processEvents();
         }
         scrollArea->setHorizontalScrollBarPolicy( currPolicy );
-        qDebug() << "It took " << resizeCount << " total";
-        qDebug() << "Final Width: " << resizeWidget->size().width();
+        qCDebug( t42utils_autoSize ) << "It took " << resizeCount << " total";
+        qCDebug( t42utils_autoSize ) << "Final Width: " << resizeWidget->size().width();
         return resizeWidget->size().width();
     }
 

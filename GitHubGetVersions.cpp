@@ -24,7 +24,7 @@
 #include "GitHubGetVersions.h"
 #include "VersionInfoData.h"
 #include "FileUtils.h"
-#include "VersionInfoData.h"
+#include "SetupSystemLogging.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -89,24 +89,24 @@ namespace NTowel42Utils
     {
     }
 
-    void CGitHubGetVersions::slotEncrypted( QNetworkReply * /*reply*/ )
+    void CGitHubGetVersions::slotEncrypted( QNetworkReply * reply )
     {
-        // qDebug() << "slotEncrypted:" << reply << reply->url().toString();
+        qCDebug( t42utils_GitHubGetVersions ) << "slotEncrypted:" << reply << reply->url().toString();
     }
 
-    void CGitHubGetVersions::slotPreSharedKeyAuthenticationRequired( QNetworkReply * /*reply*/, QSslPreSharedKeyAuthenticator * /*authenticator*/ )
+    void CGitHubGetVersions::slotPreSharedKeyAuthenticationRequired( QNetworkReply * reply, QSslPreSharedKeyAuthenticator * authenticator )
     {
-        // qDebug() << "slotPreSharedKeyAuthenticationRequired: 0x" << Qt::hex << reply << reply->url().toString() << authenticator;
+        qCDebug( t42utils_GitHubGetVersions ) << "slotPreSharedKeyAuthenticationRequired: 0x" << Qt::hex << reply << reply->url().toString() << authenticator;
     }
 
-    void CGitHubGetVersions::slotProxyAuthenticationRequired( const QNetworkProxy & /*proxy*/, QAuthenticator * /*authenticator*/ )
+    void CGitHubGetVersions::slotProxyAuthenticationRequired( const QNetworkProxy & proxy, QAuthenticator * authenticator )
     {
-        // qDebug() << "slotProxyAuthenticationRequired: 0x" << Qt::hex << &proxy << authenticator;
+        qCDebug( t42utils_GitHubGetVersions ) << "slotProxyAuthenticationRequired: 0x" << Qt::hex << &proxy << authenticator;
     }
 
-    void CGitHubGetVersions::slotSSlErrors( QNetworkReply * /*reply*/, const QList< QSslError > & /*errors*/ )
+    void CGitHubGetVersions::slotSSlErrors( QNetworkReply * reply, const QList< QSslError > & errors )
     {
-        // qDebug() << "slotSSlErrors: 0x" << Qt::hex << reply << errors;
+        qCDebug( t42utils_GitHubGetVersions ) << "slotSSlErrors: 0x" << Qt::hex << reply << errors;
     }
 
     void CGitHubGetVersions::slotFinished( QNetworkReply *reply )

@@ -22,6 +22,7 @@
 // SOFTWARE.
 
 #include "MD5.h"
+#include "SetupSystemLogging.h"
 
 #include <QString>
 #include <QCryptographicHash>
@@ -188,7 +189,6 @@ namespace NTowel42Utils
             processImage( img );
 
         emitFinished();
-    
     }
 
     unsigned long long CComputeMD5::getThreadID() const
@@ -199,7 +199,7 @@ namespace NTowel42Utils
     void CComputeMD5::slotStop()
     {
         fStopped = true;
-        // qDebug() << "ComputeMD5 stopped";
+        qCDebug( t42utils_MD5 ) << "ComputeMD5 stopped";
     }
 
     void CComputeMD5::emitFinished()

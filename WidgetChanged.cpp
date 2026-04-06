@@ -23,6 +23,7 @@
 
 #include "WidgetChanged.h"
 #include "DelayLineEdit.h"
+#include "SetupSystemLogging.h"
 
 #include <QMetaMethod>
 #include <QObject>
@@ -327,7 +328,7 @@ namespace NTowel42Utils
 
     void setupWidgetChanged( QDoubleSpinBox *doubleSpinBox, const QWidget *parentWidget, const char *member, bool isExcluded )
     {
-        QObject::disconnect( doubleSpinBox, SIGNAL( valueChanged( double) ), parentWidget, member );
+        QObject::disconnect( doubleSpinBox, SIGNAL( valueChanged( double ) ), parentWidget, member );
         if ( !isExcluded )
             QObject::connect( doubleSpinBox, SIGNAL( valueChanged( double ) ), parentWidget, member );
     }
@@ -470,7 +471,7 @@ namespace NTowel42Utils
         }
 
         auto className = QString::fromUtf8( widget->metaObject()->className() );
-        // qDebug() << "Testing-" << widget << "-" << className << widget->objectName();
+        qCDebug( t42utils_widgetChanged ) << "Testing-" << widget << "-" << className << widget->objectName();
 
         QAbstractButton *button = dynamic_cast< QAbstractButton * >( widget );
         auto checkBox = dynamic_cast< QCheckBox * >( widget );
@@ -487,7 +488,7 @@ namespace NTowel42Utils
         if ( label || tb || dbb || ( button && !checkBox && !radioButton ) || scrollbar || webview || ( className == "QColumnViewGrip" ) || ( className == "QFrame" ) || ( className == "QTableCornerButton" ) || ( className == "QWidget" ) || ( className == "QSplitter" ) || ( className == "QRubberBand" ) || ( className == "QSplitterHandle" ) || ( className == "QToolBar" ) || ( className == "QToolBarSeparator" ) || ( className == "QMenu" ) || ( className == "QMenuBar" ) || ( className == "QDockWidget" ) || ( className == "QStackedWidget" ) || ( className == "QChartView" ) || ( widget->objectName() == QStringLiteral( "qt_scrollarea_viewport" ) ) || ( widget->objectName() == QStringLiteral( "qt_scrollarea_hcontainer" ) ) || ( widget->objectName() == QStringLiteral( "qt_scrollarea_vcontainer" ) ) || ( className.indexOf( "private", 0, Qt::CaseInsensitive ) != -1 ) )
         {
             isSkipWidget = true;
-            // qDebug() << "|---> Skipped Widget" << widget << "-" << widget->metaObject()->className() << widget->objectName();
+            qCDebug( t42utils_widgetChanged ) << "|---> Skipped Widget" << widget << "-" << widget->metaObject()->className() << widget->objectName();
             if ( handled )
                 ( *handled )[ widget ] = true;
             return true;
@@ -497,10 +498,10 @@ namespace NTowel42Utils
         bool isExcluded = excludeAll || ( excludedWidgets.find( widget ) != excludedWidgets.end() );
         if ( !isExcluded && parent && ( parent != parentWidget ) )
             return excludeWidget( excludeAll, excludedWidgets, parent, parentWidget, isSkipWidget, handled );
-        // if ( isExcluded )
-        //     qDebug() << "|---> Excluded Widget" << widget << "-" << widget->metaObject()->className() << widget->objectName();
-        // else
-        //     qDebug() << "|---> NOT Excluded Widget" << widget << "-" << widget->metaObject()->className() << widget->objectName();
+        if ( isExcluded )
+            qCDebug( t42utils_widgetChanged ) << "|---> Excluded Widget" << widget << "-" << widget->metaObject()->className() << widget->objectName();
+        else
+            qCDebug( t42utils_widgetChanged ) << "|---> NOT Excluded Widget" << widget << "-" << widget->metaObject()->className() << widget->objectName();
         if ( handled )
         {
             ( *handled )[ widget ] = isExcluded;
@@ -594,7 +595,7 @@ namespace NTowel42Utils
             return;
         else
         {
-            qDebug() << "UNHANDLED-" << child << "-" << child->metaObject()->className() << child->objectName();
+            qCDebug( t42utils_widgetChanged ) << "UNHANDLED-" << child << "-" << child->metaObject()->className() << child->objectName();
         }
 #endif
     }
@@ -698,7 +699,7 @@ namespace NTowel42Utils
             return;
         else
         {
-            qDebug() << "UNHANDLED-" << child << "-" << child->metaObject()->className() << child->objectName();
+            qCDebug( t42utils_widgetChanged ) << "UNHANDLED-" << child << "-" << child->metaObject()->className() << child->objectName();
         }
 #endif
     }
@@ -807,7 +808,7 @@ namespace NTowel42Utils
             return;
         else
         {
-            qDebug() << "UNHANDLED-" << child << "-" << child->metaObject()->className() << child->objectName();
+            qCDebug( t42utils_widgetChanged ) << "UNHANDLED-" << child << "-" << child->metaObject()->className() << child->objectName();
         }
 #endif
     }

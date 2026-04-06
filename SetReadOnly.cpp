@@ -23,6 +23,7 @@
 
 #include "SetReadOnly.h"
 #include "ButtonGroupWDescriptiveText.h"
+#include "SetupSystemLogging.h"
 
 #include <QAbstractButton>
 #include <QAbstractItemView>
@@ -108,7 +109,7 @@ namespace NTowel42Utils
                 setReadOnly( childWidget, readOnly );
                 return;
             }
-            qDebug() << "SetReadOnly: UNHANDLED-" << childWidget << "-" << childWidget->metaObject()->className() << " - SuperClass: " << childWidget->metaObject()->superClass()->className() << " - " << childWidget->objectName();
+            qCDebug( t42utils_setReadOnly ) << "SetReadOnly: UNHANDLED-" << childWidget << "-" << childWidget->metaObject()->className() << " - SuperClass: " << childWidget->metaObject()->superClass()->className() << " - " << childWidget->objectName();
             childWidget->setCursor( readOnly ? Qt::ForbiddenCursor : Qt::ArrowCursor );
         }
     }

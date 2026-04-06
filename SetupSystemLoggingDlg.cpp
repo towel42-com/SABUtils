@@ -231,7 +231,9 @@ namespace NTowel42Utils
                 setupSystemLogging();
             }
 
-            QLoggingCategory::setFilterRules( getRules( false ) );
+            auto rules = getRules( false );
+            qCDebug( t42utils_base ).noquote().nospace() << "Setting log filter rules to:\n" << rules;
+            QLoggingCategory::setFilterRules( rules );
             QLoggingCategory::installFilter( nullptr );
             QDialog::accept();
         }

@@ -25,6 +25,7 @@
 
     #include "FileUtils.h"
     #include <QDir>
+    #include "SetupSystemLogging.h"
 
 namespace NTowel42Utils
 {
@@ -41,7 +42,7 @@ namespace NTowel42Utils
             if ( skipDir && skipDir( dir ) )
                 return {};
 
-            // qDebug() << dir.absolutePath();
+            qCDebug( t42utils_findAllFiles ) << dir.absolutePath();
             auto files = dir.entryInfoList( nameFilters, QDir::Files, sortByName ? QDir::SortFlag::Name : QDir::SortFlag::NoSort );
             QList< QFileInfo > retVal;
             for ( auto &&ii : files )

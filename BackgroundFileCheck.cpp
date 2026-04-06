@@ -25,6 +25,7 @@
 #include "RevertValue.h"
 
 #include "FileUtils.h"
+#include "SetupSystemLogging.h"
 
 #include <QThread>
 #include <QFileInfo>
@@ -37,7 +38,7 @@ extern Q_CORE_EXPORT int qt_ntfs_permission_lookup;
 #endif
 
 #ifdef _DEBUG
-// #define DEBUG_BACKGROUND_FILE_CHECK
+ //#define DEBUG_BACKGROUND_FILE_CHECK
 #endif
 
 namespace NTowel42Utils
@@ -271,7 +272,7 @@ namespace NTowel42Utils
 #ifdef DEBUG_BACKGROUND_FILE_CHECK
         static std::unordered_map< const CBackgroundFileCheckImpl *, int > hitCounts;
         hitCounts[ this ]++;
-        qDebug() << this << hitCounts[ this ] << msg << fPathName << fStopped << fTimedOut << fThread->isRunning();
+        qCDebug( t42utils_backgroundFileCheck ) << this << hitCounts[ this ] << msg << fPathName << fStopped << fTimedOut << fThread->isRunning();
 #else
         (void)msg;
 #endif

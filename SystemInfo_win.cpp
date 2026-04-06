@@ -22,6 +22,7 @@
 // SOFTWARE.
 #include "SystemInfo.h"
 #include "nodiscard.h"
+#include "SetupSystemLogging.h"
 
 #include <QDateTime>
 #include <QTimeZone>
@@ -446,7 +447,7 @@ namespace NTowel42Utils
             status = PdhAddCounter( query, path.c_str(), 0, &currCounter );
             if ( status != ERROR_SUCCESS )
             {
-                qDebug() << "Error (PdhAddCounter): " << status;
+                qCDebug( t42utils_systemInfo ) << "Error (PdhAddCounter): " << status;
                 return {};
             }
             counters.push_back( currCounter );
@@ -454,7 +455,7 @@ namespace NTowel42Utils
         status = PdhCollectQueryData( query );
         if ( status != ERROR_SUCCESS )
         {
-            qDebug() << "Error (PdhCollectQueryData): " << status;
+            qCDebug( t42utils_systemInfo ) << "Error (PdhCollectQueryData): " << status;
             return {};
         }
 
@@ -468,7 +469,7 @@ namespace NTowel42Utils
         auto status = PdhCollectQueryData( queries.first );
         if ( status != ERROR_SUCCESS )
         {
-            qDebug() << "Error (PdhCollectQueryData): " << status;
+            qCDebug( t42utils_systemInfo ) << "Error (PdhCollectQueryData): " << status;
             return {};
         }
 
@@ -481,14 +482,14 @@ namespace NTowel42Utils
             status = PdhGetFormattedCounterArray( query, PDH_FMT_DOUBLE, &dwBufferSize, &dwItemCount, pItems );
             if ( PDH_MORE_DATA != status )
             {
-                qDebug() << "Error (PdhGetFormattedCounterArray): " << status;
+                qCDebug( t42utils_systemInfo ) << "Error (PdhGetFormattedCounterArray): " << status;
                 return {};
             }
 
             pItems = (PDH_FMT_COUNTERVALUE_ITEM *)new uint8_t[ dwBufferSize ];
             if ( !pItems )
             {
-                qDebug() << "Error (new):";
+                qCDebug( t42utils_systemInfo ) << "Error (new):";
                 return {};
             }
 
@@ -497,7 +498,7 @@ namespace NTowel42Utils
                 status = PdhGetFormattedCounterArray( query, PDH_FMT_DOUBLE, &dwBufferSize, &dwItemCount, pItems );
                 if ( ERROR_SUCCESS != status )
                 {
-                    qDebug() << "Error (PdhGetFormattedCounterArray): " << status;
+                    qCDebug( t42utils_systemInfo ) << "Error (PdhGetFormattedCounterArray): " << status;
                     return {};
                 }
 

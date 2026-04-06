@@ -24,6 +24,8 @@
 #ifdef TOWEL42_QSQL_SUPPORT
 
     #include "DBUtils.h"
+    #include "SetupSystemLogging.h"
+
     #include <cassert>
     #include <unordered_map>
     #include <unordered_set>
@@ -123,7 +125,7 @@ namespace NTowel42Utils
                     params[ ii ] = ii.mid( 1 );
             }
             else
-                qDebug() << "Param: " << ii << "is in the sql cmd twice";
+                qCDebug( t42utils_dbUtils_validateQuery ) << "Param: " << ii << "is in the sql cmd twice";
         }
 
         for ( auto &&ii : params )
@@ -170,8 +172,8 @@ namespace NTowel42Utils
     {
         if ( error.type() != QSqlError::NoError )
         {
-            qDebug() << getThreadName() << ": " << error.driverText();
-            qDebug() << getThreadName() << ": " << error.databaseText();
+            qCDebug( t42utils_dbUtils_reportError ) << getThreadName() << ": " << error.driverText();
+            qCDebug( t42utils_dbUtils_reportError ) << getThreadName() << ": " << error.databaseText();
             if ( assert )
                 Q_ASSERT( error.type() == QSqlError::NoError );
         }
@@ -224,7 +226,7 @@ namespace NTowel42Utils
             {
                 if ( assert )
                     Q_ASSERT( currParam.toLower() == currParam );
-                qDebug() << QString( "Parameter '%1' should be all lowercase" ).arg( currParam );
+                qCDebug( t42utils_dbUtils_validateQuery ) << QString( "Parameter '%1' should be all lowercase" ).arg( currParam );
                 return false;
             }
         }
@@ -368,7 +370,7 @@ namespace NTowel42Utils
             auto value = query.boundValues()[ ii ];
             if ( value.isNull() && ( value.userType() != QMetaType::QString ) )
             {
-                qDebug() << query.boundValueNames()[ ii ] << " has a null bound value.";
+                qCDebug( t42utils_dbUtils_validateQuery ) << query.boundValueNames()[ ii ] << " has a null bound value.";
                 continue;
             }
             numBoundWithValue++;
@@ -417,9 +419,9 @@ namespace NTowel42Utils
         auto aOK = boundNotParam.empty();
         if ( !boundNotParam.empty() )
         {
-            qDebug() << "The following are bound but not in param map: ";
+            qCDebug( t42utils_dbUtils_validateQuery ) << "The following are bound but not in param map: ";
             for ( auto &&ii : boundNotParam )
-                qDebug() << ii;
+                qCDebug( t42utils_dbUtils_validateQuery ) << ii;
             if ( assert )
                 Q_ASSERT( boundNotParam.empty() );
         }
@@ -429,9 +431,9 @@ namespace NTowel42Utils
             Q_ASSERT( boundIncorrectly.empty() );
         if ( !boundIncorrectly.empty() )
         {
-            qDebug() << "The following are bound incorrectly: ";
+            qCDebug( t42utils_dbUtils_validateQuery ) << "The following are bound incorrectly: ";
             for ( auto &&ii : boundNotParam )
-                qDebug() << ii;
+                qCDebug( t42utils_dbUtils_validateQuery ) << ii;
         }
 
         aOK = aOK && paramNoBound.empty();
@@ -439,9 +441,9 @@ namespace NTowel42Utils
             Q_ASSERT( paramNoBound.empty() );
         if ( !paramNoBound.empty() )
         {
-            qDebug() << "The following are in the param map but not bound: ";
+            qCDebug( t42utils_dbUtils_validateQuery ) << "The following are in the param map but not bound: ";
             for ( auto &&ii : paramNoBound )
-                qDebug() << ii;
+                qCDebug( t42utils_dbUtils_validateQuery ) << ii;
         }
 
         return aOK && validateParams( query, params.size(), assert );
@@ -719,8 +721,8 @@ namespace NTowel42Utils
 
     std::optional< int > lastInsertedKey( QSqlQuery &query, const QString & /*tableName*/ )
     {
-        qDebug() << ( query.driver()->objectName() );
-        qDebug() << ( QSqlDatabase().driverName() );
+        qCDebug( t42utils_dbUtils ) << ( query.driver()->objectName() );
+        qCDebug( t42utils_dbUtils ) << ( QSqlDatabase().driverName() );
 
         auto cmd = QStringLiteral( "SELECT LAST_INSERT_ID();" );
         auto aOK = runCmd( query, cmd ) && query.next();

@@ -43,6 +43,7 @@
 // SOFTWARE.
 
 #include "AutoFetch.h"
+#include "SetupSystemLogging.h"
 
 #include <QTreeView>
 #include <QScrollBar>
@@ -68,7 +69,7 @@ namespace NTowel42Utils
         auto vpRegion = view->viewport()->visibleRegion();
         auto vpRect = view->viewport()->rect();
         auto idxRect = view->visualRect( idx );
-        // qDebug() << "vpRegion:" << vpRegion << "vpRect:" << vpRect << " IDX Rect:" << idxRect;
+        qCDebug( t42utils_autoFetch_isVisible ) << "vpRegion:" << vpRegion << "vpRect:" << vpRect << " IDX Rect:" << idxRect;
         bool isVisible = std::get< 1 >( retVal ) = vpRegion.intersects( idxRect ) || vpRegion.contains( idxRect );
         if ( !isVisible )
         {
@@ -82,7 +83,7 @@ namespace NTowel42Utils
 
     QModelIndex findFirstVisible( QTreeView *view, QModelIndex idx )
     {
-        // qDebug() << "findFirstVisible:" << idx << idx.data();
+        qCDebug( t42utils_autoFetch_findFirstVisible ) << idx << idx.data();
 
         bool aOK = false;
         bool isVisible = false;
@@ -106,7 +107,7 @@ namespace NTowel42Utils
         while ( aOK && !isVisible && !std::get< 3 >( whereIsIt ) )   // must be above or off to the left
         {
             idx = view->indexBelow( idx );
-            // qDebug() << "findFirstVisible: indexBelow" << idx << idx.data();
+            qCDebug( t42utils_autoFetch_findFirstVisible ) << "indexBelow" << idx << idx.data();
             std::tie( aOK, isVisible, whereIsIt ) = NTowel42Utils::isVisible( view, idx );
         }
         return idx;
@@ -136,11 +137,11 @@ namespace NTowel42Utils
         bool isVisible = false;
         std::tuple< bool, bool, bool, bool > whereIsIt;
         std::tie( aOK, isVisible, whereIsIt ) = NTowel42Utils::isVisible( view, initIndex );
-        // qDebug() << "initIndex:" << initIndex << initIndex.data() << "isExpanded:" << view->isExpanded( initIndex ) << "Num Children:" << model->rowCount( initIndex ) << "Can FetchMore:" << model->canFetchMore( initIndex )
-        //     << " aOK:" << aOK
-        //     << " isVisible:" << isVisible
-        //     << " whereIsIt:" << whereIsIt
-        //     ;
+        qCDebug( t42utils_autoFetch )   //
+            << "initIndex:" << initIndex << initIndex.data() << "isExpanded:" << view->isExpanded( initIndex ) << "Num Children:" << model->rowCount( initIndex ) << "Can FetchMore:" << model->canFetchMore( initIndex )   //
+            << " aOK:" << aOK <<   //
+            " isVisible:" << isVisible   //
+            << " whereIsIt:" << whereIsIt;
 
         // dont bother if its not expanded..
         if ( !aOK || !view->isExpanded( initIndex ) )
@@ -157,7 +158,7 @@ namespace NTowel42Utils
         Q_ASSERT( isVisible || ( std::get< 0 >( whereIsIt ) || std::get< 1 >( whereIsIt ) || std::get< 2 >( whereIsIt ) ) );
 
         QModelIndex expandingIndex = initIndex;
-        // qDebug() << "expandingIndex:" << expandingIndex << expandingIndex.data();
+        qCDebug( t42utils_autoFetch_expandingIndex ) << expandingIndex << expandingIndex.data();
 
         QModelIndex firstVisible = findFirstVisible( view, expandingIndex );
         auto idxRect = view->visualRect( expandingIndex );

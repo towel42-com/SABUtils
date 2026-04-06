@@ -22,6 +22,7 @@
 // SOFTWARE.
 
 #include "ButtonEnabler.h"
+#include "SetupSystemLogging.h"
 
 #include <QAbstractItemView>
 #include <QAbstractButton>
@@ -103,11 +104,14 @@ namespace NTowel42Utils
     {
         if ( fButton )
         {
-            // qDebug() << fButton->parentWidget() << fButton;
+            qCDebug( t42utils_buttonEnabler ) << fButton->parentWidget() << fButton << enabled;
             fButton->setEnabled( enabled );
         }
         if ( fAction )
+        {
+            qCDebug( t42utils_buttonEnabler ) << fAction << enabled;
             fAction->setEnabled( enabled );
+        }
     }
 
     QAbstractButton *CButtonEnabler::button() const

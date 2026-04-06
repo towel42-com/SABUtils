@@ -22,6 +22,7 @@
 // SOFTWARE.
 
 #include "DoubleProgressDlg.h"
+#include "SetupSystemLogging.h"
 
 #include <QScopedValueRollback>
 #include <QTimer>
@@ -907,7 +908,7 @@ namespace NTowel42Utils
     {
         if ( button == fCancelButton.second )
         {
-            qDebug() << "CDoubleProgressDlg::setCancelButton: Attempt to set the same button again";
+            qCDebug( t42utils_doubleProgressDlg ) << "CDoubleProgressDlg::setCancelButton: Attempt to set the same button again";
             return;
         }
         delete fCancelButton.second;
@@ -997,7 +998,7 @@ namespace NTowel42Utils
 
         fTitle->setGeometry( leftMargin, additionalSpacing, fDialog->width() - leftMargin - rightMargin, labelHeight );
 
-        //        qDebug() << "Dialog Size:" << fDialog->geometry();
+        qCDebug( t42utils_doubleProgressDlg ) << "Dialog Size:" << fDialog->geometry();
 
         auto primGeom = QRect( leftMargin, labelHeight + verticalSpacing + additionalSpacing, fDialog->width() - leftMargin - rightMargin, primaryBarHeight.height() );
         auto secondGeom = QRect( primGeom.left(), primGeom.y() + primGeom.height() + verticalSpacing, primGeom.width(), secondaryBarHeight.height() );
