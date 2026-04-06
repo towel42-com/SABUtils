@@ -71,7 +71,6 @@ set(project_H
     Towel42UtilsExport.h
     VersionInfoData.h
     Towel42UtilsFwd.h
-
     ${OS_HEADERS}
 )
 
@@ -137,7 +136,9 @@ if ( TOWEL42_QCORE_SUPPORT )
         QtUtils.cpp
         StayAwake.cpp
         SystemInfo.cpp
+        SetupSystemLogging.cpp
         Towel42UtilsResources.cpp
+        TimeStamp.cpp
         UtilityModels.cpp
         utils.cpp
         WordExp.cpp
@@ -163,6 +164,8 @@ if ( TOWEL42_QCORE_SUPPORT )
         QtUtils.h
         StayAwake.h   
         SystemInfo.h
+        SetupSystemLogging.h
+        TimeStamp.h
         Towel42UtilsResources.h
         utils.h
         WordExp.h
@@ -215,6 +218,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         SpinBox64.cpp
         SpinBox64U.cpp
         SummaryDateEdit.cpp
+        SetupSystemLoggingDlg.cpp
         uiUtils.cpp
         UtilityViews.cpp
         WidgetChanged.cpp
@@ -240,6 +244,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         SetReadOnlyComboBox.h
         SetReadOnlyGroupBox.h
         SummaryDateEdit.h
+        SetupSystemLoggingDlg.h
         ScrollMessageBox.h
         SelectFileUrl.h
         SpinBox64.h
@@ -266,6 +271,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         ${qtproject_UIS}
         DownloadFile.ui
         ScrollMessageBox.ui
+        SetupSystemLoggingDlg.ui
     )
     
     SET( project_pub_DEPS
