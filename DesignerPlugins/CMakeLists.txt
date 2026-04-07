@@ -45,8 +45,9 @@ FUNCTION( AddDesignerPlugin )
 ENDFUNCTION()
 
 AddDesignerPlugin( NAME ImageHandlerDesignerPlugin FILES ../ImageHandler.cpp ../ImageHandler.h ImageHandlerDesignerPlugin.cpp ImageHandlerDesignerPlugin.h )
-
 AddDesignerPlugin( NAME ButtonGroupWDescriptiveTextDesignerPlugin FILES ../ButtonGroupWDescriptiveText.cpp ../ButtonGroupWDescriptiveText.h ButtonGroupWDescriptiveTextDesignerPlugin.cpp ButtonGroupWDescriptiveTextDesignerPlugin.h )
+AddDesignerPlugin( NAME SetReadOnlyComboBoxDesignerPlugin FILES ../SetReadOnlyComboBox.cpp ../SetReadOnlyComboBox.h SetReadOnlyComboBoxDesignerPlugin.cpp SetReadOnlyComboBoxDesignerPlugin.h )
+AddDesignerPlugin( NAME SetReadOnlyGroupBoxDesignerPlugin FILES ../SetReadOnlyGroupBox.cpp ../SetReadOnlyGroupBox.h SetReadOnlyGroupBoxDesignerPlugin.cpp SetReadOnlyGroupBoxDesignerPlugin.h )
 
 AddDesignerPlugin( NAME ImageListWidgetPlugin 
     FILES 
