@@ -31,7 +31,9 @@
 #include <QToolButton>
 #include <QListWidget>
 #include <QLabel>
+#include <QCheckBox>
 #include <QGridLayout>
+#include <QVBoxLayout>
 #include <QSpacerItem>
 #include <QIcon>
 #include <QDragEnterEvent>
@@ -43,11 +45,12 @@ namespace NTowel42Utils
 {
     CImageListWidget::CImageListWidget( QWidget *parent /*= nullptr*/ ) :
         QWidget( parent ),
-        fCaption( tr( "Select Image:" ) )
+        fImagesDescription( tr( "Image" ) )
 
     {
         setupUi();
 
+        connect( fCheckbox, &QCheckBox::toggled, this, &CImageListWidget::slotShowImagesChanged );
         connect( fAddImage, &QToolButton::clicked, this, &CImageListWidget::slotAddImage );
         connect( fDelImage, &QToolButton::clicked, this, &CImageListWidget::slotDelImage );
         connect( fMoveUp, &QToolButton::clicked, this, &CImageListWidget::slotMoveImageUp );
@@ -67,12 +70,13 @@ namespace NTowel42Utils
         auto gridLayout = new QGridLayout( this );
         gridLayout->setObjectName( "gridLayout_3" );
         gridLayout->setContentsMargins( 0, 0, 0, 0 );
-        fLabel = new QLabel( this );
-        fLabel->setObjectName( "fLabel" );
-        fLabel->setText( tr( "Images:" ) );
+
+        fCheckbox = new QCheckBox( this );
+        fCheckbox->setObjectName( "fCheckbox" );
+        fCheckbox->setText( tr( "Images:" ) );
 
         int rowNum = 0;
-        gridLayout->addWidget( fLabel, rowNum++, 0, 1, 2 );
+        gridLayout->addWidget( fCheckbox, rowNum++, 0, 1, 2 );
 
         fImages = new CImageDropListWidget( this );
         connect( fImages, &CImageDropListWidget::sigImageDropped, this, &CImageListWidget::slotImageDropped );
@@ -84,8 +88,9 @@ namespace NTowel42Utils
         fAddImage = new QToolButton( this );
         fAddImage->setObjectName( "fAddImage" );
         {
-            QIcon icon( QIcon::fromTheme( QIcon::ThemeIcon::ListAdd ) );
+            auto icon = QIcon::fromTheme( QIcon::ThemeIcon::ListAdd );
             fAddImage->setIcon( icon );
+            fAddImage->setFixedSize( icon.availableSizes().front() );
         }
 
         gridLayout->addWidget( fAddImage, rowNum++, 1, 1, 1 );
@@ -95,6 +100,7 @@ namespace NTowel42Utils
         {
             QIcon icon( QIcon::fromTheme( QIcon::ThemeIcon::EditDelete ) );
             fDelImage->setIcon( icon );
+            fDelImage->setFixedSize( icon.availableSizes().front() );
         }
 
         gridLayout->addWidget( fDelImage, rowNum++, 1, 1, 1 );
@@ -104,6 +110,7 @@ namespace NTowel42Utils
         {
             QIcon icon( QIcon::fromTheme( QIcon::ThemeIcon::GoUp ) );
             fMoveUp->setIcon( icon );
+            fMoveUp->setFixedSize( icon.availableSizes().front() );
         }
         gridLayout->addWidget( fMoveUp, rowNum++, 1, 1, 1 );
 
@@ -112,13 +119,19 @@ namespace NTowel42Utils
         {
             QIcon icon( QIcon::fromTheme( QIcon::ThemeIcon::GoDown ) );
             fMoveDown->setIcon( icon );
+            fMoveDown->setFixedSize( icon.availableSizes().front() );
         }
 
         gridLayout->addWidget( fMoveDown, rowNum++, 1, 1, 1 );
 
+        fSpacerWidget = new QWidget( this );
+        fSpacerWidget->setObjectName( "fSpacerWidget" );
+        auto vboxLayout = new QVBoxLayout( fSpacerWidget );
         auto spacer = new QSpacerItem( 20, 40, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding );
+        vboxLayout->addItem( spacer );
 
-        gridLayout->addItem( spacer, rowNum++, 1, 1, 1 );
+        gridLayout->addWidget( fSpacerWidget, rowNum++, 1, 1, 1 );
+        setSizePolicy( QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum );
     }
 
     void CImageListWidget::setReadOnly( bool readOnly )
@@ -158,22 +171,60 @@ namespace NTowel42Utils
             connect( fImages, &QListWidget::itemDoubleClicked, this, &CImageListWidget::slotEditItem );
     }
 
-    void CImageListWidget::setCaption( const QString &caption )
+    void CImageListWidget::setImagesDescription( const QString &caption )
     {
-        fCaption = caption;
-        if ( fCaption.isEmpty() )
-            fCaption = tr( "Select Image:" );
+        fImagesDescription = caption;
+        if ( fImagesDescription.isEmpty() )
+            fImagesDescription = tr( "Image" );
 
-        if ( !fCaption.endsWith( ':' ) )
-            fCaption += QChar( ':' );
-        fLabel->setText( fCaption );
+        slotShowImagesChanged();
+        fCheckbox->setText( tr( "Has %1?" ).arg( fImagesDescription ) );
     }
 
-    QString CImageListWidget::caption() const
+    QString CImageListWidget::imagesDescription() const
     {
-        if ( fCaption.isEmpty() )
-            return tr( "Select Image:" );
-        return fCaption;
+        return fImagesDescription;
+    }
+
+    QString CImageListWidget::selectImageWindowTitle() const
+    {
+        auto retVal = fImagesDescription;
+        if ( retVal.isEmpty() )
+            retVal = tr( "Image" );
+
+        return tr( "Select %1:" ).arg( retVal );
+    }
+
+    void CImageListWidget::slotShowImagesChanged()
+    {
+        fAddImage->setVisible( fCheckbox->isChecked() );
+        fDelImage->setVisible( fCheckbox->isChecked() );
+        fMoveUp->setVisible( fCheckbox->isChecked() );
+        fMoveDown->setVisible( fCheckbox->isChecked() );
+        fImages->setVisible( fCheckbox->isChecked() );
+        fSpacerWidget->setVisible( fCheckbox->isChecked() );
+    }
+
+    QSize CImageListWidget::minimumSizeHint() const
+    {
+        auto height = QWidget::minimumSizeHint().height();
+        if ( fCheckbox->isChecked() )
+        {
+            height = std::max( height, fCheckbox->sizeHint().height() + fImages->sizeHint().height() + 20 );
+            height = std::max( height, ( fAddImage->sizeHint().height() * 4 ) + 3 * 20 );
+        }
+        auto width = QWidget::minimumSizeHint().width();
+        return { width, height };
+    }
+
+    bool CImageListWidget::hasImages() const
+    {
+        return fCheckbox->isChecked();
+    }
+
+    void CImageListWidget::setHasImages( bool hasImages )
+    {
+        fCheckbox->setChecked( hasImages );
     }
 
     void CImageListWidget::slotSelectionChanged( bool enabled )
@@ -241,22 +292,24 @@ namespace NTowel42Utils
 
     void CImageListWidget::loadImages( const TImageDataList &images, const std::function< bool( TImageData image ) > &addImage /*= {}*/ )
     {
+        bool imageAdded = false;
         for ( auto &&imageData : images )
         {
             if ( addImage && !addImage( imageData ) )
                 continue;
 
-            loadImage( imageData );
+            imageAdded = loadImage( imageData ) || imageAdded;
         }
+        fCheckbox->setChecked( imageAdded );
     }
 
-    void CImageListWidget::loadImage( std::shared_ptr< NTowel42Utils::SImageData > imageData, QListWidgetItem *item /*= nullptr*/ )
+    bool CImageListWidget::loadImage( std::shared_ptr< NTowel42Utils::SImageData > imageData, QListWidgetItem *item /*= nullptr*/ )
     {
         auto pm = imageData->pixmap();
         if ( !pm.has_value() )
         {
             QMessageBox::critical( this, tr( "Invalid image file" ), tr( "The image could not be loaded" ), QMessageBox::StandardButton::Ok );
-            return;
+            return false;
         }
 
         QIcon icon;
@@ -264,7 +317,7 @@ namespace NTowel42Utils
         if ( icon.isNull() )
         {
             QMessageBox::critical( this, tr( "Invalid image file" ), tr( "The image could not be loaded" ), QMessageBox::StandardButton::Ok );
-            return;
+            return false;
         }
         if ( !item )
             item = new QListWidgetItem( fImages );
@@ -277,6 +330,7 @@ namespace NTowel42Utils
         item->setText( description );
         item->setData( Qt::UserRole + 1, imageData->fData );
         item->setData( Qt::UserRole + 2, imageData->data( Qt::UserRole + 2 ) );
+        return true;
     }
 
     void CImageListWidget::slotEditItem()
@@ -291,7 +345,7 @@ namespace NTowel42Utils
 
         auto dlg = new CImageHandlerDlg( this );
         dlg->setImageData( imageData );
-        dlg->setWindowTitle( caption() );
+        dlg->setWindowTitle( selectImageWindowTitle() );
         connect(
             dlg, &CImageHandlerDlg::accepted,
             [ this, item, dlg ]()
@@ -310,7 +364,6 @@ namespace NTowel42Utils
         if ( !imageData )
             return;
         loadImage( imageData );
-
     }
 
     void CImageListWidget::slotImageFileDropped( const QString &filePath )
@@ -327,7 +380,7 @@ namespace NTowel42Utils
             return;
 
         auto dlg = new CImageHandlerDlg( true, this );
-        dlg->setWindowTitle( caption() );
+        dlg->setWindowTitle( selectImageWindowTitle() );
         connect(
             dlg, &CImageHandlerDlg::accepted,
             [ this, dlg ]()

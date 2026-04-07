@@ -30,7 +30,8 @@
 #include <QListWidget>
 #include <functional>
 
-class QLabel;
+class QCheckBox;
+class QSpacerItem;
 class QToolButton;
 namespace NTowel42Utils
 {
@@ -60,7 +61,8 @@ namespace NTowel42Utils
     {
         Q_OBJECT
         Q_PROPERTY( bool readOnly READ isReadOnly WRITE setReadOnly )
-        Q_PROPERTY( QString caption READ caption WRITE setCaption )
+        Q_PROPERTY( bool hasImages READ hasImages WRITE setHasImages )
+        Q_PROPERTY( QString imagesDescription READ imagesDescription WRITE setImagesDescription )
         Q_PROPERTY( bool autoNameImages READ autoNameImages WRITE setAutoNameImages )
     public:
         CImageListWidget( QWidget *parent = nullptr );
@@ -75,11 +77,17 @@ namespace NTowel42Utils
         void setReadOnly( bool readOnly );
         bool isReadOnly() const { return fReadOnly; }
 
-        void setCaption( const QString &caption );
-        QString caption() const;
+        void setImagesDescription( const QString &imagesDescription );
+        QString imagesDescription() const;
+
+        virtual QSize minimumSizeHint() const override;
+
+        bool hasImages() const;
+        void setHasImages( bool hasImages );
 
     Q_SIGNALS:
     public Q_SLOTS:
+        void slotShowImagesChanged();
         void slotAddImage();
         void slotDelImage();
         void slotMoveImageUp();
@@ -90,21 +98,23 @@ namespace NTowel42Utils
         void slotImageFileDropped( const QString &filePath );
 
     private:
+        QString selectImageWindowTitle() const;
         void setReadOnly( bool readOnly, bool force );
         std::shared_ptr< NTowel42Utils::SImageData > imageDataForItem( QListWidgetItem *curr ) const;
         void setupUi();
-        void loadImage( std::shared_ptr< NTowel42Utils::SImageData > imageData, QListWidgetItem *item = nullptr );
+        bool loadImage( std::shared_ptr< NTowel42Utils::SImageData > imageData, QListWidgetItem *item = nullptr );
 
         bool fReadOnly{ false };
 
-        QLabel *fLabel{ nullptr };
+        QCheckBox *fCheckbox{ nullptr };
         QToolButton *fAddImage{ nullptr };
         QToolButton *fDelImage{ nullptr };
         QToolButton *fMoveUp{ nullptr };
         QToolButton *fMoveDown{ nullptr };
         CImageDropListWidget *fImages{ nullptr };
+        QWidget *fSpacerWidget{ nullptr };
 
-        QString fCaption;
+        QString fImagesDescription;
         bool fAutoName{ false };
     };
 }

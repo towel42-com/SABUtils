@@ -46,6 +46,16 @@ ENDFUNCTION()
 
 AddDesignerPlugin( NAME ImageHandlerDesignerPlugin FILES ../ImageHandler.cpp ../ImageHandler.h ImageHandlerDesignerPlugin.cpp ImageHandlerDesignerPlugin.h )
 
-SET( FILES  )
 AddDesignerPlugin( NAME ButtonGroupWDescriptiveTextDesignerPlugin FILES ../ButtonGroupWDescriptiveText.cpp ../ButtonGroupWDescriptiveText.h ButtonGroupWDescriptiveTextDesignerPlugin.cpp ButtonGroupWDescriptiveTextDesignerPlugin.h )
 
+AddDesignerPlugin( NAME ImageListWidgetPlugin 
+    FILES 
+    ../ImageListWidget.cpp 
+    ../ImageListWidget.h 
+    ../ButtonEnabler.cpp
+    ../ButtonEnabler.h
+    ../ImageHandler.h
+    ../ImageHandler.cpp
+    ../SystemLoggingDefs.h
+    ../SystemLoggingDefs.cpp
+    ImageListWidgetDesignerPlugin.cpp ImageListWidgetDesignerPlugin.h )
