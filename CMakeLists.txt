@@ -68,16 +68,21 @@ if ( NOT TOWEL42_UTILS_DIR )
     SET( TOWEL42_UTILS_DIR ${CMAKE_CURRENT_LIST_DIR} )
 endif()
 
-include( ${CMAKE_SOURCE_DIR}/T42-CMakeUtils/Modules/EnableGoogleTesting.cmake )
+if ( NOT TOWEL42_CMAKEUTILS_DIR )
+    SET( TOWEL42_CMAKEUTILS_DIR ${CMAKE_SOURCE_DIR}/T42-CMakeUtils )
+endif()
+SET(CMAKE_MODULE_PATH ${TOWEL42_CMAKEUTILS_DIR}/Modules ${CMAKE_MODULE_PATH})
+
+include( ${TOWEL42_CMAKEUTILS_DIR}/Modules/EnableGoogleTesting.cmake )
 
 OPTION(TOWEL42_DEBUG_TRACE "Enable Debug Tracing to std::cout" OFF)
 
+project( Towel42Utils LANGUAGES C CXX) 
 include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
-project( ${_PROJECT_NAME} ) 
+find_package(Threads REQUIRED)
 
 find_package(IncludeProjectSettings REQUIRED)
 IncludeProjectSettings()
-
 
 add_compile_definitions( 
     $<$<BOOL:TOWEL42_DEBUG_TRACE>:TOWEL42_DEBUG_TRACE>
