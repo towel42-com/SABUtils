@@ -352,7 +352,7 @@ namespace NTowel42Utils
     {
     }
 
-    std::shared_ptr< NTowel42Utils::SImageData > SImageData::fromFile( const QString &fileName, const QString &description /*= {} */ )
+    std::shared_ptr< SImageData > SImageData::fromFile( const QString &fileName, const QString &description /*= {} */ )
     {
         QFile file( fileName );
         if ( !file.open( QFile::ReadOnly ) )
@@ -362,7 +362,7 @@ namespace NTowel42Utils
         return fromData( data, description.isEmpty() ? QFileInfo( fileName ).fileName() : description );
     }
 
-    std::shared_ptr< NTowel42Utils::SImageData > SImageData::fromData( const QByteArray &data, const QString &description /*= {} */ )
+    std::shared_ptr< SImageData > SImageData::fromData( const QByteArray &data, const QString &description /*= {} */ )
     {
         if ( !CImageHandler::checkImageSize( nullptr, data.size() ) )
         {
@@ -379,7 +379,7 @@ namespace NTowel42Utils
         if ( pos != fPixmaps.end() )
             return ( *pos ).second;
 
-        auto currPM = NTowel42Utils::pixmapForImageData( fData, sz );
+        auto currPM = pixmapForImageData( fData, sz );
         fPixmaps[ sizeKey ] = currPM;
         return currPM;
     }
@@ -407,12 +407,12 @@ namespace NTowel42Utils
             fPixmaps.erase( pos );
         }
 
-        fPixmaps[ sz ] = NTowel42Utils::pixmapForImageData( fData, sz );
+        fPixmaps[ sz ] = pixmapForImageData( fData, sz );
     }
 
     std::size_t SSizeHash::operator()( const QSize &sz ) const
     {
-        return NTowel42Utils::cantorHash( sz.width(), sz.height() );
+        return cantorHash( sz.width(), sz.height() );
     }
 
     CImageHandlerDlg::CImageHandlerDlg( QWidget *parent /*= nullptr*/, Qt::WindowFlags flags /*= Qt::WindowFlags() */ ) :
@@ -457,7 +457,7 @@ namespace NTowel42Utils
     {
     }
 
-    std::shared_ptr< NTowel42Utils::SImageData > CImageHandlerDlg::imageData() const
+    std::shared_ptr< SImageData > CImageHandlerDlg::imageData() const
     {
         return fImageHandler->imageData();
     }
@@ -467,12 +467,12 @@ namespace NTowel42Utils
         fImageHandler->setImageData( imageData );
     }
 
-    void CImageHandlerDlg::setImageType( EImageType type )
+    void CImageHandlerDlg::setImageType( CImageHandler::EImageType type )
     {
         fImageHandler->setImageType( type );
     }
 
-    NTowel42Utils::EImageType CImageHandlerDlg::imageType() const
+    CImageHandler::EImageType CImageHandlerDlg::imageType() const
     {
         return fImageHandler->imageType();
     }

@@ -41,12 +41,6 @@ class QPushButton;
 class QFrame;
 namespace NTowel42Utils
 {
-    enum EImageType
-    {
-        eAvatar = 0,
-        eImage = 1
-    };
-
     struct SSizeHash
     {
         std::size_t operator()( const QSize &sz ) const;
@@ -59,7 +53,6 @@ namespace NTowel42Utils
 
         static std::shared_ptr< NTowel42Utils::SImageData > fromFile( const QString &fileName, const QString &description = {} );
         static std::shared_ptr< NTowel42Utils::SImageData > fromData( const QByteArray &data, const QString &description = {} );
-
 
         std::optional< QPixmap > pixmap( const std::optional< QSize > &sz = {} ) const;
 
@@ -84,6 +77,14 @@ namespace NTowel42Utils
         Q_PROPERTY( EImageType imageType MEMBER fImageType NOTIFY sigImageTypeChanged );
 
     public:
+        enum EImageType
+        {
+            eAvatar = 0,
+            eImage = 1
+        };
+        Q_ENUM( EImageType );
+
+    public:
         CImageHandler( QWidget *parent = nullptr );
         ~CImageHandler();
 
@@ -92,8 +93,8 @@ namespace NTowel42Utils
         std::shared_ptr< SImageData > imageData() const;
         void setImageData( std::shared_ptr< SImageData > imageData );
 
-        void setImageType( EImageType type, bool force = false );
-        EImageType imageType() const { return fImageType; }
+        void setImageType( CImageHandler::EImageType type, bool force = false );
+        CImageHandler::EImageType imageType() const { return fImageType; }
 
         bool readOnly() const { return fReadOnly; }
         void setReadOnly( bool readOnly );
@@ -110,7 +111,6 @@ namespace NTowel42Utils
         void slotSelectImage();
 
     private:
-
         void slotReadOnlyChanged();
         void slotImageTypeChanged();
 
@@ -127,7 +127,7 @@ namespace NTowel42Utils
 
         std::shared_ptr< SImageData > fImageData;
         bool fReadOnly{ false };
-        EImageType fImageType{ EImageType::eImage };
+        CImageHandler::EImageType fImageType{ CImageHandler::EImageType::eImage };
         bool fLayoutDirty{ true };
 
         QFrame *fFrame{ nullptr };
@@ -142,7 +142,7 @@ namespace NTowel42Utils
     {
         Q_OBJECT
         Q_PROPERTY( bool readOnly READ readOnly WRITE setReadOnly );
-        Q_PROPERTY( EImageType imageType READ imageType WRITE setImageType );
+        Q_PROPERTY( CImageHandler::EImageType imageType READ imageType WRITE setImageType );
 
     public:
         CImageHandlerDlg( QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags() );
@@ -156,8 +156,8 @@ namespace NTowel42Utils
         std::shared_ptr< SImageData > imageData() const;
         void setImageData( std::shared_ptr< SImageData > imageData );
 
-        void setImageType( EImageType type );
-        EImageType imageType() const;
+        void setImageType( CImageHandler::EImageType type );
+        CImageHandler::EImageType imageType() const;
 
         void setReadOnly( bool readOnly );
         bool readOnly() const;
