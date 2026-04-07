@@ -63,7 +63,7 @@ namespace NTowel42Utils
     {
         fButtonText.push_back( toString( eYes ).value() );
         fButtonText.push_back( toString( eNo ).value() );
-        fButtonsThatRequireText.insert( toString( eYes ).value() );
+        fButtonsThatRequireText.push_back( toString( eYes ).value() );
 
         rebuild();
         connect( this, &QWidget::objectNameChanged, this, &CButtonGroupWDescriptiveText::nameObjects );
@@ -116,10 +116,43 @@ namespace NTowel42Utils
     {
         setCustomButtonList( QStringList() << tr( "Accept" ) << tr( "Reject" ) << tr( "Condemn" ), false );
         fButtonsThatRequireText.clear();
-        fButtonsThatRequireText.insert( tr( "Reject" ) );
-        fButtonsThatRequireText.insert( tr( "Condemn" ) );
+        fButtonsThatRequireText.push_back( tr( "Reject" ) );
+        fButtonsThatRequireText.push_back( tr( "Condemn" ) );
         setLongDescriptiveTextEdit( pte, false );
         setPlaceDescriptiveTextOnSeparateLine( pte == nullptr, true );
+    }
+
+    void CButtonGroupWDescriptiveText::setupBuddies( QWidget *widget )
+    {
+        auto labels = widget->findChildren< QLabel * >();
+        for ( auto &&label : labels )
+        {
+            auto buddy = label->buddy();
+            auto buttonGroup = qobject_cast< CButtonGroupWDescriptiveText * >( buddy );
+            if ( buttonGroup )
+            {
+                buttonGroup->setLabel( label );
+            }
+        }
+    }
+
+    bool widgetNameIsEmpty( const QString &widgetName )
+    {
+        return widgetName.isEmpty() || ( widgetName.compare( QStringLiteral( "<EMPTY>" ), Qt::CaseInsensitive ) == 0 ) || ( widgetName.compare( QStringLiteral( "<NA>" ), Qt::CaseInsensitive ) == 0 );
+    }
+
+    void CButtonGroupWDescriptiveText::setLongDescriptionWidgetName( const QString &widgetName )
+    {
+        auto widget = widgetNameIsEmpty( widgetName ) ? nullptr : parentWidget()->findChild< QTextEdit * >( widgetName );
+        fLongDescriptiveTextEdit.first = widgetName;
+        setAcceptRejectCondemn( widget );
+    }
+
+    QString CButtonGroupWDescriptiveText::longDescriptionWidgetName() const
+    {
+        if ( fLongDescriptiveTextEdit.first.has_value() )
+            return fLongDescriptiveTextEdit.first.value();
+        return fLongDescriptiveTextEdit.second ? fLongDescriptiveTextEdit.second->objectName() : QString();
     }
 
     void CButtonGroupWDescriptiveText::setPlaceDescriptiveTextOnSeparateLine( bool separateLine, bool rebuild )
@@ -150,10 +183,10 @@ namespace NTowel42Utils
     void CButtonGroupWDescriptiveText::setLongDescriptiveTextEdit( QTextEdit *pte, bool rebuild )
     {
         fShowDescriptiveText = pte == nullptr;
-        fLongDescriptiveTextEdit = pte;
+        fLongDescriptiveTextEdit.second = pte;
 
-        if ( fLongDescriptiveTextEdit )
-            connect( fLongDescriptiveTextEdit, &QTextEdit::textChanged, this, &CButtonGroupWDescriptiveText::slotChanged );
+        if ( fLongDescriptiveTextEdit.second )
+            connect( fLongDescriptiveTextEdit.second, &QTextEdit::textChanged, this, &CButtonGroupWDescriptiveText::slotChanged );
 
         if ( rebuild )
             this->rebuild();
@@ -170,10 +203,15 @@ namespace NTowel42Utils
 
     void CButtonGroupWDescriptiveText::setShowDescriptiveText( bool hasText, bool rebuild )
     {
-        Q_ASSERT( !fLongDescriptiveTextEdit );
+        Q_ASSERT( !fLongDescriptiveTextEdit.second );
         fShowDescriptiveText = hasText;
         if ( rebuild )
             this->rebuild();
+    }
+
+    bool CButtonGroupWDescriptiveText::showDescriptiveText() const
+    {
+        return fShowDescriptiveText;
     }
 
     void CButtonGroupWDescriptiveText::setLabel( QLabel *label )
@@ -182,6 +220,11 @@ namespace NTowel42Utils
         if ( fBuddyLabel )
             fBuddyLabel->setBuddy( this );
         slotChanged();
+    }
+
+    QString CButtonGroupWDescriptiveText::descText() const
+    {
+        return fLabelDesc.value_or( QString() );
     }
 
     void CButtonGroupWDescriptiveText::setDescText( const QString &labelText, bool rebuild )
@@ -224,9 +267,9 @@ namespace NTowel42Utils
 
     QString CButtonGroupWDescriptiveText::text() const
     {
-        if ( fLongDescriptiveTextEdit )
+        if ( fLongDescriptiveTextEdit.second )
         {
-            return fLongDescriptiveTextEdit->toPlainText();
+            return fLongDescriptiveTextEdit.second->toPlainText();
         }
 
         Q_ASSERT( fShowDescriptiveText && fDescriptiveText );
@@ -237,9 +280,9 @@ namespace NTowel42Utils
 
     void CButtonGroupWDescriptiveText::setText( const QString &text )
     {
-        if ( fLongDescriptiveTextEdit )
+        if ( fLongDescriptiveTextEdit.second )
         {
-            fLongDescriptiveTextEdit->setPlainText( text );
+            fLongDescriptiveTextEdit.second->setPlainText( text );
         }
         else
         {
@@ -254,6 +297,22 @@ namespace NTowel42Utils
     int CButtonGroupWDescriptiveText::propValue() const
     {
         return value().has_value() ? value().value() : -1;
+    }
+
+    QStringList CButtonGroupWDescriptiveText::buttonText() const
+    {
+        return fButtonText;
+    }
+
+    void CButtonGroupWDescriptiveText::setButtonsText( const QStringList &text, bool rebuild )
+    {
+        fButtonText = text;
+        if ( fHasNA )
+        {
+            addNAToButtonList();
+        }
+        if ( rebuild )
+            this->rebuild();
     }
 
     void CButtonGroupWDescriptiveText::addButton( const QString &text, bool rebuild )
@@ -280,15 +339,15 @@ namespace NTowel42Utils
 
     void CButtonGroupWDescriptiveText::setButtonRequiresText( int id )
     {
-        setButtonsThatRequiresText( { id } );
+        setButtonsThatRequireText( { id } );
     }
 
     void CButtonGroupWDescriptiveText::setButtonRequiresText( const QString &buttonText )
     {
-        setButtonsThatRequiresText( { buttonText } );
+        setButtonsThatRequireText( { buttonText } );
     }
 
-    void CButtonGroupWDescriptiveText::setButtonsThatRequiresText( const std::list< int > &ids )
+    void CButtonGroupWDescriptiveText::setButtonsThatRequireText( const std::list< int > &ids )
     {
         if ( !fButtonGroup )
         {
@@ -301,33 +360,49 @@ namespace NTowel42Utils
             Q_ASSERT( button );
             if ( !button )
                 return;
-            fButtonsThatRequireText.insert( button->text() );
+            fButtonsThatRequireText.push_back( button->text() );
         }
         rebuildIDRequiredTextMap();
     }
 
-    void CButtonGroupWDescriptiveText::setButtonsThatRequiresText( const QStringList &buttonsText )
+    void CButtonGroupWDescriptiveText::setButtonsThatRequireText( const QStringList &buttonsText )
     {
         if ( !fButtonGroup )
         {
             rebuild();
         }
-        fButtonsThatRequireText = { buttonsText.begin(), buttonsText.end() };
+        fButtonsThatRequireText = buttonsText;
         rebuildIDRequiredTextMap();
     }
 
-    void CButtonGroupWDescriptiveText::setAlwaysRequiresText()
+    bool CButtonGroupWDescriptiveText::alwaysRequiresText() const
     {
+        return fButtonsThatRequireText == fButtonText;
+    }
+
+    void CButtonGroupWDescriptiveText::setAlwaysRequiresText( bool alwaysRequiresText )
+    {
+        if ( !alwaysRequiresText )
+            return;
+
         fButtonsThatRequireText.clear();
         fIDsThatRequireText.clear();
         for ( auto &&ii : fButtonText )
         {
-            fButtonsThatRequireText.insert( ii );
+            fButtonsThatRequireText.push_back( ii );
         }
+        slotChanged();
     }
 
-    void CButtonGroupWDescriptiveText::setNeverRequiresText()
+    bool CButtonGroupWDescriptiveText::neverRequiresText() const
     {
+        return fButtonsThatRequireText.isEmpty();
+    }
+
+    void CButtonGroupWDescriptiveText::setNeverRequiresText( bool neverRequiresText )
+    {
+        if ( !neverRequiresText )
+            return;
         fButtonsThatRequireText.clear();
         fIDsThatRequireText.clear();
         slotChanged();
@@ -387,6 +462,7 @@ namespace NTowel42Utils
         else
             slotChanged();
     }
+
     void CButtonGroupWDescriptiveText::slotChanged()
     {
         if ( !fBuddyLabel )
@@ -418,7 +494,7 @@ namespace NTowel42Utils
         fIDsThatRequireText.clear();
         for ( auto &&ii : fButtonGroup->buttons() )
         {
-            if ( fButtonsThatRequireText.find( ii->text() ) != fButtonsThatRequireText.end() )
+            if ( fButtonsThatRequireText.indexOf( ii->text() ) != -1 )
             {
                 auto id = fButtonGroup->id( ii );
                 Q_ASSERT( id != -1 );
@@ -504,7 +580,7 @@ namespace NTowel42Utils
         fButtonGroup = new QButtonGroup( this );
         connect( fButtonGroup, &QButtonGroup::buttonClicked, this, &CButtonGroupWDescriptiveText::slotButtonClicked );
 
-        addButtons( fPlaceDescriptiveTextOnSeparateLine || fLongDescriptiveTextEdit || !fShowDescriptiveText );
+        addButtons( fPlaceDescriptiveTextOnSeparateLine || hasLongDescriptiveTextEdit() || !fShowDescriptiveText );
 
         if ( currentCheckedId.has_value() )
         {
@@ -513,7 +589,7 @@ namespace NTowel42Utils
                 newButton->setChecked( true );
         }
 
-        if ( !fLongDescriptiveTextEdit && fShowDescriptiveText )
+        if ( !hasLongDescriptiveTextEdit() && fShowDescriptiveText )
         {
             if ( fLabelDesc.has_value() )
             {
@@ -526,12 +602,17 @@ namespace NTowel42Utils
             connect( fDescriptiveText, &QLineEdit::textChanged, this, &CButtonGroupWDescriptiveText::slotChanged );
         }
 
-        if ( fLongDescriptiveTextEdit )
-            fLongDescriptiveTextEdit->setReadOnly( fReadOnly );
+        if ( fLongDescriptiveTextEdit.second )
+            fLongDescriptiveTextEdit.second->setReadOnly( fReadOnly );
         if ( fDescriptiveText )
             fDescriptiveText->setReadOnly( fReadOnly );
 
         nameObjects();
+    }
+
+    bool CButtonGroupWDescriptiveText::hasLongDescriptiveTextEdit()
+    {
+        return fLongDescriptiveTextEdit.second || !widgetNameIsEmpty( fLongDescriptiveTextEdit.first.value_or( {} ) );
     }
 
 }

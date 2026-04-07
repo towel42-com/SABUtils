@@ -49,7 +49,13 @@ namespace NTowel42Utils
         Q_PROPERTY( int value READ propValue WRITE setPropValue );
         Q_PROPERTY( bool readOnly READ readOnly WRITE setReadOnly );
         Q_PROPERTY( bool hasNA READ hasNA WRITE setHasNA );
-
+        Q_PROPERTY( QString longDescriptionWidgetName READ longDescriptionWidgetName WRITE setLongDescriptionWidgetName );
+        Q_PROPERTY( QString descText READ descText WRITE setDescText )
+        Q_PROPERTY( bool showDescriptiveText READ showDescriptiveText WRITE setShowDescriptiveText )
+        Q_PROPERTY( QStringList buttonText READ buttonText WRITE setButtonsText )
+        Q_PROPERTY( QStringList buttonsThatRequireText READ buttonsThatRequireText WRITE setButtonsThatRequireText )
+        Q_PROPERTY( bool alwaysRequiresText READ alwaysRequiresText WRITE setAlwaysRequiresText )
+        Q_PROPERTY( bool neverRequiresText READ neverRequiresText WRITE setNeverRequiresText )
     public:
         enum EValue
         {
@@ -58,34 +64,48 @@ namespace NTowel42Utils
             eNA = 2,
             eFirstCustomValue = 3
         };
+        Q_ENUM( EValue );
+
         std::optional< QString > toString( EValue value ) const;
 
         CButtonGroupWDescriptiveText( QWidget *parent = nullptr );
         ~CButtonGroupWDescriptiveText();
 
         static void addWizardDefaultProperty( QWizard *wizard );
-        void setAcceptRejectCondemn( QTextEdit *te );   // short cut to building it all yourself
         void setCustomButtonList( const QStringList &buttonNames, bool rebuild = true );
 
+        void setLongDescriptionWidgetName( const QString &widgetName );
+        QString longDescriptionWidgetName() const;
+        void setAcceptRejectCondemn( QTextEdit *te );   // short cut to building it all yourself
+
+        static void setupBuddies( QWidget *widget );
     public:
         void setHasNA( bool hasNA, bool rebuild = true );
         bool hasNA() const { return fHasNA; }
 
         void setLongDescriptiveTextEdit( QTextEdit *pte, bool rebuild = true );
         void setShowDescriptiveText( bool showDescriptiveText, bool rebuild = true );
+        bool showDescriptiveText() const;
         void setLabel( QLabel *label );
+        QString descText() const;
         void setDescText( const QString &text, bool rebuild = true );
         bool setValue( int value, const QString &desc );
         std::optional< int > value() const;
         void setButtonRequiresText( int id );   // default is the eYes
         void setButtonRequiresText( const QString &buttonText );   // default is the "Yes" Button
-        void setButtonsThatRequiresText( const std::list< int > &ids );   // default is the { eYes }
-        void setButtonsThatRequiresText( const QStringList &buttonsText );   // default is the { "Yes" } Button
+        void setButtonsThatRequireText( const std::list< int > &ids );   // default is the { eYes }
+        void setButtonsThatRequireText( const QStringList &buttonsText );   // default is the { "Yes" } Button
+        QStringList buttonsThatRequireText() const { return fButtonsThatRequireText; }
 
         void setPlaceDescriptiveTextOnSeparateLine( bool separateLine, bool rebuild = true );
-        void setAlwaysRequiresText();
-        void setNeverRequiresText();
+        void setAlwaysRequiresText( bool alwaysRequiresText );
+        bool alwaysRequiresText() const;
 
+        void setNeverRequiresText( bool neverRequiresText );
+        bool neverRequiresText() const;
+
+        QStringList buttonText() const;
+        void setButtonsText( const QStringList &text, bool rebuild = true );
         void addButton( const QString &text, bool rebuild = true );
 
         void setReadOnly( bool readOnly, bool rebuild = true );
@@ -114,6 +134,10 @@ namespace NTowel42Utils
     private:
         bool aOK( bool *textMissing ) const;
         void rebuild();
+
+    private:
+        bool hasLongDescriptiveTextEdit();
+
         void addButtons( bool addSpacer );
         void addNAToButtonList();
         void rebuildIDRequiredTextMap();
@@ -140,10 +164,10 @@ namespace NTowel42Utils
 
         // NOT OWNED
         QLabel *fBuddyLabel{ nullptr };   // the label outside the widget to change colors
-        QTextEdit *fLongDescriptiveTextEdit{ nullptr };   // the TextEdit for more extensive details, unowned
+        std::pair< std::optional< QString >, QTextEdit * > fLongDescriptiveTextEdit{ {}, nullptr };   // the TextEdit for more extensive details, unowned
 
         bool requiredTextMissing() const;
-        std::unordered_set< QString > fButtonsThatRequireText;
+        QStringList fButtonsThatRequireText;
         std::unordered_set< int > fIDsThatRequireText;
         std::optional< int > fPreviousValue;
     };
