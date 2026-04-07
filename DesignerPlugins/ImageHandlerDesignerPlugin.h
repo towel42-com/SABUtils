@@ -27,7 +27,6 @@
 
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
-//! [0]
 class CImageHandlerDesignerPlugin : public QObject, public QDesignerCustomWidgetInterface
 {
     Q_OBJECT
@@ -51,6 +50,5 @@ public:
 private:
     bool fInitialized = false;
 };
-//! [0]
 
 #endif

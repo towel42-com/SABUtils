@@ -22,18 +22,18 @@
 // SOFTWARE.
 //
 
-#ifndef IMAGELISTWIDGETDESIGNERPLUGIN_H
-#define IMAGELISTWIDGETDESIGNERPLUGIN_H
+#ifndef SUMMARYDATEEDITDESIGNERPLUGIN_H
+#define SUMMARYDATEEDITDESIGNERPLUGIN_H
 
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
-class CImageListWidgetDesignerPlugin : public QObject, public QDesignerCustomWidgetInterface
+class CSummaryDateEditDesignerPlugin : public QObject, public QDesignerCustomWidgetInterface
 {
     Q_OBJECT
     Q_PLUGIN_METADATA( IID "org.qt-project.QDesignerCustomWidgetInterface" )
     Q_INTERFACES( QDesignerCustomWidgetInterface )
 public:
-    explicit CImageListWidgetDesignerPlugin( QObject *parent = nullptr );
+    explicit CSummaryDateEditDesignerPlugin( QObject *parent = nullptr );
 
     bool isContainer() const override;
     bool isInitialized() const override;
