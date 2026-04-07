@@ -136,6 +136,7 @@ if ( TOWEL42_QCORE_SUPPORT )
         QtUtils.cpp
         StayAwake.cpp
         SystemInfo.cpp
+        SystemLoggingDefs.cpp
         SetupSystemLogging.cpp
         Towel42UtilsResources.cpp
         TimeStamp.cpp
@@ -164,6 +165,8 @@ if ( TOWEL42_QCORE_SUPPORT )
         QtUtils.h
         StayAwake.h   
         SystemInfo.h
+        SystemLoggingDefs.h
+        SystemLoggingDefs_pri.h
         SetupSystemLogging.h
         TimeStamp.h
         Towel42UtilsResources.h
@@ -186,7 +189,7 @@ endif()
 
 if ( TOWEL42_QWIDGET_SUPPORT )
     add_definitions( -DTOWEL42_QWIDGET_SUPPORT=1)
-    find_package(Qt6 COMPONENTS Widgets Gui REQUIRED)
+    find_package(Qt6 COMPONENTS Widgets Gui UiPlugin REQUIRED)
     set(qtproject_SRCS
         ${qtproject_SRCS}
         About.cpp
@@ -278,6 +281,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         ${project_pub_DEPS}
         Qt6::Widgets
         Qt6::Gui
+        Qt6::UiPlugin
     )
 endif()
 

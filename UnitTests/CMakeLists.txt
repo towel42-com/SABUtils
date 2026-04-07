@@ -62,6 +62,8 @@ IF(TOWEL42_QCORE_SUPPORT)
         ../WordExp.h
         ../ExcelFuncs.h
         ../ExcelFuncs.cpp
+        ../SystemLoggingDefs.cpp
+        ../SystemLoggingDefs.h
     )
     SET( LIBS 
         ${LIBS}

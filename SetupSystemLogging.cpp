@@ -22,7 +22,8 @@
 // SOFTWARE.
 
 #include "SetupSystemLogging.h"
-#include "SetupSystemLogging_pri.h"
+#include "SystemLoggingDefs.h"
+#include "SystemLoggingDefs_pri.h"
 #include "SetupSystemLoggingDlg.h"
 #include "TimeStamp.h"
 
@@ -32,67 +33,10 @@
 #include <QFile>
 #include <QCoreApplication>
 
-Q_LOGGING_CATEGORY( t42utils_base, "Towel42Utils", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_autoFetch, "Towel42Utils.autoFetch", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_autoFetch_isVisible, "Towel42Utils.autoFetch.isVisible", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_autoFetch_findFirstVisible, "Towel42Utils.autoFetch.findFirstVisible", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_autoFetch_expandingIndex, "Towel42Utils.autoFetch.expandingIndex", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_autoSize, "Towel42Utils.autoSize", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_autoTabStop, "Towel42Utils.autoTabStop", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_backgroundFileCheck, "Towel42Utils.backgroundFileCheck", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_buttonEnabler, "Towel42Utils.buttonEnabler", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_dbUtils, "Towel42Utils.dbUtils", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_dbUtils_reportError, "Towel42Utils.dbUtils.reportError", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_dbUtils_validateQuery, "Towel42Utils.dbUtils.validateQuery", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_doubleProgressDlg, "Towel42Utils.doubleProgressDlg", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_downloadFile, "Towel42Utils.downloadFile", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_fileUtils, "Towel42Utils.fileUtils", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_findAllFiles, "Towel42Utils.findAllFiles", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_GitHubGetVersions, "Towel42Utils.GitHubGetVersions", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_MD5, "Towel42Utils.MD5", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_getDate, "Towel42Utils.getDate", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_appendToLog, "Towel42Utils.appendToLog", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_toDate, "Towel42Utils.toDate", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_dumpRow, "Towel42Utils.dumpRow", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_regExReplace, "Towel42Utils.regExReplace", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_setReadOnly, "Towel42Utils.setReadOnly", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_systemInfo, "Towel42Utils.systemInfo", QtMsgType::QtDebugMsg );
-Q_LOGGING_CATEGORY( t42utils_widgetChanged, "Towel42Utils.widgetChanged", QtMsgType::QtDebugMsg );
-
 namespace NTowel42Utils
 {
     namespace NSystemLogging
     {
-        void initTowel42UtilCategories()
-        {
-            qCInfo( t42utils_base );
-            qCInfo( t42utils_autoFetch );
-            qCInfo( t42utils_autoFetch_isVisible );
-            qCInfo( t42utils_autoFetch_findFirstVisible );
-            qCInfo( t42utils_autoFetch_expandingIndex );
-            qCInfo( t42utils_autoSize );
-            qCInfo( t42utils_autoTabStop );
-            qCInfo( t42utils_backgroundFileCheck );
-            qCInfo( t42utils_buttonEnabler );
-            qCInfo( t42utils_dbUtils );
-            qCInfo( t42utils_dbUtils_reportError );
-            qCInfo( t42utils_dbUtils_validateQuery );
-            qCInfo( t42utils_doubleProgressDlg );
-            qCInfo( t42utils_downloadFile );
-            qCInfo( t42utils_fileUtils );
-            qCInfo( t42utils_findAllFiles );
-            qCInfo( t42utils_GitHubGetVersions );
-            qCInfo( t42utils_MD5 );
-            qCInfo( t42utils_getDate );
-            qCInfo( t42utils_appendToLog );
-            qCInfo( t42utils_toDate );
-            qCInfo( t42utils_dumpRow );
-            qCInfo( t42utils_regExReplace );
-            qCInfo( t42utils_setReadOnly );
-            qCInfo( t42utils_systemInfo );
-            qCInfo( t42utils_widgetChanged );
-        }
-
         static QString sAppName;
         static QStringList sOtherPrefixes;
 
