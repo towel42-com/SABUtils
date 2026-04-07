@@ -48,6 +48,7 @@ namespace NTowel42Utils
         Q_OBJECT;
         Q_PROPERTY( int value READ propValue WRITE setPropValue );
         Q_PROPERTY( bool readOnly READ readOnly WRITE setReadOnly );
+        Q_PROPERTY( bool hasNA READ hasNA WRITE setHasNA );
 
     public:
         enum EValue
@@ -67,8 +68,10 @@ namespace NTowel42Utils
         void setCustomButtonList( const QStringList &buttonNames, bool rebuild = true );
 
     public:
-        void setLongDescriptiveTextEdit( QTextEdit *pte, bool rebuild = true );
         void setHasNA( bool hasNA, bool rebuild = true );
+        bool hasNA() const { return fHasNA; }
+
+        void setLongDescriptiveTextEdit( QTextEdit *pte, bool rebuild = true );
         void setShowDescriptiveText( bool showDescriptiveText, bool rebuild = true );
         void setLabel( QLabel *label );
         void setDescText( const QString &text, bool rebuild = true );

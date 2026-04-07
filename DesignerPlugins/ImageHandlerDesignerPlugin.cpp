@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
-#include "T42-Utils/ImageHandler.h"
+#include "../ImageHandler.h"
 #include "ImageHandlerDesignerPlugin.h"
 
 #include <QtPlugin>
