@@ -22,19 +22,19 @@
 // SOFTWARE.
 //
 
-#ifndef IMAGEHANDLERDESIGNERPLUGIN_H
-#define IMAGEHANDLERDESIGNERPLUGIN_H
+#ifndef BUTTONGROUPWDESCRIPTIVETEXTDESIGNERPLUGIN_H
+#define BUTTONGROUPWDESCRIPTIVETEXTDESIGNERPLUGIN_H
 
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 
 //! [0]
-class CImageHandlerDesignerPlugin : public QObject, public QDesignerCustomWidgetInterface
+class CButtonGroupWDescriptiveTextDesignerPlugin : public QObject, public QDesignerCustomWidgetInterface
 {
     Q_OBJECT
     Q_PLUGIN_METADATA( IID "org.qt-project.QDesignerCustomWidgetInterface" )
     Q_INTERFACES( QDesignerCustomWidgetInterface )
 public:
-    explicit CImageHandlerDesignerPlugin(QObject *parent = nullptr);
+    explicit CButtonGroupWDescriptiveTextDesignerPlugin( QObject *parent = nullptr );
 
     bool isContainer() const override;
     bool isInitialized() const override;
@@ -45,8 +45,8 @@ public:
     QString name() const override;
     QString toolTip() const override;
     QString whatsThis() const override;
-    QWidget *createWidget(QWidget *parent) override;
-    void initialize(QDesignerFormEditorInterface *core) override;
+    QWidget *createWidget( QWidget *parent ) override;
+    void initialize( QDesignerFormEditorInterface *core ) override;
 
 private:
     bool fInitialized = false;

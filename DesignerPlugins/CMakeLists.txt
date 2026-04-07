@@ -2,40 +2,50 @@
 # SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
 
 cmake_minimum_required(VERSION 3.16)
-project(Towel42UtilsDesignerPlugins LANGUAGES CXX)
+FUNCTION( AddDesignerPlugin )
+    set( options "")
+    set( oneValueArgs NAME)
+    set( multiValueArgs FILES )
+    cmake_parse_arguments(PARSE_ARGV 0 arg
+        "${options}" "${oneValueArgs}" "${multiValueArgs}"
+    )
+    MESSAGE( STATUS "Creating Designer Plugin ${arg_NAME} using ${arg_FILES}" )
 
-set(CMAKE_AUTOMOC ON)
+    project(${arg_NAME} LANGUAGES CXX)
+    
+    set(CMAKE_AUTOMOC ON)
+    find_package(Qt6 REQUIRED COMPONENTS Core Gui UiPlugin Widgets)
+    qt_add_plugin(${PROJECT_NAME})
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui UiPlugin Widgets)
+    target_sources(${PROJECT_NAME} PRIVATE ${arg_FILES} )
 
-qt_add_plugin(${PROJECT_NAME})
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        WIN32_EXECUTABLE TRUE
+        MACOSX_BUNDLE TRUE
+    )
+    target_link_libraries(${PROJECT_NAME} PUBLIC
+        Qt::Core
+        Qt::Gui
+        Qt::UiPlugin
+        Qt::Widgets
+        Towel42Utils
+    )
 
-target_sources(${PROJECT_NAME} PRIVATE
-    ../ImageHandler.cpp ../ImageHandler.h
-    ImageHandlerDesignerPlugin.cpp ImageHandlerDesignerPlugin.h
-)
+    set(INSTALL_PLUGINS_DIR "${QT6_INSTALL_PREFIX}/${QT6_INSTALL_PLUGINS}/designer")
+    
+    install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION "${INSTALL_PLUGINS_DIR}"
+        BUNDLE DESTINATION "${INSTALL_PLUGINS_DIR}"
+        LIBRARY DESTINATION "${INSTALL_PLUGINS_DIR}"
+    )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    WIN32_EXECUTABLE TRUE
-    MACOSX_BUNDLE TRUE
-)
+    set_target_properties( ${PROJECT_NAME} PROPERTIES FOLDER DesignerPlugins )
+    #set_target_properties( ${PROJECT_NAME}_autogen PROPERTIES FOLDER DesignerPlugins )
+    #set_target_properties( ${PROJECT_NAME}_automoc_json_extraction PROPERTIES FOLDER DesignerPlugins )
+ENDFUNCTION()
 
-target_link_libraries(${PROJECT_NAME} PUBLIC
-    Qt::Core
-    Qt::Gui
-    Qt::UiPlugin
-    Qt::Widgets
-    Towel42Utils
-)
+AddDesignerPlugin( NAME ImageHandlerDesignerPlugin FILES ../ImageHandler.cpp ../ImageHandler.h ImageHandlerDesignerPlugin.cpp ImageHandlerDesignerPlugin.h )
 
-set(INSTALL_PLUGINS_DIR "${QT6_INSTALL_PREFIX}/${QT6_INSTALL_PLUGINS}/designer")
+SET( FILES  )
+AddDesignerPlugin( NAME ButtonGroupWDescriptiveTextDesignerPlugin FILES ../ButtonGroupWDescriptiveText.cpp ../ButtonGroupWDescriptiveText.h ButtonGroupWDescriptiveTextDesignerPlugin.cpp ButtonGroupWDescriptiveTextDesignerPlugin.h )
 
-install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION "${INSTALL_PLUGINS_DIR}"
-    BUNDLE DESTINATION "${INSTALL_PLUGINS_DIR}"
-    LIBRARY DESTINATION "${INSTALL_PLUGINS_DIR}"
-)
-
-set_target_properties( ${PROJECT_NAME} PROPERTIES FOLDER DesignerPlugins )
-#set_target_properties( ${PROJECT_NAME}_autogen PROPERTIES FOLDER DesignerPlugins )
-#set_target_properties( ${PROJECT_NAME}_automoc_json_extraction PROPERTIES FOLDER DesignerPlugins )

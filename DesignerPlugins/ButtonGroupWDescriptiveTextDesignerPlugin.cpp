@@ -21,19 +21,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //
-#include "T42-Utils/ImageHandler.h"
-#include "ImageHandlerDesignerPlugin.h"
+#include "T42-Utils/ButtonGroupWDescriptiveText.h"
+#include "ButtonGroupWDescriptiveTextDesignerPlugin.h"
 
 #include <QtPlugin>
 
 using namespace Qt::StringLiterals;
 
-CImageHandlerDesignerPlugin::CImageHandlerDesignerPlugin( QObject *parent ) :
+CButtonGroupWDescriptiveTextDesignerPlugin::CButtonGroupWDescriptiveTextDesignerPlugin( QObject *parent ) :
     QObject( parent )
 {
 }
 
-void CImageHandlerDesignerPlugin::initialize( QDesignerFormEditorInterface * /* core */ )
+void CButtonGroupWDescriptiveTextDesignerPlugin::initialize( QDesignerFormEditorInterface * /* core */ )
 {
     if ( fInitialized )
         return;
@@ -41,51 +41,51 @@ void CImageHandlerDesignerPlugin::initialize( QDesignerFormEditorInterface * /* 
     fInitialized = true;
 }
 
-bool CImageHandlerDesignerPlugin::isInitialized() const
+bool CButtonGroupWDescriptiveTextDesignerPlugin::isInitialized() const
 {
     return fInitialized;
 }
 
-QWidget *CImageHandlerDesignerPlugin::createWidget( QWidget *parent )
+QWidget *CButtonGroupWDescriptiveTextDesignerPlugin::createWidget( QWidget *parent )
 {
-    return new NTowel42Utils::CImageHandler( parent );
+    return new NTowel42Utils::CButtonGroupWDescriptiveText( parent );
 }
 
-QString CImageHandlerDesignerPlugin::name() const
+QString CButtonGroupWDescriptiveTextDesignerPlugin::name() const
 {
-    return u"NTowel42Utils::CImageHandler"_s;
+    return u"NTowel42Utils::CButtonGroupWDescriptiveText"_s;
 }
 
-QString CImageHandlerDesignerPlugin::group() const
+QString CButtonGroupWDescriptiveTextDesignerPlugin::group() const
 {
     return u"Towel 42 Utilities"_s;
 }
 
-QIcon CImageHandlerDesignerPlugin::icon() const
+QIcon CButtonGroupWDescriptiveTextDesignerPlugin::icon() const
 {
     return {};
 }
 
-QString CImageHandlerDesignerPlugin::toolTip() const
+QString CButtonGroupWDescriptiveTextDesignerPlugin::toolTip() const
 {
-    return u"NTowel42Utils::CImageHandler"_s;
+    return u"NTowel42Utils::CButtonGroupWDescriptiveText"_s;
 }
 
-QString CImageHandlerDesignerPlugin::whatsThis() const
+QString CButtonGroupWDescriptiveTextDesignerPlugin::whatsThis() const
 {
-    return u"NTowel42Utils::CImageHandler"_s;
+    return u"NTowel42Utils::CButtonGroupWDescriptiveText"_s;
 }
 
-bool CImageHandlerDesignerPlugin::isContainer() const
+bool CButtonGroupWDescriptiveTextDesignerPlugin::isContainer() const
 {
     return false;
 }
 
-QString CImageHandlerDesignerPlugin::domXml() const
+QString CButtonGroupWDescriptiveTextDesignerPlugin::domXml() const
 {
     return uR"(
 <ui language="c++">
-  <widget class="NTowel42Utils::CImageHandler" name="imageHandler">
+  <widget class="NTowel42Utils::CButtonGroupWDescriptiveText" name="buttonGroupWDescriptiveText">
 )"
            R"(
     <property name="geometry">
@@ -99,17 +99,17 @@ QString CImageHandlerDesignerPlugin::domXml() const
 ")
 R"(
     <property name="toolTip">
-      <string>Image Handler</string>
+      <string>Button Group with Descriptive Text</string>
     </property>
     <property name="whatsThis">
-      <string>The widget allows the user to select an image or avatar.</string>
+      <string>The widget creates a button group that shows missing data as well as needs an explanation.</string>
     </property>
   </widget>
 </ui>
 )"_s;
 }
 
-QString CImageHandlerDesignerPlugin::includeFile() const
+QString CButtonGroupWDescriptiveTextDesignerPlugin::includeFile() const
 {
-    return u"T42-Utils/ImageHandler.h"_s;
+    return u"T42-Utils/ButtonGroupWDescriptiveText.h"_s;
 }
