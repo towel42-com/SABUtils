@@ -30,19 +30,12 @@ namespace NTowel42Utils
         QDateEdit( parent )
     {
         setCalendarPopup( false );
-        setType( ESummaryDateType::eAnnual );
-    }
-
-    CSummaryDateEdit::CSummaryDateEdit( const QDate &date, QWidget *parent /*= nullptr */ ) :
-        QDateEdit( date, parent )
-    {
-        setCalendarPopup( false );
-        setType( ESummaryDateType::eAnnual );
+        setSummaryDateType( ESummaryDateType::eAnnual );
     }
 
     QString CSummaryDateEdit::textFromDateTime( const QDateTime &dt ) const
     {
-        if ( fDateType != ESummaryDateType::eQuarterly )
+        if ( fSummaryDateType != ESummaryDateType::eQuarterly )
             return QDateEdit::textFromDateTime( dt );
 
         auto quarter = 1 + ( ( dt.date().month() - 1 ) / 3 );
@@ -51,7 +44,7 @@ namespace NTowel42Utils
 
     QDateTime CSummaryDateEdit::dateTimeFromText( const QString &text ) const
     {
-        if ( fDateType != ESummaryDateType::eQuarterly )
+        if ( fSummaryDateType != ESummaryDateType::eQuarterly )
             return QDateEdit::dateTimeFromText( text );
 
         auto tmp = text.split( " " );
@@ -107,7 +100,7 @@ namespace NTowel42Utils
         return { StepUpEnabled | StepDownEnabled };
     }
 
-    void CSummaryDateEdit::setType( ESummaryDateType dateType )
+    void CSummaryDateEdit::setSummaryDateType( ESummaryDateType dateType )
     {
         if ( dateType == ESummaryDateType::eAnnual )
         {
@@ -116,11 +109,12 @@ namespace NTowel42Utils
         else if ( dateType == ESummaryDateType::eQuarterly )
         {
             setDisplayFormat( "'Q'q yyyy" );
+            setCurrentSection( QDateTimeEdit::YearSection );
         }
         else if ( dateType == ESummaryDateType::eMonthly )
         {
             setDisplayFormat( "MMM yyyy" );
         }
-        fDateType = dateType;
+        fSummaryDateType = dateType;
     }
 }

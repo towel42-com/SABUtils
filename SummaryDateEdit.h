@@ -30,23 +30,24 @@
 
 namespace NTowel42Utils
 {
-    enum class ESummaryDateType
-    {
-        eAnnual,
-        eQuarterly,
-        eMonthly
-    };
-
     class TOWEL42_UTILS_EXPORT CSummaryDateEdit : public QDateEdit
     {
         Q_OBJECT;
-
+        Q_PROPERTY( ESummaryDateType summaryDateType READ summaryDateType WRITE setSummaryDateType );
     public:
+        enum class ESummaryDateType
+        {
+            eAnnual,
+            eQuarterly,
+            eMonthly
+        };
+        Q_ENUM( ESummaryDateType );
+
         explicit CSummaryDateEdit( QWidget *parent = nullptr );
-        explicit CSummaryDateEdit( const QDate &date, QWidget *parent = nullptr );
         ~CSummaryDateEdit() = default;
 
-        void setType( ESummaryDateType dateType );
+        void setSummaryDateType( ESummaryDateType dateType );
+        ESummaryDateType summaryDateType() const { return fSummaryDateType; }
 
         virtual QString textFromDateTime( const QDateTime &dt ) const override;
         virtual QDateTime dateTimeFromText( const QString &text ) const override;
@@ -57,7 +58,7 @@ namespace NTowel42Utils
 
     protected:
     private:
-        ESummaryDateType fDateType{ ESummaryDateType::eAnnual };
+        ESummaryDateType fSummaryDateType{ ESummaryDateType::eAnnual };
     };
 }
 #endif
