@@ -29,32 +29,33 @@
 #include <QString>
 
 #include <QLoggingCategory>
-Q_DECLARE_LOGGING_CATEGORY( t42utils_base )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_autoFetch )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_autoFetch_isVisible )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_autoFetch_findFirstVisible )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_autoFetch_expandingIndex )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_autoSize )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_autoTabStop )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_backgroundFileCheck )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_buttonEnabler )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_dbUtils )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_dbUtils_reportError )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_dbUtils_validateQuery )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_doubleProgressDlg )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_downloadFile )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_fileUtils )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_findAllFiles )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_GitHubGetVersions )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_MD5 )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_getDate )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_appendToLog )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_toDate )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_dumpRow )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_regExReplace )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_setReadOnly ) 
-Q_DECLARE_LOGGING_CATEGORY( t42utils_systemInfo )
-Q_DECLARE_LOGGING_CATEGORY( t42utils_widgetChanged )
+Q_DECLARE_LOGGING_CATEGORY( t42utils_base );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_autoFetch );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_autoFetch_isVisible );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_autoFetch_findFirstVisible );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_autoFetch_expandingIndex );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_autoSize );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_autoTabStop );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_backgroundFileCheck );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_buttonEnabler );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_dbUtils );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_dbUtils_reportError );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_dbUtils_validateQuery );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_dbUtils_transaction );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_doubleProgressDlg );;
+Q_DECLARE_LOGGING_CATEGORY( t42utils_downloadFile );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_fileUtils );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_findAllFiles );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_GitHubGetVersions );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_MD5 );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_getDate );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_appendToLog );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_toDate );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_dumpRow );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_regExReplace );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_setReadOnly ); 
+Q_DECLARE_LOGGING_CATEGORY( t42utils_systemInfo );
+Q_DECLARE_LOGGING_CATEGORY( t42utils_widgetChanged );
 namespace NTowel42Utils
 {
     namespace NSystemLogging

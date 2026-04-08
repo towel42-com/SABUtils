@@ -642,23 +642,25 @@ namespace NTowel42Utils
                 return false;
 
             CTransaction transaction( db );
+            auto &&aOK = transaction.statusVariable();
+
             auto newTableName = backupTable( query, tableName );
             if ( !newTableName.has_value() )
             {
-                transaction.setRollback();
+                aOK = false;
                 return false;
             }
 
             auto cmd = createTableCommand( tableName, columns, false );
             if ( !runCmd( query, cmd ) )
             {
-                transaction.setRollback();
+                aOK = false;
                 return false;
             }
 
             if ( !importTable( query, newTableName.value(), tableName, { { oldColumnName, newColumnName } }, {} ) )
             {
-                transaction.setRollback();
+                aOK = false;
                 return false;
             }
         }
@@ -795,14 +797,21 @@ namespace NTowel42Utils
         fDatabase( db )
     {
         transaction( fDatabase );
+        qCDebug( t42utils_dbUtils_transaction ) << "Starting transaction for database: " << fDatabase.connectionName();
     }
 
     CTransaction::~CTransaction()
     {
-        if ( fRollback )
-            rollback( fDatabase );
-        else
+        if ( fTransactionOK )
+        {
+            qCDebug( t42utils_dbUtils_transaction ) << "Committing transaction for database: " << fDatabase.connectionName();
             commit( fDatabase );
+        }
+        else
+        {
+            qCDebug( t42utils_dbUtils_transaction ) << "Rolling back transaction for database: " << fDatabase.connectionName();
+            rollback( fDatabase );
+        }
     }
 
     SDBVersion::SDBVersion( const QString &str )

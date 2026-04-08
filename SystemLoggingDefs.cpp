@@ -35,6 +35,7 @@ Q_LOGGING_CATEGORY( t42utils_buttonEnabler, "Towel42Utils.buttonEnabler", QtMsgT
 Q_LOGGING_CATEGORY( t42utils_dbUtils, "Towel42Utils.dbUtils", QtMsgType::QtDebugMsg );
 Q_LOGGING_CATEGORY( t42utils_dbUtils_reportError, "Towel42Utils.dbUtils.reportError", QtMsgType::QtDebugMsg );
 Q_LOGGING_CATEGORY( t42utils_dbUtils_validateQuery, "Towel42Utils.dbUtils.validateQuery", QtMsgType::QtDebugMsg );
+Q_LOGGING_CATEGORY( t42utils_dbUtils_transaction, "Towel42Utils.dbUtils.transaction", QtMsgType::QtDebugMsg );
 Q_LOGGING_CATEGORY( t42utils_doubleProgressDlg, "Towel42Utils.doubleProgressDlg", QtMsgType::QtDebugMsg );
 Q_LOGGING_CATEGORY( t42utils_downloadFile, "Towel42Utils.downloadFile", QtMsgType::QtDebugMsg );
 Q_LOGGING_CATEGORY( t42utils_fileUtils, "Towel42Utils.fileUtils", QtMsgType::QtDebugMsg );

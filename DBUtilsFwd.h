@@ -47,11 +47,16 @@ namespace NTowel42Utils
         CTransaction( const QSqlDatabase &db );
         ~CTransaction();
 
-        void setRollback( bool rollback = true ) { fRollback = rollback; }
+        bool &statusVariable() { return fTransactionOK; }   // for use in auto && to avoid copies
+        bool status() { return fTransactionOK; }
+
+        void setRollback( bool rollback = true ) { setStatus( !rollback ); }
+        void setStatus( bool status ) { fTransactionOK = status; }
+        
 
     private:
         QSqlDatabase fDatabase;
-        bool fRollback{ false };
+        bool fTransactionOK{ false };
     };
 
     struct TOWEL42_UTILS_EXPORT SColumnInfo
