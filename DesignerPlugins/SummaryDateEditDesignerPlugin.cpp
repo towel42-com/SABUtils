@@ -85,9 +85,7 @@ QString CSummaryDateEditDesignerPlugin::domXml() const
 {
     return uR"(
 <ui language="c++">
-  <widget class="NTowel42Utils::CSummaryDateEdit" name="SummaryDateEdit">
-)"
-           R"(
+  <widget class="NTowel42Utils::CSummaryDateEdit" name="summaryDateEdit">
     <property name="geometry">
       <rect>
         <x>0</x>
@@ -95,14 +93,6 @@ QString CSummaryDateEditDesignerPlugin::domXml() const
         <width>200</width>
         <height>250</height>
       </rect>
-    </property>
-")
-R"(
-    <property name="toolTip">
-      <string>SummaryDateEdit</string>
-    </property>
-    <property name="whatsThis">
-      <string>The is a QDateDate that can summarize annually, quarterly, or monthly.</string>
     </property>
   </widget>
 </ui>

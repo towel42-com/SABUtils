@@ -85,9 +85,7 @@ QString CSetReadOnlyGroupBoxDesignerPlugin::domXml() const
 {
     return uR"(
 <ui language="c++">
-  <widget class="NTowel42Utils::CSetReadOnlyGroupBox" name="SetReadOnlyGroupBox">
-)"
-           R"(
+  <widget class="NTowel42Utils::CSetReadOnlyGroupBox" name="setReadOnlyGroupBox">
     <property name="geometry">
       <rect>
         <x>0</x>
@@ -95,14 +93,6 @@ QString CSetReadOnlyGroupBoxDesignerPlugin::domXml() const
         <width>200</width>
         <height>250</height>
       </rect>
-    </property>
-")
-R"(
-    <property name="toolTip">
-      <string>SetReadOnlyGroupBox</string>
-    </property>
-    <property name="whatsThis">
-      <string>The is a groupbox that can be set to read only and it disables the checkbox.</string>
     </property>
   </widget>
 </ui>

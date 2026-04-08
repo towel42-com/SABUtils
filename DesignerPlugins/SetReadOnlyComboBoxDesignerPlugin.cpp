@@ -85,9 +85,7 @@ QString CSetReadOnlyComboBoxDesignerPlugin::domXml() const
 {
     return uR"(
 <ui language="c++">
-  <widget class="NTowel42Utils::CSetReadOnlyComboBox" name="SetReadOnlyComboBox">
-)"
-           R"(
+  <widget class="NTowel42Utils::CSetReadOnlyComboBox" name="setReadOnlyComboBox">
     <property name="geometry">
       <rect>
         <x>0</x>
@@ -95,14 +93,6 @@ QString CSetReadOnlyComboBoxDesignerPlugin::domXml() const
         <width>200</width>
         <height>250</height>
       </rect>
-    </property>
-")
-R"(
-    <property name="toolTip">
-      <string>Image Handler</string>
-    </property>
-    <property name="whatsThis">
-      <string>The is a groupbox that can be set to read only and it disables the dropdown list while maintaining the look and feel of a combobox.</string>
     </property>
   </widget>
 </ui>

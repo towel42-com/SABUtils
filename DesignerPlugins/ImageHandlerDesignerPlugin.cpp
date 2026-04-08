@@ -86,8 +86,6 @@ QString CImageHandlerDesignerPlugin::domXml() const
     return uR"(
 <ui language="c++">
   <widget class="NTowel42Utils::CImageHandler" name="imageHandler">
-)"
-           R"(
     <property name="geometry">
       <rect>
         <x>0</x>
@@ -95,14 +93,6 @@ QString CImageHandlerDesignerPlugin::domXml() const
         <width>200</width>
         <height>250</height>
       </rect>
-    </property>
-")
-R"(
-    <property name="toolTip">
-      <string>Image Handler</string>
-    </property>
-    <property name="whatsThis">
-      <string>The widget allows the user to select an image or avatar.</string>
     </property>
   </widget>
 </ui>

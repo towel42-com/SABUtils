@@ -86,8 +86,6 @@ QString CImageListWidgetDesignerPlugin::domXml() const
     return uR"(
 <ui language="c++">
   <widget class="NTowel42Utils::CImageListWidget" name="imageListWidget">
-)"
-           R"(
     <property name="geometry">
       <rect>
         <x>0</x>
@@ -96,18 +94,11 @@ QString CImageListWidgetDesignerPlugin::domXml() const
         <height>250</height>
       </rect>
     </property>
-")
-R"(
-    <property name="toolTip">
-      <string>A widget that supports adding/deleting and organizing images.</string>
-    </property>
-    <property name="whatsThis">
-      <string>The widget creates a widget that is used to organize widgets.</string>
-    </property>
   </widget>
 </ui>
 )"_s;
 }
+
 
 QString CImageListWidgetDesignerPlugin::includeFile() const
 {

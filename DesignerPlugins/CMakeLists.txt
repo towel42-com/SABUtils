@@ -4,10 +4,10 @@
 cmake_minimum_required(VERSION 3.16)
 find_package( AddDesignerPlugin REQUIRED )
 
-AddDesignerPlugin( BASENAME ImageHandler )
-AddDesignerPlugin( BASENAME ButtonGroupWDescriptiveText ) 
+AddDesignerPlugin( BASENAME ImageHandler LINK_LIBS Towel42Utils )
+AddDesignerPlugin( BASENAME ButtonGroupWDescriptiveText LINK_LIBS Towel42Utils ) 
 AddDesignerPlugin( BASENAME SetReadOnlyComboBox )
-AddDesignerPlugin( BASENAME SetReadOnlyGroupBox ) 
+AddDesignerPlugin( BASENAME SetReadOnlyGroupBox LINK_LIBS Towel42Utils ) 
 AddDesignerPlugin( BASENAME SummaryDateEdit ) 
 
 AddDesignerPlugin( BASENAME ImageListWidget
@@ -20,4 +20,7 @@ AddDesignerPlugin( BASENAME ImageListWidget
     ../ImageHandler.cpp
     ../SystemLoggingDefs.h
     ../SystemLoggingDefs.cpp
-    ImageListWidgetDesignerPlugin.cpp ImageListWidgetDesignerPlugin.h )
+    ImageListWidgetDesignerPlugin.cpp 
+    ImageListWidgetDesignerPlugin.h
+    LINK_LIBS Towel42Utils
+)

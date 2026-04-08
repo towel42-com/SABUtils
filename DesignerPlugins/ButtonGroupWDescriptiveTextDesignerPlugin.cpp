@@ -86,8 +86,6 @@ QString CButtonGroupWDescriptiveTextDesignerPlugin::domXml() const
     return uR"(
 <ui language="c++">
   <widget class="NTowel42Utils::CButtonGroupWDescriptiveText" name="buttonGroupWDescriptiveText">
-)"
-           R"(
     <property name="geometry">
       <rect>
         <x>0</x>
@@ -95,14 +93,6 @@ QString CButtonGroupWDescriptiveTextDesignerPlugin::domXml() const
         <width>200</width>
         <height>250</height>
       </rect>
-    </property>
-")
-R"(
-    <property name="toolTip">
-      <string>Button Group with Descriptive Text</string>
-    </property>
-    <property name="whatsThis">
-      <string>The widget creates a button group that shows missing data as well as needs an explanation.</string>
     </property>
   </widget>
 </ui>
