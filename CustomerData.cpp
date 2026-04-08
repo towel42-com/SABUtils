@@ -235,7 +235,7 @@ namespace NTowel42Utils
         if ( ( pwEmpty && !confirmEmpty ) || ( !pwEmpty && confirmEmpty ) )
         {
             passwordOK = true;
-            confirmPasswordOK = true;
+            confirmPasswordOK = false;
         }
         else if ( !pwEmpty && !confirmEmpty )
         {
