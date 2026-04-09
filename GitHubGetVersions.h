@@ -111,6 +111,8 @@ namespace NTowel42Utils
         void setForcedCheck( bool forcedCheck ) { fForcedCheck = forcedCheck; }
         bool forcedCheck() const { return fForcedCheck ; }
 
+        void setTestMode( bool testMode ) { fTestMode = testMode; }
+        bool testMode() const { return fTestMode; }
     private Q_SLOTS:
         void slotFinished( QNetworkReply *reply );
         void slotAuthenticationRequired( QNetworkReply *reply, QAuthenticator *authenticator );
@@ -140,8 +142,9 @@ namespace NTowel42Utils
         std::optional< std::pair< QString, std::shared_ptr< SGitHubRelease > > > fLatestUpdate;
         std::list< std::shared_ptr< SGitHubRelease > > fReleases;
 
-        bool fLatestRequest{ false };
+        bool fGetLatestVersionOnly{ false };
         bool fForcedCheck{ false };
+        bool fTestMode{ false };
     };
 }
 

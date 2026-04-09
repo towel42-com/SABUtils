@@ -40,10 +40,6 @@
 #include <QJsonParseError>
 #include <QCoreApplication>
 
-#ifdef _DEBUG
-//#define FORCE_OOD
-#endif
-
 namespace NTowel42Utils
 {
 
@@ -134,12 +130,12 @@ namespace NTowel42Utils
                 fErrorString += QObject::tr( "Error in Reply from server %1: '%2' @ %3" ).arg( githubReleaseUrl().toString() ).arg( error.errorString() ).arg( error.offset );
                 fHasError = true;
             }
-            if ( fLatestRequest && !json.isObject() )
+            if ( fGetLatestVersionOnly && !json.isObject() )
             {
                 fErrorString += QObject::tr( "Error in Reply: Invalid JSON Object" );
                 fHasError = true;
             }
-            else if ( !fLatestRequest && !json.isArray() )
+            else if ( !fGetLatestVersionOnly && !json.isArray() )
             {
                 fErrorString += QObject::tr( "Error in Reply: Invalid JSON Array" );
                 fHasError = true;
@@ -147,7 +143,7 @@ namespace NTowel42Utils
 
             if ( !fHasError )
             {
-                if ( fLatestRequest )
+                if ( fGetLatestVersionOnly )
                     loadResult( json.object(), true );
                 else
                     loadResults( json.array() );
@@ -164,7 +160,7 @@ namespace NTowel42Utils
     void CGitHubGetVersions::requestLatestVersion()
     {
         Q_ASSERT( fCurrentVersion.has_value() );
-        fLatestRequest = true;
+        fGetLatestVersionOnly = true;
         QUrl url( githubReleaseUrl() );
 
         fErrorString = "";
@@ -265,9 +261,7 @@ namespace NTowel42Utils
             if ( curr->supportsOS() )
             {
                 bool isNewer = ( *curr->fVersion > fCurrentVersion.value() );
-#ifdef FORCE_OOD
-                isNewer = !fLatestUpdate.has_value();
-#endif
+                isNewer = isNewer || fTestMode;
                 if ( isNewer )
                 {
                     emit sigLogMessage( tr( "Newer version found '%1'" ).arg( curr->fVersion->toString( true ) ) );
@@ -323,7 +317,7 @@ namespace NTowel42Utils
             retVal += "/";
         if ( !retVal.endsWith( "releases" ) )
             retVal += "releases";
-        if ( fLatestRequest )
+        if ( fGetLatestVersionOnly )
             retVal += "/latest";
         auto url = QUrl( retVal );
 
