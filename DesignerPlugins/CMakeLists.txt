@@ -4,11 +4,15 @@
 cmake_minimum_required(VERSION 3.16)
 find_package( AddDesignerPlugin REQUIRED )
 
-AddDesignerPlugin( BASENAME ImageHandler LINK_LIBS Towel42Utils )
-AddDesignerPlugin( BASENAME ButtonGroupWDescriptiveText LINK_LIBS Towel42Utils ) 
-AddDesignerPlugin( BASENAME SetReadOnlyComboBox )
-AddDesignerPlugin( BASENAME SetReadOnlyGroupBox LINK_LIBS Towel42Utils ) 
-AddDesignerPlugin( BASENAME SummaryDateEdit ) 
+#find_package( T42Utils REQUIRED )
+#PrintAllVariables( PATTERN "(QT.*)|(Qt.*)" )
+get_filename_component( pluginDir "${QT6_INSTALL_PREFIX}" DIRECTORY )
+SET( pluginDir ${pluginDir}/t42-plugins/${Qt6_VERSION}/designer )
+AddDesignerPlugin( BASENAME ImageHandler LINK_LIBS Towel42Utils PLUGIN_DIR "${pluginDir}" )
+AddDesignerPlugin( BASENAME ButtonGroupWDescriptiveText LINK_LIBS Towel42Utils PLUGIN_DIR "${pluginDir}") 
+AddDesignerPlugin( BASENAME SetReadOnlyComboBox PLUGIN_DIR "${pluginDir}")
+AddDesignerPlugin( BASENAME SetReadOnlyGroupBox LINK_LIBS Towel42Utils PLUGIN_DIR "${pluginDir}") 
+AddDesignerPlugin( BASENAME SummaryDateEdit PLUGIN_DIR "${pluginDir}") 
 
 AddDesignerPlugin( BASENAME ImageListWidget
     FILES 
@@ -23,4 +27,5 @@ AddDesignerPlugin( BASENAME ImageListWidget
     ImageListWidgetDesignerPlugin.cpp 
     ImageListWidgetDesignerPlugin.h
     LINK_LIBS Towel42Utils
+    PLUGIN_DIR "${pluginDir}"
 )
