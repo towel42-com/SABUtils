@@ -721,18 +721,6 @@ namespace NTowel42Utils
         return query.value( 0 ).toString();
     }
 
-    std::optional< int > lastInsertedKey( QSqlQuery &query, const QString & /*tableName*/ )
-    {
-        qCDebug( t42utils_dbUtils ) << ( query.driver()->objectName() );
-        qCDebug( t42utils_dbUtils ) << ( QSqlDatabase().driverName() );
-
-        auto cmd = QStringLiteral( "SELECT LAST_INSERT_ID();" );
-        auto aOK = runCmd( query, cmd ) && query.next();
-        if ( !aOK )
-            return {};
-        return query.value( 0 ).toInt();
-    }
-
     QString enumStringForValue( const TEnumValueVector &enumValues, int value )
     {
         for ( int ii = 0; ii < enumValues.size(); ++ii )

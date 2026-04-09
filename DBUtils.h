@@ -90,8 +90,6 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT SDBVersion sqliteVersion( QSqlQuery &query );
 
-    TOWEL42_UTILS_EXPORT std::optional< int > lastInsertedKey( QSqlQuery &query, const QString &tableName );
-
     template< typename T >
     bool hasValue( const std::shared_ptr< NTowel42Utils::TParameterVariantMap > &values, const QString &label )
     {
