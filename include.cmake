@@ -113,6 +113,7 @@ CheckForWidgetSupport( TOWEL42_DESIGNERPLUGIN_SUPPORT "Designer Plugins" )
 if ( TOWEL42_QCORE_SUPPORT )
     add_definitions( -DTOWEL42_QCORE_SUPPORT=1)
     find_package(Qt6 COMPONENTS Core REQUIRED)
+    MESSAGE( STATUS "Using Qt Version: ${Qt6_VERSION} - From: ${QT6_INSTALL_PREFIX}" )
     IF(WIN32)
             set( QT_OS_SRCS 
                 ForceUnbufferedProcessModifier.cpp 
