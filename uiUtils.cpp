@@ -339,12 +339,14 @@ namespace NTowel42Utils
             return {};
 
         std::optional< QPixmap > pixmap;
+#ifdef TOWEL42_QSVG_SUPPORT
         auto isSVG = NTowel42Utils::isSVG( data );
         if ( isSVG )
         {
             pixmap = NTowel42Utils::getSVG( data, sz );
         }
         else
+#endif
         {
             QBuffer buf( &const_cast< QByteArray & >( data ) );
             auto imageReader = QImageReader();
