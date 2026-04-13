@@ -1,7 +1,8 @@
 #ifndef __SVGUTILS_H
 #define __SVGUTILS_H
+#ifdef TOWEL42_QSVG_SUPPORT
 
-#include "Towel42UtilsExport.h"
+    #include "Towel42UtilsExport.h"
 #include <optional>
 #include <QSize>
 
@@ -18,4 +19,6 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool isSVG( const QByteArray &data );
     TOWEL42_UTILS_EXPORT bool isSVG( QIODevice *device );
 }
+
+#endif
 #endif
