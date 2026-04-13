@@ -545,7 +545,7 @@ namespace NTowel42Utils
     }
 
     template< typename T, typename = std::enable_if< std::is_integral_v< T > > >
-    QString contiguousNumbersText( const std::list< std::list< T > > &groupedNumbers, const QString &prefix = {}, int numDigits = 1 )
+    QString contiguousNumbersText( const std::list< std::list< T > > &groupedNumbers, int numDigits = 1, const QString &prefix = {} )
     {
         QString retVal;
         bool first = true;
