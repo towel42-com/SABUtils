@@ -38,7 +38,8 @@ namespace NTowel42Utils
     struct TOWEL42_UTILS_EXPORT SVersion
     {
         SVersion() {};
-        SVersion( const QString &tagName, const QString &createdDate );;
+        SVersion( const QString &tagName, const QString &createdDate );
+        ;
         SVersion( int major, int minor, int patch );
         bool setVersionInfo( const QString &tagName, const QString &createdDate );
 
@@ -76,6 +77,13 @@ namespace NTowel42Utils
     class TOWEL42_UTILS_EXPORT CVersionInfoData
     {
     public:
+        enum class EHomePageType
+        {
+            eNone,
+            eProduct,
+            eVendor
+        };
+
         virtual int majorVersion() const = 0;
         virtual int minorVersion() const = 0;
         virtual int patchVersion() const = 0;
@@ -86,7 +94,7 @@ namespace NTowel42Utils
         virtual QString ahead() const = 0;
         virtual QString appName() const = 0;
         virtual QString vendor() const = 0;
-        virtual QString homePage() const = 0;
+        virtual QString vendorHomePage() const = 0;
         virtual QString productHomePage() const = 0;
         virtual QString email() const = 0;
         virtual QString copyright() const = 0;
@@ -103,12 +111,15 @@ namespace NTowel42Utils
         virtual QString getVersionText( bool verbose ) const;   // verbose adds git version and status
         virtual QString getGitVersionAndStatus() const;
         virtual QString getVersionTextEX( bool localTime, bool full, bool sortableDate ) const;
-        virtual QString getWindowTitle( bool verbose = true, bool homePage = true ) const;
-        virtual void setupApplication( bool useProductHomepage ) const;
+        virtual QString getWindowTitle( bool verbose = true, EHomePageType homePage = EHomePageType::eProduct ) const;
+        virtual void setupApplication( EHomePageType homePage = EHomePageType::eProduct ) const;
 
         void setAboutText( const QString &text ) { fAboutText = text; }
         void setLogoPath( const QString &path ) { fLogoPath = path; }
         void setThirdPartyData( const std::list< SThirdPartyData > &thirdPartyData ) { fThirdPartyData = thirdPartyData; }
+
+    protected:
+        QString homePage( EHomePageType homePage ) const;
 
     private:
         QString fAboutText;

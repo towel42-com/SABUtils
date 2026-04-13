@@ -29,6 +29,7 @@
 #include <cstdint>
 #include <QCoreApplication>
 #include <QTimeZone>
+#include <QUrl>
 
 namespace NTowel42Utils
 {
@@ -118,7 +119,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    QString CVersionInfoData::getWindowTitle( bool verbose /*= true*/, bool homePage /*= true */ ) const
+    QString CVersionInfoData::getWindowTitle( bool verbose /*= true*/, EHomePageType homePageType /*= true */ ) const
     {
         auto retVal = appName();
         if ( verbose )
@@ -126,19 +127,32 @@ namespace NTowel42Utils
             retVal += QStringLiteral( " -" );
         }
         retVal += QStringLiteral( " v" ) + getVersionTextEX( true, true, false );
-        if ( verbose && homePage )
+        if ( verbose )
         {
-            retVal += QStringLiteral( " - https://" ) + this->homePage();
+            auto homePageText = homePage( homePageType );
+            if ( !homePageText.isEmpty() )
+                retVal += QStringLiteral( " - " ) + homePageText;
         }
         return retVal;
     }
 
-    void CVersionInfoData::setupApplication( bool useProductHomepage ) const
+    void CVersionInfoData::setupApplication( EHomePageType homePage ) const
     {
         qApp->setApplicationName( appName() );
         qApp->setApplicationVersion( getVersionTextEX( false, true, false ) );
         qApp->setOrganizationName( vendor() );
-        qApp->setOrganizationDomain( useProductHomepage ? productHomePage() : homePage() );
+        qApp->setOrganizationDomain( this->homePage( homePage ) );
+    }
+
+    QString CVersionInfoData::homePage( EHomePageType homePage ) const
+    {
+        if ( homePage == EHomePageType::eNone )
+            return {};
+
+        auto urlObj = QUrl( homePage == EHomePageType::eProduct ? productHomePage() : vendorHomePage() );
+        if ( urlObj.scheme().isEmpty() )
+            urlObj.setScheme( QStringLiteral( "https" ) );
+        return urlObj.toString();
     }
 
     int compare( const SVersion &lhs, const SVersion &rhs )
@@ -155,7 +169,7 @@ namespace NTowel42Utils
     }
 
 #if __cplusplus >= 202002L
-    int operator<=> ( const SVersion &lhs, const SVersion &rhs )
+    int operator<= > ( const SVersion &lhs, const SVersion &rhs )
     {
         return compare( lhs, rhs );
     }
@@ -181,12 +195,12 @@ namespace NTowel42Utils
         return !operator==( lhs, rhs );
     }
 
- SVersion::SVersion( const QString &tagName, const QString &createdDate )
+    SVersion::SVersion( const QString &tagName, const QString &createdDate )
     {
         setVersionInfo( tagName, createdDate );
     }
 
- SVersion::SVersion( int major, int minor, int patch ) :
+    SVersion::SVersion( int major, int minor, int patch ) :
         fMajor( major ),
         fMinor( minor ),
         fPatch( patch )
@@ -207,7 +221,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-QString SThirdPartyData::row() const
+    QString SThirdPartyData::row() const
     {
         return QString( R"(<tr>)"
                         R"(<td style="white-space=nowrap;">%1</td>)"
