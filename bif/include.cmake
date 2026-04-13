@@ -37,6 +37,7 @@ set(qtproject_SRCS
     ../BackupFile.cpp
     ../MoveToTrash.cpp
     ../FileUtils_Remove.cpp
+    ../SystemLoggingDefs.cpp
     BIFIOHandler.cpp
     ${OS_SRCS}
 )
