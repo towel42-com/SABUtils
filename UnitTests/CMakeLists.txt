@@ -71,10 +71,15 @@ IF(TOWEL42_QCORE_SUPPORT)
     )
 endif()
 
+set( _QTLibs "Qt6::Core" )
+if ( TOWEL42_QSQL_SUPPORT )
+    set( _QTLibs "${_QTLibs};Qt6::Sql" )
+endif()
+
 set( testProjectName "" )
 TOWEL42_UNIT_TEST(QtBasedUtils
     main.cpp
-    "gmock;Qt6::Core;Qt6::Sql"
+    "gmock;${_QTLibs}"
     testProjectName
     TestGeneral.cpp;TestExcelFuncs.cpp;${SOURCE_FILES}
     )
