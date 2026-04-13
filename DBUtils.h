@@ -53,9 +53,9 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::pair< QString, QVariant > &param );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd );
 
-    TOWEL42_UTILS_EXPORT void reportError( const QSqlError &error, bool assert = true );
-    TOWEL42_UTILS_EXPORT void reportError( const QSqlQuery &query, bool assert = true );
-    TOWEL42_UTILS_EXPORT void reportError( const QSqlDatabase &db, bool assert = true );
+    TOWEL42_UTILS_EXPORT bool reportError( const QSqlError &error, bool assert = true );
+    TOWEL42_UTILS_EXPORT bool reportError( const QSqlQuery &query, bool assert = true );
+    TOWEL42_UTILS_EXPORT bool reportError( const QSqlDatabase &db, bool assert = true );
 
     TOWEL42_UTILS_EXPORT bool transaction( QSqlDatabase &db );
     TOWEL42_UTILS_EXPORT bool commit( QSqlDatabase &db );

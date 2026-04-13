@@ -168,7 +168,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    void reportError( const QSqlError &error, bool assert )
+    bool reportError( const QSqlError &error, bool assert )
     {
         if ( error.type() != QSqlError::NoError )
         {
@@ -176,17 +176,19 @@ namespace NTowel42Utils
             qCDebug( t42utils_dbUtils_reportError ) << getThreadName() << ": " << error.databaseText();
             if ( assert )
                 Q_ASSERT( error.type() == QSqlError::NoError );
+            return false;
         }
+        return true;
     }
 
-    void reportError( const QSqlQuery &query, bool assert )
+    bool reportError( const QSqlQuery &query, bool assert )
     {
-        reportError( query.lastError(), assert );
+        return reportError( query.lastError(), assert );
     }
 
-    void reportError( const QSqlDatabase &db, bool assert )
+    bool reportError( const QSqlDatabase &db, bool assert )
     {
-        reportError( db.lastError(), assert );
+        return reportError( db.lastError(), assert );
     }
 
     QStringList paramsInCmd( const QString &cmdText, bool namedOnly )
