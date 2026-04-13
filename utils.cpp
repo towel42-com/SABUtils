@@ -352,7 +352,7 @@ namespace NTowel42Utils
 #ifdef TOWEL42_QCORE_SUPPORT
     bool isValidURL( const QString &url, int *start, int *length )
     {
-        auto regExStr = QStringLiteral( R"__(((([a-z]+):\/\/)|(www\.))(\.?[a-z0-9\-ßאֱגדףפ‏üתנזוןחטץצÿ‎עהךכלםרשמûסי]{2,256})+(\.[a-z]+))__" );
+        auto regExStr = QStringLiteral( R"__(([a-x]+)?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*))__" );
         auto regEx = QRegularExpression( regExStr, QRegularExpression::CaseInsensitiveOption );
         auto match = regEx.match( url );
         if ( !match.hasMatch() )
