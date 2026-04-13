@@ -74,18 +74,14 @@ namespace NTowel42Utils
                            .arg( versionInfo->getVersionText( true ) )
                            .arg( versionInfo->getBuildDateText( true, false, false ) );
 
-        auto homePage = versionInfo->homePage();
-        if ( !homePage.startsWith( "http" ) )
-            homePage = QStringLiteral( "https://" ) + homePage;
-
         auto aboutText = QObject::tr( R"__(
 <p>%1</p>
 <p><a href="%2">%2</a>.</p>
 <hr style="width:50%;text-align:left;margin-left:0">
 <p>%4</p>)__" )   //
-                .arg( versionInfo->aboutText() )
-                .arg( homePage )
-                .arg( versionInfo->copyright() );
+                             .arg( versionInfo->aboutText() )
+                             .arg( versionInfo->vendorHomePage() )
+                             .arg( versionInfo->copyright() );
 
         auto msgBox = new QMessageBox( parent );
         msgBox->setAttribute( Qt::WA_DeleteOnClose );
