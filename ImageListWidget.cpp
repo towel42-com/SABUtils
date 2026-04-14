@@ -360,7 +360,7 @@ namespace NTowel42Utils
 
     void CImageListWidget::slotImageDropped( const QByteArray &data )
     {
-        auto imageData = SImageData::fromData( data );
+        auto imageData = SImageData::fromData( window(), data );
         if ( !imageData )
             return;
         loadImage( imageData );
@@ -368,7 +368,7 @@ namespace NTowel42Utils
 
     void CImageListWidget::slotImageFileDropped( const QString &filePath )
     {
-        auto imageData = SImageData::fromFile( filePath );
+        auto imageData = SImageData::fromFile( window(), filePath );
         if ( !imageData )
             return;
         loadImage( imageData );
