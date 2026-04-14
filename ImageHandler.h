@@ -51,12 +51,12 @@ namespace NTowel42Utils
         SImageData() = default;
         SImageData( const QByteArray &data, const QString &description );
 
-        static std::shared_ptr< NTowel42Utils::SImageData > fromFile( QWidget *parent, const QString &fileName, const QString &description = {} );
-        static std::shared_ptr< NTowel42Utils::SImageData > fromData( QWidget *parent, const QByteArray &data, const QString &description = {} );
+        static std::shared_ptr< NTowel42Utils::SImageData > fromFile( QWidget *parent, const QString &fileName, const QString &description = {}, bool autoCompressOnTooBig=true );
+        static std::shared_ptr< NTowel42Utils::SImageData > fromData( QWidget *parent, const QByteArray &data, const QString &description = {}, bool autoCompressOnTooBig = true );
 
         std::optional< QPixmap > pixmap( const std::optional< QSize > &sz = {} ) const;
 
-        bool findLargestImageThatFits( int64_t sz );
+        bool findOptimalQualityForSize( int64_t sz );
 
         void setData( int role, const QVariant &value );
         QVariant data( int role, const QVariant &defaultValue = {} );

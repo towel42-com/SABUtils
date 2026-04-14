@@ -345,26 +345,26 @@ namespace NTowel42Utils
     {
     }
 
-    std::shared_ptr< SImageData > SImageData::fromFile( QWidget *parent, const QString &fileName, const QString &description /*= {} */ )
+    std::shared_ptr< SImageData > SImageData::fromFile( QWidget *parent, const QString &fileName, const QString &description /*= {} */, bool autoCompressOnTooBig /*=true*/ )
     {
         QFile file( fileName );
         if ( !file.open( QFile::ReadOnly ) )
             return {};
 
         auto data = file.readAll();
-        return fromData( parent, data, description.isEmpty() ? QFileInfo( fileName ).fileName() : description );
+        return fromData( parent, data, description.isEmpty() ? QFileInfo( fileName ).fileName() : description, autoCompressOnTooBig );
     }
 
-    std::shared_ptr< SImageData > SImageData::fromData( QWidget *parent, const QByteArray &data, const QString &description /*= {} */ )
+    std::shared_ptr< SImageData > SImageData::fromData( QWidget *parent, const QByteArray &data, const QString &description /*= {} */, bool autoCompressOnTooBig /*= true*/ )
     {
         if ( !CImageHandler::checkImageSize( data ) )
         {
             QLocale locale;
-            if ( QMessageBox::warning( parent, QObject::tr( "Image Too Large" ), QObject::tr( "The selected file is larger than the maximum allowed size of %1 bytes. Would you like to scale it down to fit?" ).arg( locale.toString( CImageHandler::sMaxImageSize.value() ) ), QMessageBox::StandardButton::Yes, QMessageBox::StandardButton::No ) == QMessageBox::StandardButton::No )
+            if ( !autoCompressOnTooBig && ( QMessageBox::warning( parent, QObject::tr( "Image Too Large" ), QObject::tr( "The selected file is larger than the maximum allowed size of %1 bytes. Would you like to scale it down to fit?" ).arg( locale.toString( CImageHandler::sMaxImageSize.value() ) ), QMessageBox::StandardButton::Yes, QMessageBox::StandardButton::No ) == QMessageBox::StandardButton::No ) )
                 return {};
 
             auto retVal = std::make_shared< SImageData >( data, description );
-            retVal->findLargestImageThatFits( CImageHandler::sMaxImageSize.value() );
+            retVal->findOptimalQualityForSize( CImageHandler::sMaxImageSize.value() );
             return retVal;
         }
         auto retVal = std::make_shared< SImageData >( data, description );
@@ -383,13 +383,13 @@ namespace NTowel42Utils
         return currPM;
     }
 
-    bool SImageData::findLargestImageThatFits( int64_t sz )
+    bool SImageData::findOptimalQualityForSize( int64_t sz )
     {
         auto image = imageForImageData( fData );
         if ( !image.has_value() )
             return false;
 
-        image = NTowel42Utils::findLargestImageThatFits( image.value(), sz, fData );
+        image = NTowel42Utils::findOptimalQualityForSize( image.value(), sz, fData );
         if ( !image.has_value() || image.value().isNull() )
         {
             fData.clear();

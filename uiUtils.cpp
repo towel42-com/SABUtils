@@ -448,13 +448,14 @@ namespace NTowel42Utils
         return ba;
     }
 
-    std::optional< QImage > findLargestImageThatFits( const QImage &image, int64_t sz, QByteArray &data )
+    std::optional< QImage > findOptimalQualityForSize( const QImage &image, int64_t sz, QByteArray &data )
     {
         int low = 1;
         int high = 100;
         int bestQuality = 1;
 
         std::unordered_map< int, QByteArray > results;
+        QByteArray bestResult;
         QByteArray result;
         while ( low <= high )
         {
@@ -465,6 +466,7 @@ namespace NTowel42Utils
             results[ mid ] = result;
             if ( result.size() <= sz )
             {
+                bestResult = result;
                 bestQuality = mid;
                 low = mid + 1;
             }
@@ -478,7 +480,8 @@ namespace NTowel42Utils
         Q_ASSERT( pos != results.end() );
         if ( pos == results.end() )
             return {};
-        data = ( *pos ).second;
+        Q_ASSERT( bestResult == ( *pos ).second );
+        data = ( *pos ).second;;
         return QImage::fromData( ( *pos ).second );
     }
 
