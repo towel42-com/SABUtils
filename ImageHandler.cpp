@@ -42,7 +42,7 @@
 #include <QIcon>
 #include <QRect>
 #include <QTimer>
-
+#include <QBuffer>
 #include <QDialogButtonBox>
 
 namespace NTowel42Utils
@@ -139,11 +139,8 @@ namespace NTowel42Utils
 
         QString filter = QString( "All Supported Images (%1)" ).arg( supportedFormats.join( " " ) );
 
-        auto fileName = QFileDialog::getOpenFileName( this, tr( "Select Image File" ), {}, filter );
+        auto fileName = QFileDialog::getOpenFileName( window(), tr( "Select Image File" ), {}, filter );
         if ( fileName.isEmpty() )
-            return;
-
-        if ( !checkFileSize( window(), fileName ) )
             return;
 
         setImageFile( fileName );
@@ -151,15 +148,19 @@ namespace NTowel42Utils
 
     bool CImageHandler::checkFileSize( QWidget *parent, const QString &fileName )
     {
-        return checkImageSize( parent, QFileInfo( fileName ).size() );
-    }
-
-    bool CImageHandler::checkImageSize( QWidget *parent, int64_t sz )
-    {
-        if ( sMaxImageSize.has_value() && ( sz > sMaxImageSize.value() ) )
+        if ( sMaxImageSize.has_value() && ( QFileInfo( fileName ).size() > sMaxImageSize.value() ) )
         {
             QLocale locale;
             QMessageBox::warning( parent, tr( "File Too Large" ), tr( "The selected file is larger than the maximum allowed size of %1 bytes." ).arg( locale.toString( sMaxImageSize.value() ) ), QMessageBox::StandardButton::Ok );
+            return false;
+        }
+        return true;
+    }
+
+    bool CImageHandler::checkImageSize( const QByteArray &rawImageData )
+    {
+        if ( sMaxImageSize.has_value() && ( rawImageData.size() > sMaxImageSize.value() ) )
+        {
             return false;
         }
         return true;
@@ -212,27 +213,19 @@ namespace NTowel42Utils
         auto data = file.readAll();
         if ( data.isNull() )
         {
-            QMessageBox::critical( this, tr( "Could not read file" ), tr( "Reading file '%1' produced no data" ).arg( fileName ), QMessageBox::StandardButton::Ok );
+            QMessageBox::critical( window(), tr( "Could not read file" ), tr( "Reading file '%1' produced no data" ).arg( fileName ), QMessageBox::StandardButton::Ok );
             return;
         }
 
-        setImageDataInt( data );
+        fImageData = SImageData::fromData( window(), data );
+        fImageData->fPixmaps.clear();
+        fImageData->fDescription = fDescription->text();
+        setImagePixmap();
     }
 
     void CImageHandler::setImageData( std::shared_ptr< SImageData > imageData )
     {
         fImageData = imageData;
-        setImagePixmap();
-    }
-
-    void CImageHandler::setImageDataInt( const QByteArray &imageData )
-    {
-        if ( !fImageData )
-            fImageData = std::make_shared< SImageData >();
-
-        fImageData->fPixmaps.clear();
-        fImageData->fData = imageData;
-        fImageData->fDescription = fDescription->text();
         setImagePixmap();
     }
 
@@ -352,21 +345,27 @@ namespace NTowel42Utils
     {
     }
 
-    std::shared_ptr< SImageData > SImageData::fromFile( const QString &fileName, const QString &description /*= {} */ )
+    std::shared_ptr< SImageData > SImageData::fromFile( QWidget *parent, const QString &fileName, const QString &description /*= {} */ )
     {
         QFile file( fileName );
         if ( !file.open( QFile::ReadOnly ) )
             return {};
 
         auto data = file.readAll();
-        return fromData( data, description.isEmpty() ? QFileInfo( fileName ).fileName() : description );
+        return fromData( parent, data, description.isEmpty() ? QFileInfo( fileName ).fileName() : description );
     }
 
-    std::shared_ptr< SImageData > SImageData::fromData( const QByteArray &data, const QString &description /*= {} */ )
+    std::shared_ptr< SImageData > SImageData::fromData( QWidget *parent, const QByteArray &data, const QString &description /*= {} */ )
     {
-        if ( !CImageHandler::checkImageSize( nullptr, data.size() ) )
+        if ( !CImageHandler::checkImageSize( data ) )
         {
-            return {};
+            QLocale locale;
+            if ( QMessageBox::warning( parent, QObject::tr( "Image Too Large" ), QObject::tr( "The selected file is larger than the maximum allowed size of %1 bytes. Would you like to scale it down to fit?" ).arg( locale.toString( CImageHandler::sMaxImageSize.value() ) ), QMessageBox::StandardButton::Yes, QMessageBox::StandardButton::No ) == QMessageBox::StandardButton::No )
+                return {};
+
+            auto retVal = std::make_shared< SImageData >( data, description );
+            retVal->findLargestImageThatFits( CImageHandler::sMaxImageSize.value() );
+            return retVal;
         }
         auto retVal = std::make_shared< SImageData >( data, description );
         return retVal;
@@ -382,6 +381,22 @@ namespace NTowel42Utils
         auto currPM = pixmapForImageData( fData, sz );
         fPixmaps[ sizeKey ] = currPM;
         return currPM;
+    }
+
+    bool SImageData::findLargestImageThatFits( int64_t sz )
+    {
+        auto image = imageForImageData( fData );
+        if ( !image.has_value() )
+            return false;
+
+        image = NTowel42Utils::findLargestImageThatFits( image.value(), sz, fData );
+        if ( !image.has_value() || image.value().isNull() )
+        {
+            fData.clear();
+            return false;
+        }
+
+        return fData.size() < sz;
     }
 
     void SImageData::setData( int role, const QVariant &value )
@@ -486,5 +501,4 @@ namespace NTowel42Utils
     {
         return fImageHandler->readOnly();
     }
-
 }

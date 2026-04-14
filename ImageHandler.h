@@ -51,10 +51,12 @@ namespace NTowel42Utils
         SImageData() = default;
         SImageData( const QByteArray &data, const QString &description );
 
-        static std::shared_ptr< NTowel42Utils::SImageData > fromFile( const QString &fileName, const QString &description = {} );
-        static std::shared_ptr< NTowel42Utils::SImageData > fromData( const QByteArray &data, const QString &description = {} );
+        static std::shared_ptr< NTowel42Utils::SImageData > fromFile( QWidget *parent, const QString &fileName, const QString &description = {} );
+        static std::shared_ptr< NTowel42Utils::SImageData > fromData( QWidget *parent, const QByteArray &data, const QString &description = {} );
 
         std::optional< QPixmap > pixmap( const std::optional< QSize > &sz = {} ) const;
+
+        bool findLargestImageThatFits( int64_t sz );
 
         void setData( int role, const QVariant &value );
         QVariant data( int role, const QVariant &defaultValue = {} );
@@ -71,6 +73,7 @@ namespace NTowel42Utils
     class TOWEL42_UTILS_EXPORT CImageHandler : public QWidget
     {
         friend class CImageHandlerDlg;
+        friend struct SImageData;
 
         Q_OBJECT
         Q_PROPERTY( bool readOnly MEMBER fReadOnly NOTIFY sigReadOnlyChanged );
@@ -102,7 +105,7 @@ namespace NTowel42Utils
         static void setMaxImageSize( int64_t sz ) { sMaxImageSize = sz; }
 
         static bool checkFileSize( QWidget *parent, const QString &fileName );
-        static bool checkImageSize( QWidget *parent, int64_t sz );
+        static bool checkImageSize( const QByteArray &imageData );
     Q_SIGNALS:
         void sigReadOnlyChanged();
         void sigImageTypeChanged();
@@ -115,7 +118,6 @@ namespace NTowel42Utils
         void slotImageTypeChanged();
 
     private:
-        void setImageDataInt( const QByteArray &imageData );
         void setupUi();
         void loadDefaultImage();
         QSize computeSize() const;
