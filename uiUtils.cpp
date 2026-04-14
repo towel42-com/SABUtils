@@ -392,4 +392,94 @@ namespace NTowel42Utils
 
         return pixmapForImageData( data, sz );
     }
+
+    std::optional< QImage > imageForImageData( const QByteArray &data, const std::optional< QSize > &sz /*= {} */ )
+    {
+        if ( data.isNull() || data.isEmpty() )
+            return {};
+
+        std::optional< QImage > image;
+#ifdef TOWEL42_QSVG_SUPPORT
+        auto isSVG = NTowel42Utils::isSVG( data );
+        if ( isSVG )
+        {
+            image = NTowel42Utils::getSVGImage( data, sz );
+        }
+        else
+#endif
+        {
+            QBuffer buf( &const_cast< QByteArray & >( data ) );
+            auto imageReader = QImageReader();
+            imageReader.setAutoTransform( true );
+            imageReader.setDevice( &buf );
+
+            auto lclImage = imageReader.read();
+            if ( !lclImage.isNull() )
+            {
+                if ( sz.has_value() )
+                    lclImage = lclImage.scaled( sz.value(), Qt::KeepAspectRatio );
+                image = lclImage;
+            }
+        }
+        return image;
+    }
+
+    std::optional< QImage > imageForImageFile( const QString &path, const std::optional< QSize > &sz /*= {} */ )
+    {
+        auto file = QFile( path );
+        if ( !file.open( QFile::ReadOnly ) )
+            return {};
+        auto data = file.readAll();
+        if ( data.isNull() )
+            return {};
+
+        return imageForImageData( data, sz );
+    }
+
+    QByteArray imageData( const QImage &image )
+    {
+        if ( image.isNull() )
+            return {};
+
+        QByteArray ba;
+        QBuffer buffer( &ba );
+        buffer.open( QIODevice::WriteOnly );
+        image.save( &buffer, "PNG" );
+        return ba;
+    }
+
+    std::optional< QImage > findLargestImageThatFits( const QImage &image, int64_t sz, QByteArray &data )
+    {
+        int low = 1;
+        int high = 100;
+        int bestQuality = 1;
+
+        std::unordered_map< int, QByteArray > results;
+        QByteArray result;
+        while ( low <= high )
+        {
+            int mid = ( low + high ) / 2;
+            QBuffer buffer( &result );
+            buffer.open( QIODevice::WriteOnly );
+            image.save( &buffer, "JPG", mid );   // Vary quality
+            results[ mid ] = result;
+            if ( result.size() <= sz )
+            {
+                bestQuality = mid;
+                low = mid + 1;
+            }
+            else
+            {
+                high = mid - 1;
+            }
+        }
+
+        auto pos = results.find( bestQuality );
+        Q_ASSERT( pos != results.end() );
+        if ( pos == results.end() )
+            return {};
+        data = ( *pos ).second;
+        return QImage::fromData( ( *pos ).second );
+    }
+
 }

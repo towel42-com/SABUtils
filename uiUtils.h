@@ -28,6 +28,7 @@
 #include <QModelIndex>
 #include <vector>
 #include <QPixmap>
+#include <QImage>
 #include <optional>
 
 class QString;
@@ -78,6 +79,9 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT std::optional< QPixmap > pixmapForImageData( const QByteArray &data, const std::optional< QSize > &sz = {} );
     TOWEL42_UTILS_EXPORT std::optional< QPixmap > pixmapForImageFile( const QString &path, const std::optional< QSize > &sz = {} );
+    TOWEL42_UTILS_EXPORT std::optional< QImage > imageForImageData( const QByteArray &data, const std::optional< QSize > &sz = {} );
+    TOWEL42_UTILS_EXPORT std::optional< QImage > imageForImageFile( const QString &path, const std::optional< QSize > &sz = {} );
 
+    TOWEL42_UTILS_EXPORT std::optional< QImage > findLargestImageThatFits( const QImage &image, int64_t sz, QByteArray &data );
 }
 #endif
