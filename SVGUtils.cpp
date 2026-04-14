@@ -10,7 +10,7 @@
 
 namespace NTowel42Utils
 {
-    std::optional< QPixmap > getSVG( QSvgRenderer *renderer, const std::optional< QSize > &sz )
+    std::optional< QImage > getSVGImage( QSvgRenderer *renderer, const std::optional< QSize > &sz /*= {} */ )
     {
         Q_ASSERT( renderer && renderer->isValid() );
         if ( !renderer || !renderer->isValid() )
@@ -24,7 +24,15 @@ namespace NTowel42Utils
         image.fill( Qt::transparent );
         QPainter painter( &image );
         renderer->render( &painter );
-        return QPixmap::fromImage( image );
+        return image;
+    }
+
+    std::optional< QPixmap > getSVG( QSvgRenderer *renderer, const std::optional< QSize > &sz )
+    {
+        auto image = getSVGImage( renderer, sz );
+        if ( image.has_value() )
+            return QPixmap::fromImage( image.value() );
+        return {};
     }
 
     std::optional< QPixmap > getSVG( const QString &svgFile, const std::optional< QSize > &sz )
@@ -33,17 +41,28 @@ namespace NTowel42Utils
         return getSVG( &renderer, sz );
     }
 
+    std::optional< QImage > getSVGImage( const QString &svgFile, const std::optional< QSize > &sz /*= {} */ )
+    {
+        QSvgRenderer renderer( svgFile );
+        return getSVGImage( &renderer, sz );
+    }
+
     std::optional< QPixmap > getSVG( const QByteArray &svgData, const std::optional< QSize > &sz )
     {
         QSvgRenderer renderer( svgData );
         return getSVG( &renderer, sz );
     }
 
+    std::optional< QImage > getSVGImage( const QByteArray &svgData, const std::optional< QSize > &sz /*= {} */ )
+    {
+        QSvgRenderer renderer( svgData );
+        return getSVGImage( &renderer, sz );
+    }
+
     bool isSVG( const QByteArray &data )
     {
         QTextStream ts( data );
         return isSVG( ts.device() );
-
     }
 
     bool isSVG( QIODevice *device )
