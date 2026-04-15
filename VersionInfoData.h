@@ -39,7 +39,6 @@ namespace NTowel42Utils
     {
         SVersion() {};
         SVersion( const QString &tagName, const QString &createdDate );
-        ;
         SVersion( int major, int minor, int patch );
         bool setVersionInfo( const QString &tagName, const QString &createdDate );
 
