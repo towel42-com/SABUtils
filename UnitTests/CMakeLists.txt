@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+find_package(AddUnitTest REQUIRED)
+
 set ( DEBUG_PATH 
     "%PATH%"
     "${QT6_INSTALL_PREFIX}/bin"
@@ -73,6 +75,8 @@ set( _QTLibs "Qt6::Core" )
 if ( TOWEL42_QSQL_SUPPORT )
     set( _QTLibs "${_QTLibs};Qt6::Sql" )
 endif()
+
+unset( FOLDER_NAME )
 
 set( testProjectName "" )
 TOWEL42_UNIT_TEST(QtBasedUtils

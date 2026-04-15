@@ -106,8 +106,6 @@ add_compile_definitions(
     $<$<BOOL:TOWEL42_DEBUG_TRACE>:TOWEL42_DEBUG_TRACE>
 )
 
-find_package(AddUnitTest REQUIRED)
-
 IF(TOWEL42_QCORE_SUPPORT)
     find_package(Qt6SrcMoc REQUIRED)
     set(TOWEL42_MOC_OPTIONS "-DNON_VIS_BUILD=1")
