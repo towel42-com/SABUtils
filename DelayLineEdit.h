@@ -34,6 +34,7 @@ namespace NTowel42Utils
     class CBackgroundFileCheck;
     class TOWEL42_UTILS_EXPORT CDelayLineEdit : public QLineEdit
     {
+    public:
         Q_OBJECT;
 
     public:

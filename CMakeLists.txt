@@ -46,7 +46,6 @@ SET( TOWEL42_ZIP_SUPPORT OFF CACHE BOOL "Enable ZIP Utilities Support" )
 SET( TOWEL42_ENABLE_TESTING OFF CACHE BOOL "Enable Testing" )
 
 message( STATUS "T42-Utils: Building for DLL=${TOWEL42_UTILS_DLL}" )
-
 message( STATUS "T42-Utils: Building TOWEL42_BIFSUPPORT=${TOWEL42_BIFSUPPORT}" )
 message( STATUS "T42-Utils: Building TOWEL42_GIFSUPPORT=${TOWEL42_GIFSUPPORT}" )
 message( STATUS "T42-Utils: Building TOWEL42_NUGET_SUPPORT=${TOWEL42_NUGET_SUPPORT}" )
@@ -136,16 +135,28 @@ endif()
 if ( TOWEL42_UTILS_DLL )
     SET( LIBTYPE SHARED )
     add_compile_definitions( 
-        TOWEL42UTILS_INTERNAL
+        Towel42Utils_EXPORTS
         $<$<BOOL:TOWEL42_UTILS_DLL>:TOWEL42_UTILS_DLL>
     )
 else()
     SET( LIBTYPE STATIC )
+    
+    add_compile_definitions( 
+        TOWEL42_UTILS_STATIC_DEFINE
+    )
 endif()
 
 add_library(${PROJECT_NAME} ${LIBTYPE}
     ${_PROJECT_DEPENDENCIES}
 )
+
+include(GenerateExportHeader)
+generate_export_header( Towel42Utils
+    EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/Towel42UtilsExport.h
+    BASE_NAME TOWEL42_UTILS
+    )
+include_directories( ${CMAKE_BINARY_DIR} )
+
 
 target_link_libraries( ${PROJECT_NAME}
     PUBLIC

@@ -66,7 +66,7 @@ set(project_H
     RevertValue.h
     StringComparisonClasses.h
     StringUtils.h
-    Towel42UtilsExport.h
+    ${CMAKE_BINARY_DIR}/Towel42UtilsExport.h
     VersionInfoData.h
     Towel42UtilsFwd.h
     ${OS_HEADERS}

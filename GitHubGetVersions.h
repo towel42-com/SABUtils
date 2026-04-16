@@ -89,6 +89,7 @@ namespace NTowel42Utils
 
     class TOWEL42_UTILS_EXPORT CGitHubGetVersions : public QObject
     {
+    public:
         Q_OBJECT;
 
     public:
