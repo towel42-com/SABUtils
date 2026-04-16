@@ -24,9 +24,11 @@
 #include "QtUtils.h"
 
 #include <QFileInfo>
-#include <QKeyEvent>
-#include <QLineEdit>
-#include <QAbstractButton>
+#ifdef QT_WIDGETS_LIB
+    #include <QKeyEvent>
+    #include <QLineEdit>
+    #include <QAbstractButton>
+#endif
 #include <QTimer>
 #include <QDir>
 
@@ -353,6 +355,7 @@ namespace NTowel42Utils
         return QStringListModel::headerData( section, orientation, role );
     }
 
+#ifdef QT_WIDGETS_LIB
     CStringFilterModel::CStringFilterModel( QAbstractItemModel *sourceModel, QLineEdit *filter, QObject *parent ) :
         QSortFilterProxyModel( parent ),
         fFilter( filter )
@@ -487,6 +490,7 @@ namespace NTowel42Utils
         }
         QTreeView::keyPressEvent( event );
     }
+#endif
 
     CStringTupleModel::CStringTupleModel( const QStringList &columnNames, QObject *parent ) :
         QAbstractTableModel( parent ),

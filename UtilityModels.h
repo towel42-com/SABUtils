@@ -31,13 +31,16 @@
 #include <QList>
 #include <QPair>
 #include <QStringList>
-#include <QListView>
-#include <QTreeView>
-#include <QTableView>
 #include <QMap>
 #include <QStringListModel>
 #include <QAbstractTableModel>
 #include <QSortFilterProxyModel>
+
+#ifdef QT_WIDGETS_LIB
+    #include <QListView>
+    #include <QTreeView>
+    #include <QTableView>
+#endif
 
 class QAbstractButton;
 class QXmlQuery;
@@ -203,6 +206,7 @@ namespace NTowel42Utils
         std::map< QString, QString > fReverseAliasMap;
     };
 
+#ifdef QT_WIDGETS_LIB
     class TOWEL42_UTILS_EXPORT CStringFilterModel : public QSortFilterProxyModel
     {
         Q_OBJECT
@@ -216,7 +220,8 @@ namespace NTowel42Utils
         QLineEdit *fFilter;
         QTimer *fTimer;
     };
-
+#endif
+#ifdef QT_WIDGETS_LIB
     class TOWEL42_UTILS_EXPORT CCheckableListView : public QListView
     {
         Q_OBJECT
@@ -246,5 +251,6 @@ namespace NTowel42Utils
     Q_SIGNALS:
         void sigBlockFilterUpdates( bool block );
     };
+#endif
 }
 #endif

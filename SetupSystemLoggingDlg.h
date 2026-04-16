@@ -23,9 +23,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Towel42UtilsExport.h"
-#include <QDialog>
-#include <unordered_map>
+#ifdef QT_WIDGETS_LIB
+    #include "Towel42UtilsExport.h"
+    #include <QDialog>
+    #include <unordered_map>
 
 class QStandardItemModel;
 class QSortFilterProxyModel;
@@ -46,7 +47,7 @@ namespace NTowel42Utils
             Q_OBJECT
 
         public:
-            explicit CSetupSystemLoggingDlg( const QString & appName, QWidget *parent = nullptr );
+            explicit CSetupSystemLoggingDlg( const QString &appName, QWidget *parent = nullptr );
             ~CSetupSystemLoggingDlg();
 
             QString fullName( QStandardItem *item ) const;
@@ -64,7 +65,7 @@ namespace NTowel42Utils
             void loadCategory( const SCategoryInfo &category );
 
             void checkItem( QStandardItem *item, const std::function< bool( QStandardItem *item ) > &function );
-        	void checkItem( QStandardItem *item, bool check );
+            void checkItem( QStandardItem *item, bool check );
 
             std::unique_ptr< Ui::CSetupSystemLoggingDlg > fImpl;
             std::unordered_map< QString, QStandardItem * > fItems;
@@ -74,4 +75,5 @@ namespace NTowel42Utils
     }
 }
 
+#endif
 #endif

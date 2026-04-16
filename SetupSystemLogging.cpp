@@ -129,6 +129,7 @@ namespace NTowel42Utils
             sOtherPrefixes << QString( sAppName ).remove( " " );
 
             auto args = QCoreApplication::arguments();
+#ifdef QT_WIDGETS_LIB
             std::optional< bool > uiMode;
             if ( args.contains( "--debug_system_logging" ) )
                 uiMode = true;
@@ -149,6 +150,7 @@ namespace NTowel42Utils
                 dlg.exec();
             }
             else
+#endif
                 setupSystemLogging();
         }
 
