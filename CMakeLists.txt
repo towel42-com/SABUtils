@@ -29,10 +29,10 @@ else()
     SET( TOWEL42_UTILS_DLL OFF CACHE BOOL "Build Towel42 Utils as a Shared Library" )
 endif()
 
+SET( TOWEL42_NUGET_SUPPORT OFF CACHE BOOL "Enable NuGet Package Support" )
+
 SET( TOWEL42_BIFSUPPORT OFF CACHE BOOL "Support for BIF Utilities" )
 SET( TOWEL42_GIFSUPPORT OFF CACHE BOOL "Support for GIF Utilities" )
-
-SET( TOWEL42_NUGET_SUPPORT OFF CACHE BOOL "Enable NuGet Package Support" )
 SET( TOWEL42_DESIGNERPLUGIN_SUPPORT OFF CACHE BOOL "Enable Creation of Designer Plugins Support" )
 SET( TOWEL42_ZIP_SUPPORT OFF CACHE BOOL "Enable ZIP Utilities Support" )
 SET( TOWEL42_ENABLE_TESTING OFF CACHE BOOL "Enable Testing" )
