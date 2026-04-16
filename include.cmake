@@ -47,7 +47,6 @@ set(project_SRCS
     RegExUtils.cpp
     StringComparisonClasses.cpp
     StringUtils.cpp
-    VersionInfoData.cpp
     ${OS_SRCS}
 )
 
@@ -67,7 +66,6 @@ set(project_H
     StringComparisonClasses.h
     StringUtils.h
     ${CMAKE_BINARY_DIR}/Towel42UtilsExport.h
-    VersionInfoData.h
     Towel42UtilsFwd.h
     ${OS_HEADERS}
 )
@@ -75,26 +73,22 @@ set(project_H
 set(qtproject_UIS
 )
 
-MACRO(CheckForCoreSupport whichLibVAR whichLibName)
-    if ( ${whichLibVAR} AND NOT Qt6Core_FOUND )
-        MESSAGE( AUTHOR_WARNING "  ${whichLibVAR} requires Qt6::Core support, to remove this warning call find_package( Qt6 COMPONENTS Core REQUIRED )
-  OR define TOWEL42_QCORE_SUPPORT" )
-        find_package( Qt6 COMPONENTS Core REQUIRED )
-    endif()
-ENDMACRO()
+MACRO(CheckQtComponent whichLibVar components)
+    foreach( component in components )
+    
+        if( ${whichLibVar} AND NOT Qt6${component}_FOUND)
+            string( TOUPPER ${component} upcaseComponent )
+            MESSAGE( AUTHOR_WARNING "  ${whichLibVAR} requires Qt6::${component} support, to remove this warning call find_package( Qt6 COMPONENTS ${component} REQUIRED )
+      OR define TOWEL42_Q${upcaseComponent}_SUPPORT" )
+            find_package(Qt6 COMPONENTS ${component} REQUIRED)
+        endif()
+    endforeach()
+endmacro()
 
-MACRO(CheckForWidgetSupport whichLibVAR whichLibName)
-    if ( ${whichLibVAR} AND NOT Qt6Widgets_FOUND )
-        MESSAGE( AUTHOR_WARNING "  ${whichLibVAR} requires Qt6::Widgets and Qt6::Gui support, to remove this warning call find_package( Qt6 COMPONENTS Widgets Gui REQUIRED
-  OR define TOWEL42_QWIDGETS_SUPPORT" )
-        find_package( Qt6 COMPONENTS Widgets Gui REQUIRED )
-    endif()
-ENDMACRO()
-
-CheckForCoreSupport( TOWEL42_BIFSUPPORT "BIF" )
-CheckForCoreSupport( TOWEL42_GIFSUPPORT "GIF" )
-CheckForCoreSupport( TOWEL42_ZIP_SUPPORT "ZIP" )
-CheckForWidgetSupport( TOWEL42_DESIGNERPLUGIN_SUPPORT "Designer Plugins" )
+CheckQtComponent( TOWEL42_BIFSUPPORT "BIF" Core )
+CheckQtComponent( TOWEL42_GIFSUPPORT "GIF" Core)
+CheckQtComponent( TOWEL42_ZIP_SUPPORT "ZIP" Core )
+CheckQtComponent( TOWEL42_DESIGNERPLUGIN_SUPPORT "Designer Plugins" Widgets;Gui)
 
 if ( Qt6Core_FOUND )
     IF(WIN32)
@@ -137,6 +131,7 @@ if ( Qt6Core_FOUND )
         TimeStamp.cpp
         UtilityModels.cpp
         utils.cpp
+        VersionInfoData.cpp
         WordExp.cpp
     )
 
@@ -166,6 +161,7 @@ if ( Qt6Core_FOUND )
         TimeStamp.h
         Towel42UtilsResources.h
         utils.h
+        VersionInfoData.h
         WordExp.h
     )
 
