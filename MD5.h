@@ -30,9 +30,11 @@
 class QByteArray;
 class QFileInfo;
 class QString;
+    #ifdef QT_GUI_LIB
 class QIcon;
 class QPixmap;
 class QImage;
+    #endif
 
     #include <QRunnable>
     #include <string>
@@ -47,10 +49,12 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT QByteArray getMd5( const QString &data, bool isFileName = false );
     TOWEL42_UTILS_EXPORT std::string getMd5( const std::string &data, bool isFileName = false );
 
+    #ifdef QT_GUI_LIB
     TOWEL42_UTILS_EXPORT QByteArray getMd5( const QIcon &icon );
     TOWEL42_UTILS_EXPORT QByteArray getMd5( const QPixmap &pixmap );   // only includes image data
     TOWEL42_UTILS_EXPORT QByteArray getMd5( const QImage &img );
     TOWEL42_UTILS_EXPORT QByteArray getImageData( const QImage &img );
+    #endif
 
     TOWEL42_UTILS_EXPORT QByteArray formatMd5( const QByteArray &digest, bool isHex );
 
@@ -83,7 +87,9 @@ namespace NTowel42Utils
     private:
         void processEvents();
 
+    #ifdef QT_GUI_LIB
         void processImage( const QImage &img );
+    #endif
         void emitFinished();
 
         QFileInfo fFileInfo;
