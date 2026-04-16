@@ -30,10 +30,10 @@ find_package(Deploy REQUIRED)
 find_package(IncludeProjectSettings REQUIRED)
 include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
 project( ${_PROJECT_NAME} ) 
-IncludeProjectSettings(QT ${USE_QT})
+IncludeProjectSettings()
 
 add_definitions( -DBUILD_BIF_PLUGIN=1 )
-add_definitions( -DTOWEL42UTILS_INTERNAL )
+add_definitions( -DTowel42Utils_EXPORTS )
 
 add_library(${PROJECT_NAME} SHARED
     ${_PROJECT_DEPENDENCIES} 
