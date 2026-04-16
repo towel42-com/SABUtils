@@ -155,7 +155,6 @@ generate_export_header( Towel42Utils
     EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/Towel42UtilsExport.h
     BASE_NAME TOWEL42_UTILS
     )
-include_directories( ${CMAKE_BINARY_DIR} )
 
 
 target_link_libraries( ${PROJECT_NAME}
