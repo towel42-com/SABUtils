@@ -218,13 +218,13 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    std::pair< bool, bool > confirmPassword( bool userTypeRequiresPassword, bool isNewUser, const QString &password, const QString &confirmPassword )
+    std::pair< bool, bool > confirmPassword( bool userTypeRequiresPassword, bool isNewUser, const std::string &password, const std::string &confirmationPassword )
     {
         bool passwordOK = true;
         bool confirmPasswordOK = true;
 
-        auto pwEmpty = password.isEmpty();
-        auto confirmEmpty = confirmPassword.isEmpty();
+        auto pwEmpty = password.empty();
+        auto confirmEmpty = confirmationPassword.empty();
 
         // if pw or confirm empty but not both, always password OK and confirm is not
         // if both not empty, always pw OK and confirm is if they match
@@ -240,7 +240,7 @@ namespace NTowel42Utils
         else if ( !pwEmpty && !confirmEmpty )
         {
             passwordOK = true;
-            confirmPasswordOK = password == confirmPassword;
+            confirmPasswordOK = password == confirmationPassword;
         }
         // existing user a does not require password, if both are empty its fine, don't update password
         // new user does not require password, if both empty its fine as its not required for this user
@@ -273,6 +273,11 @@ namespace NTowel42Utils
     }
 
 #ifdef QT_CORE_LIB
+    std::pair< bool, bool > confirmPassword( bool userTypeRequiresPassword, bool isNewUser, const QString &password, const QString &confirmationPassword )
+    {
+        return confirmPassword( userTypeRequiresPassword, isNewUser, password.toStdString(), confirmationPassword.toStdString() );
+    }
+
     std::optional< QString > fixupPhoneNumber( const QString &phoneNumber )
     {
         auto retVal = fixupPhoneNumber( phoneNumber.toStdString() );

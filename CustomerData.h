@@ -44,6 +44,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT std::optional< std::pair< std::string, std::string > > splitByCountryCode( std::string_view phoneNumber );
     TOWEL42_UTILS_EXPORT bool isValidEmail( const std::string &email );
 
+    TOWEL42_UTILS_EXPORT std::pair< bool, bool > confirmPassword( bool userTypeRequiresPassword, bool isNewUser, const std::string &password, const std::string &confirmPassword );
 #ifdef QT_CORE_LIB
     TOWEL42_UTILS_EXPORT std::optional< QString > fixupPhoneNumber( const QString &phoneNumber );
     TOWEL42_UTILS_EXPORT std::optional< std::pair< QString, QString > > splitByCountryCode( const QString &phoneNumber );
