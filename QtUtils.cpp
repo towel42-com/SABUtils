@@ -34,13 +34,20 @@
 #include <QSettings>
 #include <QSize>
 #include <QPoint>
-#include <QColor>
-#include <QTreeView>
+
+#ifdef QT_GUI_LIB
+    #include <QColor>
+#endif
+
+#ifdef QT_WIDGETS_LIB
+    #include <QTreeView>
+    #include <QLayout>
+    #include <QPlainTextEdit>
+    #include <QTreeWidget>
+    #include <QApplication>
+#endif
+
 #include <QTimer>
-#include <QLayout>
-#include <QPlainTextEdit>
-#include <QTreeWidget>
-#include <QApplication>
 #include <QDebug>
 #include <QVariant>
 #include <QLocale>
@@ -808,6 +815,7 @@ namespace NTowel42Utils
         writer.writeEndElement();
     }
 
+#ifdef QT_WIDGETS_LIB
     void expandAll( const QModelIndex &index, QTreeView *view )
     {
         if ( !view || !view->model() )
@@ -835,6 +843,7 @@ namespace NTowel42Utils
 
         return expandAll( QModelIndex(), view );
     }
+#endif
 
     size_t CCaseInsensitiveHash::operator()( const QString &str ) const
     {
@@ -861,6 +870,7 @@ namespace NTowel42Utils
         }
     }
 
+#ifdef QT_WIDGETS_LIB
     void deleteLayoutAndItems( QLayout *layout )
     {
         if ( !layout )
@@ -965,7 +975,9 @@ namespace NTowel42Utils
         previousText.first += txt.mid( lineStart );
         textEdit->moveCursor( QTextCursor::End );
     }
+#endif
 
+#ifdef QT_GUI_LIB
     uint8_t *imageToPixels( const QImage &image )   // allocates the space, user is responsible for memory deletion using array delete
     {
         Q_ASSERT( sizeof( uchar ) == sizeof( uint8_t ) );
@@ -975,6 +987,7 @@ namespace NTowel42Utils
         std::memcpy( retVal, image.bits(), imageSize );
         return retVal;
     }
+#endif
 
     QString getHexValue( intptr_t value )
     {
@@ -1193,6 +1206,7 @@ namespace NTowel42Utils
         return {};
     }
 
+#ifdef QT_WIDGETS_LIB
     QTreeWidgetItem *nextVisibleItem( QTreeWidgetItem *item )
     {
         if ( !item )
@@ -1216,5 +1230,5 @@ namespace NTowel42Utils
         }
         return item;
     }
-
+#endif
 }
