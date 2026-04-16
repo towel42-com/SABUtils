@@ -25,14 +25,14 @@
 #define __WINDOWSERROR_H
 
 #include "Towel42UtilsExport.h"
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QString>
 #endif
 #include <string>
 
 namespace NTowel42Utils
 {
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     TOWEL42_UTILS_EXPORT QString getWindowsError();   // windows only
     TOWEL42_UTILS_EXPORT QString getWindowsError( int errorCode );   // windows only
 #endif

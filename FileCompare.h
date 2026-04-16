@@ -24,7 +24,7 @@
 #ifndef __FILECOMPARE_H
 #define __FILECOMPARE_H
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include "Towel42UtilsExport.h"
 
     #include <string>
@@ -49,7 +49,7 @@ namespace NTowel42Utils
         {
         public:
             CFileCompare( const std::string &lhs, const std::string &rhs );
-    #ifdef TOWEL42_QCORE_SUPPORT
+    #ifdef QT_CORE_LIB
             CFileCompare( const QString &lhs, const QString &rhs );
             CFileCompare( const QFileInfo &lhs, const QFileInfo &rhs );
     #endif
@@ -59,7 +59,7 @@ namespace NTowel42Utils
             bool checkSize() const;
 
             void disableCheckTimeStamps();
-    #ifdef TOWEL42_QCORE_SUPPORT
+    #ifdef QT_CORE_LIB
             void checkTimeStamp( std::list< QFileDevice::FileTime > timeStampsToCheck );   // default modtime only
             std::list< QFileDevice::FileTime > timeStampsChecked() const;
     #endif

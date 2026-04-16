@@ -23,7 +23,7 @@
 
 #include "StringComparisonClasses.h"
 #include "StringUtils.h"
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QHash>
 #endif
 
@@ -47,7 +47,7 @@ namespace NTowel42Utils
             return strCaseCmp( s1, s2 ) == 0;
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         size_t noCaseQStringHash::operator()( const QString &s ) const
         {
             return static_cast< size_t >( qHash( s ) );

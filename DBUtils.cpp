@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifdef TOWEL42_QSQL_SUPPORT
+#ifdef QT_SQL_LIB
 
     #include "DBUtils.h"
     #include "SetupSystemLogging.h"

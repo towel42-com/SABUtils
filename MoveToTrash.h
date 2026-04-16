@@ -31,7 +31,7 @@
 #include <set>
 #include <memory>
 #include <unordered_map>
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QStringList>
     #include <QFileDevice>
     #include <QList>

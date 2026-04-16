@@ -27,7 +27,7 @@
 #include "../FileUtils.h"
 #include "../RegExUtils.h"
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QCoreApplication>
 #endif
 
@@ -583,7 +583,7 @@ namespace
     }
 #endif
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #ifdef WIN32
         #define USER     QStringLiteral( R"__(scott.TOWEL42)__" )
         #define HOME_DIR QStringLiteral( R"__(C:\Users\)__" ) + USER
@@ -865,7 +865,7 @@ namespace
         ASSERT_EQ( 5, grouped.size() );
     }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     TEST( TestUtils, TestIntsFromString )
     {
         auto ints = NTowel42Utils::intsFromString( "1 2 3" );

@@ -25,7 +25,7 @@
 #include "RegExUtils.h"
 #include "FromString.h"
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QString>
     #include <QRegularExpression>
     #include <QTextStream>
@@ -277,7 +277,7 @@ namespace NTowel42Utils
             return stripQuotes( text, tmp );
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         QString stripQuotes( const QString &text, char quote )
         {
             char tmp[ 2 ] = { 0, 0 };
@@ -307,7 +307,7 @@ namespace NTowel42Utils
             return retVal;
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         QString stripQuotes( const QString &text, const char *quotes )
         {
             auto retVal = text.trimmed();
@@ -343,7 +343,7 @@ namespace NTowel42Utils
             return isQuoted( text, tmp );
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         bool isQuoted( const QString &text, char quote )
         {
             char tmp[ 2 ] = { 0, 0 };
@@ -372,7 +372,7 @@ namespace NTowel42Utils
             return false;
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         bool isQuoted( const QString &text, const char *quotes )
         {
             QString retVal = text.trimmed();
@@ -466,7 +466,7 @@ namespace NTowel42Utils
             return true;
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         //////////////////////////////////////////////////////////////////////////
         // hasPrefixSubString(string str, std::string substr)
         //
@@ -932,7 +932,7 @@ namespace NTowel42Utils
             return retVal;
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         QString PadString( const QString &str, size_t max, EPadType padType, char padChar )
         {
             return QString::fromStdString( PadString( str.toStdString(), max, padType, padChar ) );
@@ -1970,7 +1970,7 @@ namespace NTowel42Utils
             return tmp;
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         std::list< std::string > splitSDCPattern( const std::string &pattern, bool regExp, const char *hsc, bool &aOK, std::string *msg )
         {
             std::list< std::string > retVal;
@@ -2157,7 +2157,7 @@ namespace NTowel42Utils
             return ( ii == str.size() ) ? std::string::npos : ii;
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         QStringList asReport( const QStringList &columnNames, const QStringList &subHeader, const QList< QStringList > &data, bool sortData )
         {
             // first row is the columnNames
@@ -2426,7 +2426,7 @@ namespace NTowel42Utils
             return validateQuotedPrintableString( str.c_str(), str.length() );
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         bool isDiacriticalCharacter( const QChar &ch, QString *ascii )
         {
             std::wstring tmp;
@@ -2659,7 +2659,7 @@ namespace NTowel42Utils
             return retVal;
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         bool startsOrEndsWithNumber( const QString &string, QString *number /*= nullptr*/, QString *extra /*= nullptr*/, bool *numIsPrefix /*= nullptr*/ )   // a numbers separated by a non A-Z
         {
             if ( number )
@@ -2964,7 +2964,7 @@ namespace NTowel42Utils
             return retVal;
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         int romanCharValue( QChar ch, bool &aOK )
         {
             static std::unordered_map< char, int > sValueMap = {

@@ -26,7 +26,7 @@
 
 #include "Towel42UtilsExport.h"
 #include <string>
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QString>
 class QRegularExpression;
 #endif
@@ -41,7 +41,7 @@ namespace NTowel42Utils
 
         TOWEL42_UTILS_EXPORT bool matchRegExpr( const char *s1, const char *s2 );
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         TOWEL42_UTILS_EXPORT std::list< std::string > splitStringRegEx( const std::string &string, const std::string &regex, bool nocase = false, bool skipEmpty = false );   // split based on regex
         TOWEL42_UTILS_EXPORT bool isExactMatchRegEx( const std::string &data, const std::string &pattern, bool nocase );
         TOWEL42_UTILS_EXPORT QString encodeRegEx( const char *inString );
@@ -52,7 +52,7 @@ namespace NTowel42Utils
         TOWEL42_UTILS_EXPORT std::string addToRegEx( std::string oldRegEx, const std::string &regEx );
 
         TOWEL42_UTILS_EXPORT bool isSpecialRegExChar( char ch, bool includeDotSlash = true );
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         TOWEL42_UTILS_EXPORT bool isSpecialRegExChar( const QChar &ch, bool includeDotSlash = true );
 
         // used in the regExReplace and regExReplaceAll

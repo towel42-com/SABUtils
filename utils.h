@@ -40,7 +40,7 @@
 #include <sstream>
 #include <iostream>
 #include <optional>
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QString>
     #include <QDateTime>
     #include <QLocale>
@@ -171,7 +171,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT std::string toString( int64_t val, int base );
     TOWEL42_UTILS_EXPORT int64_t fromString( const std::string &str, int base );
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     TOWEL42_UTILS_EXPORT QString secsToString( quint64 seconds );
     TOWEL42_UTILS_EXPORT QTime msecsToTime( uint64_t msecs );
 #endif
@@ -199,7 +199,7 @@ namespace NTowel42Utils
         {
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         CTimeString( const QDateTime &startTime, const QDateTime &endTime ) :   // limited to milliseconds
             CTimeString( startTime.msecsTo( endTime ) )
         {
@@ -219,7 +219,7 @@ namespace NTowel42Utils
         {
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         QString toString( bool autoTrim ) const { return toString( "dd:hh:mm:ss.zzz (SS seconds)", autoTrim ); }
 
         // dd -> days, hh -> hours, mm minutes, ss seconds, zzz milliseconds for Qt and microseconds for chrono based SS total seconds.  When autotrim is true, trims off days/hours/minutes if zero only when followed by a colon minutes and
@@ -511,7 +511,7 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT char GetChar();
     TOWEL42_UTILS_EXPORT int waitForPrompt( int returnCode, const char *prompt = nullptr );   // uses GetChar above
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     TOWEL42_UTILS_EXPORT bool isValidURL( const QString &url, int *start = nullptr, int *length = nullptr );
 #endif
 
@@ -573,7 +573,7 @@ namespace NTowel42Utils
         }
         return retVal;
     }
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     TOWEL42_UTILS_EXPORT std::list< int > intsFromString( const QString &string, const QString &prefixRegEx = {}, bool sort = true, bool *aOK = nullptr );
 #endif
 }

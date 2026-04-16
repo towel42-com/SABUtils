@@ -1,6 +1,6 @@
 #ifndef __SVGUTILS_H
 #define __SVGUTILS_H
-#ifdef TOWEL42_QSVG_SUPPORT
+#ifdef QT_SVG_LIB
 
     #include "Towel42UtilsExport.h"
     #include <optional>

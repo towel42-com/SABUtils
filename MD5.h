@@ -26,7 +26,7 @@
 
 #include "Towel42UtilsExport.h"
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
 class QByteArray;
 class QFileInfo;
 class QString;

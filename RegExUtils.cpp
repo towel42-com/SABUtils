@@ -23,7 +23,7 @@
 
 #include "RegExUtils.h"
 #include "StringUtils.h"
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QRegularExpression>
     #include "SetupSystemLogging.h"
 #endif
@@ -46,7 +46,7 @@ namespace NTowel42Utils
             return lhsExps == rhsExps;
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         bool isExactMatchRegEx( const std::string &data, const std::string &pattern, bool nocase )
         {
             std::string regEx = "\\A(" + pattern + ")\\z";
@@ -119,7 +119,7 @@ namespace NTowel42Utils
                 return ( !strcmp( s2, "*" ) || ( strlen( s1 ) == 1 && !strcmp( s2, "?" ) ) ) ? true : false;
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         QString encodeRegEx( QString retVal )
         {
             QRegularExpression regEx( "([\\^\\$\\.\\*\\+\\?\\|\\(\\)\\[\\]\\{\\}\\\\])" );
@@ -169,7 +169,7 @@ namespace NTowel42Utils
             return oldRegEx;
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         std::optional< QString > replaceMatch( const QString &replacement, QRegularExpressionMatch &match )
         {
             QString retVal;

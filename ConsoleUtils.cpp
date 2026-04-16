@@ -30,7 +30,7 @@
 #include <thread>
 #include <chrono>
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QString>
     #ifdef Q_OS_WINDOWS
         #include <qt_windows.h>
@@ -211,7 +211,7 @@ namespace NTowel42Utils
         return retVal || ( handle != nullptr );
     }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     bool attachConsole( QString *msg )
     {
         std::wstring tmp;

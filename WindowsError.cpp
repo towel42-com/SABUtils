@@ -24,7 +24,7 @@
 #include "WindowsError.h"
 #include "StringUtils.h"
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #ifdef WIN32
         #include <qt_windows.h>
     #endif
@@ -81,7 +81,7 @@ namespace NTowel42Utils
     }
 #endif()
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     QString getWindowsError()
     {
         return QString::fromStdWString( getWindowsErrorStd() );

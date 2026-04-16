@@ -40,7 +40,7 @@ set( SOURCE_FILES
 SET( LIBS 
     gmock
 )
-IF(TOWEL42_QCORE_SUPPORT)
+IF(Qt6Core_FOUND)
     set( SOURCE_FILES
         ${SOURCE_FILES}
         ../RegExUtils.cpp
@@ -72,7 +72,7 @@ IF(TOWEL42_QCORE_SUPPORT)
 endif()
 
 set( _QTLibs "Qt6::Core" )
-if ( TOWEL42_QSQL_SUPPORT )
+if ( QtSql_FOUND )
     set( _QTLibs "${_QTLibs};Qt6::Sql" )
 endif()
 

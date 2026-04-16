@@ -29,7 +29,7 @@
     #include <chrono>
 #endif
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QDate>
     #include <QDebug>
 #endif
@@ -85,7 +85,7 @@ namespace NTowel42Utils
     }
 
 #endif
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     QDate nthDayOfMonth( int year, int month, int nthDay, int dayOfWeek )
     {
         QDate dt( year, month, 1 );

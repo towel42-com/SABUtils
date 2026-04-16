@@ -31,13 +31,13 @@
 #include <tuple>
 #include <regex>
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QString>
     #include <QFile>
     #include <QStringView>
     #include <QStringList>
     #include <QTemporaryFile>
-    #ifdef TOWEL42_QSQL_SUPPORT
+    #ifdef QT_SQL_LIB
         #include "DBUtils.h"
         #include <QSqlDatabase>
         #include <QSqlQuery>
@@ -272,7 +272,7 @@ namespace NTowel42Utils
         return { passwordOK, confirmPasswordOK };
     }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     std::optional< QString > fixupPhoneNumber( const QString &phoneNumber )
     {
         auto retVal = fixupPhoneNumber( phoneNumber.toStdString() );
@@ -298,7 +298,7 @@ namespace NTowel42Utils
         return isValidEmail( email.toStdString() );
     }
 
-    #ifdef TOWEL42_QSQL_SUPPORT
+    #ifdef QT_SQL_LIB
 
     std::shared_ptr< QTemporaryFile > getCustomerDataFile()
     {

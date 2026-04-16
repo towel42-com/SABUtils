@@ -30,7 +30,7 @@
 #include <list>
 #include <set>
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QStringList>
 class QFileInfo;
 class QString;
@@ -60,7 +60,7 @@ namespace NTowel42Utils
             // if onlyinvalid is true, DACLs will only contained invalid SID data
             CSIDFileInfo( const std::wstring &pathName, bool onlyInvalidDACL = false );
             CSIDFileInfo( const std::string &pathName, bool onlyInvalidDACL = false );
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
             CSIDFileInfo( const QString &pathName, bool onlyInvalidDACL = false );
             CSIDFileInfo( const QFileInfo &fileInfo, bool onlyInvalidDACL = false );
 #endif

@@ -26,7 +26,7 @@
 
 #include "Towel42UtilsExport.h"
 
-#ifdef TOWEL42_QSQL_SUPPORT
+#ifdef QT_SQL_LIB
     #include <QString>
     #include <QSqlDatabase>
     #include <unordered_map>

@@ -33,7 +33,7 @@
 #include <optional>
 #include <functional>
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QStringList>
     #include <QString>
     #include <QFileDevice>
@@ -87,7 +87,7 @@ namespace NTowel42Utils
         TOWEL42_UTILS_EXPORT bool isBinaryFile( const std::string &fileName );   // if any char in the first 100 characters is non std::isprint return true
         TOWEL42_UTILS_EXPORT bool isBinaryFile( const std::string &fileName, const std::string &relToDir );   // if any char in the first 100 characters is non std::isprint return true
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         TOWEL42_UTILS_EXPORT QString getRelativePath( const QDir &dir, const QString &absPath );
         TOWEL42_UTILS_EXPORT QString driveSpec( const QString &path );
         TOWEL42_UTILS_EXPORT bool exists( const QString &path );

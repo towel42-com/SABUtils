@@ -76,41 +76,27 @@ set(qtproject_UIS
 )
 
 MACRO(CheckForCoreSupport whichLibVAR whichLibName)
-    if ( NOT TOWEL42_QCORE_SUPPORT )
-        if ( ${whichLibVAR} )
-            MESSAGE( WARNING "${whichLibName} Support requires QtCore Support, set TOWEL42_QCORE_SUPPORT to true to prevent this warning" )
-            set( TOWEL42_QCORE_SUPPORT ON )
-            set( TOWEL42_QCORE_SUPPORT ON PARENT_SCOPE )
-        endif()
+    if ( ${whichLibVAR} AND NOT Qt6Core_FOUND )
+        MESSAGE( AUTHOR_WARNING "  ${whichLibVAR} requires Qt6::Core support, to remove this warning call find_package( Qt6 COMPONENTS Core REQUIRED )
+  OR define TOWEL42_QCORE_SUPPORT" )
+        find_package( Qt6 COMPONENTS Core REQUIRED )
     endif()
 ENDMACRO()
 
 MACRO(CheckForWidgetSupport whichLibVAR whichLibName)
-    if ( NOT TOWEL42_QWIDGET_SUPPORT )
-        if ( ${whichLibVAR} )
-            MESSAGE( WARNING "${whichLibName} Support requires QtWidget Support, set TOWEL42_QWIDGET_SUPPORT to true to prevent this warning" )
-            set( TOWEL42_QWIDGET_SUPPORT ON )
-            set( TOWEL42_QWIDGET_SUPPORT ON PARENT_SCOPE )
-        endif()
+    if ( ${whichLibVAR} AND NOT Qt6Widgets_FOUND )
+        MESSAGE( AUTHOR_WARNING "  ${whichLibVAR} requires Qt6::Widgets and Qt6::Gui support, to remove this warning call find_package( Qt6 COMPONENTS Widgets Gui REQUIRED
+  OR define TOWEL42_QWIDGETS_SUPPORT" )
+        find_package( Qt6 COMPONENTS Widgets Gui REQUIRED )
     endif()
 ENDMACRO()
 
 CheckForCoreSupport( TOWEL42_BIFSUPPORT "BIF" )
 CheckForCoreSupport( TOWEL42_GIFSUPPORT "GIF" )
-CheckForCoreSupport( TOWEL42_QAXOBJECT_SUPPORT "QAXObject" )
-CheckForCoreSupport( TOWEL42_QCONCURRENT_SUPPORT "QConcurrent" )
-CheckForCoreSupport( TOWEL42_QNETWORK_SUPPORT "QNetwork" )
-CheckForCoreSupport( TOWEL42_QSQL_SUPPORT "QSql" )
-CheckForCoreSupport( TOWEL42_QSVG_SUPPORT "QSvg" )
-CheckForCoreSupport( TOWEL42_QWIDGET_SUPPORT "QWidget" )
-CheckForCoreSupport( TOWEL42_QXMLPATTERNS_SUPPORT "QXmlPatterns" )
-CheckForCoreSupport( TOWEL42_QXML_SUPPORT "QXml" )
 CheckForCoreSupport( TOWEL42_ZIP_SUPPORT "ZIP" )
 CheckForWidgetSupport( TOWEL42_DESIGNERPLUGIN_SUPPORT "Designer Plugins" )
 
-if ( TOWEL42_QCORE_SUPPORT )
-    add_definitions( -DTOWEL42_QCORE_SUPPORT=1)
-    find_package(Qt6 COMPONENTS Core REQUIRED)
+if ( Qt6Core_FOUND )
     IF(WIN32)
             set( QT_OS_SRCS 
                 ForceUnbufferedProcessModifier.cpp 
@@ -191,13 +177,10 @@ if ( TOWEL42_QCORE_SUPPORT )
     set(qtproject_QRC
         resources/Towel42Utils.qrc
     )
-    if ( TOWEL42_QCORE_SUPPORT )
-        file(GLOB qtproject_QRC_SOURCES "resources/*")
-    endif()
+    file(GLOB qtproject_QRC_SOURCES "resources/*")
 endif()
 
-if ( TOWEL42_QWIDGET_SUPPORT )
-    add_definitions( -DTOWEL42_QWIDGET_SUPPORT=1)
+if ( Qt6Widgets_FOUND )
     find_package(Qt6 COMPONENTS Widgets Gui UiPlugin REQUIRED)
     set(qtproject_SRCS
         ${qtproject_SRCS}
@@ -296,10 +279,6 @@ endif()
 
 if ( TOWEL42_BIFSUPPORT )
     find_package(Qt6 COMPONENTS Widgets Gui REQUIRED)
-    if ( NOT TOWEL42_QWIDGET_SUPPORT  )
-        MESSAGE( FATAL_ERROR "BIF Support requires QWidget Support" )
-    endif()
-
     add_definitions( -DTOWEL42_BIFSUPPORT=1)
     set(qtproject_SRCS
         ${qtproject_SRCS}
@@ -342,7 +321,7 @@ endif()
 
 if ( TOWEL42_GIFSUPPORT )
     find_package(Qt6 COMPONENTS Widgets Gui REQUIRED)
-    if ( NOT TOWEL42_QWIDGET_SUPPORT  )
+    if ( NOT Qt6Widgets_FOUND  )
         MESSAGE( FATAL_ERROR "GIF Support requires QWidget Support" )
     endif()
     
@@ -371,9 +350,7 @@ if ( TOWEL42_GIFSUPPORT )
     )
 endif()
 
-if ( TOWEL42_QAXOBJECT_SUPPORT )
-    find_package(Qt6 COMPONENTS AxContainer REQUIRED)
-    add_definitions( -DTOWEL42_QAXOBJECT_SUPPORT=1)
+if ( Qt6AxObject_FOUND )
 
     set(qtproject_SRCS
         ${qtproject_SRCS}
@@ -392,9 +369,7 @@ if ( TOWEL42_QAXOBJECT_SUPPORT )
     )
 endif()
 
-if ( TOWEL42_QNETWORK_SUPPORT )
-    find_package(Qt6 COMPONENTS Network REQUIRED)
-    add_definitions( -DTOWEL42_QNETWORK_SUPPORT=1)
+if ( Qt6Network_FOUND )
     set(qtproject_SRCS
         ${qtproject_SRCS}
         DownloadFile.cpp
@@ -416,9 +391,7 @@ if ( TOWEL42_QNETWORK_SUPPORT )
     )
 endif()
 
-if ( TOWEL42_QCONCURRENT_SUPPORT )
-    find_package(Qt6 COMPONENTS Concurrent REQUIRED)
-    add_definitions( -DTOWEL42_QCONCURRENT_SUPPORT=1)
+if ( Qt6Concurrent_FOUND )
     set(qtproject_SRCS
         ${qtproject_SRCS}
         ThreadedProgressDialog.cpp
@@ -460,9 +433,7 @@ IF ( TOWEL42_ZIP_SUPPORT )
     include_directories(${Qt6CorePrivate_INCLUDE_DIRS})
 endif()
 
-if ( TOWEL42_QSQL_SUPPORT )
-    add_definitions( -DTOWEL42_QSQL_SUPPORT=1)
-    find_package(Qt6 COMPONENTS Sql REQUIRED)
+if ( QtSql_FOUND )
     set(qtproject_H
         ${qtproject_H}
     )
@@ -483,9 +454,7 @@ if ( TOWEL42_QSQL_SUPPORT )
     )
 endif()
 
-if ( TOWEL42_QSVG_SUPPORT )
-    find_package(Qt6 COMPONENTS Svg REQUIRED)
-    add_definitions( -DTOWEL42_QSVG_SUPPORT=1)
+if ( Qt6Svg_FOUND )
     set(qtproject_H
         ${qtproject_H}
     )

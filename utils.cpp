@@ -22,7 +22,7 @@
 // SOFTWARE.
 
 #include "utils.h"
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QString>
     #include <QDateTime>
     #include <QDebug>
@@ -297,7 +297,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     QString secsToString( quint64 seconds )
     {
         CTimeString ts( seconds * 1000 );
@@ -349,7 +349,7 @@ namespace NTowel42Utils
         return returnCode;
     }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     bool isValidURL( const QString &url, int *start, int *length )
     {
         auto regExStr = QStringLiteral( R"__(([a-x]+)?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*))__" );

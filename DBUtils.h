@@ -28,7 +28,7 @@
 
 #include "Towel42UtilsExport.h"
 
-#ifdef TOWEL42_QSQL_SUPPORT
+#ifdef QT_SQL_LIB
 class QString;
 class QSqlQuery;
 class QSqlDatabase;
