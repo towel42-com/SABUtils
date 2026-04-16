@@ -38,6 +38,7 @@
 #include <functional>
 #include <algorithm>
 #include <sstream>
+#include <iomanip>
 #include <iostream>
 #include <optional>
 #ifdef QT_CORE_LIB
@@ -545,9 +546,9 @@ namespace NTowel42Utils
     }
 
     template< typename T, typename = std::enable_if< std::is_integral_v< T > > >
-    QString contiguousNumbersText( const std::list< std::list< T > > &groupedNumbers, int numDigits = 1, const QString &prefix = {} )
+    std::string contiguousNumbersText( const std::list< std::list< T > > &groupedNumbers, int numDigits = 1, const std::string &prefix = {} )
     {
-        QString retVal;
+        std::string retVal;
         bool first = true;
         for ( auto &&ii : groupedNumbers )
         {
@@ -560,20 +561,29 @@ namespace NTowel42Utils
 
             auto numberText = [ prefix, numDigits ]( T number )
             {
-                return QString( "%1%2" ).arg( prefix ).arg( number, numDigits, 10, QChar( '0' ) );
+                std::ostringstream oss;
+                oss << prefix << std::setw( numDigits ) << std::setfill( '0' ) << number;
+                return oss.str();
             };
 
             retVal += numberText( ii.front() );
             if ( ii.size() > 1 )
             {
                 if ( std::abs( ii.back() - ii.front() ) > 1 )
-                    retVal += QStringLiteral( "-" );
+                    retVal += "-";
                 retVal += numberText( ii.back() );
             }
         }
         return retVal;
     }
+
 #ifdef QT_CORE_LIB
+    template< typename T, typename = std::enable_if< std::is_integral_v< T > > >
+    QString contiguousNumbersText( const std::list< std::list< T > > &groupedNumbers, int numDigits = 1, const QString &prefix = {} )
+    {
+        return QString::fromStdString( contiguousNumbersText( groupedNumbers, numDigits, prefix.toStdString() ) );
+    }
+
     TOWEL42_UTILS_EXPORT std::list< int > intsFromString( const QString &string, const QString &prefixRegEx = {}, bool sort = true, bool *aOK = nullptr );
 #endif
 }
