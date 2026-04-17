@@ -105,19 +105,6 @@ std::ostream &operator<<( std::ostream &oss, const std::list< std::vector< T > >
     return oss;
 }
 
-TOWEL42_UTILS_EXPORT inline std::ostream &t42DebugStreamInternal()
-{
-    return std::cout;
-}
-#undef t42DebugStream
-#if defined( TOWEL42_DEBUG_TRACE )
-    #define t42DebugStream t42DebugStreamInternal
-#else
-    #define t42DebugStream \
-        while ( false ) \
-        t42DebugStreamInternal
-#endif
-
 namespace NTowel42Utils
 {
     template< typename T >
