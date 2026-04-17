@@ -22,6 +22,19 @@
 # SOFTWARE.
 
 cmake_minimum_required(VERSION 3.30)
+MACRO(CheckQtComponent whichLibVar components)
+    if ( ${${whichLibVar}} )
+        foreach( component ${components} )
+            set( qtFoundVar Qt6${component}_FOUND )
+
+            set( VARNAME TOWEL42_Q${component}_SUPPORT )
+            string( TOUPPER ${VARNAME} VARNAME )
+            
+            MESSAGE( AUTHOR_WARNING "  ${whichLibVar} requires ${VARNAME} to be set." )
+            SET( ${VARNAME} ON )
+        endforeach()
+    endif()
+ENDMACRO()
 
 if( TOWEL42_UTILS_DLL )
     SET( TOWEL42_UTILS_DLL ON CACHE BOOL "Build Towel42 Utils as a Shared Library" )
@@ -45,6 +58,11 @@ SET( TOWEL42_QSQL_SUPPORT OFF CACHE BOOL "Enable QSql Support" )
 SET( TOWEL42_QSVG_SUPPORT OFF CACHE BOOL "Enable QSvg Support" )
 SET( TOWEL42_QWIDGETS_SUPPORT OFF CACHE BOOL "Enable QWidgets and QGui Support" )
 SET( TOWEL42_QXML_SUPPORT OFF CACHE BOOL "Enable QXml Support" )
+
+CheckQtComponent( TOWEL42_DESIGNERPLUGIN_SUPPORT "Core;Widgets;Gui")
+CheckQtComponent( TOWEL42_BIFSUPPORT Core )
+CheckQtComponent( TOWEL42_GIFSUPPORT Core)
+CheckQtComponent( TOWEL42_ZIP_SUPPORT Core )
 
 SET( QtLibList "" )
 if ( TOWEL42_QAXOBJECT_SUPPORT )
@@ -117,12 +135,12 @@ SET(CMAKE_MODULE_PATH ${TOWEL42_CMAKEUTILS_DIR}/Modules ${CMAKE_MODULE_PATH})
 
 include( ${TOWEL42_CMAKEUTILS_DIR}/Modules/EnableGoogleTesting.cmake )
 
-OPTION(TOWEL42_DEBUG_TRACE "Enable Debug Tracing to std::cout" OFF)
-
 project( Towel42Utils LANGUAGES C CXX) 
+
 if ( QtLibList )
     find_package( Qt6 COMPONENTS ${QtLibList} REQUIRED )
 endif()
+
 if ( TOWEL42_DESIGNERPLUGIN_SUPPORT )
     SET_PROPERTY(GLOBAL PROPERTY QT_TARGETS_FOLDER CMakePredefinedTargets/QtInternalTargets)
     qt_standard_project_setup()
@@ -140,7 +158,7 @@ add_compile_definitions(
     $<$<BOOL:TOWEL42_DEBUG_TRACE>:TOWEL42_DEBUG_TRACE>
 )
 
-IF(Qt6Core_FOUND)
+IF( Qt6Core_FOUND )
     find_package(Qt6SrcMoc REQUIRED)
     set(TOWEL42_MOC_OPTIONS "-DNON_VIS_BUILD=1")
 endif()    
@@ -228,7 +246,7 @@ endif()
 if ( NOT TOWEL42_NO_DEPLOY_SUBMODULES )
     find_package(Deploy REQUIRED)
     if ( TOWEL42_UTILS_DLL )
-        IF(Qt6Core_FOUND)
+        IF( Qt6Core_FOUND )
             DeployQt( ${PROJECT_NAME} . )
         ENDIF()
 
