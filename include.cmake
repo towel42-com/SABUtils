@@ -73,22 +73,26 @@ set(project_H
 set(qtproject_UIS
 )
 
-MACRO(CheckQtComponent whichLibVar components)
-    foreach( component in components )
+FUNCTION(CheckQtComponent whichLibVar components)
+    if ( NOT ${${whichLibVar}} )
+        return()
+    endif()
     
-        if( ${whichLibVar} AND NOT Qt6${component}_FOUND)
-            string( TOUPPER ${component} upcaseComponent )
-            MESSAGE( AUTHOR_WARNING "  ${whichLibVAR} requires Qt6::${component} support, to remove this warning call find_package( Qt6 COMPONENTS ${component} REQUIRED )
-      OR define TOWEL42_Q${upcaseComponent}_SUPPORT" )
-            find_package(Qt6 COMPONENTS ${component} REQUIRED)
-        endif()
-    endforeach()
-endmacro()
+    foreach( component ${components} )
+        set( qtFoundVar Qt6${component}_FOUND )
 
-CheckQtComponent( TOWEL42_BIFSUPPORT "BIF" Core )
-CheckQtComponent( TOWEL42_GIFSUPPORT "GIF" Core)
-CheckQtComponent( TOWEL42_ZIP_SUPPORT "ZIP" Core )
-CheckQtComponent( TOWEL42_DESIGNERPLUGIN_SUPPORT "Designer Plugins" Widgets;Gui)
+        string( TOUPPER ${component} upcaseComponent )
+        MESSAGE( AUTHOR_WARNING "  ${whichLibVar} requires Qt6::${component} support, to remove this warning call find_package( Qt6 COMPONENTS ${component} REQUIRED )
+  OR define TOWEL42_Q${upcaseComponent}_SUPPORT" )
+
+        find_package(Qt6 COMPONENTS ${component} REQUIRED)
+    endforeach()
+ENDFUNCTION()
+
+CheckQtComponent( TOWEL42_BIFSUPPORT Core )
+CheckQtComponent( TOWEL42_GIFSUPPORT Core)
+CheckQtComponent( TOWEL42_ZIP_SUPPORT Core )
+CheckQtComponent( TOWEL42_DESIGNERPLUGIN_SUPPORT Widgets;Gui)
 
 if ( Qt6Core_FOUND )
     IF(WIN32)
