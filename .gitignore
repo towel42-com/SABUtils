@@ -3,8 +3,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-build 
-build_config*
+build
+all_build_configs
+buildAllConfigs.log
+buildAllConfigs.json
+
 # User-specific files
 *.rsuser
 *.suo
