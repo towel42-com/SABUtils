@@ -26,6 +26,8 @@
 
 #include "Towel42UtilsExport.h"
 
+#include "SystemLoggingDefs.h"
+
 #include <cinttypes>
 #include <cstdarg>
 #include <string>
@@ -400,8 +402,10 @@ namespace NTowel42Utils
             [ &combinations, &report = std::as_const( report ) ]( const std::vector< T > &sub )
             {
                 combinations.push_back( sub );
+#ifdef QT_CORE_LIB
                 if ( report.first && ( ( combinations.size() % report.second ) == 0 ) )
-                    t42DebugStream() << "Generating combination: " << combinations.size() << "\n";
+                    qCDebug( t42utils_base ) << "Generating combination: " << combinations.size() << "\n";
+#endif
             } );
         return combinations;
     }
