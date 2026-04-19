@@ -73,7 +73,7 @@ set(project_H
 set(qtproject_UIS
 )
 
-if ( Qt6Core_FOUND )
+if ( TOWEL42_QCORE_SUPPORT )
     IF(WIN32)
             set( QT_OS_SRCS 
                 ForceUnbufferedProcessModifier.cpp 
@@ -159,7 +159,7 @@ if ( Qt6Core_FOUND )
     file(GLOB qtproject_QRC_SOURCES "resources/*")
 endif()
 
-if ( Qt6Widgets_FOUND )
+if ( TOWEL42_QWIDGETS_SUPPORT )
     find_package(Qt6 COMPONENTS Widgets Gui UiPlugin REQUIRED)
     set(qtproject_SRCS
         ${qtproject_SRCS}
@@ -241,9 +241,9 @@ if ( Qt6Widgets_FOUND )
         WidgetChanged.h
         WidgetUtilsFwd.h
     )
+
     set(qtproject_UIS
         ${qtproject_UIS}
-        DownloadFile.ui
         ScrollMessageBox.ui
         SetupSystemLoggingDlg.ui
     )
@@ -329,7 +329,7 @@ if ( TOWEL42_GIFSUPPORT )
     )
 endif()
 
-if ( Qt6AxObject_FOUND )
+if ( TOWEL42_VSINSTALLER_SUPPORT )
 
     set(qtproject_SRCS
         ${qtproject_SRCS}
@@ -348,7 +348,7 @@ if ( Qt6AxObject_FOUND )
     )
 endif()
 
-if ( Qt6Network_FOUND )
+if ( TOWEL42_QNETWORK_SUPPORT )
     set(qtproject_SRCS
         ${qtproject_SRCS}
         DownloadFile.cpp
@@ -364,13 +364,20 @@ if ( Qt6Network_FOUND )
         DownloadFile.h
         GitHubGetVersions.h
     )
+
+    set(qtproject_UIS
+        ${qtproject_UIS}
+        DownloadFile.ui
+    )
+
     SET( project_pub_DEPS
         ${project_pub_DEPS}
         Qt6::Network
+        Qt6::Widgets
     )
 endif()
 
-if ( Qt6Concurrent_FOUND )
+if ( TOWEL42_QCONCURRENT_SUPPORT )
     set(qtproject_SRCS
         ${qtproject_SRCS}
         ThreadedProgressDialog.cpp
@@ -385,6 +392,7 @@ if ( Qt6Concurrent_FOUND )
     SET( project_pub_DEPS
         ${project_pub_DEPS}
         Qt6::Concurrent
+        Qt6::Widgets
     )
 endif()
 
@@ -412,7 +420,7 @@ IF ( TOWEL42_ZIP_SUPPORT )
     include_directories(${Qt6CorePrivate_INCLUDE_DIRS})
 endif()
 
-if ( QtSql_FOUND )
+if ( TOWEL42_QSQL_SUPPORT )
     set(qtproject_H
         ${qtproject_H}
     )
@@ -433,7 +441,7 @@ if ( QtSql_FOUND )
     )
 endif()
 
-if ( Qt6Svg_FOUND )
+if ( TOWEL42_QSVG_SUPPORT )
     set(qtproject_H
         ${qtproject_H}
     )
