@@ -23,6 +23,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifdef QT_CORE_LIB
 #include <QLoggingCategory>
 Q_DECLARE_LOGGING_CATEGORY( t42utils_base )
 Q_DECLARE_LOGGING_CATEGORY( t42utils_autoFetch )
@@ -57,4 +58,5 @@ namespace NTowel42Utils
         void initTowel42UtilCategories();
     }
 }
+#endif
 #endif
