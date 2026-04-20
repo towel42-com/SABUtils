@@ -399,6 +399,9 @@ endif()
 IF ( TOWEL42_ZIP_SUPPORT )
     add_definitions( -DTOWEL42_ZIP_SUPPORT=1)
     find_package(Qt6 COMPONENTS Core REQUIRED)
+    
+    find_package(ZLIB REQUIRED PATHS C:/Users/scott.TOWEL42/Dropbox/home/bin/zlib)
+
     set(qtproject_H
         ${qtproject_H}
     )
@@ -416,6 +419,7 @@ IF ( TOWEL42_ZIP_SUPPORT )
     SET( project_pub_DEPS
         ${project_pub_DEPS}
         Qt6::Core
+        ZLIB::ZLIB
     )
     include_directories(${Qt6CorePrivate_INCLUDE_DIRS})
 endif()
