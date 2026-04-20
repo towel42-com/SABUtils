@@ -160,7 +160,7 @@ if ( TOWEL42_QCORE_SUPPORT )
 endif()
 
 if ( TOWEL42_QWIDGETS_SUPPORT )
-    find_package(Qt6 COMPONENTS Widgets Gui UiPlugin REQUIRED)
+    find_package(Qt6 COMPONENTS Widgets Gui REQUIRED)
     set(qtproject_SRCS
         ${qtproject_SRCS}
         About.cpp
@@ -252,7 +252,6 @@ if ( TOWEL42_QWIDGETS_SUPPORT )
         ${project_pub_DEPS}
         Qt6::Widgets
         Qt6::Gui
-        Qt6::UiPlugin
     )
 endif()
 
