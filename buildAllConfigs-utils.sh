@@ -14,6 +14,25 @@ terror() {
     techo "$@" 2>&1
 }
 
+printStack() {
+    asError=$1
+    
+    local cmd=techo
+    if [[ ${asError} == 1 ]]; then
+        cmd=terror
+    fi
+    local ii=0
+    local stackSize=${#FUNCNAME[@]}
+    ${cmd} "Stack trace (most recent call first):\n"
+    # Start from 1 to skip the 'print_stack' function itself
+    for (( ii=1; ii < stackSize; ii++ )); do
+        local func="${FUNCNAME[$ii]:-(top level)}"
+        local file="${BASH_SOURCE[$ii]:-(no file)}"
+        local line="${BASH_LINENO[$((ii-1))]}"
+        ${cmd} "  at $func() in $file:$line\n"
+    done
+}
+
 printAllValues() {
     local arrayName=$1
     local -n array=$1
@@ -52,13 +71,22 @@ headerLine() {
 
 getConfigName() {
     local configNum=$1
-    printf "build_config_%04d" $configNum
+    local forceQt=$2
+    
+    if [[ -z ${forceQt} ]]; then
+        terror "forceQt not set\n"
+        printStack 1
+    fi
+    
+    printf "build_config_%04d_QT_%s" $configNum $forceQt
 }
 
 getConfigJSONFileName() {
     local configNum=$1
-    configName=$(getConfigName $configNum)
-    echo "all_build_configs/$(getConfigName $configNum)/results.json"
+    local forceQt=$2
+    
+    configName=$(getConfigName $configNum $forceQt)
+    echo "all_build_configs/${configName}/results.json"
 }
 
 waitForLock() {
@@ -75,9 +103,10 @@ removeLock() {
 }
 
 addJSONResults() {
-    configNum=$1
+    local configNum=$1
+    local forceQt=$2
     
-    local configJsonFile=$(getConfigJSONFileName $configNum)
+    local configJsonFile=$(getConfigJSONFileName $configNum $forceQt)
     if [[ ! -f ${configJsonFile} ]]; then
         return 1
     fi
@@ -94,15 +123,16 @@ addJSONResults() {
 }
    
 updateGlobalResults() {
-    currConfigNum=$1
-    
-    local configJsonFile=$(getConfigJSONFileName $configNum)    
+    local currConfigNum=$1
+    local forceQt=$2
+
+    local configJsonFile=$(getConfigJSONFileName $configNum $forceQt)    
     if [[ ! -f ${configJsonFile} ]]; then
         terror "Could not find results file '${configJsonFile}'"
         continue;
     fi
 
-    addJSONResults $configNum
+    addJSONResults $configNum $forceQt
     return 0
 }
 
@@ -189,8 +219,9 @@ BUILD_STATUS=skipped
 printHeader() {
     local configNum=$1
     local configName=$2
-    local localLogFile=$3
-    local localJSONFile=$4
+    local forceQt=$3
+    local localLogFile=$4
+    local localJSONFile=$5
     
     if [[ ${PARALLEL} == 1 ]]; then
         blankLine
@@ -203,7 +234,7 @@ printHeader() {
     fi
     
     if [[ ${VERBOSE} == 1 ]]; then 
-        varNames=(configNum configName localLogFile localJSONFile LOG_FILE RUN_BUILD RUN_CMAKE CONFIGS CONFIGS_TO_RUN)
+        varNames=(configNum configName forceQt localLogFile localJSONFile LOG_FILE RUN_BUILD RUN_CMAKE CONFIGS CONFIGS_TO_RUN)
     fi
     
     local size=0
@@ -227,6 +258,7 @@ printHeader() {
 
 getOptions() {
     local configNum=$1
+    local forceQt=$2
    
     configs=()
     for (( idx=${#CONFIGS[@]}-1 ; idx>=0 ; idx-- )) ; do
@@ -243,6 +275,9 @@ getOptions() {
        
         configs+=("$currConfig")
     done
+    printf -v currConfig "%s%s=%s" "-D" TOWEL42_FORCE_QT_FOR_CONFIG_TESTING ${forceQt}
+    configs+=("$currConfig")
+
     echo "${configs[@]}"
 }
 
@@ -315,6 +350,7 @@ setupConfigBuildArea() {
 runCMake() {
     local configName=$1
     local configNum=$2
+    local forceQt=$3
 
     local _forceRunCMake=0
     if [[ ${RUN_BUILD} == 1 ]]; then
@@ -325,7 +361,7 @@ runCMake() {
         fi
     fi
 
-    options=$(getOptions $configNum)
+    options=$(getOptions $configNum $forceQt)
     
     if [[ ${_forceRunCMake} == 1 || ${RUN_CMAKE} == 1 ]]; then
         techo "    Running CMake\n"
@@ -396,12 +432,14 @@ runBuild() {
 
 runConfig_Impl() {
     local configNum=$1
-    local configName=$(getConfigName $configNum)
+    local forceQt=$2
+    
+    local configName=$(getConfigName $configNum $forceQt)
 
     declare -g localLogFile=all_build_configs/${configName}/${configName}.log
-    local localJSONFile=$(getConfigJSONFileName $configNum)
+    local localJSONFile=$(getConfigJSONFileName $configNum $forceQt)
     
-    printHeader $configNum $configName $localLogFile $localJSONFile
+    printHeader $configNum $configName $forceQt $localLogFile $localJSONFile
     
     globalCount=$(( $globalCount + 1 ))
     local currStatus="configuration \"$configName\""
@@ -411,14 +449,13 @@ runConfig_Impl() {
         return 0
     fi
 
-    currentConfigNum=$(($currentConfigNum + 1))
     techo "Running $currStatus\n"
     
     setupConfigBuildArea $configName
     status=$?
     
     if [[ ${status} == 0 ]]; then
-        runCMake $configName $configNum
+        runCMake $configName $configNum $forceQt
         status=$?
         if [[ ${status} == 0 ]]; then
             runBuild $configName
@@ -434,7 +471,8 @@ runConfig_Impl() {
 
     if [[ ! -f ${localJSONFile} ]]; then
         if [[ ${RUN_CMAKE} == 1 || ${RUN_BUILD} == 1 ]]; then
-            echo \[ \{ \"configName\":\"${configName}\", \"status\":${status}, \"setup_status\":\"${SETUP_STATUS}\", \"cmake_status\":\"${CMAKE_STATUS}\", \"build_status\":\"${BUILD_STATUS}\" \} \] > ${localJSONFile}
+            jq -n --arg configName "$configName" --arg status "$status" --arg setup_status "${SETUP_STATUS}" --arg cmake_status "${CMAKE_STATUS}" --arg build_status "${BUILD_STATUS}" \
+                '[ { "configName":$configName, "status":$status, "setup_status":$setup_status, "cmake_status":$cmake_status, "build_status":$build_status } ]' > ${localJSONFile}
         fi
     else
         if [[ ${RUN_CMAKE} == 1 ]]; then
@@ -445,7 +483,7 @@ runConfig_Impl() {
         fi
     fi
     
-    updateGlobalResults $configNum
+    updateGlobalResults $configNum $forceQt
     return 0
 }
     

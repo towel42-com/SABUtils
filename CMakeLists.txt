@@ -142,6 +142,13 @@ include( ${TOWEL42_CMAKEUTILS_DIR}/Modules/EnableGoogleTesting.cmake )
 
 project( Towel42Utils LANGUAGES C CXX) 
 
+find_package(Threads REQUIRED)
+find_package(IncludeProjectSettings REQUIRED)
+
+if ( TOWEL42_FORCE_QT_FOR_CONFIG_TESTING )
+    find_package( Qt6 COMPONENTS Core REQUIRED )
+endif()
+
 if ( QtLibList )
     find_package( Qt6 COMPONENTS ${QtLibList} REQUIRED )
 endif()
@@ -153,10 +160,6 @@ endif()
 
 include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
     
-find_package(Threads REQUIRED)
-
-find_package(IncludeProjectSettings REQUIRED)
-
 IncludeProjectSettings()
 
 add_compile_definitions( 

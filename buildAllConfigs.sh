@@ -131,7 +131,7 @@ while [[ $# -gt 0 ]]; do
             RUN_BUILD=1
             shift
         ;;
-        --nobuild)
+        --nobuild|--no-build)
             RUN_BUILD=0
             shift
         ;;
@@ -139,7 +139,7 @@ while [[ $# -gt 0 ]]; do
             RUN_CMAKE=1
             shift
         ;;
-        --nocmake)
+        --nocmake|--no-cmake)
             RUN_CMAKE=0
             shift
         ;;
@@ -148,7 +148,7 @@ while [[ $# -gt 0 ]]; do
             END=2
             shift
         ;;
-        --nodebug)
+        --nodebug|--no-debug)
             DEBUG=0
             shift
         ;;
@@ -156,7 +156,7 @@ while [[ $# -gt 0 ]]; do
             PARALLEL=1
             shift
         ;;
-        --noparallel)
+        --noparallel|--no-parallel)
             PARALLEL=0
             shift
         ;;
@@ -164,7 +164,7 @@ while [[ $# -gt 0 ]]; do
             SINGLE=1
             shift
         ;;
-        --nosingle)
+        --nosingle|--no-single)
             SINGLE=0
             shift
         ;;
@@ -172,7 +172,7 @@ while [[ $# -gt 0 ]]; do
             VERBOSE=1
             shift
         ;;
-        --noverbose)
+        --noverbose|--no-verbose)
             VERBOSE=0
             shift
         ;;
@@ -191,12 +191,13 @@ readarray -t CONFIGS < <(printf '%s\n' "${CONFIGS[@]}" | sort)
 
 runConfig() {
     local configNum=$1
-    . ./buildAllConfigs-utils.sh
-    runConfig_Impl $configNum
+    local forceQt=$2
+    . ./buildAllConfigs-utils.sh 
+    runConfig_Impl $configNum $forceQt
 }
     
-numConfigs=${#CONFIGS[@]} 
-numCombinations=$((1 << ${numConfigs}))
+numConfigs=$((${#CONFIGS[@]} * 2)) 
+numCombinations=$(( (1 << ${#CONFIGS[@]})*2 ))
 
 techo "     Total number of configs: ${numConfigs}\n"
 techo "Total number of combinations: ${numCombinations}\n"
@@ -231,8 +232,8 @@ if [[ ${END} -eq -1 ]]; then
     END=$(( $numCombinations - 1 ))
 fi
   
-if [[ ${DEBUG} == 1 ]]; then
-    techo "\nNOTE: Only running the first $(($END + 1)) configurations\n"
+if [[ ${DEBUG} == 1 || "${END}" -ne "$(( $numCombinations - 1 ))" ]]; then
+    techo "\nNOTE: Only running the first $(( 2*($END + 1) )) configurations\n"
 fi
   
   
@@ -241,14 +242,12 @@ if [[ ${SINGLE} == 1 ]]; then
     sequence=(0)
     value=1
     for (( ii=0; ii<${numConfigs}; ii++ )); do
+        if [[ "${#sequence[@]}" -ge "${END}" ]]; then
+            break
+        fi
         sequence+=($value)
         value=$(( $value << 1))
     done
-    #local n=$1
-    ## Check if n > 0 AND bitwise (n & (n - 1)) is 0
-    #if [[ ! $((${configNum} & (${configNum} - 1))) == 0 ]]; then
-    #    return 0
-    #fi
 fi
 
 if [[ ${PARALLEL} == 1 ]]; then 
@@ -282,7 +281,9 @@ if [[ ${PARALLEL} == 1 ]]; then
         runConfig {} ::: ${sequence[@]}
 else
     for ii in ${sequence[@]}; do
-        runConfig $ii
+        for forceQt in ON OFF; do
+            runConfig $ii ${forceQt}
+        done
     done
 fi
 
