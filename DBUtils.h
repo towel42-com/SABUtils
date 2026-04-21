@@ -25,6 +25,7 @@
 #define __DBUTILS_H
 
 #include "DBUtilsFwd.h"
+#include <functional>
 
 #include "Towel42UtilsExport.h"
 
@@ -46,16 +47,30 @@ class QSqlError;
 
 namespace NTowel42Utils
 {
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QMap< QString, QVariant > &namedParams );
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterVariantMap &namedParams );
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterStringMap &namedParams );
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QString &paramName, const QVariant &paramValue );
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::pair< QString, QVariant > &param );
-    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, bool assert=true );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const std::pair< QString, QVariant > &param, bool assert = true );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QString &paramName, const QVariant &paramValue, bool assert = true );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterStringMap &namedParams, bool assert = true );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterVariantMap &namedParams, bool assert = true );
+    TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QMap< QString, QVariant > &namedParams, bool assert = true );
 
-    TOWEL42_UTILS_EXPORT bool reportError( const QSqlError &error, bool assert = true );
-    TOWEL42_UTILS_EXPORT bool reportError( const QSqlQuery &query, bool assert = true );
-    TOWEL42_UTILS_EXPORT bool reportError( const QSqlDatabase &db, bool assert = true );
+    #if QT_CONCURRENT_LIB
+    TOWEL42_UTILS_EXPORT std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, QString *newDBConnectionName = nullptr );   // if newDBConnectionName is non-null, then the connection is returned and not closed on finishing
+    TOWEL42_UTILS_EXPORT std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, const std::pair< QString, QVariant > &param, QString *newDBConnectionName = nullptr );
+    TOWEL42_UTILS_EXPORT std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, const QString &paramName, const QVariant &paramValue, QString *newDBConnectionName = nullptr );
+    TOWEL42_UTILS_EXPORT std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, const TParameterStringMap &namedParams, QString *newDBConnectionName = nullptr );
+    TOWEL42_UTILS_EXPORT std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, const TParameterVariantMap &namedParams, QString *newDBConnectionName = nullptr );
+    TOWEL42_UTILS_EXPORT std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, const QMap< QString, QVariant > &namedParams, QString *newDBConnectionName = nullptr );
+
+    TOWEL42_UTILS_EXPORT std::pair< bool, QString > runCmdsInThread( const QString &connectionName, const QStringList &cmds, const std::function< bool() > &contFunc = {}, QString *newDBConnectionName = nullptr );
+
+    // the cmd will be split first
+    TOWEL42_UTILS_EXPORT std::pair< bool, QString > runCmdsInThread( const QString &connectionName, const QString &cmd, const std::function< void( const QString &, int, int ) > &setupProgressFunc = {}, const std::function< bool() > &contFunc = {}, QString *newDBConnectionName = nullptr );
+    #endif
+
+    TOWEL42_UTILS_EXPORT bool reportError( const QSqlError &error, bool assert = true, QString *msg = nullptr );
+    TOWEL42_UTILS_EXPORT bool reportError( const QSqlQuery &query, bool assert = true, QString *msg = nullptr );
+    TOWEL42_UTILS_EXPORT bool reportError( const QSqlDatabase &db, bool assert = true, QString *msg = nullptr );
 
     TOWEL42_UTILS_EXPORT bool transaction( QSqlDatabase &db );
     TOWEL42_UTILS_EXPORT bool commit( QSqlDatabase &db );
@@ -82,6 +97,8 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool validateOnly( QSqlQuery &query, const QString &cmd, bool assert );
 
     TOWEL42_UTILS_EXPORT bool clearDatabase( QSqlDatabase &db, bool close );
+
+    TOWEL42_UTILS_EXPORT QString databaseName( const QSqlDatabase &db );
 
     TOWEL42_UTILS_EXPORT bool validateSQLITEInstalled( QString *msg );
     TOWEL42_UTILS_EXPORT bool validateDriverInstalled( const QString &driver, QString *msg );
@@ -124,6 +141,11 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT QString enumStringForValue( const TEnumValueVector &enumValues, int value );
     TOWEL42_UTILS_EXPORT std::optional< int > enumValueForString( const TEnumValueVector &enumValues, const QString &string );
+
+    TOWEL42_UTILS_EXPORT QString getNextCommand( QStringView &sql, QString &delimiter );
+
+    TOWEL42_UTILS_EXPORT QStringList splitCommands( QStringView sql, const std::function< void() > &onNextCommandFound = {} );
+    TOWEL42_UTILS_EXPORT QString stripPragmas( QStringView sql );
 }
 TOWEL42_UTILS_EXPORT QDebug &operator<<( QDebug &dbg, const QSqlQuery &query );
 TOWEL42_UTILS_EXPORT QTextStream &operator<<( QTextStream &ds, const QSqlQuery &query );
