@@ -178,6 +178,11 @@ processArgs() {
 
 generateSequences() {
     local numConfigs=$1
+
+    if [[ ${END} -eq -1 ]]; then
+        END=$(( $numCombinations - 1 ))
+    fi
+
     sequence=($(seq $START $END))
     if [[ ${SINGLE} == 1 ]]; then
         sequence=(0)
@@ -199,7 +204,7 @@ generateSequences() {
 }
 
 validateVariables() {
-    techo "Validating global variables are not being ignored\n"
+    techo "\nValidating global variables are not being ignored\n"
         
     declare -a ignoreArray=()
     declare -A ignoreMap=()
@@ -229,34 +234,36 @@ validateVariables() {
         for var in "${errorVars[@]}"; do
             terror "ERROR: Required variable '$var' is currently being ignored\n"
         done
-        terror "    Declare the variable after the calle to 'env_parallel --session'\n"
+        terror "    Declare the variable after the call to 'env_parallel --session'\n"
         exit -1
     fi
-
-    readarray -t allCurr < <(compgen -A function -v)
-    declare -a passedVars=()
-    for val in "${allCurr[@]}"; do
-        if [[ -v ignoreMap[$val] ]]; then
-            continue
-        fi
-        
-        if local -p "$val" &>/dev/null; then
-            continue
-        fi
-          
-        passedVars+=("$val")
-    done
-    
-    techo "The following variables are not in the ignore variables set:\n"
-    local totalSize=0
-    for val in "${passedVars[@]}"; do
-        local sz=$(eval echo $val | wc -c)
-        techo "    $val - size: $sz\n"
-        totalSize=$(( $totalSize + $sz ))
-    done
-
-    techo "Total size of variables=$totalSize\n"
     techo "Finished validating global variables\n"
+
+    if [[ ${VERBOSE} == 1 ]]; then
+        readarray -t allCurr < <(compgen -A function -v)
+        declare -a passedVars=()
+        for val in "${allCurr[@]}"; do
+            if [[ -v ignoreMap[$val] ]]; then
+                continue
+            fi
+            
+            if local -p "$val" &>/dev/null; then
+                continue
+            fi
+              
+            passedVars+=("$val")
+        done
+        
+        techo "    \nThe following variables are not in the ignore variables set:\n"
+        local totalSize=0
+        for val in "${passedVars[@]}"; do
+            local sz=$(getObjectSize "$val")
+            techo "        $val - size: $sz\n"
+            totalSize=$(( $totalSize + $sz ))
+        done
+
+        techo "    Total size of variables=$totalSize\n"
+    fi
 }
 
 showGlobalHeader() {
@@ -266,7 +273,7 @@ showGlobalHeader() {
     if [[ ${FORCE_QT} == 1 ]]; then
         numCombinations=$((${numCombinations} * 2))
     fi
-    declare -A headerInfo=()
+    declare -a headerInfo=()
     
     local curr=0
     headerInfo[$((curr++))]="Total number of configs;${numConfigs} (includes all config variables disabled)"
@@ -289,10 +296,6 @@ showGlobalHeader() {
     headerInfo[$((curr++))]="Results Logfile;${LOG_FILE}"
     headerInfo[$((curr++))]="Results JSON;${JSON_FILE}"
 
-    if [[ ${END} -eq -1 ]]; then
-        END=$(( $numCombinations - 1 ))
-    fi
-  
     generateSequences $numConfigs
 
     local numConfigsBeingRun=$((${#sequence[@]} * ${#qt_sequence[@]}))
@@ -342,7 +345,6 @@ declare -a errorVars=()
 PASS_VARS=(
     CONFIGS
     CONFIGS_TO_RUN
-    DEBUG
     JSON_FILE
     LOG_FILE
     OUT_DIR
@@ -356,6 +358,7 @@ PASS_VARS=(
 )
 
 PASS_VARS_OPT=""
+DEBUG=0
 #headerLine
 #set
 #headerLine
@@ -374,7 +377,6 @@ fi
 RUN_BUILD=1
 RUN_CMAKE=1
 VERBOSE=0
-DEBUG=0
 PARALLEL=1
 T42_CMAKEUTILS_DIR=$(cygpath -m $(realpath ../T42-CMakeUtils/))
 declare -A CONFIGS_TO_RUN=()
@@ -404,8 +406,10 @@ showGlobalHeader
 runConfig() {
     local configNum=$1
     local forceQt=$2
+
     . ./buildAllConfigs-utils.sh 
-    runConfig_Impl $configNum $forceQt
+
+    runConfig_Impl "$configNum" "$forceQt"
 }
 
 rm -rf buildAllConfigs.lockfile
@@ -421,20 +425,26 @@ fi
 if [[ -v ignoreMap ]]; then
     echo "ignoreMap set to ${ignoreMap[@]}"
 fi
-    
+
 if [[ ${PARALLEL} == 1 ]]; then 
     PASS_VARS_OPT=()
     
     validateVariables
-
+    
+    dryRunOpt=""
+    if [[ ${DRY_RUN} == 1 ]]; then
+        dryRunOpt=--dry-run
+    fi
     PASS_VARS_OPT=${PASS_VARS_OPT[@]}
     # echo PASS_VARS_OPT=${PASS_VARS_OPT}
     numParallel=-j+0
+    export PARALLEL_SHELL=./bash.sh
     env_parallel \
         --eta \
+        ${dryRunOpt} \
         ${numParallel} \
         --env _ \
-        runConfig {} ::: ${sequence[@]}
+        runConfig "{1}" "{2}" ::: ${sequence[@]} ::: ${qt_sequence[@]}
 else
     for ii in ${sequence[@]}; do
         for forceQt in ON OFF; do

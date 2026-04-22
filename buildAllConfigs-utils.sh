@@ -14,6 +14,28 @@ terror() {
     techo "$@" 2>&1
 }
 
+getObjectSize() {
+    local target=$1
+    
+    #echo "target=${target} - value = ${#target}"
+    
+    # Check if it is a defined function
+    local size=0
+    if declare -f "$target" > /dev/null; then
+        # declare -f prints the function definition; wc -c counts the bytes
+        local size=$(declare -f "$target" | wc -c)
+    elif declare -p "$target" 2>/dev/null | grep -q 'declare -[aA]'; then
+        # ${#var} gets character count; printf | wc -c gets byte count
+        eval "size=\$(printf '%s' \"\${$target[@]}\" | wc -c)"
+    elif [[ -n ${!target+x} ]]; then
+        size=$(printf '%s' "${!target}" | wc -c)
+    else
+        return 1
+    fi
+    echo $size
+    return 0
+}
+
 printStack() {
     asError=$1
     
@@ -419,6 +441,7 @@ runBuild() {
 
             if [[ $status != 0 ]]; then
                 allBuildsStatus=1
+                break
             fi
             
         done
