@@ -54,7 +54,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterVariantMap &namedParams, bool assert = true );
     TOWEL42_UTILS_EXPORT bool runCmd( QSqlQuery &query, const QString &cmd, const QMap< QString, QVariant > &namedParams, bool assert = true );
 
-    #if QT_CONCURRENT_LIB
+    #ifdef QT_CONCURRENT_LIB
     TOWEL42_UTILS_EXPORT std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, QString *newDBConnectionName = nullptr );   // if newDBConnectionName is non-null, then the connection is returned and not closed on finishing
     TOWEL42_UTILS_EXPORT std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, const std::pair< QString, QVariant > &param, QString *newDBConnectionName = nullptr );
     TOWEL42_UTILS_EXPORT std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, const QString &paramName, const QVariant &paramValue, QString *newDBConnectionName = nullptr );

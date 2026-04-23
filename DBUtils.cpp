@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if QT_SQL_LIB
+#ifdef QT_SQL_LIB
 
     #include "DBUtils.h"
     #include "SetupSystemLogging.h"
@@ -44,7 +44,7 @@
     #include <tuple>
     #include <QtGlobal>
 
-    #if QT_CONCURRENT_LIB
+    #ifdef QT_CONCURRENT_LIB
         #include <QFutureWatcher>
         #include <QtConcurrentRun>
         #include <QEventLoop>
@@ -147,8 +147,7 @@ namespace NTowel42Utils
         return QStringLiteral( "THREAD: %1" ).arg( getThreadID() );
     }
 
-    #if QT_CONCURRENT_LIB
-
+    #ifdef QT_CONCURRENT_LIB
     QSqlDatabase getClonedDB( const QString &connectionName, QString *newDBConnectionName, QString msg )
     {
         auto clonedConnName = connectionName + QStringLiteral( "-%1" ).arg( getThreadID() );
@@ -1041,7 +1040,7 @@ namespace NTowel42Utils
             return retVal;
         };
 
-    #if QT_CONFIG( concurrent )
+    #ifdef QT_CONCURRENT_LIB
         QFutureWatcher< QStringList > watcher;
         QEventLoop loop;
         QObject::connect( &watcher, &QFutureWatcher< bool >::finished, &loop, &QEventLoop::quit );
