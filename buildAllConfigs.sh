@@ -111,7 +111,7 @@ processArgs() {
                 FORCE_QT=1
                 shift
             ;;
-            --forceqt|--no-forceqt)
+            --noforceqt|--no-forceqt)
                 FORCE_QT=0
                 shift
             ;;
@@ -168,6 +168,11 @@ processArgs() {
                 Usage
                 exit 0
             ;;
+            --*)
+                printf "\e[31mERROR: Unknown switch '%s'\e[0m\n" "${arg}" 2>&1
+                Usage
+                exit 1
+            ;;
             *)
                 CONFIGS_TO_RUN[$1]="$1"
                 shift
@@ -198,9 +203,10 @@ generateSequences() {
     fi
 
     qt_sequence=(ON OFF)
-    if [[ $FORCE_QT == 0 ]]; then
+    if [[ ${FORCE_QT} == 0 ]]; then
         qt_sequence=(OFF)
     fi
+    numConfigsBeingRun=$((${#sequence[@]} * ${#qt_sequence[@]}))
 }
 
 validateVariables() {
@@ -266,6 +272,15 @@ validateVariables() {
     fi
 }
 
+dumpHex() {
+    str="$1"
+
+    echo "================"
+    echo "$str"
+    echo $str | od -An -tx1
+    echo "================"
+}
+    
 showGlobalHeader() {
     local numConfigs=$((${#CONFIGS[@]} + 1)) 
     local numCombinations=$(( (1 << ${#CONFIGS[@]}) ))
@@ -293,12 +308,12 @@ showGlobalHeader() {
     fi
 
     headerInfo[$((curr++))]="Maximum number of combinations;${numCombinations}"
-    headerInfo[$((curr++))]="Results Logfile;${LOG_FILE}"
-    headerInfo[$((curr++))]="Results JSON;${JSON_FILE}"
+    headerInfo[$((curr++))]="Results Logfile;${LOG_FILE};1"
+    headerInfo[$((curr++))]="Results JSON;${JSON_FILE};1"
+    headerInfo[$((curr++))]="BASH Shell Wrapper;${BASH_SHELL_WRAPPER};1"
 
     generateSequences $numConfigs
 
-    local numConfigsBeingRun=$((${#sequence[@]} * ${#qt_sequence[@]}))
     headerInfo[$((curr++))]="Number of (unfiltered) configurations to run;${numConfigsBeingRun}"
     headerInfo[$((curr++))]="Number of filters;${#CONFIGS_TO_RUN[@]}"
     echo "${CONFIGS_TO_RUN[@]}"
@@ -320,7 +335,13 @@ showGlobalHeader() {
     for currHeaderInfo in "${headerInfo[@]}"; do
         IFS=";" read -r -a arr <<< "${currHeaderInfo}"
     
-        techo "%${maxLen}s : %s\n" "${arr[0]}" "${arr[1]}"
+    
+        value="${arr[1]}"
+        if [[ ${#arr[@]} == 3 && ${arr[2]} == 1 ]]; then
+            value=$(getOSC8Url "${value}" "" 0)
+        fi
+        
+        printf "%${maxLen}s : %s\n" "${arr[0]}" "${value}"
     done
 }
 
@@ -332,6 +353,7 @@ showGlobalHeader() {
 globalPassed=()
 globalSkipped=()
 globalFailed=()
+globalCount=0
 numCombinations=0
 START=0
 END=-1
@@ -362,8 +384,11 @@ DEBUG=0
 #headerLine
 #set
 #headerLine
+BASH_SHELL_WRAPPER=/tmp/bash-$$.sh
 
 env_parallel --session
+
+numConfigsBeingRun=0
 
 #variables used inside parallel
 OUT_DIR=all_build_configs
@@ -401,7 +426,6 @@ CONFIGS=(
 readarray -t CONFIGS < <(printf '%s\n' "${CONFIGS[@]}" | sort)
 
 processArgs "$@"
-showGlobalHeader
 
 runConfig() {
     local configNum=$1
@@ -422,9 +446,15 @@ if [[ -f ${JSON_FILE} ]]; then
     mv ${JSON_FILE} ${JSON_FILE}.bak
 fi
 
-if [[ -v ignoreMap ]]; then
-    echo "ignoreMap set to ${ignoreMap[@]}"
-fi
+techoVerbose "Creating bash shell wrapper: $BASH_SHELL_WRAPPER\n"
+cat <<EOF > $BASH_SHELL_WRAPPER
+/usr/bin/bash.exe "\$@"
+EOF
+export PARALLEL_SHELL=$BASH_SHELL_WRAPPER
+
+touch "${JSON_FILE}"
+
+showGlobalHeader
 
 if [[ ${PARALLEL} == 1 ]]; then 
     PASS_VARS_OPT=()
@@ -438,16 +468,15 @@ if [[ ${PARALLEL} == 1 ]]; then
     PASS_VARS_OPT=${PASS_VARS_OPT[@]}
     # echo PASS_VARS_OPT=${PASS_VARS_OPT}
     numParallel=-j+0
-    export PARALLEL_SHELL=./bash.sh
     env_parallel \
         --eta \
         ${dryRunOpt} \
         ${numParallel} \
         --env _ \
-        runConfig "{1}" "{2}" ::: ${sequence[@]} ::: ${qt_sequence[@]}
+        runConfig "{1}" "{2}" ::: "${sequence[@]}" ::: "${qt_sequence[@]}"
 else
-    for ii in ${sequence[@]}; do
-        for forceQt in ON OFF; do
+    for ii in "${sequence[@]}"; do
+        for forceQt in "${qt_sequence[@]}"; do
             runConfig $ii ${forceQt}
         done
     done

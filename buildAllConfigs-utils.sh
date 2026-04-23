@@ -11,7 +11,8 @@ techoVerbose() {
 }
 
 terror() {
-    techo "$@" 2>&1
+    printf -v tmp "$@"
+    printf "\e[31m%s\e[0m" "${tmp}" | tee -a ${LOG_FILE} 2>&1
 }
 
 getObjectSize() {
@@ -108,7 +109,7 @@ getConfigJSONFileName() {
     local forceQt=$2
     
     configName=$(getConfigName $configNum $forceQt)
-    echo "all_build_configs/${configName}/results.json"
+    echo "${OUT_DIR}/${configName}/results.json"
 }
 
 waitForLock() {
@@ -124,6 +125,35 @@ removeLock() {
     rm -rf buildAllConfigs.lockfile
 }
 
+
+reportConfigFooter() {
+    local status=$1
+    local config="$2"
+    
+    slnxURL=$(getOSC8Url "${OUT_DIR}/$config/Towel42Utils.slnx" "Solution")
+    logURL=$(getOSC8Url "${OUT_DIR}/$config/${config}.log" "Log File")
+    jsonURL=$(getOSC8Url "${OUT_DIR}/$config/results.json" "JSON File")
+    
+    local statusText="PASSED"
+    local color="\e[0;"
+    
+    if [[ $status == -1 ]]; then
+        statusText="SKIPPED"
+        color="\e[34m"
+    elif [[ $status != 0 ]]; then
+        statusText="FAILED"
+        color="\e[31m"
+    fi
+    printf -v statusText "${color}%s\e[0m" "${statusText}"
+    
+    if [[ $status == -1 ]]; then
+        techo "    %s: %s\n" "${statusText}" "$config"
+    else
+        headerLine
+        techo "    %s: %s - %s - %s - %s\n" "${statusText}" "$config" "${slnxURL}" "${logURL}" "${jsonURL}"
+    fi
+}
+
 addJSONResults() {
     local configNum=$1
     local forceQt=$2
@@ -137,10 +167,11 @@ addJSONResults() {
         touch ${JSON_FILE}
     fi
     
-    techo "Adding results from $configName\n"
+    #techo "Adding results from $configName\n"
     waitForLock addJSONResults  
     jq -n '[inputs[]]' ${JSON_FILE} ${configJsonFile} | sponge ${JSON_FILE}
     removeLock addJSONResults
+    
     return 0
 }
    
@@ -150,7 +181,7 @@ updateGlobalResults() {
 
     local configJsonFile=$(getConfigJSONFileName $configNum $forceQt)    
     if [[ ! -f ${configJsonFile} ]]; then
-        terror "Could not find results file '${configJsonFile}'"
+        terror "Could not find JSON file '${configJsonFile}'"
         continue;
     fi
 
@@ -172,16 +203,16 @@ createGlobalResults() {
     fi
     
     if [[ -z $START ]]; then
-        START=$(ls -d1 all_build_configs/build_config_* | sort -n | head -n 1 | sed -e 's/all_build_configs\/build_config_//')
+        START=$(ls -d1 ${OUT_DIR}/build_config_* | sort -n | head -n 1 | sed -e 's/${OUT_DIR}\/build_config_//')
     fi    
         
     if [[ -z $END ]]; then
-        END=$(ls -d1 all_build_configs/build_config_* | sort -n | tail -n 1 | sed -e 's/all_build_configs\/build_config_//')
+        END=$(ls -d1 ${OUT_DIR}/build_config_* | sort -n | tail -n 1 | sed -e 's/${OUT_DIR}\/build_config_//')
     fi    
 
     techo "Finding existing results files: START=$START END=$END\n"
     args=(--indent 4 -n '[inputs[]]')
-    files=($(eval ls all_build_configs/build_config_{$START..$END}/results.json))
+    files=($(eval ls ${OUT_DIR}/build_config_{$START..$END}/results.json))
     args+=("${files[@]}")
     
     waitForLock createGlobalResults
@@ -189,11 +220,38 @@ createGlobalResults() {
     jq "${args[@]}" > ${JSON_FILE} # retval comes from jq
     removeLock createGlobalResults
 }
- 
+
+getOSC8Url() { 
+    local path=$1
+    local desc="$2"
+    local showRed=1
+    if [[ -v $3 ]]; then
+        showRed=$3
+    fi
+   
+    abspath=$(cygpath -m $(pwd)/"$path")
+
+    local url=$(printf "file:///%s" "$abspath")
+    local url=$(printf "file:///%s" "$abspath")
+    
+    if [[ "$desc" == "" ]]; then
+        desc="$path"
+    fi
+
+    #echo ""
+    #echo -n "${url}" | od -An -tx1
+    printf -v osc8 "\e]8;;%s\e\\%s\e]8;;\e\\" "$url" "${desc}"
+    if [[ -f $path || ( $showRed == 0 ) ]]; then
+        printf "\e[0m%s\e[0m" "${osc8}"
+    else
+        printf "\e[31m%s\e[0m" "${osc8}"
+    fi
+}
+
 reportSummary() {
     JSON_FILE=$1
     if [[ -z $JSON_FILE ]]; then
-        JSON_FILE=buildAllConfigs.json
+        JSON_FILE=${OUT_DIR}/buildAllConfigs.json
     fi
 
     local passed=()
@@ -217,18 +275,23 @@ reportSummary() {
     
     removeLock reportSummary
     
+    local logFileURL=$(getOSC8Url "${LOG_FILE}")
+    local jsonFileURL=$(getOSC8Url "${JSON_FILE}")
+    
     techo "===========================================\n"
     techo "Summary:\n"
     techo "    Configurations Run: ${count}\n"
+    techo "              Log file: %s\n" ${logFileURL}
+    techo "     Results JSON file: %s\n" ${jsonFileURL}
     techo "    Skipped Completely: ${skippedCompletely}\n"
     techo "            Incomplete: ${incomplete}\n"
     techo "                Passed: ${passed}\n"
     techo "                Failed: ${failedCount}\n"
         
     if [[ ${failedCount} != 0 ]] ; then
-        techo "Failed Configurations:\n"
+        terror "Failed Configurations:\n"
         for config in "${failed[@]}"; do
-            techo "    '$config'\n"
+            reportConfigFooter 1 $config
         done
     fi
 
@@ -238,7 +301,7 @@ SETUP_STATUS=skipped
 CMAKE_STATUS=skipped
 BUILD_STATUS=skipped
 
-printHeader() {
+printConfigHeader() {
     local configNum=$1
     local configName=$2
     local forceQt=$3
@@ -252,7 +315,12 @@ printHeader() {
 
     local varNames=(configName)
     if [[ ${PARALLEL} == 0 ]]; then
-        techo "$(($configNum - $START)) of $(( $END - $START + 1)) Passed: ${#globalPassed[@]} Failed: ${#globalFailed[@]} Skipped: ${#globalSkipped[@]}\n"
+        local failedFormat="\e[31m%d\e[0m"
+        if [[ ${#globalFailed[@]} == 0 ]]; then
+            failedFormat="%d"
+        fi
+        techo "\e[0;32m[%d of %d]\e[0m - Configuration #%d QT=%s - Passed: %d Failed: $failedFormat Previously Skipped: %d\n" ${globalCount} ${numConfigsBeingRun} $configNum ${forceQt} ${#globalPassed[@]} ${#globalFailed[@]} ${#globalSkipped[@]}
+        varNames=()
     fi
     
     if [[ ${VERBOSE} == 1 ]]; then 
@@ -275,7 +343,6 @@ printHeader() {
             techo "%${size}s: %s\n" $var ${!var}
         fi
     done
-    headerLine
 }
 
 getOptions() {
@@ -315,9 +382,9 @@ reportResult() {
     fi
     if [[ $status == 0 ]]; then
         varRef=passed
-        techo "${spacing}SUCCESS\n"
+        techo "${spacing}PASSED\n"
         if [[ ! -z "${extraLogFile}" ]]; then
-            echo "${spacing}SUCCESS" >> ${extraLogFile}
+            echo "${spacing}PASSED" >> ${extraLogFile}
         fi
         return 0
     else
@@ -342,13 +409,13 @@ setupConfigBuildArea() {
     # if it doesnt exist, create if building
     # if it exists and you are not running cmake or build, DO NOT delete it
     local _mkdir=0
-    if [[ ${RUN_CMAKE} == 1 || ( ! -d all_build_configs/${configName} && ${RUN_BUILD} == 1 ) ]]; then
+    if [[ ${RUN_CMAKE} == 1 || ( ! -d ${OUT_DIR}/${configName} && ${RUN_BUILD} == 1 ) ]]; then
         _mkdir=1
     fi
 
     SETUP_STATUS=skipped
     if [[ ${_mkdir} == 1 ]]; then
-        if [[ -d all_build_configs/${configName} ]]; then
+        if [[ -d ${OUT_DIR}/${configName} ]]; then
             techo "    Removing existing directory\n"
             rm -rf ${configName} |& tee -a ${LOG_FILE}
             status=${PIPESTATUS[0]}
@@ -358,8 +425,8 @@ setupConfigBuildArea() {
             fi
         fi
         
-        techo "    Creating directory all_build_configs/$configName\n"
-        mkdir -p all_build_configs/$configName |& tee -a ${LOG_FILE}
+        techo "    Creating directory ${OUT_DIR}/$configName\n"
+        mkdir -p ${OUT_DIR}/$configName |& tee -a ${LOG_FILE}
         status=${PIPESTATUS[0]}
         reportResult SETUP_STATUS $status
         if [[ $status != 0 ]]; then
@@ -373,11 +440,11 @@ runCMake() {
     local configName=$1
     local configNum=$2
     local forceQt=$3
-
+    
     local _forceRunCMake=0
     if [[ ${RUN_BUILD} == 1 ]]; then
         if [[ ${RUN_CMAKE} == 0 ]]; then
-            if [[ ! -f all_build_configs/${configName}/CMakeCache.txt ]]; then
+            if [[ ! -f ${OUT_DIR}/${configName}/CMakeCache.txt ]]; then
                 _forceRunCMake=1
             fi
         fi
@@ -388,13 +455,19 @@ runCMake() {
     if [[ ${_forceRunCMake} == 1 || ${RUN_CMAKE} == 1 ]]; then
         techo "    Running CMake\n"
         local devWarning=-Wno-dev
+        outFiles=("$localLogFile")
         if [[ ${VERBOSE} == 1 ]]; then
             devWarning=-Wdev
-            echo "=====================================" | tee -a ${LOG_FILE} ${localLogFile}
-            echo "        CMD: cmake -S . -B all_build_configs/${configName} ${devWarning} -DTOWEL42_CMAKEUTILS_DIR=${T42_CMAKEUTILS_DIR} $options" |& tee -a ${LOG_FILE} ${localLogFile}
-            echo "=====================================" | tee -a ${LOG_FILE} ${localLogFile}
+            outFiles+=("${LOG_FILE}")
+            outFiles+=("/dev/stdout")
         fi
-        cmake -S . -B all_build_configs/${configName} ${devWarning} -DTOWEL42_CMAKEUTILS_DIR=${T42_CMAKEUTILS_DIR} $options |& tee -a ${LOG_FILE} >> ${localLogFile}
+       
+        for outFile in "${outFiles[@]}"; do
+            echo "=====================================" &>>  ${outFile}
+            echo "        CMD: cmake -S . -B ${OUT_DIR}/${configName} ${devWarning} -DTOWEL42_CMAKEUTILS_DIR=${T42_CMAKEUTILS_DIR} $options" &>> ${outFile}
+            echo "=====================================" &>>  ${outFile}
+        done
+        cmake -S . -B ${OUT_DIR}/${configName} ${devWarning} -DTOWEL42_CMAKEUTILS_DIR=${T42_CMAKEUTILS_DIR} $options |& tee -a ${LOG_FILE} >> ${localLogFile}
         status=${PIPESTATUS[0]}
         reportResult CMAKE_STATUS $status ${localLogFile}
         return $status
@@ -415,7 +488,7 @@ runBuild() {
             echo "        Running Build-$config" | tee -a ${LOG_FILE} ${localLogFile}
 
             local args=()
-            args+=(\"all_build_configs/${configName}/ALL_BUILD.vcxproj\")
+            args+=(\"${OUT_DIR}/${configName}/ALL_BUILD.vcxproj\")
             args+=(\"--t:Clean,Build\")
             
             if [[ ${PARALLEL} == 1 ]]; then
@@ -425,7 +498,7 @@ runBuild() {
             args+=(\"--p:Configuration=${config}\")
             
             local msbuild="C:/Program Files/Microsoft Visual Studio/18/Enterprise/MSBuild/Current/Bin/amd64/MSBuild.exe"
-            local argFile=all_build_configs/${configName}/args-${config}.txt
+            local argFile=${OUT_DIR}/${configName}/args-${config}.txt
             echo "${args[@]}" > $argFile
             
             if [[ ${VERBOSE} == 1 ]]; then
@@ -459,19 +532,24 @@ runConfig_Impl() {
     
     local configName=$(getConfigName $configNum $forceQt)
 
-    declare -g localLogFile=all_build_configs/${configName}/${configName}.log
+    declare -g localLogFile=${OUT_DIR}/${configName}/${configName}.log
     local localJSONFile=$(getConfigJSONFileName $configNum $forceQt)
-    
-    printHeader $configNum $configName $forceQt $localLogFile $localJSONFile
-    
-    globalCount=$(( $globalCount + 1 ))
-    local currStatus="configuration \"$configName\""
+
+    local skipConfig=0
     if [[ "${#CONFIGS_TO_RUN[@]}" -gt 0 && ! -v CONFIGS_TO_RUN["${configName}"] ]]; then #requires bash 4.2+
-        techoVerbose "Skipping $currStatus\n"
-        globalSkipped+=($configName);
-        return 0
+        skipConfig=1
     fi
 
+    local currStatus="configuration \"$configName\""
+    globalCount=$(( $globalCount + 1 ))
+
+    printConfigHeader $configNum $configName $forceQt $localLogFile $localJSONFile
+    if [[ ${skipConfig} == 1 ]]; then 
+        globalSkipped+=($configName);
+        reportConfigFooter -1 "$configName"
+        return 0
+    fi
+    headerLine
     techo "Running $currStatus\n"
     
     setupConfigBuildArea $configName
@@ -507,6 +585,8 @@ runConfig_Impl() {
     fi
     
     updateGlobalResults $configNum $forceQt
+    
+    reportConfigFooter ${status} "$configName"
     return 0
 }
     
