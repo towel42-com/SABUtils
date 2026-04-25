@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 Usage() {
-    echo "buildAllConfigs.sh: --outdir <dir> --logfile <filename> --json <filename> --cmakeutilsdir <directory> --start <n> --end <n> --build --cmake --verbose --debug --parallel --single --forceqt [config1 config2...] "
+    echo "buildAllConfigs.sh: --outdir <dir> --logfile <filename> --json <filename> --cmakeutilsdir <directory> --start <n> --end <n> --build --cmake --verbose --debug --parallel --all_combinations --forceqt [config1 config2...] "
     echo "    Run all configurations"
     echo "  --outdir <dir> : Output directory (default ${OUT_DIR})"
     echo "       --logfile : The output log file for all the runs (default buildAllConfigs.log)"
@@ -9,10 +9,10 @@ Usage() {
     echo "         --cmake : Run the cmake stage (may get overridden if required by the build stage) (default ${RUN_CMAKE})"
     echo "         --build : Run the build stage (default ${RUN_BUILD})"
     echo "       --verbose : Give extended debugging information (default ${VERBOSE})"
-    echo "         --debug : Runs in debug mode (only runs the first 3 configurations, overrides --end) (default ${DEBUG})"
-    echo "      --parallel : Runs in configurations in parallel (default ${PARALLEL})"
+    echo "         --debug : Runs in debug mode (only runs the first 3 configurations, overrides --end, only runs the RelWithDebInfo build type) (default ${DEBUG})"
+    echo "      --parallel : Runs in configurations in parallel (default ${T42_PARALLEL})"
     echo "       --forceqt : Enable forcing qt as a secondary config (default ${FORCE_QT})"
-    echo "        --single : Runs single configurations only, no two configurations are on at the same time (default ${SINGLE})"
+    echo "--all_combinations : Runs all combinations of configuration options, Otherwise only run 1 configuration option at a time (default ${ALL_COMBINATIONS})"
     echo "       --dry-run : Runs in dry-run (ignored if --parallel not set) (default ${DRY_RUN})"
     echo " --cmakeutilsdir : The directory for the Towel 42 CMake Utilities (default ${T42_CMAKEUTILS_DIR})"
     echo "         --start : Start with configuration number (default 0)"
@@ -124,28 +124,27 @@ processArgs() {
                 shift
             ;;
             --debug)
-                DEBUG=1
-                END=2
+                T42_DEBUG=1
                 shift
             ;;
             --nodebug|--no-debug)
-                DEBUG=0
+                T42_DEBUG=0
                 shift
             ;;
             --parallel)
-                PARALLEL=1
+                T42_PARALLEL=1
                 shift
             ;;
             --noparallel|--no-parallel)
-                PARALLEL=0
+                T42_PARALLEL=0
                 shift
             ;;
-            --single)
-                SINGLE=1
+            --all_combinations)
+                ALL_COMBINATIONS=1
                 shift
             ;;
-            --nosingle|--no-single)
-                SINGLE=0
+            --noall_combinations|--no-all_combinations)
+                ALL_COMBINATIONS=0
                 shift
             ;;
             --dry-run)
@@ -168,8 +167,8 @@ processArgs() {
                 Usage
                 exit 0
             ;;
-            --*)
-                printf "\e[31mERROR: Unknown switch '%s'\e[0m\n" "${arg}" 2>&1
+            -*)
+                printColoredText RED "ERROR: Unknown switch \'"${arg}"\'\n" 2>&1
                 Usage
                 exit 1
             ;;
@@ -187,9 +186,9 @@ generateSequences() {
     if [[ ${END} -eq -1 ]]; then
         END=$(( $numCombinations - 1 ))
     fi
-
+    
     sequence=($(seq $START $END))
-    if [[ ${SINGLE} == 1 ]]; then
+    if [[ ${ALL_COMBINATIONS} == 0 ]]; then
         sequence=(0)
         local value=1
         local ii
@@ -202,6 +201,15 @@ generateSequences() {
         done
     fi
 
+    if [[ ${T42_DEBUG} == 1 ]]; then 
+        if [[ ${FORCE_QT} == 0 ]]; then
+            sequence=("${sequence[@]:0:4}")
+        else
+            sequence=("${sequence[@]:0:2}")
+        fi
+        echo "Skippinhg debug reduction"
+    fi
+
     qt_sequence=(ON OFF)
     if [[ ${FORCE_QT} == 0 ]]; then
         qt_sequence=(OFF)
@@ -210,9 +218,10 @@ generateSequences() {
 }
 
 validateVariables() {
-    techo "\nValidating global variables are not being ignored\n"
+    techo "Validating global variables are not being ignored\n"
         
     declare -a ignoreArray=()
+    declare -a errorVars=()
     declare -A ignoreMap=()
     readarray -t ignoreArray <<< "$PARALLEL_IGNORED_NAMES"
     for val in "${ignoreArray[@]}"; do
@@ -221,7 +230,7 @@ validateVariables() {
         fi
         ignoreMap["$val"]=1
     done
-
+   
     for val in "${PASS_VARS[@]}"; do
         printf -v currPassVarOpt "%s %s" "--env" $val
         PASS_VARS_OPT+=(${currPassVarOpt})
@@ -231,7 +240,7 @@ validateVariables() {
             isIgnored=1
         fi
         
-         if [[ $isIgnored == 1 ]]; then
+        if [[ $isIgnored == 1 ]]; then
             errorVars+=("$val")
         fi
     done
@@ -243,24 +252,33 @@ validateVariables() {
         terror "    Declare the variable after the call to 'env_parallel --session'\n"
         exit -1
     fi
-    techo "Finished validating global variables\n"
+    techo "    Finished validating global variables\n"
 
-    if [[ ${VERBOSE} == 1 ]]; then
-        readarray -t allCurr < <(compgen -A function -v)
-        declare -a passedVars=()
-        for val in "${allCurr[@]}"; do
-            if [[ -v ignoreMap[$val] ]]; then
-                continue
-            fi
-            
-            if local -p "$val" &>/dev/null; then
-                continue
-            fi
-              
-            passedVars+=("$val")
-        done
+    readarray -t allCurr < <(compgen -A function -v)
+    declare -a passedVars=()
+    techo "Exporting the necessary functions\n"
+    for val in "${allCurr[@]}"; do
+        if [[ -v ignoreMap[$val] ]]; then
+            continue
+        fi
         
-        techo "    \nThe following variables are not in the ignore variables set:\n"
+        if local -p "$val" &>/dev/null; then
+            continue
+        fi
+          
+        passedVars+=("$val")
+        if declare -F "${val}" > /dev/null; then
+            eval export -f $val
+        else
+            eval export $val
+        fi
+    done
+    techo "    Finished exporting the necessary functions\n"
+        
+        
+    if [[ ${VERBOSE} == 1 ]]; then
+        techo "Getting the size of exported global varables\n"
+        techo "    The following variables are not in the ignore variables set:\n"
         local totalSize=0
         for val in "${passedVars[@]}"; do
             local sz=$(getObjectSize "$val")
@@ -268,7 +286,9 @@ validateVariables() {
             totalSize=$(( $totalSize + $sz ))
         done
 
-        techo "    Total size of variables=$totalSize\n"
+        techo "        =======================\n"
+        techo "        Total size of variables=$totalSize\n"
+        techo "    Finished getting the size of exported global varables\n"
     fi
 }
 
@@ -310,8 +330,11 @@ showGlobalHeader() {
     headerInfo[$((curr++))]="Maximum number of combinations;${numCombinations}"
     headerInfo[$((curr++))]="Results Logfile;${LOG_FILE};1"
     headerInfo[$((curr++))]="Results JSON;${JSON_FILE};1"
-    headerInfo[$((curr++))]="BASH Shell Wrapper;${BASH_SHELL_WRAPPER};1"
-
+    if [[ ${T42_PARALLEL} == 1 ]]; then
+        headerInfo[$((curr++))]="Jobs Log File;${JOB_LOGFILE};1"
+        headerInfo[$((curr++))]="BASH Shell Wrapper;${BASH_SHELL_WRAPPER};1"
+    fi
+    
     generateSequences $numConfigs
 
     headerInfo[$((curr++))]="Number of (unfiltered) configurations to run;${numConfigsBeingRun}"
@@ -341,7 +364,7 @@ showGlobalHeader() {
             value=$(getOSC8Url "${value}" "" 0)
         fi
         
-        printf "%${maxLen}s : %s\n" "${arr[0]}" "${value}"
+        printf "%${maxLen}s : %s\n" "${arr[0]}" "${value}" | tee -a "${LOG_FILE}"
     done
 }
 
@@ -357,7 +380,7 @@ globalFailed=()
 numCombinations=0
 START=0
 END=-1
-SINGLE=0
+ALL_COMBINATIONS=0
 value=""
 val=""
 currHeaderInfo=""
@@ -370,7 +393,7 @@ PASS_VARS=(
     JSON_FILE
     LOG_FILE
     OUT_DIR
-    PARALLEL
+    T42_PARALLEL
     RUN_BUILD
     RUN_CMAKE
     T42_CMAKEUTILS_DIR
@@ -381,12 +404,9 @@ PASS_VARS=(
 )
 
 PASS_VARS_OPT=""
-DEBUG=0
 #headerLine
 #set
 #headerLine
-BASH_SHELL_WRAPPER=bash.sh
-
 env_parallel --session
 
 getGlobalCount() {
@@ -398,7 +418,11 @@ incGlobalCount() {
 }
 
 techo() {
-    printf "$@" | tee -a ${LOG_FILE}
+    printf "$@" | tee -a "${LOG_FILE}"
+}
+
+techoColoredText() {
+    printColoredText "$@" | tee -a "${LOG_FILE}"
 }
 
 techoVerbose() {
@@ -407,9 +431,36 @@ techoVerbose() {
     fi
 }
 
+printColorCode() {
+    local colorName=$1
+
+    declare -A colorMap=( ["NONE"]="0" ["BLUE"]="6" ["RED"]="1" ["GREEN"]="2" )
+    local code=0
+    if [[ -v colorMap["${colorName}"] ]]; then
+        code="${colorMap["${colorName}"]}"
+    fi
+    #echo "ColorName=$colorName code=$code"
+    
+    if [[ ${code} != 0 ]]; then
+        printf "\e[38;5;${code}m"
+    fi
+}
+
+printEndColor() {
+    printf "\e[0m"
+}
+
+printColoredText() {
+    local colorName=$1
+    shift
+    
+    printColorCode $colorName
+    printf "$@"
+    printEndColor
+}
+
 terror() {
-    printf -v tmp "$@"
-    printf "\e[31m%s\e[0m" "${tmp}" | tee -a ${LOG_FILE} 2>&1
+    printColoredText RED "${@}" | tee -a "${LOG_FILE}" 2>&1
 }
 
 getObjectSize() {
@@ -522,32 +573,32 @@ removeLock() {
     rm -rf buildAllConfigs.lockfile
 }
 
-
 reportConfigFooter() {
     local status=$1
     local config="$2"
     
-    slnxURL=$(getOSC8Url "${OUT_DIR}/$config/Towel42Utils.slnx" "Solution")
+    slnxURL=$(getOSC8Url "${OUT_DIR}/$config/Towel42Utils.slnx" "Visual Studio Solution")
     logURL=$(getOSC8Url "${OUT_DIR}/$config/${config}.log" "Log File")
     jsonURL=$(getOSC8Url "${OUT_DIR}/$config/results.json" "JSON File")
     
     local statusText="PASSED"
-    local color="\e[0;"
-    
+    local colorName=NONE
     if [[ $status == -1 ]]; then
         statusText="SKIPPED"
-        color="\e[34m"
-    elif [[ $status != 0 ]]; then
-        statusText="FAILED"
-        color="\e[31m"
-    fi
-    printf -v statusText "${color}%s\e[0m" "${statusText}"
-    
-    if [[ $status == -1 ]]; then
-        techo "    %s: %s\n" "${statusText}" "$config"
+        colorName=BLUE
+    elif [[ $status == 0 ]]; then
+        colorName=NONE
     else
-        techo "    %s: %s - %s - %s - %s\n" "${statusText}" "$config" "${slnxURL}" "${logURL}" "${jsonURL}"
+        statusText="FAILED"
+        colorName=RED
     fi
+    techoColoredText $colorName "    ${statusText}:"
+    techo " %s" "$config"
+    
+    if [[ $status != -1 ]]; then
+        techo " - %s - %s - %s" "${slnxURL}" "${logURL}" "${jsonURL}"
+    fi
+    techo "\n"
 }
 
 addJSONResults() {
@@ -590,21 +641,37 @@ createGlobalResults() {
         mv "${JSON_FILE}" "${JSON_FILE}.bak"
     fi
     
+    techo "Generating Global Summary Report\n"
+
     local args=(--indent 4 -n '[inputs[]]')
 
+    if [[ ! -f "${GLOBAL_COUNT_FILE}" ]]; then
+        terror "    No configurations run, not creating summary results file\n"
+        return 1
+    fi
     local configs=()
     while IFS= read -r line; do
         configs+=("$line")
     done < "${GLOBAL_COUNT_FILE}"
 
+    if [[ ${#configs[@]} == 0 ]]; then
+        terror "    No configurations run, not creating summary results file\n"
+        return 1
+    fi
     for config in "${configs[@]}"; do
         args+=("${OUT_DIR}/${config}/results.json")
     done    
 
     waitForLock createGlobalResults
-    techo "Joining existing config files into new summary json file ${JSON_FILE}\n"
+    techo "    Joining existing config files into new summary json file ${JSON_FILE}\n"
     jq "${args[@]}" > ${JSON_FILE} # retval comes from jq
     status=$?
+    if [[ $status != 0 ]]; then
+        terror "Error joining resultant json files\n"
+    else
+        techo "    Finished generating Global Summary Report\n"
+    fi
+    
     removeLock createGlobalResults
     return $?
 }
@@ -630,9 +697,11 @@ getOSC8Url() {
     #echo -n "${url}" | od -An -tx1
     printf -v osc8 "\e]8;;%s\e\\%s\e]8;;\e\\" "$url" "${desc}"
     if [[ -f $path || ( $showRed == 0 ) ]]; then
-        printf "\e[0m%s\e[0m" "${osc8}"
+        techo "%s" "${osc8}"
     else
-        printf "\e[31m%s\e[0m" "${osc8}"
+        red=$(printColorCode RED)
+        noColor=$(printEndColor)
+        techo "%s%s%s" "${red}" "${osc8}" "${noColor}"
     fi
 }
 
@@ -642,6 +711,10 @@ reportSummary() {
     local failed=()
 
     createGlobalResults
+    results=$?
+    if [[ ${results} != 0 ]]; then
+        return 1
+    fi
 
     if [[ ! -f ${JSON_FILE} ]]; then
         terror "========================================\n"
@@ -669,6 +742,10 @@ reportSummary() {
     techo "    Configurations Run: ${count}\n"
     techo "              Log file: %s\n" ${logFileURL}
     techo "     Results JSON file: %s\n" ${jsonFileURL}
+    if [[ ${T42_PARALLEL} == 1 ]]; then
+        local jobsLogFile=$(getOSC8Url "${JOB_LOGFILE}")
+        techo "     Jobs Log File: %s\n" ${jobsLogFile};
+    fi
     techo "    Skipped Completely: ${skippedCompletely}\n"
     techo "            Incomplete: ${incomplete}\n"
     techo "                Passed: ${passed}\n"
@@ -695,20 +772,22 @@ printConfigHeader() {
     local localLogFile=$4
     local localJSONFile=$5
     
-    if [[ ${PARALLEL} == 1 ]]; then
+    if [[ ${T42_PARALLEL} == 1 ]]; then
         blankLine
     fi
     headerLine
 
     count=$(getGlobalCount)
     percent=$(( (100*${count}) / ${numConfigsBeingRun} ))
-    techo "\e[0;32m[%d of %d (%d%%)]\e[0m - Configuration #%d QT=%s" ${count} ${numConfigsBeingRun} ${percent} $configNum ${forceQt}
-    if [[ ${PARALLEL} == 0 ]]; then
-        local failedFormat="\e[31m%d\e[0m"
-        if [[ ${#globalFailed[@]} == 0 ]]; then
-            failedFormat="%d"
+
+    techoColoredText GREEN "[%d of %d (%d%%)]" ${count} ${numConfigsBeingRun} ${percent}
+    techo " - Configuration #%d QT=%s"  $configNum ${forceQt}
+    if [[ ${T42_PARALLEL} == 0 ]]; then
+        local failedText="0"
+        if [[ ${#globalFailed[@]} != 0 ]]; then
+            failedText=$(printColoredText RED "%d" ${#globalFailed[@]} )
         fi
-        techo " - Passed: %d Failed: $failedFormat Previously Skipped: %d\n" ${#globalPassed[@]} ${#globalFailed[@]} ${#globalSkipped[@]}
+        techo " - Passed: %d Failed: $failedText Previously Skipped: %d\n" ${#globalPassed[@]} ${#globalSkipped[@]}
     else
         techo " - %s\n" ${configName}
     fi
@@ -784,7 +863,7 @@ reportResult() {
         if [[ ! -z "${extraLogFile}" ]]; then
             headerLine
             techo "Failed Messages from command:\n\n"
-            tail -n 30 ${extraLogFile} | tee -a ${LOG_FILE}
+            tail -n 30 ${extraLogFile} | tee -a "${LOG_FILE}"
             echo "${spacing}FAILED" >> ${extraLogFile}
             headerLine
         fi
@@ -808,7 +887,7 @@ setupConfigBuildArea() {
     if [[ ${_mkdir} == 1 ]]; then
         if [[ -d ${OUT_DIR}/${configName} ]]; then
             techo "    Removing existing directory\n"
-            rm -rf ${configName} |& tee -a ${LOG_FILE}
+            rm -rf ${configName} |& tee -a "${LOG_FILE}"
             status=${PIPESTATUS[0]}
             reportResult SETUP_STATUS $status
             if [[ $status != 0 ]]; then
@@ -817,7 +896,7 @@ setupConfigBuildArea() {
         fi
         
         techo "    Creating directory ${OUT_DIR}/$configName\n"
-        mkdir -p ${OUT_DIR}/$configName |& tee -a ${LOG_FILE}
+        mkdir -p ${OUT_DIR}/$configName |& tee -a "${LOG_FILE}"
         status=${PIPESTATUS[0]}
         reportResult SETUP_STATUS $status
         if [[ $status != 0 ]]; then
@@ -858,9 +937,9 @@ runCMake() {
             echo "        CMD: cmake -S . -B ${OUT_DIR}/${configName} ${devWarning} -DTOWEL42_CMAKEUTILS_DIR=${T42_CMAKEUTILS_DIR} $options" &>> ${outFile}
             echo "=====================================" &>>  ${outFile}
         done
-        cmake -S . -B ${OUT_DIR}/${configName} ${devWarning} -DTOWEL42_CMAKEUTILS_DIR=${T42_CMAKEUTILS_DIR} $options |& tee -a ${LOG_FILE} >> ${localLogFile}
+        cmake -S . -B ${OUT_DIR}/${configName} ${devWarning} -DTOWEL42_CMAKEUTILS_DIR=${T42_CMAKEUTILS_DIR} $options |& tee -a "${LOG_FILE}" >> "${localLogFile}" 
         status=${PIPESTATUS[0]}
-        reportResult CMAKE_STATUS $status ${localLogFile}
+        reportResult CMAKE_STATUS $status "${localLogFile}" 
         return $status
     fi
     return 0
@@ -873,16 +952,21 @@ runBuild() {
     BUILD_STATUS=skipped
     local allBuildsStatus=0
     if [[ ${RUN_BUILD} == 1 ]]; then
-        echo "    Running all build configurations" | tee -a ${LOG_FILE} ${localLogFile}
+        echo "    Running all build configurations" | tee -a "${LOG_FILE}" "${localLogFile}" 
 
-        for config in Debug Release RelWithDebInfo MinSizeRel; do
-            echo "        Running Build-$config" | tee -a ${LOG_FILE} ${localLogFile}
+        local -a msConfigs=(Debug Release RelWithDebInfo MinSizeRel)
+        if [[ ${T42_DEBUG} == 1 ]]; then
+            msConfigs=(RelWithDebInfo)
+        fi
+        
+        for config in "${msConfigs[@]}"; do
+            echo "        Running Build Configuration-$config" | tee -a ${LOG_FILE} ${localLogFile}
 
             local args=()
             args+=(\"${OUT_DIR}/${configName}/ALL_BUILD.vcxproj\")
             args+=(\"--t:Clean,Build\")
             
-            if [[ ${PARALLEL} == 1 ]]; then
+            if [[ ${T42_PARALLEL} == 1 ]]; then
                 args+=(\"--m:1\")
                 args+=(\"--p:CL_MPCount=1\")
             fi
@@ -893,15 +977,15 @@ runBuild() {
             echo "${args[@]}" > $argFile
             
             if [[ ${VERBOSE} == 1 ]]; then
-                echo "=====================================" | tee -a ${LOG_FILE} ${localLogFile}
-                echo "               CMD: $msbuild \"@${argFile}\"" | tee -a ${LOG_FILE} ${localLogFile}
-                echo "  argfile contents: ${args[@]}" | tee -a ${LOG_FILE} ${localLogFile}
-                echo "=====================================" | tee -a ${LOG_FILE} ${localLogFile}
+                echo "=====================================" | tee -a "${LOG_FILE}" "${localLogFile}" 
+                echo "               CMD: $msbuild \"@${argFile}\"" | tee -a "${LOG_FILE}" "${localLogFile}" 
+                echo "  argfile contents: ${args[@]}" | tee -a "${LOG_FILE}" "${localLogFile}" 
+                echo "=====================================" | tee -a "${LOG_FILE}" "${localLogFile}" 
             fi
             
-            "$msbuild" @"${argFile}" |& tee -a ${LOG_FILE} >> ${localLogFile}
+            "$msbuild" @"${argFile}" |& tee -a "${LOG_FILE}" >> "${localLogFile}" 
             status=${PIPESTATUS[0]}
-            reportResult BUILD_STATUS $status ${localLogFile} 1
+            reportResult BUILD_STATUS $status "${localLogFile}" 1
 
             if [[ $status != 0 ]]; then
                 allBuildsStatus=1
@@ -909,8 +993,8 @@ runBuild() {
             fi
             
         done
-        echo "    All build Configuration Status" | tee -a ${LOG_FILE} ${localLogFile}
-        reportResult BUILD_STATUS $allBuildsStatus ${localLogFile}
+        echo "    All build Configuration Status" | tee -a "${LOG_FILE}" "${localLogFile}" 
+        reportResult BUILD_STATUS $allBuildsStatus "${localLogFile}" 
         return $allBuildsStatus
     fi
     return 0
@@ -991,21 +1075,61 @@ runConfig() {
     runConfig_Impl "$configNum" "$forceQt"
 }
 
+
+run() {
+    if [[ ${T42_PARALLEL} == 1 ]]; then 
+        PASS_VARS_OPT=()
+        
+        validateVariables
+        
+        dryRunOpt=""
+        if [[ ${DRY_RUN} == 1 ]]; then
+            dryRunOpt=--dry-run
+        fi
+        PASS_VARS_OPT=${PASS_VARS_OPT[@]}
+        # echo PASS_VARS_OPT=${PASS_VARS_OPT}
+        numParallel=-j+0
+        if [[ ! -f "${BASH_SHELL_WRAPPER}" ]]; then
+            terror "Could not find shell wrapper \"${BASH_SHELL_WRAPPER}\"\n"
+            return 1
+        fi
+        
+        PARALLEL_OPTS="--eta --progress --total-jobs --keep-order --halt soon,fail=30% ${dryRunOpt} ${numParallel} --env _ --joblog ${JOB_LOGFILE}"
+        if [[ ${VERBOSE} == 1 ]]; then
+            techo "Launching parallel\n"
+            echo "PARALLEL=${PARALLEL_OPTS} parallel runConfig "{1}" "{2}" ::: "${sequence[@]}" ::: "${qt_sequence[@]}"" | tee -a ${LOG_FILE}
+        fi
+        PARALLEL=${PARALLEL_OPTS} parallel runConfig "{1}" "{2}" ::: "${sequence[@]}" ::: "${qt_sequence[@]}"
+            
+        techoVerbose "Finished running parallel\n"
+    else
+        for ii in "${sequence[@]}"; do
+            for forceQt in "${qt_sequence[@]}"; do
+                runConfig $ii ${forceQt}
+            done
+        done
+    fi
+}
+
 numConfigsBeingRun=0
 
 #variables used inside parallel
 OUT_DIR=all_build_configs
 LOG_FILE=${OUT_DIR}/buildAllConfigs.log
+
 JSON_FILE=${OUT_DIR}/buildAllConfigs.json
+JOB_LOGFILE=${OUT_DIR}/jobsLogFile.log
 
 if [[ ! -d ${OUT_DIR} ]]; then
     mkdir -p ${OUT_DIR}
 fi
 
+T42_DEBUG=0
 RUN_BUILD=1
+FORCE_QT=1
 RUN_CMAKE=1
 VERBOSE=0
-PARALLEL=1
+T42_PARALLEL=1
 T42_CMAKEUTILS_DIR=$(cygpath -m $(realpath ../T42-CMakeUtils/))
 declare -A CONFIGS_TO_RUN=()
 declare -a CONFIGS
@@ -1040,9 +1164,17 @@ if [[ -f ${JSON_FILE} ]]; then
     mv ${JSON_FILE} ${JSON_FILE}.bak
 fi
 
+BASH_SHELL_WRAPPER=${OUT_DIR}/bash.sh
 techoVerbose "Creating bash shell wrapper: $BASH_SHELL_WRAPPER\n"
-BASH_SHELL_WRAPPER=$(realpath ./bash.sh)
-printf "/usr/bin/bash.exe \"\$@\"\n" > $BASH_SHELL_WRAPPER
+BASH_SHELL_WRAPPER=$(realpath "${BASH_SHELL_WRAPPER}")
+if [[ ${T42_DEBUG} == 1 ]]; then 
+    printf "echo ============\necho /usr/bin/bash.exe \"\$@\"\necho ============\n" > $BASH_SHELL_WRAPPER
+else
+    rm -rf ${BASH_SHELL_WRAPPER}
+fi
+printf "/usr/bin/bash.exe \"\$@\"\n" >> $BASH_SHELL_WRAPPER
+
+chmod +x ${BASH_SHELL_WRAPPER}
 export PARALLEL_SHELL=$BASH_SHELL_WRAPPER
 
 GLOBAL_COUNT_FILE=${OUT_DIR}/configsRunFile.txt
@@ -1052,32 +1184,11 @@ touch "${JSON_FILE}"
 
 showGlobalHeader
 
-if [[ ${PARALLEL} == 1 ]]; then 
-    PASS_VARS_OPT=()
-    
-    validateVariables
-    
-    dryRunOpt=""
-    if [[ ${DRY_RUN} == 1 ]]; then
-        dryRunOpt=--dry-run
-    fi
-    PASS_VARS_OPT=${PASS_VARS_OPT[@]}
-    # echo PASS_VARS_OPT=${PASS_VARS_OPT}
-    numParallel=-j+0
-    env_parallel \
-        --eta \
-        ${dryRunOpt} \
-        ${numParallel} \
-        --env _ \
-        runConfig "{1}" "{2}" ::: "${sequence[@]}" ::: "${qt_sequence[@]}"
-else
-    for ii in "${sequence[@]}"; do
-        for forceQt in "${qt_sequence[@]}"; do
-            runConfig $ii ${forceQt}
-        done
-    done
-fi
+run
 
 reportSummary
 
-rm -rf ${BASH_SHELL_WRAPPER}
+if [[ ${T42_DEBUG} == 0 ]]; then 
+    techoVerbose "Removing created shell wrapper"
+    rm -rf ${BASH_SHELL_WRAPPER}
+fi    
