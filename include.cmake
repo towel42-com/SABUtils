@@ -50,6 +50,13 @@ set(project_SRCS
     ${OS_SRCS}
 )
 
+if ( Qt6Core_FOUND )
+    set(project_SRCS 
+        ${project_SRCS}
+        SystemLoggingDefs.cpp
+    )
+endif()
+
 set(qtproject_CPPMOC_SRCS
 )
 
