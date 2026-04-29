@@ -397,14 +397,14 @@ validateEnvSize() {
     
     local -i totalSize=0
 
-    validateObjectSizes totalSize 37 "function" "Functions" functions currText
+    validateObjectSizes totalSize 38 "function" "Functions" functions currText
     local -i status=$?
     techo "%s" "${currText}" 
     if [[ ${status} != 0 ]]; then
         return 1
     fi
 
-    validateObjectSizes totalSize 17 "variable" "Variables" variables currText
+    validateObjectSizes totalSize 18 "variable" "Variables" variables currText
     local -i status=$?
     techo "%s" "${currText}" 
     if [[ ${status} != 0 ]]; then
@@ -948,14 +948,26 @@ addToGlobalRunFile() {
 teeToError() {
     local extraFile=${2:-""}
     if [[ ! -z ${extraFile} ]]; then
-        tee -a "${LOG_FILE}" ${2:-""} 2>&1
+        tee -a "${LOG_FILE}" "${extraFile}" 2>&1
     else
         tee -a "${LOG_FILE}" 2>&1
     fi
 }
 
+getEchoPrefix() {
+    local prefix=""
+    if [[ ( ${T42_PARALLEL} == 1 ) && ( ${RUN_NUMBER} != -1 ) ]]; then
+        printf -v prefix "%d> " "$((RUN_NUMBER+1))"
+    fi
+    echo "${prefix}"
+}
+
 techo() {
-    printf "$@" | teeToOutput
+    local lcl
+    printf -v lcl "$@"
+    local prefix=$(getEchoPrefix)
+    local fmt="${prefix}%s"
+    printf "${fmt}" "${lcl}" | teeToOutput
 }
 
 techoColoredText() {
@@ -1073,18 +1085,19 @@ printAllValues() {
     local -n array=$2
     local space=$3
     
+    local prefix=${prefix}
     if [[ -z "$space" ]]; then
         space=${#arrayName}
     fi
 
-    printf -v ${retValTextName} "%${space}s: " $arrayName
+    printf -v ${retValTextName} "%s%${space}s: " "${prefix}" $arrayName
     if [[ ${#array[@]} == 0 ]]; then
         printf -v ${retValTextName} "%s<EMPTY>\n" "${retValTextName}"
     else
         printf -v ${retValTextName} "%s#%d\n" "${retValTextName}" ${#array[@]}
         space=$(($space + 2))
         for val in "${array[@]}"; do
-            printf -v ${retValTextName} "%s%${space}s%s\n" "${retValTextName}" "" $val
+            printf -v ${retValTextName} "%s%s%${space}s%s\n" "${retValTextName}" "${prefix}" "" $val
         done
     fi
 }
@@ -1237,23 +1250,23 @@ getOSC8Url() {
 }
 
 printConfigHeader() {
-    local runNumber=$1
-    local configNum=$2
-    local configName=$3
-    local forceQt=$4
-    local forceDLL=$5
-    local localLogFile=$6
-    local localJSONFile=$7
+    local configNum=$1
+    local configName=$2
+    local forceQt=$3
+    local forceDLL=$4
+    local localLogFile=$5
+    local localJSONFile=$6
     
+    local prefix=$(getEchoPrefix)
     local headerText=""
     if [[ ${T42_PARALLEL} == 1 ]]; then
         printf -v headerText "\n"
     fi
-    printf -v headerText "%s%s\n" "${headerText}" "$(headerLineText)"
+    printf -v headerText "%s%s%s\n" "${headerText}" "${prefix}" "$(headerLineText)"
 
-    percent=$(( (100*${runNumber}) / ${NUM_CONFIGS_BEING_RUN} ))
+    percent=$(( (100*${RUN_NUMBER}) / ${NUM_CONFIGS_BEING_RUN} ))
 
-    printf -v headerText "%s%s[%d of %d (%d%%)]%s" "${headerText}" "$(printColorCode "GREEN")" $runNumber ${NUM_CONFIGS_BEING_RUN} ${percent} "$(printEndColor)"
+    printf -v headerText "%s%s%s[%d of %d (%d%%)]%s" "${headerText}" "${prefix}" "$(printColorCode "GREEN")" $RUN_NUMBER ${NUM_CONFIGS_BEING_RUN} ${percent} "$(printEndColor)"
     printf -v headerText "%s - Configuration #%d QT=%s DLL=%s" "${headerText}" $configNum ${forceQt} ${forceDLL}
     if [[ ${T42_PARALLEL} == 0 ]]; then
         local failedText="0"
@@ -1293,7 +1306,7 @@ printConfigHeader() {
         if [[ "$def" =~ "declare -a" || "$def" =~ "declare -A" ]]; then
             printAllValues headerText ${var} ${size}
         else
-            printf -v headerText "%s%${size}s: %s\n" "${headerText}" $var ${!var}
+            printf -v headerText "%s%s%${size}s: %s\n" "${headerText}" "${prefix}" $var ${!var}
         fi
     done
     techo "%s" "${headerText}"
@@ -1377,9 +1390,10 @@ reportResult() {
     local addOutputOnError=$4
     local extraSpace=$5
     
-    local spacing="        "
+    local prefix=$(getEchoPrefix)
+    local spacing="${prefix}        "
     if [[ ${extraSpace} == 1 ]]; then
-        spacing="            "
+        spacing+="    "
     fi
     
     if [[ $status == -1 ]]; then # skipped
@@ -1522,8 +1536,9 @@ runBuild() {
         msConfigs=(RelWithDebInfo)
     fi
     
+    local prefix=$(getEchoPrefix)
     for msBuildConfig in "${msConfigs[@]}"; do
-        echo "        Running Build Configuration-$msBuildConfig" | tee -a ${LOG_FILE} ${localLogFile}
+        echo "${prefix}        Running Build Configuration-$msBuildConfig" | tee -a ${LOG_FILE} ${localLogFile}
 
         if [[ ${RUN_BUILD} == 1 ]]; then
             local args=()
@@ -1541,10 +1556,10 @@ runBuild() {
             echo "${args[@]}" > $argFile
             
             if [[ ${VERBOSE} == 1 ]]; then
-                echo "=====================================" | teeToOutput "${localLogFile}" 
-                echo "               CMD: $msbuild \"@${argFile}\"" | teeToOutput "${localLogFile}" 
-                echo "  argfile contents: ${args[@]}" | teeToOutput "${localLogFile}" 
-                echo "=====================================" | teeToOutput "${localLogFile}" 
+                echo "${prefix}=====================================" | teeToOutput "${localLogFile}" 
+                echo "${prefix}               CMD: $msbuild \"@${argFile}\"" | teeToOutput "${localLogFile}" 
+                echo "${prefix}  argfile contents: ${args[@]}" | teeToOutput "${localLogFile}" 
+                echo "${prefix}=====================================" | teeToOutput "${localLogFile}" 
             fi
             
             "$msbuild" @"${argFile}" |& teeToOutput "${localLogFile}" 
@@ -1563,7 +1578,7 @@ runBuild() {
         fi
     done
     
-    echo "    All build Configuration Status" | teeToOutput ${LOG_FILE} "${localLogFile}" 
+    echo "${prefix}    All build Configuration Status" | teeToOutput ${LOG_FILE} "${localLogFile}" 
     reportResultWithLog BUILD_STATUS $allBuildsStatus "${localLogFile}"
     if [[ ${allBuildsStatus} == -1 ]]; then
         allBuildsStatus=0
@@ -1593,7 +1608,7 @@ runConfig() {
     local -a currConfigArray=()
     readarray -d ";" -t currConfigArray <<< "$currConfigString"
 
-    local runNumber=${currConfigArray[0]}
+    RUN_NUMBER=${currConfigArray[0]}
     local configNum=${currConfigArray[1]}
     local forceQt="${currConfigArray[2]}"
     local forceDLL="${currConfigArray[3]}"
@@ -1612,7 +1627,7 @@ runConfig() {
     addToGlobalRunFile "${configName}"
 
     local status=0
-    printConfigHeader $runNumber $configNum $configName $forceQt $forceDLL $localLogFile $localJSONFile
+    printConfigHeader $RUN_NUMBER $configNum $configName $forceQt $forceDLL $localLogFile $localJSONFile
     if [[ ${skipConfig} == 1 ]]; then 
         if [[ ! -d ${OUT_DIR}/${configName} ]]; then
             mkdir -p ${OUT_DIR}/${configName}
@@ -1686,6 +1701,7 @@ run() {
         
         declare -a PARALLEL_OPTS=(
             "--eta" 
+            "--progress"
             "--termseq" 
             "INT,2000,KILL,20" 
             "--keep-order" 
@@ -1725,6 +1741,7 @@ CMAKE_STATUS=skipped
 BUILD_STATUS=skipped
 
 NUM_CONFIGS_BEING_RUN=0
+RUN_NUMBER=-1
 
 #variables used inside parallel
 OUT_DIR=all_build_configs
