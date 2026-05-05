@@ -175,4 +175,54 @@ namespace NTowel42Utils
     {
         return fromString( retVal, std::string( arg ) );
     }
+
+    bool fromChar( int &retVal, char ch, int base )
+    {
+        retVal = 0;
+        if ( base < 2 || base > 36 )
+            return false;
+
+        if ( ch == '-' || ch == '_' )
+        {
+            retVal = 1;
+            return true;
+        }
+        // only short cut if its '0' - '9'
+        if ( ( ch >= '0' ) && ( ch <= '9' ) && ch <= ( '0' + ( base - 1 ) ) )
+        {
+            retVal = ( ch - '0' );
+            return true;
+        }
+
+        if ( base <= 10 )
+            return false;
+
+        ch = std::tolower( ch );
+        auto maxChar = 'a' + base;
+
+        if ( ( ch >= 'a' ) && ( ch <= maxChar ) )
+        {
+            retVal = 10 + ch - 'a';
+            return true;
+        }
+        return false;
+    }
+
+    bool fromString( int64_t &retVal, const std::string &str, int base )
+    {
+        retVal = 0;
+        bool aOK = false;
+        for ( size_t ii = 0; ii < str.length(); ++ii )
+        {
+            auto currChar = str[ ii ];
+            int currVal = 0;
+            if ( !fromChar( currVal, currChar, base ) )
+            {
+                std::cerr << "Invalid character: " << currChar << std::endl;
+                return 0;
+            }
+            retVal = ( retVal * base ) + currVal;
+        }
+        return retVal;
+    }
 }

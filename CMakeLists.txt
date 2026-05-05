@@ -25,11 +25,15 @@ cmake_minimum_required(VERSION 3.30)
 MACRO(CheckQtComponent whichLibVar components)
     if ( ${${whichLibVar}} )
         foreach( component ${components} )
-            set( VARNAME TOWEL42_Q${component}_SUPPORT )
-            string( TOUPPER ${VARNAME} VARNAME )
-            
-            MESSAGE( AUTHOR_WARNING "  ${whichLibVar} requires ${VARNAME} to be set." )
-            SET( ${VARNAME} ON )
+            set( _QT_LIB_NAME Qt${component}_FOUND )
+            if ( NOT "${_QT_LIB_NAME}" )
+                #            set( VARNAME TOWEL42_Q${component}_SUPPORT )
+                #            string( TOUPPER ${VARNAME} VARNAME )
+
+                MESSAGE( AUTHOR_WARNING "  ${whichLibVar} requires the following Qt library 'Qt${component}'." )
+                LIST( APPEND QtLibList ${component} )
+            endif()
+            unset( _QT_LIB_NAME )
         endforeach()
     endif()
 ENDMACRO()
@@ -55,12 +59,13 @@ SET( TOWEL42_QSVG_SUPPORT OFF CACHE BOOL "Enable QSvg Support" )
 SET( TOWEL42_QWIDGETS_SUPPORT OFF CACHE BOOL "Enable QWidgets and QGui Support" )
 SET( TOWEL42_QXML_SUPPORT OFF CACHE BOOL "Enable QXml Support" )
 
+SET( QtLibList "" )
+
 CheckQtComponent( TOWEL42_DESIGNERPLUGIN_SUPPORT "Core;Widgets;Gui;UiPlugin")
-CheckQtComponent( TOWEL42_BIFSUPPORT "Core;Widgets" )
+CheckQtComponent( TOWEL42_BIFSUPPORT Core )
 CheckQtComponent( TOWEL42_GIFSUPPORT Core)
 CheckQtComponent( TOWEL42_ZIP_SUPPORT Core )
 
-SET( QtLibList "" )
 if ( TOWEL42_VSINSTALLER_SUPPORT )
     LIST( APPEND QtLibList AxContainer )
     SET( TOWEL42_MOC_OPTIONS ${TOWEL42_MOC_OPTIONS} -DQT_AXCONTAINER_LIB )
@@ -146,10 +151,11 @@ find_package(Threads REQUIRED)
 find_package(IncludeProjectSettings REQUIRED)
 
 if ( TOWEL42_FORCE_QT_FOR_CONFIG_TESTING )
-    find_package( Qt6 COMPONENTS Core REQUIRED )
+    LIST( APPEND QtLibList Core )
 endif()
 
 if ( QtLibList )
+    message( STATUS "The following Qt libraries have been set for loading: ${QtLibList}" )
     find_package( Qt6 COMPONENTS ${QtLibList} REQUIRED )
 endif()
 
@@ -159,7 +165,7 @@ if ( TOWEL42_DESIGNERPLUGIN_SUPPORT )
 endif()
 
 include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
-    
+
 IncludeProjectSettings()
 
 add_compile_definitions( 
@@ -174,6 +180,7 @@ endif()
 if( WIN32 AND TOWEL42_VSINSTALLER_SUPPORT )
     include( "${CMAKE_CURRENT_LIST_DIR}/CMakeNuGetTools/cmake/NuGetTools.cmake" )
     UNSET( NUGET_COMMAND CACHE )
+    file( REAL_PATH ~/bin HOME_BIN_DIR EXPAND_TILDE)
     find_program( 
         NUGET_COMMAND 
         nuget.exe 

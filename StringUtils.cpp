@@ -2442,6 +2442,40 @@ namespace NTowel42Utils
         }
 #endif
 
+        std::wstring toPercentEncoding( const std::wstring &url, const std::wstring &exclude /*= {}*/, const std::wstring &include /*= {} */, wchar_t percent /*='%'*/ )
+        {
+            if ( url.empty() )
+                return {};
+
+            std::wostringstream escaped;
+            escaped.fill( '0' );
+            escaped << std::hex;
+
+            for ( wchar_t c : url )
+            {
+                if ( ( c != percent ) //
+                      && ( //
+                          std::isalnum( c ) //
+                          || c == 0x2d // -
+                          || c == 0x2E // .
+                          || c == 0x5F // _
+                          || c == 0x7E // ~
+                          || ( exclude.find( c ) != std::string::npos ) //
+                      ) //
+                      && (include.find(c) == std::string::npos) //
+                    )
+                {
+                    escaped << c;
+                    continue;
+                }
+                        
+                // Any other character is percent-encoded
+                escaped << '%' << std::uppercase << std::hex <<  std::setw( 2 ) << static_cast< int >( c ) << std::nouppercase;
+            }
+
+            return escaped.str();
+        }
+
         bool isDiacriticalCharacter( const wchar_t &ch, std::wstring *ascii )
         {
             static auto map = std::map< wchar_t, std::wstring >( {

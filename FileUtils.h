@@ -32,6 +32,7 @@
 #include <unordered_map>
 #include <optional>
 #include <functional>
+#include <filesystem>
 
 #ifdef QT_CORE_LIB
     #include <QStringList>
@@ -66,11 +67,15 @@ namespace NTowel42Utils
         TOWEL42_UTILS_EXPORT bool isDirectory( const std::string &path );
 
         TOWEL42_UTILS_EXPORT bool renameFile( const std::string &oldfileName, const std::string &newFileName, bool force = false );
-        TOWEL42_UTILS_EXPORT std::string getWd();
+        TOWEL42_UTILS_EXPORT std::string getCWD();
         TOWEL42_UTILS_EXPORT std::string tilda2Home( const std::string &fileName );
         TOWEL42_UTILS_EXPORT std::string JoinPaths( const std::string &dir, const std::string &file );
         TOWEL42_UTILS_EXPORT bool mkdir( std::string &dir, bool makeParents = true );   // dir gets set to absolute path
         TOWEL42_UTILS_EXPORT bool mkdir( const std::string &dir, bool makeParents = true );   //
+        TOWEL42_UTILS_EXPORT bool mkdir( std::wstring &dir, bool makeParents = true );   // dir gets set to absolute path
+        TOWEL42_UTILS_EXPORT bool mkdir( const std::wstring &dir, bool makeParents = true );   //
+        TOWEL42_UTILS_EXPORT bool mkdir( const std::filesystem::path &dir, bool makeParents = true );   //
+
         TOWEL42_UTILS_EXPORT bool pathCompare( const std::string &lhs, const std::string &rhs );   // return is lhs is the same path as rhs
         TOWEL42_UTILS_EXPORT std::string normalizePath( const std::string &path, const std::string &relToDir = std::string() );   // removes ".." and "." replaces all "\" with "/"
 

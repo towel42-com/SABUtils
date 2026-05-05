@@ -43,7 +43,6 @@
 #include <sstream>
 #include <codecvt>
 
-
 #include <cctype>
 #include <optional>
 
@@ -538,10 +537,13 @@ namespace NTowel42Utils
         TOWEL42_UTILS_EXPORT bool isValidEmailAddress( const QString &email );
 
         TOWEL42_UTILS_EXPORT QString toCSV( const QStringList &data );
-        TOWEL42_UTILS_EXPORT QString textToIdentifier( const QString &text, bool camelCase );;   // camel case or _ separators, _ will be all lower case
+        TOWEL42_UTILS_EXPORT QString textToIdentifier( const QString &text, bool camelCase );
+        ;   // camel case or _ separators, _ will be all lower case
 #endif
         TOWEL42_UTILS_EXPORT std::wstring replaceDiacriticalCharacters( const std::wstring &str );
         TOWEL42_UTILS_EXPORT bool isDiacriticalCharacter( const wchar_t &ch, std::wstring *ascii = nullptr );
+
+        TOWEL42_UTILS_EXPORT std::wstring toPercentEncoding( const std::wstring &url, const std::wstring &exclude = {}, const std::wstring &include = {}, wchar_t percent ='%' );
     }
 }
 #endif

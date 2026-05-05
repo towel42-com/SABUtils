@@ -159,7 +159,6 @@ namespace NTowel42Utils
 
     TOWEL42_UTILS_EXPORT void toDigits( int64_t val, int base, std::pair< int8_t *, uint32_t > &retVal, size_t &numDigits, bool *aOK = nullptr );
     TOWEL42_UTILS_EXPORT std::string toString( int64_t val, int base );
-    TOWEL42_UTILS_EXPORT int64_t fromString( const std::string &str, int base );
 
 #ifdef QT_CORE_LIB
     TOWEL42_UTILS_EXPORT QString secsToString( quint64 seconds );

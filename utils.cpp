@@ -51,38 +51,6 @@
 
 namespace NTowel42Utils
 {
-    int fromChar( char ch, int base, bool &aOK )
-    {
-        aOK = false;
-        if ( base < 2 || base > 36 )
-            return 0;
-
-        if ( ch == '-' || ch == '_' )
-        {
-            aOK = true;
-            return 1;
-        }
-        // only short cut if its '0' - '9'
-        if ( ( ch >= '0' ) && ( ch <= '9' ) && ch <= ( '0' + ( base - 1 ) ) )
-        {
-            aOK = true;
-            return ( ch - '0' );
-        }
-
-        if ( base <= 10 )
-            return 0;
-
-        ch = std::tolower( ch );
-        auto maxChar = 'a' + base;
-
-        if ( ( ch >= 'a' ) && ( ch <= maxChar ) )
-        {
-            aOK = true;
-            return 10 + ch - 'a';
-        }
-        return 0;
-    }
-
     char toChar( int value )
     {
         if ( ( value >= 0 ) && ( value < 10 ) )
@@ -128,24 +96,6 @@ namespace NTowel42Utils
         while ( val != 0 );
         if ( isNeg )
             retVal.insert( retVal.begin(), '-' );
-        return retVal;
-    }
-
-    int64_t fromString( const std::string &str, int base )
-    {
-        int64_t retVal = 0;
-        bool aOK = false;
-        for ( size_t ii = 0; ii < str.length(); ++ii )
-        {
-            auto currChar = str[ ii ];
-            int64_t currVal = fromChar( currChar, base, aOK );
-            if ( !aOK )
-            {
-                std::cerr << "Invalid character: " << currChar << std::endl;
-                return 0;
-            }
-            retVal = ( retVal * base ) + currVal;
-        }
         return retVal;
     }
 

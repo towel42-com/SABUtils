@@ -28,15 +28,17 @@
 #include "WindowsError.h"
 #include "SetupSystemLogging.h"
 
-#include <QDebug>
-#include <QFile>
-#include <QFileInfo>
-#include <QDir>
-#include <QDateTime>
-#include <QDirIterator>
-#include <QStringView >
-#include <QVector>
-#include <QRegularExpression>
+#ifdef QT_CORE_LIB
+    #include <QDebug>
+    #include <QFile>
+    #include <QFileInfo>
+    #include <QDir>
+    #include <QDateTime>
+    #include <QDirIterator>
+    #include <QStringView >
+    #include <QVector>
+    #include <QRegularExpression>
+#endif
 
 #include <unordered_set>
 #include <unordered_map>
@@ -44,7 +46,11 @@
 #include <iostream>
 #include <algorithm>
 #ifdef WIN32
-    #include <qt_windows.h>
+    #ifdef QT_CORE_LIB
+        #include <qt_windows.h>
+    #else
+        #include <windows.h>
+    #endif
 #else
     #include <wordexp.h>
     #include <sys/stat.h>
@@ -105,6 +111,7 @@ namespace NTowel42Utils
             }
         }
 
+#ifdef QT_CORE_LIB
         bool extCompare( const std::string &pattern, const std::string &extension, bool wildcards )
         {
             if ( pattern.empty() || extension.empty() )
@@ -163,6 +170,7 @@ namespace NTowel42Utils
 
             return matches;
         }
+#endif
 
         bool isRelativePath( const std::string &relPath )
         {
@@ -214,9 +222,10 @@ namespace NTowel42Utils
 
         std::string getAbsoluteFilePath( const std::string &relFilePath )
         {
-            return getAbsoluteFilePath( getWd(), relFilePath );
+            return getAbsoluteFilePath( getCWD(), relFilePath );
         }
 
+#ifdef QT_CORE_LIB
         std::string getRelativePath( const std::string &absPath, const std::string &dir )
         {
             std::string retVal;
@@ -232,7 +241,7 @@ namespace NTowel42Utils
 
         QString driveSpec( const QString &path )
         {
-#if defined( Q_OS_WIN )
+    #if defined( WIN32 )
             if ( path.size() < 2 )
                 return QString();
             char c = path.at( 0 ).toLatin1();
@@ -241,12 +250,12 @@ namespace NTowel42Utils
             if ( path.at( 1 ).toLatin1() != ':' )
                 return QString();
             return path.mid( 0, 2 );
-#else
+    #else
             (void)path;
             return QString();
-#endif
+    #endif
         }
-
+#endif
         bool isBinaryFile( const std::string &fileName )   // if any char in the first 100 characters is non std::isprint return true
         {
             return isBinaryFile( fileName, std::string() );
@@ -285,6 +294,7 @@ namespace NTowel42Utils
             return false;
         }
 
+#ifdef QT_CORE_LIB
         QString expandEnvVars( const QString &fileName, std::set< QString > *envVars )
         {
             static QStringList regExStrings = {
@@ -333,12 +343,12 @@ namespace NTowel42Utils
                 if ( pos != -1 )
                 {
                     auto lVarName = QStringLiteral( "${%1}" );
-#ifdef Q_OS_WIN
+    #ifdef WIN32
                     if ( !forceUnix )
                         lVarName = QStringLiteral( "%%1%" );
-#else
+    #else
                     (void)forceUnix;
-#endif
+    #endif
                     lVarName = lVarName.arg( ii );
                     lRetVal.replace( pos, lValue.length(), lVarName );
                 }
@@ -383,7 +393,7 @@ namespace NTowel42Utils
             return true;
         }
 
-        TOWEL42_UTILS_EXPORT bool isIPAddressNetworkPath( const QFileInfo &info )
+        bool isIPAddressNetworkPath( const QFileInfo &info )
         {
             auto path = info.absoluteFilePath();
             if ( !path.startsWith( "//" ) && !path.startsWith( R"__(\\)__" ) )
@@ -401,7 +411,7 @@ namespace NTowel42Utils
         {
             return isIPAddressNetworkPath( QFileInfo( info ) );
         }
-
+#endif
         template< typename T >
         std::pair< T, T > correctFixedPointRemainder( T inValue, uint8_t precisionIn, uint8_t precisionOut )
         {
@@ -437,6 +447,7 @@ namespace NTowel42Utils
             return std::make_pair( value, overflow );
         }
 
+#ifdef QT_CORE_LIB
         QString byteSizeString( uint64_t size, bool prettyPrint, bool use1024ForKSize, uint8_t precision, bool spaceBeforeSuffix, const QString &typeNameSuffix )
         {
             if ( !prettyPrint )
@@ -491,7 +502,7 @@ namespace NTowel42Utils
                 return file;
 
             bool fileDriveMissing = false;
-#ifdef Q_OS_WIN
+    #ifdef WIN32
             QString dirDrive = driveSpec( dir );
             QString fileDrive = driveSpec( file );
 
@@ -507,23 +518,23 @@ namespace NTowel42Utils
             dir.remove( 0, dirDrive.size() );
             if ( !fileDriveMissing )
                 file.remove( 0, fileDrive.size() );
-#endif
+    #endif
 
             QString result;
-#if defined( Q_OS_WIN )
+    #if defined( WIN32 )
             QStringList dirElts = dir.split( QLatin1Char( '/' ), NStringUtils::TSkipEmptyParts );
             QStringList fileElts = file.split( QLatin1Char( '/' ), NStringUtils::TSkipEmptyParts );
-#else
+    #else
             QVector< QStringView > dirElts = dir.splitRef( QLatin1Char( '/' ), NStringUtils::TSkipEmptyParts );
             QVector< QStringView > fileElts = file.splitRef( QLatin1Char( '/' ), NStringUtils::TSkipEmptyParts );
-#endif
+    #endif
             int ii = 0;
             while ( ii < dirElts.size() && ii < fileElts.size() &&
-#if defined( Q_OS_WIN )
+    #if defined( WIN32 )
                     dirElts.at( ii ).toLower() == fileElts.at( ii ).toLower() )
-#else
+    #else
                     dirElts.at( ii ) == fileElts.at( ii ) )
-#endif
+    #endif
                 ++ii;
 
             if ( !fileDriveMissing && ( ii == 0 ) && !dirElts.isEmpty() )   // has a drive AND goes all the way to the root level AND the drive is not at root
@@ -543,7 +554,7 @@ namespace NTowel42Utils
                 return QLatin1String( "." );
             return result;
         }
-
+#endif
         std::string getAbsoluteFilePath( const std::string &dir, const std::string &relFilePath )
         {
             if ( isAbsPath( relFilePath ) )
@@ -561,50 +572,66 @@ namespace NTowel42Utils
         //////////////////////////////////////////////////////////////////////////
         bool exists( const std::string &name )
         {
-            return exists( QString::fromStdString( name ) );
+            return std::filesystem::exists( name );
         }
 
+#ifdef QT_CORE_LIB
         bool exists( const QString &name )
         {
             if ( name.isEmpty() )
                 return false;
             return QFileInfo( name ).exists();
         }
+#endif
 
         bool isReadable( const std::string &name )
         {
-            return isReadable( QString::fromStdString( name ) );
+            std::error_code ec;
+            auto status = std::filesystem::status( name, ec );
+            if ( ec )
+                return false;   // Path doesn't exist or other OS error
+
+            auto perms = status.permissions();
+            // Check if any read permission is set
+            return ( perms & ( std::filesystem::perms::owner_read | std::filesystem::perms::group_read | std::filesystem::perms::others_read ) ) != std::filesystem::perms::none;
         }
 
+#ifdef QT_CORE_LIB
         bool isReadable( const QString &name )
         {
             if ( name.isEmpty() )
                 return false;
             return QFileInfo( name ).isReadable();
         }
+#endif
+
         bool isRegularFile( const std::string &name )
         {
-            return isRegularFile( QString::fromStdString( name ) );
+            return std::filesystem::is_regular_file( name );
         }
 
+#ifdef QT_CORE_LIB
         bool isRegularFile( const QString &name )
         {
             if ( name.isEmpty() )
                 return false;
             return QFileInfo( name ).isFile();
         }
+#endif
 
         bool isDirectory( const std::string &name )
         {
-            return isDirectory( QString::fromStdString( name ) );
+            return std::filesystem::is_directory( name );
         }
 
+#ifdef QT_CORE_LIB
         bool isDirectory( const QString &name )
         {
             if ( name.isEmpty() )
                 return false;
             return QFileInfo( name ).isDir();
         }
+#endif
 
         bool renameFile( const std::string &from, const std::string &to, bool force )
         {
@@ -625,50 +652,23 @@ namespace NTowel42Utils
             return true;
         }
 
-        bool copyFile( const std::string &from, const std::string &to, bool force )
+        bool copy( const std::string &fileName, const std::string &newFileName )
         {
-            if ( force && exists( to ) )
-            {
-                if ( !removePath( to ) )
-                {
-                    fprintf( stderr, "Error deleting file '%s' to rename '%s' to '%s'\n", to.c_str(), from.c_str(), to.c_str() );
-                    return false;
-                }
-            }
-
-            if ( !QFile::copy( QString::fromStdString( from ), QString::fromStdString( to ) ) )
-            {
-                fprintf( stderr, "Error copying file '%s' to '%s'\n", from.c_str(), to.c_str() );
-                return false;
-            }
-            return true;
+            std::error_code ec;
+            std::filesystem::copy( fileName, newFileName, ec );
+            return ec.operator bool();
         }
 
-        //////////////////////////////////////////////////////////////////////////
-        // getWd() : return the working directory in 'buffer'. With Windows,
-        // you have to specify the maximum size of the buffer in maxLen.
-        //////////////////////////////////////////////////////////////////////////
-        std::string getWd()
+        std::string getCWD()
         {
-            auto retVal = QDir::currentPath();
-            return canonicalFilePath( retVal.toStdString() );
+            auto retVal = std::filesystem::current_path();
+            return canonicalFilePath( retVal.string() );
         }
 
-        /******************************************************************
-        Function: tilda2Home
-        Date: 8/8/07
-        Comments:
-        * xlate ~<user> name to user's home directory
-
-        Parameters:
-
-        Revision History:
-
-        *******************************************************************/
         std::string tilda2Home( const std::string &fileName )
         {
             std::string retVal = fileName;
-#ifndef Q_OS_WINDOWS
+#ifndef WIN32
             wordexp_t result;
             if ( wordexp( fileName.c_str(), &result, 0 ) != 0 )
                 return fileName;
@@ -681,9 +681,10 @@ namespace NTowel42Utils
 
         std::string canonicalFilePath( const std::string &fileName )
         {
-            return canonicalFilePath( QString::fromStdString( fileName ) ).toStdString();
+            return std::filesystem::canonical( fileName ).string();
         }
 
+#ifdef QT_CORE_LIB
         QString canonicalFilePath( const QString &fileName )
         {
             QFileInfo fi( QFileInfo( fileName ).absoluteFilePath() );
@@ -693,7 +694,7 @@ namespace NTowel42Utils
             else
             {
                 retVal = fi.canonicalFilePath();
-#ifdef Q_OS_WIN
+    #ifdef WIN32
                 if ( !retVal.isEmpty() && ( retVal.length() < 2 || retVal[ 1 ] != ':' ) )
                 {
                     if ( retVal.mid( 0, 3 ).toLower() == "unc" )
@@ -702,25 +703,41 @@ namespace NTowel42Utils
                         retVal.remove( 0, 1 );
                     retVal = fi.absoluteFilePath().mid( 0, 3 ) + retVal;
                 }
-#endif
+    #endif
             }
             return retVal;
         }
-
+#endif
         bool mkdir( const std::string &relDir, bool makeParents )
         {
-            std::string tmpDir = relDir;
-            return mkdir( tmpDir, makeParents );
+            return mkdir( std::filesystem::path( relDir ), makeParents );
         }
 
         bool mkdir( std::string &dirName, bool makeParents )
         {
-            QDir dir( QString::fromStdString( dirName ) );
-            dirName = dir.absolutePath().toStdString();
+            dirName = std::filesystem::absolute( dirName ).string();
+            auto retVal = mkdir( std::filesystem::path( dirName ), makeParents );
+            return retVal;
+        }
+
+        bool mkdir( const std::wstring &relDir, bool makeParents )
+        {
+            return mkdir( std::filesystem::path( relDir ), makeParents );
+        }
+
+        bool mkdir( std::wstring &dirName, bool makeParents )
+        {
+            dirName = std::filesystem::absolute( dirName ).wstring();
+            return mkdir( std::filesystem::path( dirName ), makeParents );
+        }
+
+        bool mkdir( const std::filesystem::path &dir, bool makeParents )
+        {
+            std::error_code ec;
             if ( makeParents )
-                return dir.mkpath( "." );
+                return std::filesystem::create_directories( dir );
             else
-                return dir.mkdir( "." );
+                return std::filesystem::create_directory( dir );
         }
 
         // lhs can be a pattern
@@ -801,7 +818,7 @@ namespace NTowel42Utils
                 }
                 if ( tmp.empty() )
                 {
-                    std::string currDir = normalizePath( relToDir.empty() ? getWd() : relToDir );
+                    std::string currDir = normalizePath( relToDir.empty() ? getCWD() : relToDir );
                     tmp = NStringUtils::splitString( currDir, '/', false );
                 }
                 retVal = NStringUtils::joinString( tmp, '/', true );
@@ -838,33 +855,38 @@ namespace NTowel42Utils
             return dir + "/" + fileName + "." + newExt;
         }
 
-        bool copy( const std::string &fileName, const std::string &newFileName )
-        {
-            return QFile::copy( QString::fromStdString( fileName ), QString::fromStdString( newFileName ) );
-        }
-
         std::list< std::string > getSubDirs( const std::string &dirString, bool recursive, bool includeTopDir )
         {
-            QDir dir( QString::fromStdString( dirString ) );
-            if ( !dir.exists() )
-                return std::list< std::string >();
-
-            QDirIterator::IteratorFlags flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
+            if ( !std::filesystem::is_directory( dirString ) )
+                return {};
 
             std::list< std::string > retVal;
             if ( includeTopDir )
                 retVal = { dirString };
-            QDirIterator di( dir.absolutePath(), QDir::AllDirs | QDir::NoDotAndDotDot | QDir::Readable, flags );
-            while ( di.hasNext() )
+
+            if ( recursive )
             {
-                QString str = di.next();
-                retVal.push_back( str.toStdString() );
-                if ( recursive )
+                for ( const auto &entry : std::filesystem::recursive_directory_iterator( dirString ) )
                 {
-                    auto subs = getSubDirs( str.toStdString(), true, false );
-                    retVal.insert( retVal.end(), subs.begin(), subs.end() );
+                    // Check if the current entry is a directory
+                    if ( entry.is_directory() )
+                    {
+                        retVal.emplace_back( entry.path().string() );
+                    }
                 }
             }
+            else
+            {
+                for ( const auto &entry : std::filesystem::directory_iterator( dirString ) )
+                {
+                    // Check if the current entry is a directory
+                    if ( entry.is_directory() )
+                    {
+                        retVal.emplace_back( entry.path().string() );
+                    }
+                }
+            }
+
             return retVal;
         }
 
@@ -874,7 +896,7 @@ namespace NTowel42Utils
                 return std::list< std::string >();
 
             char splitChar = ':';
-#ifdef Q_OS_WIN
+#ifdef WIN32
             splitChar = ';';
 #endif
             auto paths = NStringUtils::splitString( searchPath, splitChar, true );
@@ -884,7 +906,7 @@ namespace NTowel42Utils
         std::string getPathFromDirs( const std::list< std::string > &dirs )
         {
             char joinChar = ':';
-#ifdef Q_OS_WIN
+#ifdef WIN32
             joinChar = ';';
 #endif
             auto retVal = NStringUtils::joinString( dirs, joinChar, true );
@@ -897,25 +919,19 @@ namespace NTowel42Utils
         std::string getSystemFileName( const std::string &fileName, const std::string &relToDir )
         {
             static std::map< std::string, std::string > sFileNameMap;
-            std::map< std::string, std::string >::iterator ii = sFileNameMap.find( fileName );
+            auto ii = sFileNameMap.find( fileName );
             if ( ii == sFileNameMap.end() )
             {
-                QDir cwd;
-                if ( relToDir.empty() )
-                    cwd.setPath( QDir::currentPath() );
-                else
-                    cwd = QDir( QString::fromStdString( relToDir ) );
+                auto cwd = std::filesystem::current_path();
+                if ( !relToDir.empty() )
+                    cwd = std::filesystem::path( relToDir );
 
-                QString fn = QString::fromStdString( NFileUtils::canonicalFilePath( fileName ) );
-                std::string relPath;
-                if ( !fn.isEmpty() )
-                    relPath = NFileUtils::getRelativePath( cwd, fn ).toStdString();
+                std::filesystem::path relPath;
+                if ( !fileName.empty() )
+                    relPath /= fileName;
 
-                if ( relPath.empty() )
-                    relPath = fileName;
-
-                sFileNameMap[ fileName ] = relPath;
-                return relPath;
+                sFileNameMap[ fileName ] = relPath.string();
+                return relPath.string();
             }
             else
                 return ( *ii ).second;
@@ -936,6 +952,7 @@ namespace NTowel42Utils
             }
         }
 
+#ifdef QT_CORE_LIB
         QStringList dumpResources( const QDir &resourceDir, bool ignoreInternal )
         {
             QStringList retVal;
@@ -988,18 +1005,18 @@ namespace NTowel42Utils
                 return setTimeStamp( path, dt, msg );
 
             bool retVal = setTimeStamp( path, dt, QFileDevice::FileAccessTime, msg );
-#ifdef Q_OS_WIN
+    #ifdef WIN32
             retVal = retVal && setTimeStamp( path, dt, QFileDevice::FileBirthTime, msg );
-#endif
+    #endif
 
-#ifndef Q_OS_WIN
+    #ifndef WIN32
             retVal = retVal && setTimeStamp( path, dt, QFileDevice::FileMetadataChangeTime, msg );
-#endif
+    #endif
             retVal = retVal && setTimeStamp( path, dt, QFileDevice::FileModificationTime, msg );
             return retVal;
         }
 
-#ifdef WIN32
+    #ifdef WIN32
         static inline bool toFileTime( const QDateTime &date, FILETIME *fileTime )
         {
             SYSTEMTIME sTime;
@@ -1078,12 +1095,12 @@ namespace NTowel42Utils
             }
             return true;
         }
-#endif
+    #endif
 
         bool setDirTimeStamp( const QString &path, const QDateTime &dt, QFileDevice::FileTime ft, QString *msg )
         {
             bool retVal = false;
-#ifdef Q_OS_WINDOWS
+    #ifdef WIN32
             auto handle = CreateFileW( (wchar_t *)path.utf16(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS, NULL );
 
             if ( handle == INVALID_HANDLE_VALUE )
@@ -1094,13 +1111,13 @@ namespace NTowel42Utils
             }
             retVal = setDirTimeStamp( handle, dt, ft, msg );
             CloseHandle( handle );
-#else
+    #else
             (void)path;
             (void)dt;
             (void)ft;
             (void)msg;
             retVal = true;
-#endif
+    #endif
             return retVal;
         }
 
@@ -1154,17 +1171,17 @@ namespace NTowel42Utils
             if ( ts.isValid() )
                 aOK = aOK && setTimeStamp( path, ts, QFileDevice::FileAccessTime, msg );
 
-#ifdef Q_OS_WIN
+    #ifdef WIN32
             ts = refFile.fileTime( QFileDevice::FileBirthTime );
             if ( ts.isValid() )
                 aOK = aOK && setTimeStamp( path, ts, QFileDevice::FileBirthTime, msg );
-#endif
+    #endif
 
-#ifndef Q_OS_WIN
+    #ifndef WIN32
             ts = refFile.fileTime( QFileDevice::FileMetadataChangeTime );
             if ( ts.isValid() )
                 aOK = aOK && setTimeStamp( path, ts, QFileDevice::FileMetadataChangeTime, msg );
-#endif
+    #endif
 
             ts = refFile.fileTime( QFileDevice::FileModificationTime );
             if ( ts.isValid() )
@@ -1215,11 +1232,11 @@ namespace NTowel42Utils
             std::list< QFileDevice::FileTime > timeStampsToGet;
 
             timeStampsToGet.push_back( QFile::FileAccessTime );
-#ifdef Q_OS_WIN
+    #ifdef WIN32
             timeStampsToGet.push_back( QFile::FileBirthTime );
-#else
+    #else
             timeStampsToGet.push_back( QFile::FileMetadataChangeTime );
-#endif
+    #endif
             timeStampsToGet.push_back( QFile::FileModificationTime );
             return timeStamps( path, timeStampsToGet );
         }
@@ -1240,7 +1257,7 @@ namespace NTowel42Utils
         bool fileHasAttribute( const QFileInfo &file, EAttribute attribute )
         {
             bool retVal = false;
-#ifdef Q_OS_WIN
+    #ifdef WIN32
             DWORD winAttribute = 0;
             switch ( attribute )
             {
@@ -1264,7 +1281,7 @@ namespace NTowel42Utils
             DWORD attr = GetFileAttributesW( (WCHAR *)fileName.utf16() );
             if ( attr != INVALID_FILE_ATTRIBUTES )
                 retVal = ( attr & winAttribute ) != 0;
-#else
+    #else
             switch ( attribute )
             {
                 case EAttribute::eReadOnly:
@@ -1277,7 +1294,7 @@ namespace NTowel42Utils
                     retVal = false;
                     break;
             }
-#endif
+    #endif
             return retVal;
         }
 
@@ -1338,9 +1355,9 @@ namespace NTowel42Utils
 
         QString getCorrectPathCase( QString path )   // note, on linux returns path, windows does the actual analysis
         {
-#ifndef Q_OS_WINDOWS
+    #ifndef WIN32
             return path;
-#else
+    #else
             path = QDir::toNativeSeparators( QFileInfo( path.toLower() ).absoluteFilePath() );
 
             static std::unordered_map< QString, QString > sMap;
@@ -1441,7 +1458,7 @@ namespace NTowel42Utils
             }
             sMap[ path ] = retVal;
             return retVal;
-#endif
+    #endif
         }
 
         std::pair< uint32_t, uint32_t > getVersionInfoFromFile32( const QString &fileName, bool &aOK )
@@ -1501,5 +1518,6 @@ namespace NTowel42Utils
             }
             return { major, minor, patchHi, patchLow };
         }
+#endif
     }
 }

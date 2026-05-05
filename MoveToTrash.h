@@ -27,21 +27,14 @@
 #include "Towel42UtilsExport.h"
 
 #include <string>
-#include <list>
-#include <set>
+#include <filesystem>
 #include <memory>
-#include <unordered_map>
 #ifdef QT_CORE_LIB
-    #include <QStringList>
-    #include <QFileDevice>
-    #include <QList>
+class QFileInfo;
+class QString;
 #endif
 #include <memory>
 
-class QFileInfo;
-class QDateTime;
-class QString;
-class QDir;
 
 namespace NTowel42Utils
 {
@@ -57,9 +50,12 @@ namespace NTowel42Utils
             bool fInteractive{ false };
         };
 
+#ifdef QT_CORE_LIB
         TOWEL42_UTILS_EXPORT bool moveToTrash( const QFileInfo &info, QString *msg = nullptr, std::shared_ptr< SRecycleOptions > options = {} );
         TOWEL42_UTILS_EXPORT bool moveToTrash( const QString &fileName, QString *msg = nullptr, std::shared_ptr< SRecycleOptions > options = {} );
-        TOWEL42_UTILS_EXPORT bool moveToTrash( const std::string &fileName, std::string *msg = nullptr, std::shared_ptr< SRecycleOptions > options = {} );
+#endif
+        TOWEL42_UTILS_EXPORT bool moveToTrash( const std::wstring &fileName, std::wstring *msg = nullptr, std::shared_ptr< SRecycleOptions > options = {} );
+        TOWEL42_UTILS_EXPORT bool moveToTrash( const std::filesystem::path &fileName, std::wstring *msg = nullptr, std::shared_ptr< SRecycleOptions > options = {} );
     }
 }
 #endif

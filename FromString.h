@@ -28,6 +28,7 @@
 
 #include <string>
 #include <sstream>
+#include <cstdint>
 namespace NTowel42Utils
 {
 
@@ -65,5 +66,8 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT bool fromString( float &retVal, const char *arg );
     TOWEL42_UTILS_EXPORT bool fromString( bool &retVal, const char *arg );
     TOWEL42_UTILS_EXPORT bool fromString( bool &retVal, const std::string &arg );
+
+    TOWEL42_UTILS_EXPORT bool fromChar( char ch, int base );
+    TOWEL42_UTILS_EXPORT bool fromString( int64_t & retVal, const std::string &str, int base );
 }
 #endif

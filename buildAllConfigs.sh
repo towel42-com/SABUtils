@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 
+before=$(compgen -A variable -A function)
 . ~/bin/scripts/buildAllConfigs.sh
 
 T42_CMAKEUTILS_DIR=$(cygpath -m $(realpath ../T42-CMakeUtils/))
@@ -34,5 +35,16 @@ set -- "$@" "${args[@]}"
 unset args
 unset T42_CMAKEUTILS_DIR
 
+#declare -A depFuncs
+#getDependentFunctions --noprint runConfig depFuncs
+
+#declare -A depVars=()
+#getGlobalVarsInFunctions depFuncs depVars
+
+set +o nounset
+
 buildAllConfigs "$@"
 
+after=$(compgen -A variable -A function)
+
+#echo $after | grep -Fvx "$before"

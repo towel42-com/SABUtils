@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>NTowel42Utils::CGIFWriterDlg</class>
- <widget class="QDialog" name="NTowel42Utils::CGIFWriterDlg">
+ <class>NTowel42Utils::CBIFToGIFWriterDlg</class>
+ <widget class="QDialog" name="NTowel42Utils::CBIFToGIFWriterDlg">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -173,7 +173,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>NTowel42Utils::CGIFWriterDlg</receiver>
+   <receiver>NTowel42Utils::CBIFToGIFWriterDlg</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -189,7 +189,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>NTowel42Utils::CGIFWriterDlg</receiver>
+   <receiver>NTowel42Utils::CBIFToGIFWriterDlg</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
