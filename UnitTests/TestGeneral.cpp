@@ -26,6 +26,7 @@
 #include "../QtUtils.h"
 #include "../FileUtils.h"
 #include "../RegExUtils.h"
+#include "../FromString.h"
 
 #ifdef QT_CORE_LIB
     #include <QCoreApplication>
@@ -162,38 +163,39 @@ namespace
 
     TEST( TestUtils, fromChar )
     {
-        bool aOK;
-        EXPECT_EQ( 1, NTowel42Utils::fromChar( '-', 16, aOK ) );
-        EXPECT_TRUE( aOK );
+        int value = 0;
+        EXPECT_TRUE( NTowel42Utils::fromChar( value, '-', 16 ) );
+        EXPECT_EQ( 1, value );
 
-        EXPECT_EQ( 1, NTowel42Utils::fromChar( '_', 16, aOK ) );
-        EXPECT_TRUE( aOK );
+        EXPECT_TRUE( NTowel42Utils::fromChar( value, '_', 16 ) );
+        EXPECT_EQ( 1, value );
 
-        EXPECT_EQ( 0, NTowel42Utils::fromChar( '0' + 15, 12, aOK ) );
-        EXPECT_FALSE( aOK );
+        EXPECT_FALSE( NTowel42Utils::fromChar( value, '0' + 15, 12 ) );
+        EXPECT_EQ( 0, value );
 
-        EXPECT_EQ( 0, NTowel42Utils::fromChar( '0' + 11, 12, aOK ) );
-        EXPECT_FALSE( aOK );
+        EXPECT_FALSE( NTowel42Utils::fromChar( value, '0' + 11, 12 ) );
+        EXPECT_EQ( 0, value );
 
-        EXPECT_EQ( 11, NTowel42Utils::fromChar( 'b', 12, aOK ) );
-        EXPECT_TRUE( aOK );
+        EXPECT_TRUE( NTowel42Utils::fromChar( value, 'b', 12 ) );
+        EXPECT_EQ( 11, value );
 
         for ( int base = 2; base < 36; ++base )
         {
             for ( int jj = 0; ( jj < 9 ) && ( jj < base ); ++jj )
             {
-                EXPECT_EQ( jj, NTowel42Utils::fromChar( '0' + jj, base, aOK ) ) << "Failed: Char: " << (char)jj << " Base: " << base;
-                EXPECT_TRUE( aOK );
+                EXPECT_TRUE( NTowel42Utils::fromChar( value, '0' + jj, base ) ) << "Failed: Char: " << (char)jj << " Base: " << base;
+                EXPECT_EQ( jj, value );
             }
             for ( int jj = 'a'; jj < 'a' + ( base - 10 ); ++jj )
             {
-                EXPECT_EQ( 10 + jj - 'a', NTowel42Utils::fromChar( jj, base, aOK ) ) << "Failed: Char: " << (char)jj << " Base: " << base;
-                EXPECT_TRUE( aOK );
+                int value = 0;
+                EXPECT_TRUE( NTowel42Utils::fromChar( value, jj, base ) ) << "Failed: Char: " << (char)jj << " Base: " << base;
+                EXPECT_EQ( 10 + jj - 'a', value );
             }
             for ( int jj = 'A'; jj < 'A' + ( base - 10 ); ++jj )
             {
-                EXPECT_EQ( 10 + jj - 'A', NTowel42Utils::fromChar( jj, base, aOK ) ) << "Failed: Char: " << (char)jj << " Base: " << base;
-                EXPECT_TRUE( aOK );
+                EXPECT_TRUE( NTowel42Utils::fromChar( value, jj, base ) ) << "Failed: Char: " << (char)jj << " Base: " << base;
+                EXPECT_EQ( 10 + jj - 'A', value );
             }
         }
     }
@@ -254,9 +256,13 @@ namespace
 
     TEST( TestUtils, fromString )
     {
-        EXPECT_EQ( 10, NTowel42Utils::fromString( "a", 16 ) );
-        EXPECT_EQ( 255, NTowel42Utils::fromString( "ff", 16 ) );
-        EXPECT_EQ( 1234567890, NTowel42Utils::fromString( "1234567890", 10 ) );
+        long value = 0;
+        ASSERT_TRUE( NTowel42Utils::fromString( value, "a", 16 ) );
+        EXPECT_EQ( 10, value );
+        ASSERT_TRUE( NTowel42Utils::fromString( value, "ff", 16 ) );
+        EXPECT_EQ( 255, value );
+        ASSERT_TRUE( NTowel42Utils::fromString( value, "1234567890", 10 ) );
+        EXPECT_EQ( 1234567890, value );
     }
 
     TEST( TestUtils, computeFactors )
@@ -292,7 +298,8 @@ namespace
         {
             for ( auto &&jj : ii.second )
             {
-                auto decValue = NTowel42Utils::fromString( jj, ii.first );
+                long decValue = 0;
+                ASSERT_TRUE( NTowel42Utils::fromString( decValue, jj, ii.first ) );
                 EXPECT_TRUE( NTowel42Utils::isNarcissistic( decValue, ii.first, aOK ) ) << "base=" << ii.first << " Number: " << jj << "(" << decValue << ")";
                 EXPECT_TRUE( aOK );
             }
@@ -904,7 +911,8 @@ namespace
         EXPECT_EQ( 3, *ii++ );
         EXPECT_EQ( ints.end(), ii );
 
-        ints = NTowel42Utils::intsFromString( "E1 E2 E3", QStringLiteral( R"((E|Episode\s*)?)" ), false );
+        auto episodeRegex = QStringLiteral( R"((E|Episode\s*)?)" );
+        ints = NTowel42Utils::intsFromString( "E1 E2 E3", episodeRegex, false );
         ASSERT_EQ( 3, ints.size() );
 
         ii = ints.begin();
@@ -913,7 +921,7 @@ namespace
         EXPECT_EQ( 3, *ii++ );
         EXPECT_EQ( ints.end(), ii );
 
-        ints = NTowel42Utils::intsFromString( "E1-E3", QStringLiteral( R"((E|Episode\s*)?)" ), false );
+        ints = NTowel42Utils::intsFromString( "E1-E3", episodeRegex, false );
         ASSERT_EQ( 3, ints.size() );
 
         ii = ints.begin();
@@ -922,12 +930,35 @@ namespace
         EXPECT_EQ( 3, *ii++ );
         EXPECT_EQ( ints.end(), ii );
 
-        ints = NTowel42Utils::intsFromString( "E1E3", QStringLiteral( R"((E|Episode\s*)?)" ), false );
+        ints = NTowel42Utils::intsFromString( "E1E3", episodeRegex, false );
         ASSERT_EQ( 2, ints.size() );
 
         ii = ints.begin();
         EXPECT_EQ( 1, *ii++ );
         EXPECT_EQ( 3, *ii++ );
+        EXPECT_EQ( ints.end(), ii );
+
+        ints = NTowel42Utils::intsFromString( "E1E3E2", episodeRegex, false );
+        ASSERT_EQ( 3, ints.size() );
+
+        ii = ints.begin();
+        EXPECT_EQ( 1, *ii++ );
+        EXPECT_EQ( 3, *ii++ );
+        EXPECT_EQ( 2, *ii++ );
+        EXPECT_EQ( ints.end(), ii );
+
+        ints = NTowel42Utils::intsFromString( "E1E3E2,E5-E9", episodeRegex, false );
+        ASSERT_EQ( 8, ints.size() );
+
+        ii = ints.begin();
+        EXPECT_EQ( 1, *ii++ );
+        EXPECT_EQ( 3, *ii++ );
+        EXPECT_EQ( 2, *ii++ );
+        EXPECT_EQ( 5, *ii++ );
+        EXPECT_EQ( 6, *ii++ );
+        EXPECT_EQ( 7, *ii++ );
+        EXPECT_EQ( 8, *ii++ );
+        EXPECT_EQ( 9, *ii++ );
         EXPECT_EQ( ints.end(), ii );
     }
 
