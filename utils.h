@@ -45,6 +45,7 @@
 #include <optional>
 #ifdef QT_CORE_LIB
     #include <QString>
+    #include <QAnyStringView>
     #include <QDateTime>
     #include <QLocale>
     #include <QRegularExpression>
@@ -154,7 +155,6 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    TOWEL42_UTILS_EXPORT int fromChar( char ch, int base, bool &aOK );
     TOWEL42_UTILS_EXPORT char toChar( int value );
 
     TOWEL42_UTILS_EXPORT void toDigits( int64_t val, int base, std::pair< int8_t *, uint32_t > &retVal, size_t &numDigits, bool *aOK = nullptr );
@@ -574,7 +574,7 @@ namespace NTowel42Utils
         return QString::fromStdString( contiguousNumbersText( groupedNumbers, numDigits, prefix.toStdString() ) );
     }
 
-    TOWEL42_UTILS_EXPORT std::list< int > intsFromString( const QString &string, const QString &prefixRegEx = {}, bool sort = true, bool *aOK = nullptr );
+    TOWEL42_UTILS_EXPORT std::list< int > intsFromString( const QAnyStringView &string, const QString &prefixRegEx = {}, bool sort = true, bool *aOK = nullptr );
 #endif
 }
 #endif

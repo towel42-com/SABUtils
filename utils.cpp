@@ -339,15 +339,15 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    std::list< int > intsFromString( const QString &string, const QString &prefixRegEx, bool sort, bool *aOK )
+    std::list< int > intsFromString( const QAnyStringView &string, const QString &prefixRegEx, bool sort, bool *aOK )
     {
-        auto regExpStr1 = R"((^|[^A-Z])E(?<garbage3>PISODE)?(?<episode>\d{1,4})(?!(-|(E(EPISODE)?)))";
-        auto regExpStr2 = R"((^|[^A-Z])E(?<garbage1>PISODE)?(?<startEpisode>\d{1,4})(?<sep>\-)?E(?<garbage2>PISODE)?(?<endEpisode>\d{1,4}))";
+        auto firstNum = R"__((?:^|[^A-Z0-9a-z\-]))__" + prefixRegEx + R"__((?<%1>\d{1,4}))__";   // new word/start of line followed by prefix + first num
+        auto followOnNums = prefixRegEx + R"__((?<followOnNum>\d{1,4}))__";   // used when firstNumFound
+        auto secondNum = R"__((?<sep>[\-\:]))__" + prefixRegEx + R"__((?<endNum>\d{1,4}))__";   // seperator + prefix + endNum
 
-        auto firstNum = R"((?:^|[^A-Z0-9a-z\-]))" + prefixRegEx + R"((?<%1>\d{1,4}))";   // new word/start of line followed by prefix + first num
-        auto secondNum = R"((?<sep>[\-\:]))" + prefixRegEx + R"((?<endNum>\d{1,4}))";   // seperator + prefix + endNum
-
-        auto regExStr = "(?:" + firstNum.arg( "startNum" ) + secondNum + ")|(?:" + firstNum.arg( "num" ) + prefixRegEx + ")";
+        auto regExList = QStringList() << "(?:" + firstNum.arg( "startNum" ) + secondNum + ")";
+        regExList << "(?:" + firstNum.arg( "num" ) + ")";
+        auto regExStr = regExList.join( "|" );
 
         auto regEx = QRegularExpression( regExStr, QRegularExpression::CaseInsensitiveOption );
 
@@ -355,11 +355,11 @@ namespace NTowel42Utils
         {
             *aOK = false;
         }
-        Q_ASSERT( regEx.isValid() /*&& regEx2.isValid()*/ );
+        Q_ASSERT( regEx.isValid() );
 
         std::list< int > retVal;
 
-        auto ii = regEx.globalMatch( string );
+        auto ii = regEx.globalMatch( string.toString() );
         bool matchFound = false;
         while ( ii.hasNext() )
         {
@@ -372,6 +372,31 @@ namespace NTowel42Utils
                     return {};
                 retVal.push_back( currValue );
                 matchFound = true;
+
+                auto remaining = string.mid( match.capturedEnd( "num" ) );
+                if ( remaining.isEmpty() )
+                    continue;
+
+                auto intBreakRegEx = QStringLiteral( R"__((?:[^A-Z0-9a-z\-]))__" );
+                auto match = QRegularExpression( intBreakRegEx ).match( remaining.toString() );
+                if ( match.hasMatch() && ( match.capturedStart() == 0 ) )
+                {
+                    continue;
+                }
+
+                auto followOnRegEx = QRegularExpression( followOnNums, QRegularExpression::CaseInsensitiveOption );
+                Q_ASSERT( followOnRegEx.isValid() );
+                auto followOnMatch = followOnRegEx.match( remaining.toString() );
+                while ( followOnMatch.hasMatch() && ( followOnMatch.capturedStart() == 0 ) )
+                {
+                    auto followOn = followOnMatch.captured( "followOnNum" );
+                    currValue = followOn.toInt( &localAOK );
+                    if ( !localAOK )
+                        return {};
+                    retVal.push_back( currValue );
+                    remaining = remaining.mid( followOnMatch.capturedEnd() );
+                    followOnMatch = followOnRegEx.match( remaining.toString() );
+                }
             }
             else if ( !match.captured( "startNum" ).isEmpty() && !match.captured( "endNum" ).isEmpty() )
             {
