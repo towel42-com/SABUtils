@@ -62,44 +62,6 @@ namespace NTowel42Utils
         return aOK;
     }
 
-    bool fromString( long &retVal, const std::string &arg )
-    {
-        return fromString( retVal, arg, 10 );
-    }
-
-    bool fromString( long &retVal, const char *arg, int base )
-    {
-        return fromString( retVal, std::string( arg ), base );
-    }
-
-    bool fromString( int &retVal, const std::string &arg, int base )
-    {
-        long tmp;
-        bool aOK = fromString( tmp, arg, base );
-        if ( !aOK )
-            return false;
-        if ( ( tmp > INT_MAX ) || ( tmp < INT_MIN ) )
-            return false;
-
-        retVal = static_cast< int >( tmp );
-        return true;
-    }
-
-    bool fromString( int &retVal, const std::string &arg )
-    {
-        return fromString( retVal, arg, 10 );
-    }
-
-    bool fromString( int &retVal, const char *arg, int base )
-    {
-        return fromString( retVal, std::string( arg ), base );
-    }
-
-    bool fromString( int &retVal, const char *arg )
-    {
-        return fromString( retVal, std::string( arg ) );
-    }
-
     bool fromString( double &retVal, const std::string &arg )
     {
         retVal = 0;
@@ -206,23 +168,5 @@ namespace NTowel42Utils
             return true;
         }
         return false;
-    }
-
-    bool fromString( int64_t &retVal, const std::string &str, int base )
-    {
-        retVal = 0;
-        bool aOK = false;
-        for ( size_t ii = 0; ii < str.length(); ++ii )
-        {
-            auto currChar = str[ ii ];
-            int currVal = 0;
-            if ( !fromChar( currVal, currChar, base ) )
-            {
-                std::cerr << "Invalid character: " << currChar << std::endl;
-                return 0;
-            }
-            retVal = ( retVal * base ) + currVal;
-        }
-        return retVal;
     }
 }
