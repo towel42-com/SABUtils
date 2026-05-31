@@ -50,7 +50,7 @@
 
 #ifdef TOWEL42_GIFSUPPORT
     #include "GIFWriter.h"
-    #include "GIFWriterDlg.h"
+    #include "BIFToGIFWriterDlg.h"
 #endif
 #include "bif/BIFPlugin.h"
 
@@ -754,7 +754,7 @@ namespace NTowel42Utils
             if ( !fBIF || ( fBIF->imageCount() == 0 ) )
                 return;
 #ifdef TOWEL42_GIFSUPPORT
-            CGIFWriterDlg dlg( this );
+            CBIFToGIFWriterDlg dlg( this );
             dlg.setBIF( fBIF );
             dlg.setSpeedMultipler( fPlayerSpeedMultiplerSB->value() );
             dlg.setDelay( gifDelay() );
