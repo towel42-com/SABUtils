@@ -32,13 +32,18 @@ ENDIF()
 
 set(qtproject_SRCS
     BIFPlugin.cpp
-    ../BIFFile.cpp
-    ../FindAllFiles.cpp
-    ../BackupFile.cpp
-    ../MoveToTrash.cpp
-    ../FileUtils_Remove.cpp
-    ../SystemLoggingDefs.cpp
     BIFIOHandler.cpp
+    ../BackupFile.cpp
+    ../BIFFile.cpp
+    ../FileUtils.cpp
+    ../FileUtils_Remove.cpp
+    ../FindAllFiles.cpp
+    ../FromString.cpp
+    ../MoveToTrash.cpp
+    ../RegExUtils.cpp
+    ../StringComparisonClasses.cpp
+    ../StringUtils.cpp
+    ../SystemLoggingDefs.cpp
     ${OS_SRCS}
 )
 

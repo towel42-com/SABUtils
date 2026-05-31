@@ -568,12 +568,6 @@ namespace NTowel42Utils
     }
 
 #ifdef QT_CORE_LIB
-    template< typename T, typename = std::enable_if< std::is_integral_v< T > > >
-    QString contiguousNumbersText( const std::list< std::list< T > > &groupedNumbers, int numDigits = 1, const QString &prefix = {} )
-    {
-        return QString::fromStdString( contiguousNumbersText( groupedNumbers, numDigits, prefix.toStdString() ) );
-    }
-
     TOWEL42_UTILS_EXPORT std::list< int > intsFromString( const QAnyStringView &string, const QString &prefixRegEx = {}, bool sort = true, bool *aOK = nullptr );
 #endif
 }

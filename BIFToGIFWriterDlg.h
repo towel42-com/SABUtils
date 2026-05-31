@@ -1,4 +1,4 @@
-#if defined( TOWEL42_GIFSUPPORT ) && defined( TOWEL42_GIFSUPPORT )
+#if defined( TOWEL42_GIFSUPPORT )
 // The MIT License( MIT )
 //
 // Copyright( c ) 2026 Towel 42 Development, LLC and Scott Aron Bloom
@@ -50,8 +50,8 @@ namespace NTowel42Utils
     public:
         CBIFToGIFWriterDlg( QWidget *parent = nullptr );
         #ifdef TOWEL42_BIFSUPPORT
-        CBIFToGIFWriterDlg::CBIFToGIFWriterDlg( std::shared_ptr< NBIF::CFile > bifFile, QWidget *parent = nullptr );
-        CBIFToGIFWriterDlg::CBIFToGIFWriterDlg( std::shared_ptr< NBIF::CFile > bifFile, int delayInMSec, QWidget *parent = nullptr );
+        CBIFToGIFWriterDlg( std::shared_ptr< NBIF::CFile > bifFile, QWidget *parent = nullptr );
+        CBIFToGIFWriterDlg( std::shared_ptr< NBIF::CFile > bifFile, int delayInMSec, QWidget *parent = nullptr );
         #endif
 
         ~CBIFToGIFWriterDlg();

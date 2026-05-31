@@ -206,7 +206,7 @@ namespace NTowel42Utils
         std::map< QString, QString > fReverseAliasMap;
     };
 
-#ifdef QT_WIDGETS_LIB
+#ifdef QT_CORE_LIB
     class TOWEL42_UTILS_EXPORT CStringFilterModel : public QSortFilterProxyModel
     {
         Q_OBJECT
