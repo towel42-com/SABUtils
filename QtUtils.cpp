@@ -1111,6 +1111,81 @@ namespace NTowel42Utils
             return value.toString();
     }
 
+    QString variantToString( const QVariant &var )
+    {
+        // 1. Handle Null or Invalid variants
+        if ( !var.isValid() || var.isNull() )
+        {
+            return QStringLiteral( "" );
+        }
+
+        int typeId = var.typeId();
+        switch ( typeId )
+        {
+            case QMetaType::QString:
+                return var.toString();
+            case QMetaType::QPoint:
+                {
+                    auto &&p = var.toPoint();
+                    return QString( "Point(%1, %2)" ).arg( p.x() ).arg( p.y() );
+                }
+            case QMetaType::QPointF:
+                {
+                    auto &&p = var.toPointF();
+                    return QString( "PointF(%1, %2)" ).arg( p.x() ).arg( p.y() );
+                }
+            case QMetaType::QSize:
+                {
+                    auto &&s = var.toSize();
+                    return QString( "Size(%1x%2)" ).arg( s.width() ).arg( s.height() );
+                }
+            case QMetaType::QRect:
+                {
+                    auto &&r = var.toRect();
+                    return QString( "Rect(%1, %2, %3x%4)" ).arg( r.x() ).arg( r.y() ).arg( r.width() ).arg( r.height() );
+                }
+            case QMetaType::QUrl:
+                return var.toUrl().toString();
+            case QMetaType::QByteArray:
+                return QString::fromUtf8( var.toByteArray() );
+            case QMetaType::QDate:
+                return var.toDate().toString( Qt::ISODate );
+            case QMetaType::QTime:
+                return var.toTime().toString( Qt::ISODate );
+            case QMetaType::QDateTime:
+                return var.toDateTime().toString( Qt::ISODate );
+            default:
+                break;
+        }
+
+        // 3. Handle Sequential Containers (Lists, Arrays, StringLists)
+        if ( var.canConvert< QVariantList >() )
+        {
+            QStringList elements;
+            const QVariantList list = var.toList();
+            for ( const QVariant &item : list )
+            {
+                elements.append( variantToString( item ) );   // Recursive conversion
+            }
+            return elements.join( ", " );
+        }
+
+        // 4. Handle Key-Value Maps / Dictionaries
+        if ( var.canConvert< QVariantMap >() )
+        {
+            QStringList pairs;
+            const QVariantMap map = var.toMap();
+            for ( auto it = map.constBegin(); it != map.constEnd(); ++it )
+            {
+                pairs.append( QString( "%1=%2" ).arg( it.key(), variantToString( it.value() ) ) );
+            }
+            return pairs.join( ", " );
+        }
+
+        // 7. Fallback for unregistered Custom User Types
+        return QString( "<Unconvertible Type: %1>" ).arg( var.typeName() );
+    }
+
     bool objectInheritsFromClass( const QObject *object, const QByteArray &classX, const std::optional< QByteArray > &classY )
     {
         const QMetaObject *metaObject = object->metaObject();
