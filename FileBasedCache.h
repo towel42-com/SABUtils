@@ -116,6 +116,11 @@ namespace NTowel42Utils
             fCache[ NTowel42Utils::SFileBasedCacheNode( path ) ] = object;
         }
 
+        void clear()
+        {
+            fCache.clear();
+            fFinishedCache.clear();
+        }
     private:
         void clear( const QString &path, bool pathOnlySearch )
         {
