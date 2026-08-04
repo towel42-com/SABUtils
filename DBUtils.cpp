@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifdef TOWEL42_QSQL_SUPPORT
+#ifdef QT_SQL_LIB
 
     #include "DBUtils.h"
     #include "SetupSystemLogging.h"
@@ -42,51 +42,58 @@
     #include <QStringList>
     #include <QThread>
     #include <tuple>
+    #include <QtGlobal>
+
+    #ifdef QT_CONCURRENT_LIB
+        #include <QFutureWatcher>
+        #include <QtConcurrentRun>
+        #include <QEventLoop>
+    #endif
 
 namespace NTowel42Utils
 {
-    bool runCmd( QSqlQuery &query, const QString &cmd, const QString &paramName, const QVariant &paramValue )
+    bool runCmd( QSqlQuery &query, const QString &cmd, const QString &paramName, const QVariant &paramValue, bool assert /*= true*/ )
     {
-        return runCmd( query, cmd, std::make_pair( paramName, paramValue ) );
+        return runCmd( query, cmd, std::make_pair( paramName, paramValue ), assert );
     }
 
-    bool runCmd( QSqlQuery &query, const QString &cmd, const std::pair< QString, QVariant > &param )
+    bool runCmd( QSqlQuery &query, const QString &cmd, const std::pair< QString, QVariant > &param, bool assert /*= true*/ )
     {
-        return runCmd( query, cmd, TParameterVariantMap( { { param.first, param.second } } ) );
+        return runCmd( query, cmd, TParameterVariantMap( { { param.first, param.second } } ), assert );
     }
 
-    bool runCmd( QSqlQuery &query )
+    bool runCmd( QSqlQuery &query, bool assert /*= true*/ )
     {
         if ( !query.exec() )
         {
-            reportError( query );
+            reportError( query, assert );
             return false;
         }
 
         return true;
     }
 
-    bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterStringMap &namedParams )
+    bool runCmd( QSqlQuery &query, const QString &cmd, const TParameterStringMap &namedParams, bool assert /*= true*/ )
     {
         NTowel42Utils::TParameterVariantMap params;
         for ( auto &&ii : namedParams )
         {
             params.insert( ii );
         }
-        return runCmd( query, cmd, params );
+        return runCmd( query, cmd, params, assert );
     }
 
-    bool runCmd( QSqlQuery &query, const QString &cmd, const QMap< QString, QVariant > &namedParams )
+    bool runCmd( QSqlQuery &query, const QString &cmd, const QMap< QString, QVariant > &namedParams, bool assert /*= true*/ )
     {
         NTowel42Utils::TParameterVariantMap params;
         for ( auto &&ii = namedParams.begin(); ii != namedParams.end(); ++ii )
         {
             params.emplace( ii.key(), ii.value() );
         }
-        return runCmd( query, cmd, params );
+        return runCmd( query, cmd, params, assert );
     }
 
-    bool runCmd( QSqlQuery &query, const TParameterVariantMap &params )
+    bool runCmd( QSqlQuery &query, const TParameterVariantMap &params, bool assert /*= true*/ )
     {
         for ( auto &&ii : params )
         {
@@ -98,8 +105,259 @@ namespace NTowel42Utils
         Q_ASSERT( query.boundValues().size() == params.size() );
         validateParams( query, params );
     #endif
-        return runCmd( query );
+        return runCmd( query, assert );
     }
+
+    bool runCmd( QSqlQuery &query, const QString &cmd, const NTowel42Utils::TParameterVariantMap &namedParams, bool assert /*= true*/ )
+    {
+        query.clear();
+
+        if ( !query.prepare( cmd ) )
+        {
+            reportError( query );
+            return false;
+        }
+
+        return runCmd( query, namedParams, assert );
+    }
+
+    bool runCmd( QSqlQuery &query, const QString &cmd, bool assert /*= true*/ )
+    {
+        query.clear();
+        if ( !query.prepare( cmd ) )
+        {
+            reportError( query, assert );
+            return false;
+        }
+
+        return runCmd( query, assert );
+    }
+
+    QString getThreadID()
+    {
+        auto currThread = QThread::currentThread();
+        auto retVal = QStringLiteral( "%1" ).arg( reinterpret_cast< uintptr_t >( currThread ) );
+        if ( currThread )
+            retVal += QStringLiteral( "%2" ).arg( currThread->objectName() );
+        return retVal;
+    }
+
+    QString getThreadName()
+    {
+        return QStringLiteral( "THREAD: %1" ).arg( getThreadID() );
+    }
+
+    #ifdef QT_CONCURRENT_LIB
+    QSqlDatabase getClonedDB( const QString &connectionName, QString *newDBConnectionName, QString msg )
+    {
+        auto clonedConnName = connectionName + QStringLiteral( "-%1" ).arg( getThreadID() );
+        QSqlDatabase retVal;
+        if ( newDBConnectionName && !newDBConnectionName->isEmpty() )
+        {
+            retVal = QSqlDatabase::database( *newDBConnectionName, false );
+        }
+        else
+        {
+            retVal = QSqlDatabase::cloneDatabase( connectionName, clonedConnName );
+            if ( newDBConnectionName )
+                *newDBConnectionName = clonedConnName;
+        }
+        if ( !retVal.open() )
+            return {};
+        return retVal;
+    }
+
+    std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, const QString &paramName, const QVariant &paramValue, QString *newDBConnectionName /*= nullptr*/ )
+    {
+        return runCmdInThread( connectionName, cmd, std::make_pair( paramName, paramValue ), newDBConnectionName );
+    }
+
+    std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, const std::pair< QString, QVariant > &param, QString *newDBConnectionName /*= nullptr*/ )
+    {
+        return runCmdInThread( connectionName, cmd, TParameterVariantMap( { { param.first, param.second } } ), newDBConnectionName );
+    }
+
+    std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, const TParameterStringMap &namedParams, QString *newDBConnectionName /*= nullptr*/ )
+    {
+        NTowel42Utils::TParameterVariantMap params;
+        for ( auto &&ii : namedParams )
+        {
+            params.insert( ii );
+        }
+
+        return runCmdInThread( connectionName, cmd, params, newDBConnectionName );
+    }
+
+    std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, const QMap< QString, QVariant > &namedParams, QString *newDBConnectionName /*= nullptr*/ )
+    {
+        TParameterVariantMap params;
+        auto ii = QMapIterator( namedParams );
+        while ( ii.hasNext() )
+        {
+            ii.next();
+            params[ ii.key() ] = ii.value();
+        }
+
+        return runCmdInThread( connectionName, cmd, params, newDBConnectionName );
+    }
+
+    std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, const TParameterVariantMap &params, QString *newDBConnectionName /*= nullptr*/ )
+    {
+        QFutureWatcher< bool > watcher;
+        QEventLoop loop;
+        QObject::connect( &watcher, &QFutureWatcher< bool >::finished, &loop, &QEventLoop::quit );
+
+        QString msg;
+        auto future = QtConcurrent::run(
+            [ newDBConnectionName, connectionName, cmd, &msg, params ]()
+            {
+                QString clonedConnName;
+                if ( newDBConnectionName )
+                    clonedConnName = *newDBConnectionName;
+                auto db = getClonedDB( connectionName, &clonedConnName, msg );
+                if ( !db.isValid() )
+                    return false;
+
+                if ( newDBConnectionName )
+                    *newDBConnectionName = clonedConnName;
+
+                QSqlQuery query( db );
+                if ( !runCmd( query, cmd, params, false ) )
+                {
+                    auto retVal = reportError( query, false, &msg ) || false;
+                    if ( !newDBConnectionName )
+                        QSqlDatabase::removeDatabase( clonedConnName );
+                    return retVal;
+                }
+
+                if ( newDBConnectionName )
+                {
+                    auto dbName = NTowel42Utils::databaseName( db );
+                    if ( db.databaseName() != dbName )
+                        db.setDatabaseName( dbName );
+                }
+                else
+                    QSqlDatabase::removeDatabase( clonedConnName );
+
+                return true;
+            } );
+
+        watcher.setFuture( future );
+        loop.exec();
+
+        auto result = future.result();
+        return std::make_pair( result, msg );
+    }
+
+    std::pair< bool, QString > runCmdInThread( const QString &connectionName, const QString &cmd, QString *newDBConnectionName /*= nullptr*/ )
+    {
+        QFutureWatcher< bool > watcher;
+        QEventLoop loop;
+        QObject::connect( &watcher, &QFutureWatcher< bool >::finished, &loop, &QEventLoop::quit );
+
+        QString msg;
+        auto future = QtConcurrent::run(
+            [ newDBConnectionName, connectionName, cmd, &msg ]()
+            {
+                QString clonedConnName;
+                if ( newDBConnectionName )
+                    clonedConnName = *newDBConnectionName;
+                auto db = getClonedDB( connectionName, &clonedConnName, msg );
+                if ( !db.isValid() )
+                    return false;
+
+                if ( newDBConnectionName )
+                    *newDBConnectionName = clonedConnName;
+
+                QSqlQuery query( db );
+
+                if ( !runCmd( query, cmd, false ) )
+                {
+                    auto retVal = reportError( query, false, &msg ) || false;
+                    if ( !newDBConnectionName )
+                        QSqlDatabase::removeDatabase( clonedConnName );
+                    return retVal;
+                }
+
+                if ( newDBConnectionName )
+                {
+                    auto dbName = NTowel42Utils::databaseName( db );
+                    if ( db.databaseName() != dbName )
+                        db.setDatabaseName( dbName );
+                }
+                else
+                    QSqlDatabase::removeDatabase( clonedConnName );
+
+                return true;
+            } );
+        watcher.setFuture( future );
+
+        loop.exec();
+
+        auto result = future.result();
+        return std::make_pair( result, msg );
+    }
+
+    TOWEL42_UTILS_EXPORT std::pair< bool, QString > runCmdsInThread( const QString &connectionName, const QStringList &cmds, const std::function< bool() > &contFunc /*= {} */, QString *newDBConnectionName /*= nullptr*/ )
+    {
+        QFutureWatcher< bool > watcher;
+        QEventLoop loop;
+        QObject::connect( &watcher, &QFutureWatcher< bool >::finished, &loop, &QEventLoop::quit );
+
+        QString msg;
+        auto future = QtConcurrent::run(
+            [ connectionName, cmds, &newDBConnectionName, &msg, &contFunc ]()
+            {
+                QString clonedConnName;
+                if ( newDBConnectionName )
+                    clonedConnName = *newDBConnectionName;
+                auto db = getClonedDB( connectionName, &clonedConnName, msg );
+                if ( !db.isValid() )
+                    return false;
+                if ( newDBConnectionName )
+                    *newDBConnectionName = clonedConnName;
+
+                QSqlQuery query( db );
+                for ( int ii = 0; ii < cmds.count(); ++ii )
+                {
+                    qCDebug( t42utils_dbUtils ) << "Running SQL Command: " << ( ii + 1 ) << " of " << cmds.count();
+                    auto aOK = runCmd( query, cmds[ ii ], false );
+                    if ( !aOK )
+                    {
+                        return reportError( query, false, &msg ) || false;
+                    }
+                    if ( contFunc )
+                    {
+                        if ( !contFunc() )
+                            return false;
+                    }
+                }
+                return true;
+            } );
+        watcher.setFuture( future );
+        loop.exec();
+        return { watcher.result(), msg };
+    }
+
+    std::pair< bool, QString > runCmdsInThread( const QString &connectionName, const QString &cmd, const std::function< void( const QString &, int, int ) > &setupProgressFunc /*= {}*/, const std::function< bool() > &contFunc /*= {}*/, QString *newDBConnectionName /*= nullptr */ )
+    {
+        qCDebug( t42utils_dbUtils ) << "Splitting command:";
+        if ( setupProgressFunc )
+        {
+            setupProgressFunc( QStringLiteral( "Determining Commands" ), 0, 0 );
+        }
+
+        auto cmds = NTowel42Utils::splitCommands( cmd );
+
+        if ( setupProgressFunc )
+        {
+            setupProgressFunc( QStringLiteral( "Creating test database" ), 0, cmds.size() );
+        }
+
+        return NTowel42Utils::runCmdsInThread( connectionName, cmds, contFunc, newDBConnectionName );
+    }
+
+    #endif
 
     bool validateOnly( QSqlQuery &query, const QString &cmd, bool assert )
     {
@@ -136,59 +394,41 @@ namespace NTowel42Utils
         return aOK;
     }
 
-    bool runCmd( QSqlQuery &query, const QString &cmd, const NTowel42Utils::TParameterVariantMap &namedParams )
+    bool reportError( const QSqlError &error, bool assert, QString *msg /*=nullptr*/ )
     {
-        query.clear();
+        if ( msg )
+            msg->clear();
 
-        if ( !query.prepare( cmd ) )
-        {
-            reportError( query );
-            return false;
-        }
-
-        return runCmd( query, namedParams );
-    }
-
-    bool runCmd( QSqlQuery &query, const QString &cmd )
-    {
-        query.clear();
-        if ( !query.prepare( cmd ) )
-        {
-            reportError( query );
-            return false;
-        }
-
-        return runCmd( query );
-    }
-
-    QString getThreadName()
-    {
-        auto currThread = QThread::currentThread();
-        QString retVal = QString( "THREAD: %1_%2" ).arg( reinterpret_cast< uintptr_t >( currThread ) ).arg( currThread ? currThread->objectName() : "" );
-        return retVal;
-    }
-
-    bool reportError( const QSqlError &error, bool assert )
-    {
         if ( error.type() != QSqlError::NoError )
         {
             qCDebug( t42utils_dbUtils_reportError ) << getThreadName() << ": " << error.driverText();
             qCDebug( t42utils_dbUtils_reportError ) << getThreadName() << ": " << error.databaseText();
+            if ( msg )
+            {
+                *msg = error.driverText();
+                auto msg2 = error.databaseText();
+                if ( *msg != msg2 )
+                {
+                    *msg += ". " + msg2;
+                }
+                return false;
+            }
             if ( assert )
                 Q_ASSERT( error.type() == QSqlError::NoError );
             return false;
         }
+
         return true;
     }
 
-    bool reportError( const QSqlQuery &query, bool assert )
+    bool reportError( const QSqlQuery &query, bool assert, QString *msg )
     {
-        return reportError( query.lastError(), assert );
+        return reportError( query.lastError(), assert, msg );
     }
 
-    bool reportError( const QSqlDatabase &db, bool assert )
+    bool reportError( const QSqlDatabase &db, bool assert, QString *msg )
     {
-        return reportError( db.lastError(), assert );
+        return reportError( db.lastError(), assert, msg );
     }
 
     QStringList paramsInCmd( const QString &cmdText, bool namedOnly )
@@ -271,6 +511,15 @@ namespace NTowel42Utils
         if ( close )
             db.close();
         return true;
+    }
+
+    QString databaseName( const QSqlDatabase &db )
+    {
+        auto query = QSqlQuery( db );
+        auto aOK = runCmd( query, "SELECT DATABASE()" );
+        if ( !aOK || !query.next() )
+            return {};
+        return query.value( 0 ).toString();
     }
 
     bool validateSQLITEInstalled( QString *msg )
@@ -741,6 +990,107 @@ namespace NTowel42Utils
                 return enumValues[ ii ].first;
         }
         return {};
+    }
+
+    QString getNextCommand( QStringView &sql, QString &delimiter )
+    {
+        auto pos = sql.indexOf( delimiter );
+        auto regExp = QRegularExpression( R"__(DELIMITER\s+([^\s]+))__", QRegularExpression::PatternOption::CaseInsensitiveOption );
+        auto match = regExp.matchView( sql );
+
+        if ( !match.hasMatch() && ( pos == -1 ) )
+        {
+            auto retVal = sql.toString();
+            sql = {};
+            return {};
+        }
+
+        if ( !match.hasMatch() || ( match.hasMatch() && ( pos != -1 ) && ( pos < match.capturedStart() ) ) )
+        {
+            auto retVal = sql.left( pos ).toString();
+            sql.slice( pos + delimiter.length() );
+            return retVal;
+        }
+        else if ( match.hasMatch() )
+        {
+            delimiter = match.captured( 1 );
+            sql.slice( match.capturedEnd() + 1 );
+            return {};
+        }
+
+        return {};
+    }
+
+    QStringList splitCommands( QStringView sql, const std::function< void() > &onNextCommandFound /*= {}*/ )
+    {
+        auto splitThem = [ &sql, onNextCommandFound ]()   //
+        {
+            QStringList retVal;
+            QString currDelimiter = ";";
+            while ( !sql.empty() )
+            {
+                auto currCommand = getNextCommand( sql, currDelimiter ).trimmed();
+                if ( !currCommand.isEmpty() )
+                {
+                    retVal << currCommand;
+                }
+                if ( onNextCommandFound )
+                    onNextCommandFound();
+            }
+            return retVal;
+        };
+
+    #ifdef QT_CONCURRENT_LIB
+        QFutureWatcher< QStringList > watcher;
+        QEventLoop loop;
+        QObject::connect( &watcher, &QFutureWatcher< bool >::finished, &loop, &QEventLoop::quit );
+
+        auto future = QtConcurrent::run(   //
+            [ &splitThem ]()   //
+            { return splitThem(); } );
+        watcher.setFuture( future );
+
+        loop.exec();
+
+        auto retVal = future.result();
+        return retVal;
+    #else
+        return splitThem();
+    #endif
+    }
+
+    QString stripPragmas( QStringView sql )
+    {
+        QString retVal;
+        retVal.reserve( sql.size() );
+
+        QRegularExpression regEx( R"__(\/\*\!\d{1,5}\s)__", QRegularExpression::DotMatchesEverythingOption );
+        QRegularExpression regEx2( R"__(\*\/)__", QRegularExpression::DotMatchesEverythingOption );
+        bool inPragma = false;
+        while ( !sql.isEmpty() )
+        {
+            auto match = regEx.matchView( sql );
+            if ( !inPragma && match.hasMatch() )
+            {
+                auto pos = match.capturedStart();
+                retVal += sql.left( pos );
+                sql.slice( match.capturedEnd() );
+                inPragma = true;
+                continue;
+            }
+            if ( inPragma && ( match = regEx2.matchView( sql ) ).hasMatch() )
+            {
+                auto pos = match.capturedStart();
+                retVal += sql.left( pos );
+                inPragma = false;
+                sql.slice( match.capturedEnd() );
+                continue;
+            }
+
+            retVal += sql[ 0 ];
+            sql.slice( 1 );
+        }
+        return retVal;
     }
 
     QString SColumnInfo::columnDef() const

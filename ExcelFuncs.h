@@ -26,7 +26,7 @@
 
 #include "Towel42UtilsExport.h"
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QDate>
     #include <utility>
     #include <list>
@@ -42,7 +42,7 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT std::chrono::year_month_day nthDayOfMonth( int year, int month, int nthDay, std::chrono::weekday dayOfWeek );
     TOWEL42_UTILS_EXPORT std::chrono::year_month_day closestWorkDay( const std::chrono::year_month_day &date );
 #endif
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     using THolidayDateList = std::list< std::pair< QDate, double > >;
 
     TOWEL42_UTILS_EXPORT QDate nthDayOfMonth( int year, int month, int nthDay, int dayOfWeek );

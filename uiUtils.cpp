@@ -339,7 +339,7 @@ namespace NTowel42Utils
             return {};
 
         std::optional< QPixmap > pixmap;
-#ifdef TOWEL42_QSVG_SUPPORT
+#ifdef QT_SVG_LIB
         auto isSVG = NTowel42Utils::isSVG( data );
         if ( isSVG )
         {
@@ -399,7 +399,7 @@ namespace NTowel42Utils
             return {};
 
         std::optional< QImage > image;
-#ifdef TOWEL42_QSVG_SUPPORT
+#ifdef QT_SVG_LIB
         auto isSVG = NTowel42Utils::isSVG( data );
         if ( isSVG )
         {

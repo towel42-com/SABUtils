@@ -32,13 +32,14 @@
 #include <Shlwapi.h>
 #pragma comment( lib, "Shlwapi.lib" )
 
-#include <QString>
-#include <QFileInfo>
-#include <QDir>
-#include <QDebug>
-
 #include <iostream>
 #include <functional>
+#include <filesystem>
+
+#ifdef QT_CORE_LIB
+    #include <QFileInfo>
+    #include <QString>
+#endif
 
 namespace NTowel42Utils
 {
@@ -77,38 +78,53 @@ namespace NTowel42Utils
                 return cRef;
             }
 
-            QString getPathNameForItem( IShellItem *psiItem ) const;
+            std::filesystem::path getPathForItem( IShellItem *psiItem ) const
+            {
+                if ( !psiItem )
+                    return {};
+                std::wstring retVal;
+                PWSTR pszItem;
+                HRESULT hr = psiItem->GetDisplayName( SIGDN_FILESYSPATH, &pszItem );
+                if ( SUCCEEDED( hr ) )
+                    retVal = pszItem;
+                CoTaskMemFree( pszItem );
+                return retVal;
+            }
 
             bool verbose() const { return fOptions && fOptions->fVerbose; }
             const char *statusPrefix( HRESULT hrRename ) const { return ( SUCCEEDED( hrRename ) ? "" : "Error: " ); }
 
-            QString replaceSource( const QString &msg, IShellItem *psiItem ) const
+            std::wstring replaceSource( const std::wstring &msg, IShellItem *psiItem ) const
             {
-                auto pathName = getPathNameForItem( psiItem );
-                if ( !pathName.isEmpty() )
+                auto pathName = getPathForItem( psiItem ).wstring();
+                if ( !pathName.empty() )
                 {
-                    pathName = QStringLiteral( "%1 '%2'" ).arg( QFileInfo( pathName ).isFile() ? QStringLiteral( "file" ) : QStringLiteral( "directory" ) ).arg( pathName );
+                    pathName += L" '" + std::wstring( std::filesystem::is_regular_file( pathName ) ? L"file" : L"directory" );
                 }
                 auto realMsg = msg;
-                realMsg.replace( "<SOURCE>", pathName );
+                auto idx = realMsg.find( L"<SOURCE>" );
+                if ( idx != std::wstring::npos )
+                {
+                    realMsg.replace( idx, 8, pathName );
+                }
                 return realMsg;
             }
 
-            IFACEMETHODIMP startStatus( const QString &msg, IShellItem *srcItem = nullptr ) const
+            IFACEMETHODIMP startStatus( const std::wstring &msg, IShellItem *srcItem = nullptr ) const
             {
                 if ( verbose() )
-                    std::cout << replaceSource( msg, srcItem ).toStdString() << std::endl;
+                    std::wcout << replaceSource( msg, srcItem ) << std::endl;
                 return S_OK;
             }
 
-            IFACEMETHODIMP returnFinishedStatus( HRESULT hr, const QString &msg, IShellItem *srcItem = nullptr ) const
+            IFACEMETHODIMP returnFinishedStatus( HRESULT hr, const std::wstring &msg, IShellItem *srcItem = nullptr ) const
             {
                 if ( verbose() )
                 {
-                    ( SUCCEEDED( hr ) ? std::cout : std::cerr ) << statusPrefix( hr ) << replaceSource( msg, srcItem ).toStdString() << std::endl;
+                    ( SUCCEEDED( hr ) ? std::wcout : std::wcerr ) << statusPrefix( hr ) << replaceSource( msg, srcItem ) << std::endl;
                     if ( !SUCCEEDED( hr ) )
                     {
-                        ( SUCCEEDED( hr ) ? std::cout : std::cerr ) << statusPrefix( hr ) << "    " << getWindowsError( hr ).toStdString() << std::endl;
+                        ( SUCCEEDED( hr ) ? std::wcout : std::wcerr ) << statusPrefix( hr ) << "    " << getWindowsErrorStd( hr ) << std::endl;
                     }
                 }
                 return hr;
@@ -147,19 +163,6 @@ namespace NTowel42Utils
             HWND _hwndLV;
         };
 
-        QString CFileOpProgSinkApp::getPathNameForItem( IShellItem *psiItem ) const
-        {
-            if ( !psiItem )
-                return {};
-            QString retVal;
-            PWSTR pszItem;
-            HRESULT hr = psiItem->GetDisplayName( SIGDN_FILESYSPATH, &pszItem );
-            if ( SUCCEEDED( hr ) )
-                retVal = QString::fromWCharArray( pszItem );
-            CoTaskMemFree( pszItem );
-            return retVal;
-        }
-
         IFACEMETHODIMP CFileOpProgSinkApp::StartOperations()
         {
             return S_OK;   // startStatus( "Starting operation" );
@@ -172,53 +175,53 @@ namespace NTowel42Utils
 
         IFACEMETHODIMP CFileOpProgSinkApp::PreRenameItem( DWORD /*dwFlags*/, IShellItem *psiItem, PCWSTR pszNewName )
         {
-            return startStatus( QStringLiteral( "Renaming <SOURCE> to '%1'." ).arg( pszNewName ), psiItem );
+            return startStatus( std::wstring( L"Renaming <SOURCE> to '" ) + std::wstring( pszNewName ) + std::wstring( L"'." ), psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PostRenameItem( DWORD /*dwFlags*/, IShellItem *psiItem, PCWSTR pszNewName, HRESULT hrRename, IShellItem *psiNewlyCreated )
         {
-            auto pathName = getPathNameForItem( psiItem );
-            return returnFinishedStatus( hrRename, QStringLiteral( "Renamed <SOURCE> to '%1'.  Final path name: '%2'." ).arg( pszNewName ).arg( getPathNameForItem( psiNewlyCreated ) ) );
+            auto pathName = getPathForItem( psiItem );
+            return returnFinishedStatus( hrRename, std::wstring( L"Renamed <SOURCE> to '" ) + std::wstring( pszNewName ) + L"'.  Final path name: '" + getPathForItem( psiNewlyCreated ).wstring() );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PreMoveItem( DWORD /*dwFlags*/, IShellItem *psiItem, IShellItem *psiDestinationFolder, PCWSTR pszNewName )
         {
-            return startStatus( QStringLiteral( "Moving <SOURCE> to directory '%1' as '%3'." ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszNewName ), psiItem );
+            return startStatus( L"Moving <SOURCE> to directory '" + getPathForItem( psiDestinationFolder ).wstring() + L"' as '" + std::wstring( pszNewName ) + L"'.", psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PostMoveItem( DWORD /*dwFlags*/, IShellItem *psiItem, IShellItem *psiDestinationFolder, PCWSTR pszNewName, HRESULT hrNewName, IShellItem *psiNewlyCreated )
         {
-            return returnFinishedStatus( hrNewName, QStringLiteral( "Moved <SOURCE> to directory '%1' as '%3'. Final path name '%4'." ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszNewName ).arg( getPathNameForItem( psiNewlyCreated ) ), psiItem );
+            return returnFinishedStatus( hrNewName, L"Moved <SOURCE> to directory '" + getPathForItem( psiDestinationFolder ).wstring() + L"' as '" + std::wstring( pszNewName ) + L"'. Final path name '" + getPathForItem( psiNewlyCreated ).wstring() + L".'", psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PreCopyItem( DWORD /*dwFlags*/, IShellItem *psiItem, IShellItem *psiDestinationFolder, PCWSTR pszNewName )
         {
-            return startStatus( QStringLiteral( "Copying <SOURCE> to directory '%1' as '%2'." ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszNewName ), psiItem );
+            return startStatus( L"Copying <SOURCE> to directory '" + getPathForItem( psiDestinationFolder ).wstring() + L"' as '" + std::wstring( pszNewName ) + L"'.", psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PostCopyItem( DWORD /*dwFlags*/, IShellItem *psiItem, IShellItem *psiDestinationFolder, PCWSTR pszNewName, HRESULT hrCopy, IShellItem *psiNewlyCreated )
         {
-            return returnFinishedStatus( hrCopy, QStringLiteral( "Copied <SOURCE> to directory '%1' as '%2'. Final path name '%4'." ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszNewName ).arg( getPathNameForItem( psiNewlyCreated ) ), psiItem );
+            return returnFinishedStatus( hrCopy, L"Copied <SOURCE> to directory '" + getPathForItem( psiDestinationFolder ).wstring() + L"' as '" + std::wstring( pszNewName ) + L"'. Final path name '" + getPathForItem( psiNewlyCreated ).wstring() + L"'.", psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PreDeleteItem( DWORD dwFlags, IShellItem *psiItem )
         {
-            return startStatus( QStringLiteral( "%1 <SOURCE>." ).arg( ( dwFlags & TSF_DELETE_RECYCLE_IF_POSSIBLE ) ? QStringLiteral( "Recycling" ) : QStringLiteral( "Deleting" ) ), psiItem );
+            return startStatus( ( ( dwFlags & TSF_DELETE_RECYCLE_IF_POSSIBLE ) ? std::wstring( L"Recycling" ) : std::wstring( L"Deleting" ) ) + L"<SOURCE>.", psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PostDeleteItem( DWORD dwFlags, IShellItem *psiItem, HRESULT hrDelete, IShellItem * /*psiNewlyCreated*/ )
         {
-            return returnFinishedStatus( hrDelete, QStringLiteral( "%1 <SOURCE>." ).arg( ( dwFlags & TSF_DELETE_RECYCLE_IF_POSSIBLE ) ? QStringLiteral( "Recycled" ) : QStringLiteral( "Deleted" ) ), psiItem );
+            return returnFinishedStatus( hrDelete, ( ( dwFlags & TSF_DELETE_RECYCLE_IF_POSSIBLE ) ? std::wstring( L"Recycled" ) : std::wstring( L"Deleted" ) ) + L" <SOURCE>.", psiItem );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PreNewItem( DWORD /*dwFlags*/, IShellItem *psiDestinationFolder, PCWSTR pszNewName )
         {
-            return startStatus( QStringLiteral( "Creating '%1' in directory '%2'." ).arg( pszNewName ).arg( getPathNameForItem( psiDestinationFolder ) ) );
+            return startStatus( L"Creating '" + std::wstring( pszNewName ) + L"' in directory '" + getPathForItem( psiDestinationFolder ).wstring() + L"'." );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::PostNewItem( DWORD /*dwFlags*/, IShellItem *psiDestinationFolder, PCWSTR pszNewName, PCWSTR pszTemplateName, DWORD /*dwFileAttributes*/, HRESULT hrNew, IShellItem *psiNewItem )
         {
-            return returnFinishedStatus( hrNew, QStringLiteral( "Created '%1' in directory '%2'. Template Name: %3.  Final Path '%4'." ).arg( pszNewName ).arg( getPathNameForItem( psiDestinationFolder ) ).arg( pszTemplateName ).arg( getPathNameForItem( psiNewItem ) ) );
+            return returnFinishedStatus( hrNew, L"Created '" + std::wstring( pszNewName ) + L"' in directory '" + getPathForItem( psiDestinationFolder ).wstring() + L". Template Name: " + std::wstring( pszTemplateName ) + L". Final Path '" + getPathForItem( psiNewItem ).wstring() + L"." );
         }
 
         IFACEMETHODIMP CFileOpProgSinkApp::UpdateProgress( UINT iWorkTotal, UINT iWorkSoFar )
@@ -258,31 +261,31 @@ namespace NTowel42Utils
             return S_OK;
         }
 
-        QString getFullMsg( const QString &msg, HRESULT code )
+        std::wstring getFullMsg( const std::wstring &msg, HRESULT code )
         {
-            auto fullMessage = QStringLiteral( "%1 - %2" ).arg( msg ).arg( getWindowsError( code ) );
+            auto fullMessage = msg + L" - " + getWindowsErrorStd( code );
             return fullMessage;
         }
 
-        bool showError( const QString &msg, HRESULT code, QString *fullMessage, bool interactive, std::function< void() > runFunc )
+        bool showError( const std::wstring &msg, HRESULT code, std::wstring *fullMessage, bool interactive, std::function< void() > runFunc )
         {
             auto lclMsg = getFullMsg( msg, code );
             if ( fullMessage )
                 *fullMessage = lclMsg;
             if ( interactive )
             {
-                MessageBox( nullptr, lclMsg.toStdWString().c_str(), L"Error", MB_OK | MB_ICONERROR );
+                MessageBox( nullptr, lclMsg.c_str(), L"Error", MB_OK | MB_ICONERROR );
             }
             runFunc();
             return false;
         }
 
-        bool moveToTrashImpl( const QString &fileName, QString *msg, std::shared_ptr< SRecycleOptions > options )
+        bool moveToTrashImpl( const std::filesystem::path &relPath, std::wstring *msg, std::shared_ptr< SRecycleOptions > options )
         {
-            if ( !QFileInfo( fileName ).exists() )
+            if ( !std::filesystem::exists( relPath ) )
             {
                 if ( msg )
-                    *msg = QObject::tr( "File or Directory '%1' does not exist." ).arg( fileName );
+                    *msg = L"File or Directory '" + relPath.wstring() + L"' does not exist.";
                 return true;
             }
 
@@ -290,7 +293,7 @@ namespace NTowel42Utils
             if ( FAILED( hr ) )
             {
                 // Couldn't initialize COM library - clean up and return
-                return showError( "Couldn't initialize COM library", hr, msg, options->fInteractive, []() { CoUninitialize(); } );
+                return showError( L"Couldn't initialize COM library", hr, msg, options->fInteractive, []() { CoUninitialize(); } );
             }
             // Initialize the file operation
             IFileOperation *fileOperation;
@@ -298,14 +301,14 @@ namespace NTowel42Utils
             if ( FAILED( hr ) )
             {
                 // Couldn't CoCreateInstance - clean up and return
-                return showError( "Couldn't CoCreateInstance", hr, msg, options->fInteractive, []() { CoUninitialize(); } );
+                return showError( L"Couldn't CoCreateInstance", hr, msg, options->fInteractive, []() { CoUninitialize(); } );
             }
             hr = fileOperation->SetOperationFlags( FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SILENT | FOF_NO_UI | FOF_NOERRORUI );
             if ( FAILED( hr ) )
             {
                 // Couldn't add flags - clean up and return
                 return showError(
-                    "Couldn't add flags", hr, msg, options->fInteractive,
+                    L"Couldn't add flags", hr, msg, options->fInteractive,
                     [ fileOperation ]()
                     {
                         fileOperation->Release();
@@ -313,15 +316,14 @@ namespace NTowel42Utils
                     } );
             }
 
-            // auto path = QDir::current().absoluteFilePath( fileName ).toStdWString();
-            auto path = fileName.toStdWString();
+            auto path = std::filesystem::absolute( relPath );
 
             IShellItem *fileOrFolderItem = nullptr;
             hr = SHCreateItemFromParsingName( path.c_str(), nullptr, IID_PPV_ARGS( &fileOrFolderItem ) );
             if ( FAILED( hr ) )
             {
                 return showError(
-                    "Couldn't create IShellItem from path", hr, msg, options->fInteractive,
+                    L"Couldn't create IShellItem from path", hr, msg, options->fInteractive,
                     [ fileOrFolderItem, fileOperation ]()
                     {
                         if ( fileOrFolderItem )
@@ -351,7 +353,7 @@ namespace NTowel42Utils
             if ( FAILED( hr ) )
             {
                 return showError(
-                    "Failed to mark file/folder item for deletion", hr, msg, options->fInteractive,
+                    L"Failed to mark file/folder item for deletion", hr, msg, options->fInteractive,
                     [ fileOrFolderItem, fileOperation, pSync ]()
                     {
                         fileOperation->Release();
@@ -367,9 +369,10 @@ namespace NTowel42Utils
             CoUninitialize();
             if ( FAILED( hr ) )
             {
-                return showError( "Failed to carry out delete", hr, msg, options->fInteractive, [ fileOrFolderItem, fileOperation ]() {} );
+                return showError( L"Failed to carry out delete", hr, msg, options->fInteractive, [ fileOrFolderItem, fileOperation ]() {} );
             }
             return true;
         }
     }
 }
+

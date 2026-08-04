@@ -20,11 +20,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-#ifdef TOWEL42_QCORE_SUPPORT
-    #include "FileUtils.h"
+#include "FileUtils.h"
 
+#ifdef QT_CORE_LIB
     #include <QFileInfo>
     #include <QDir>
+#endif
+
+#include <filesystem>
+#include <locale>
+#include <codecvt>
 
 namespace NTowel42Utils
 {
@@ -32,54 +37,64 @@ namespace NTowel42Utils
     {
         bool removePath( const std::string &path, std::string *msg )
         {
-            QString lclMsg;
-            auto retVal = removePath( QString::fromStdString( path ), &lclMsg );
-            if ( !retVal && msg )
-                *msg = lclMsg.toStdString();
-            return retVal;
-        }
-
-        bool removePath( const QString &path, QString *msg )
-        {
-            QFileInfo fi( path );
-            if ( !fi.exists() )
+            if ( !std::filesystem::exists( path ) )
                 return true;
 
             bool success = false;
-            if ( fi.isFile() )
+            if ( std::filesystem::is_regular_file( path ) )
             {
-                auto file = QFile( fi.absoluteFilePath() );
-                success = file.remove();
+                std::error_code ec;
+                success = std::filesystem::remove( path, ec );
                 if ( !success && msg )
-                    *msg = QObject::tr( "Could not remove file '%1'" ).arg( path );
+                {
+                    *msg += std::string( "\nCould not remove file '" ) + path + "': " + ec.message();
+                }
             }
-            else if ( fi.isDir() )
+            else if ( std::filesystem::is_directory( path ) )
             {
-                QDir dir( path );
-                success = dir.removeRecursively();
+                std::error_code ec;
+                success = std::filesystem::remove_all( path, ec );
                 if ( !success && msg )
-                    *msg = QObject::tr( "Could remove directory (recursively) '%1'" ).arg( path );
+                {
+                    *msg += std::string( "\nCould not remove directory (recursively)'" ) + path + "': " + ec.message();
+                }
             }
             return success;
         }
 
-        bool removeInsideOfDir( const QString &dirStr, QString *msg )
+        bool removeInsideOfDir( const std::string &dir, std::string *msg )
         {
-            QDir dir( dirStr );
-            auto retVal = dir.removeRecursively();
-            if ( !retVal && msg )
-                *msg = QObject::tr( "Could not remove '%1' recursively" ).arg( dirStr );
+            if ( !std::filesystem::exists( dir ) )
+                return true;
+
+            if ( !std::filesystem::is_directory( dir ) )
+            {
+                if ( msg )
+                    *msg = std::string( "Expected directory not a regular file'" + dir + "'." );
+                return false;
+            }
+
+            return removePath( dir, msg );
+        }
+
+#ifdef QT_CORE_LIB
+        bool removePath( const QString &path, QString *msg )
+        {
+            std::string localMsg;
+            auto retVal = removePath( path.toStdString(), &localMsg );
+            if ( msg )
+                *msg = QString::fromStdString( localMsg );
             return retVal;
         }
 
-        bool removeInsideOfDir( const std::string &dir, std::string *msg )
+        bool removeInsideOfDir( const QString &dirStr, QString *msg )
         {
-            QString lclMsg;
-            bool retVal = removeInsideOfDir( QString::fromStdString( dir ), &lclMsg );
+            std::string localMsg;
+            auto retVal = removeInsideOfDir( dirStr.toStdString(), &localMsg );
             if ( msg )
-                *msg = lclMsg.toStdString();
+                *msg = QString::fromStdString( localMsg );
             return retVal;
         }
+#endif
     }
 }
-#endif

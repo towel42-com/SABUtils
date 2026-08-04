@@ -48,8 +48,10 @@
 #include "utils.h"
 #include "QtUtils.h"
 
-#include "GIFWriter.h"
-#include "GIFWriterDlg.h"
+#ifdef TOWEL42_GIFSUPPORT
+    #include "GIFWriter.h"
+    #include "BIFToGIFWriterDlg.h"
+#endif
 #include "bif/BIFPlugin.h"
 
 #include <QTimer>
@@ -751,8 +753,8 @@ namespace NTowel42Utils
         {
             if ( !fBIF || ( fBIF->imageCount() == 0 ) )
                 return;
-
-            CGIFWriterDlg dlg( this );
+#ifdef TOWEL42_GIFSUPPORT
+            CBIFToGIFWriterDlg dlg( this );
             dlg.setBIF( fBIF );
             dlg.setSpeedMultipler( fPlayerSpeedMultiplerSB->value() );
             dlg.setDelay( gifDelay() );
@@ -771,6 +773,7 @@ namespace NTowel42Utils
                 setGIFEndFrame( dlg.endFrame() );
                 setGIFDelay( dlg.delay() );
             }
+#endif
         }
     }
 }

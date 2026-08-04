@@ -1,4 +1,5 @@
 // The MIT License( MIT )
+// The MIT License( MIT )
 //
 // Copyright( c ) 2020-2026 Towel 42 Development, LLC and Scott Aron Bloom
 // SPDX-License-Identifier: MIT License
@@ -31,10 +32,15 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QAbstractEventDispatcher>
-#include <QIcon>
+#ifdef QT_WIDGETS_LIB
+    #include <QIcon>
+#endif
 #include <QBuffer>
 
-#include <QImageWriter>
+#ifdef QT_GUI_LIB
+    #include <QImageWriter>
+    #include <QPixmap>
+#endif
 #include <QDataStream>
 
 namespace NTowel42Utils
@@ -106,6 +112,7 @@ namespace NTowel42Utils
         return {};
     }
 
+#ifdef QT_GUI_LIB
     TOWEL42_UTILS_EXPORT QByteArray getMd5( const QPixmap &pixMap )
     {
         return getMd5( pixMap.toImage() );
@@ -173,6 +180,8 @@ namespace NTowel42Utils
         }
         return retVal;
     }
+#endif
+
     CComputeMD5::CComputeMD5( const QString &fileName ) :
         fFileInfo( fileName )
     {
@@ -182,11 +191,13 @@ namespace NTowel42Utils
     {
         emit sigStarted( getThreadID(), QDateTime::currentDateTime(), fFileInfo.absoluteFilePath() );
 
+#ifdef QT_GUI_LIB
         QImage img( fFileInfo.absoluteFilePath() );
-        if ( img.isNull() )
-            processNonImage();
-        else
+        if ( !img.isNull() )
             processImage( img );
+        else
+#endif
+            processNonImage();
 
         emitFinished();
     }
@@ -207,13 +218,14 @@ namespace NTowel42Utils
         emit sigFinished( getThreadID(), QDateTime::currentDateTime(), fFileInfo.absoluteFilePath(), fMD5 );
     }
 
+#ifdef QT_GUI_LIB
     void CComputeMD5::processImage( const QImage &img )
     {
         fMD5 = getMd5( img );
         emit sigFinishedReading( getThreadID(), QDateTime::currentDateTime(), fFileInfo.absoluteFilePath() );
         emit sigFinishedComputing( getThreadID(), QDateTime::currentDateTime(), fFileInfo.absoluteFilePath() );
     }
-
+#endif
     void CComputeMD5::processNonImage()
     {
         QFile file( fFileInfo.absoluteFilePath() );
@@ -261,5 +273,4 @@ namespace NTowel42Utils
             QThread::currentThread()->eventDispatcher()->processEvents( QEventLoop::AllEvents );
         }
     }
-
 }

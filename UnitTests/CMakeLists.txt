@@ -40,7 +40,7 @@ set( SOURCE_FILES
 SET( LIBS 
     gmock
 )
-IF(TOWEL42_QCORE_SUPPORT)
+IF(Qt6Core_FOUND)
     set( SOURCE_FILES
         ${SOURCE_FILES}
         ../RegExUtils.cpp
@@ -69,28 +69,28 @@ IF(TOWEL42_QCORE_SUPPORT)
         ${LIBS}
         Qt6::Core
     )
+
+    set( _QTLibs "Qt6::Core" )
+    if ( QtSql_FOUND )
+        set( _QTLibs "${_QTLibs};Qt6::Sql" )
+    endif()
+
+    unset( FOLDER_NAME )
+
+    set( testProjectName "" )
+    TOWEL42_UNIT_TEST(QtBasedUtils
+        main.cpp
+        "gmock;${_QTLibs}"
+        testProjectName
+        TestGeneral.cpp;TestExcelFuncs.cpp;${SOURCE_FILES}
+        )
+
+    set_target_properties( ${testProjectName} PROPERTIES 
+                                        VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${testProjectName}>" 
+                                        VS_DEBUGGER_COMMAND "$<TARGET_FILE:${testProjectName}>" 
+                                        VS_DEBUGGER_ENVIRONMENT "PATH=${DEBUG_PATH}" 
+                         )
 endif()
-
-set( _QTLibs "Qt6::Core" )
-if ( TOWEL42_QSQL_SUPPORT )
-    set( _QTLibs "${_QTLibs};Qt6::Sql" )
-endif()
-
-unset( FOLDER_NAME )
-
-set( testProjectName "" )
-TOWEL42_UNIT_TEST(QtBasedUtils
-    main.cpp
-    "gmock;${_QTLibs}"
-    testProjectName
-    TestGeneral.cpp;TestExcelFuncs.cpp;${SOURCE_FILES}
-    )
-
-set_target_properties( ${testProjectName} PROPERTIES 
-                                    VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${testProjectName}>" 
-                                    VS_DEBUGGER_COMMAND "$<TARGET_FILE:${testProjectName}>" 
-                                    VS_DEBUGGER_ENVIRONMENT "PATH=${DEBUG_PATH}" 
-                     )
 
 set( testProjectName "" )
 TOWEL42_UNIT_TEST(CantorHashUtils

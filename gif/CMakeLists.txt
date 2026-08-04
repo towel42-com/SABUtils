@@ -32,7 +32,11 @@ include( ${CMAKE_CURRENT_LIST_DIR}/include.cmake )
 project( ${_PROJECT_NAME} ) 
 IncludeProjectSettings(QT ${USE_QT})
 
-add_definitions( -DBUILD_GIF_PLUGIN=1 )
+add_definitions( 
+    -DBUILD_GIF_PLUGIN=1  
+    -DTOWEL42_GIFSUPPORT=1
+)
+
 add_library(${PROJECT_NAME} SHARED
     ${_PROJECT_DEPENDENCIES} 
 )

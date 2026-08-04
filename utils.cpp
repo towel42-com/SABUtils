@@ -22,7 +22,7 @@
 // SOFTWARE.
 
 #include "utils.h"
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QString>
     #include <QDateTime>
     #include <QDebug>
@@ -51,38 +51,6 @@
 
 namespace NTowel42Utils
 {
-    int fromChar( char ch, int base, bool &aOK )
-    {
-        aOK = false;
-        if ( base < 2 || base > 36 )
-            return 0;
-
-        if ( ch == '-' || ch == '_' )
-        {
-            aOK = true;
-            return 1;
-        }
-        // only short cut if its '0' - '9'
-        if ( ( ch >= '0' ) && ( ch <= '9' ) && ch <= ( '0' + ( base - 1 ) ) )
-        {
-            aOK = true;
-            return ( ch - '0' );
-        }
-
-        if ( base <= 10 )
-            return 0;
-
-        ch = std::tolower( ch );
-        auto maxChar = 'a' + base;
-
-        if ( ( ch >= 'a' ) && ( ch <= maxChar ) )
-        {
-            aOK = true;
-            return 10 + ch - 'a';
-        }
-        return 0;
-    }
-
     char toChar( int value )
     {
         if ( ( value >= 0 ) && ( value < 10 ) )
@@ -128,24 +96,6 @@ namespace NTowel42Utils
         while ( val != 0 );
         if ( isNeg )
             retVal.insert( retVal.begin(), '-' );
-        return retVal;
-    }
-
-    int64_t fromString( const std::string &str, int base )
-    {
-        int64_t retVal = 0;
-        bool aOK = false;
-        for ( size_t ii = 0; ii < str.length(); ++ii )
-        {
-            auto currChar = str[ ii ];
-            int64_t currVal = fromChar( currChar, base, aOK );
-            if ( !aOK )
-            {
-                std::cerr << "Invalid character: " << currChar << std::endl;
-                return 0;
-            }
-            retVal = ( retVal * base ) + currVal;
-        }
         return retVal;
     }
 
@@ -297,7 +247,7 @@ namespace NTowel42Utils
         return retVal;
     }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     QString secsToString( quint64 seconds )
     {
         CTimeString ts( seconds * 1000 );
@@ -349,7 +299,7 @@ namespace NTowel42Utils
         return returnCode;
     }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     bool isValidURL( const QString &url, int *start, int *length )
     {
         auto regExStr = QStringLiteral( R"__(([a-x]+)?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*))__" );
@@ -389,15 +339,15 @@ namespace NTowel42Utils
         return retVal;
     }
 
-    std::list< int > intsFromString( const QString &string, const QString &prefixRegEx, bool sort, bool *aOK )
+    std::list< int > intsFromString( const QAnyStringView &string, const QString &prefixRegEx, bool sort, bool *aOK )
     {
-        auto regExpStr1 = R"((^|[^A-Z])E(?<garbage3>PISODE)?(?<episode>\d{1,4})(?!(-|(E(EPISODE)?)))";
-        auto regExpStr2 = R"((^|[^A-Z])E(?<garbage1>PISODE)?(?<startEpisode>\d{1,4})(?<sep>\-)?E(?<garbage2>PISODE)?(?<endEpisode>\d{1,4}))";
+        auto firstNum = R"__((?:^|[^A-Z0-9a-z\-]))__" + prefixRegEx + R"__((?<%1>\d{1,4}))__";   // new word/start of line followed by prefix + first num
+        auto followOnNums = prefixRegEx + R"__((?<followOnNum>\d{1,4}))__";   // used when firstNumFound
+        auto secondNum = R"__((?<sep>[\-\:]))__" + prefixRegEx + R"__((?<endNum>\d{1,4}))__";   // seperator + prefix + endNum
 
-        auto firstNum = R"((?:^|[^A-Z0-9a-z\-]))" + prefixRegEx + R"((?<%1>\d{1,4}))";   // new word/start of line followed by prefix + first num
-        auto secondNum = R"((?<sep>[\-\:]))" + prefixRegEx + R"((?<endNum>\d{1,4}))";   // seperator + prefix + endNum
-
-        auto regExStr = "(?:" + firstNum.arg( "startNum" ) + secondNum + ")|(?:" + firstNum.arg( "num" ) + prefixRegEx + ")";
+        auto regExList = QStringList() << "(?:" + firstNum.arg( "startNum" ) + secondNum + ")";
+        regExList << "(?:" + firstNum.arg( "num" ) + ")";
+        auto regExStr = regExList.join( "|" );
 
         auto regEx = QRegularExpression( regExStr, QRegularExpression::CaseInsensitiveOption );
 
@@ -405,11 +355,11 @@ namespace NTowel42Utils
         {
             *aOK = false;
         }
-        Q_ASSERT( regEx.isValid() /*&& regEx2.isValid()*/ );
+        Q_ASSERT( regEx.isValid() );
 
         std::list< int > retVal;
 
-        auto ii = regEx.globalMatch( string );
+        auto ii = regEx.globalMatch( string.toString() );
         bool matchFound = false;
         while ( ii.hasNext() )
         {
@@ -422,6 +372,31 @@ namespace NTowel42Utils
                     return {};
                 retVal.push_back( currValue );
                 matchFound = true;
+
+                auto remaining = string.mid( match.capturedEnd( "num" ) );
+                if ( remaining.isEmpty() )
+                    continue;
+
+                auto intBreakRegEx = QStringLiteral( R"__((?:[^A-Z0-9a-z\-]))__" );
+                auto match = QRegularExpression( intBreakRegEx ).match( remaining.toString() );
+                if ( match.hasMatch() && ( match.capturedStart() == 0 ) )
+                {
+                    continue;
+                }
+
+                auto followOnRegEx = QRegularExpression( followOnNums, QRegularExpression::CaseInsensitiveOption );
+                Q_ASSERT( followOnRegEx.isValid() );
+                auto followOnMatch = followOnRegEx.match( remaining.toString() );
+                while ( followOnMatch.hasMatch() && ( followOnMatch.capturedStart() == 0 ) )
+                {
+                    auto followOn = followOnMatch.captured( "followOnNum" );
+                    currValue = followOn.toInt( &localAOK );
+                    if ( !localAOK )
+                        return {};
+                    retVal.push_back( currValue );
+                    remaining = remaining.mid( followOnMatch.capturedEnd() );
+                    followOnMatch = followOnRegEx.match( remaining.toString() );
+                }
             }
             else if ( !match.captured( "startNum" ).isEmpty() && !match.captured( "endNum" ).isEmpty() )
             {

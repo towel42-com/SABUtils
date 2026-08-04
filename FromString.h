@@ -28,9 +28,12 @@
 
 #include <string>
 #include <sstream>
+#include <cstdint>
+#include <type_traits>
+#include <iostream>
+
 namespace NTowel42Utils
 {
-
     template< class T >
     bool fromString( T &retVal, const char *arg )
     {
@@ -44,20 +47,71 @@ namespace NTowel42Utils
         return true;
     }
 
-    template< class T >
+    template< typename T, typename = std::enable_if_t< !std::is_integral< T >::value > >
     bool fromString( T &retVal, const std::string &arg )
     {
         return fromString( retVal, arg.c_str() );
     }
 
-    TOWEL42_UTILS_EXPORT bool fromString( long &retVal, const char *arg, int base );
-    TOWEL42_UTILS_EXPORT bool fromString( long &retVal, const std::string &arg, int base );
-    TOWEL42_UTILS_EXPORT bool fromString( long &retVal, const std::string &arg );
+    TOWEL42_UTILS_EXPORT bool fromChar( int &retVal, char ch, int base );
 
-    TOWEL42_UTILS_EXPORT bool fromString( int &retVal, const char *arg, int base );
-    TOWEL42_UTILS_EXPORT bool fromString( int &retVal, const char *arg );
-    TOWEL42_UTILS_EXPORT bool fromString( int &retVal, const std::string &arg, int base );
-    TOWEL42_UTILS_EXPORT bool fromString( int &retVal, const std::string &arg );
+    template< typename T >
+    std::enable_if_t< std::is_same_v< T, std::int64_t > || std::is_same_v< T, std::uint64_t >, bool > fromStringEx( T &retVal, const std::string_view &arg, int base = 10 )
+    {
+        retVal = 0;
+        bool aOK = false;
+        for ( auto &&currChar : arg )
+        {
+            int currVal = 0;
+            if ( !fromChar( currVal, currChar, base ) )
+            {
+                std::cerr << "Invalid character: " << currChar << std::endl;
+                return 0;
+            }
+            retVal = ( retVal * base ) + currVal;
+        }
+        return retVal;
+    }
+
+    template< typename T >
+    std::enable_if_t< std::is_same_v< T, std::int64_t >, bool > fromString( T &retVal, const std::string_view &arg, int base = 10 )
+    {
+        return fromStringEx( retVal, arg, base );
+    }
+
+    template< typename T >
+    std::enable_if_t< std::is_same_v< T, std::uint64_t >, bool > fromString( T &retVal, const std::string_view &arg, int base = 10 )
+    {
+        return fromStringEx( retVal, arg, base );
+    }
+
+    template< typename T, typename = std::enable_if_t< std::is_integral< T >::value && !std::is_same< T, std::int64_t >::value && !std::is_same< T, std::uint64_t >::value > >
+    bool fromString( T &retVal, const std::string_view &arg, int base = 10 )
+    {
+        if constexpr ( std::is_signed_v< T > )
+        {
+            int64_t tmpVal = 0;
+            if ( !fromString( tmpVal, arg, base ) )
+                return false;
+            if ( tmpVal <= std::numeric_limits< T >::max() && tmpVal >= std::numeric_limits< T >::min() )
+            {
+                retVal = static_cast< T >( tmpVal );
+                return true;
+            }
+        }
+        else
+        {
+            uint64_t tmpVal = 0;
+            if ( !fromString( tmpVal, arg, base ) )
+                return false;
+            if ( tmpVal <= std::numeric_limits< T >::max() && tmpVal >= std::numeric_limits< T >::min() )
+            {
+                retVal = static_cast< T >( tmpVal );
+                return true;
+            }
+        }
+        return false;
+    }
 
     TOWEL42_UTILS_EXPORT bool fromString( double &retVal, const std::string &arg );
     TOWEL42_UTILS_EXPORT bool fromString( double &retVal, const char *arg );

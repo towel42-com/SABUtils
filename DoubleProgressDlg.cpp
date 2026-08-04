@@ -948,18 +948,18 @@ namespace NTowel42Utils
 
     void CDoubleProgressDlgImpl::layout()
     {
-        int verticalSpacing = fDialog->style()->pixelMetric( QStyle::PM_LayoutVerticalSpacing, nullptr, fDialog );
-        int bottomMargin = fDialog->style()->pixelMetric( QStyle::PM_LayoutBottomMargin, nullptr, fDialog );
-        int leftMargin = std::min( fDialog->width() / 10, fDialog->style()->pixelMetric( QStyle::PM_LayoutLeftMargin, nullptr, fDialog ) );
-        int rightMargin = std::min( fDialog->width() / 10, fDialog->style()->pixelMetric( QStyle::PM_LayoutRightMargin, nullptr, fDialog ) );
+        auto verticalSpacing = fDialog->style()->pixelMetric( QStyle::PM_LayoutVerticalSpacing, nullptr, fDialog );
+        auto bottomMargin = fDialog->style()->pixelMetric( QStyle::PM_LayoutBottomMargin, nullptr, fDialog );
+        const auto leftMargin = std::min( fDialog->width() / 10, fDialog->style()->pixelMetric( QStyle::PM_LayoutLeftMargin, nullptr, fDialog ) );
+        const auto rightMargin = std::min( fDialog->width() / 10, fDialog->style()->pixelMetric( QStyle::PM_LayoutRightMargin, nullptr, fDialog ) );
 
-        int additionalSpacing = 0;
-        QSize cancelSize = fCancelButton.second ? fCancelButton.second->sizeHint() : QSize( 0, 0 );
-        QSize primaryBarHeight = fPrimaryBar->sizeHint();
-        QSize secondaryBarHeight = fSecondaryBar->sizeHint();
+        const auto additionalSpacing = 0;
+        auto cancelSize = fCancelButton.second ? fCancelButton.second->sizeHint() : QSize( 0, 0 );
+        auto primaryBarHeight = fPrimaryBar->sizeHint();
+        auto secondaryBarHeight = fSecondaryBar->sizeHint();
 
-        int cancelSizeWithSpace = 0;
-        int labelHeight = 0;
+        auto cancelSizeWithSpace = 0;
+        auto labelHeight = 0;
 
         // Find spacing and sizes that fit.  It is important that a progress
         // dialog can be made very small if the user demands it so.
@@ -986,8 +986,8 @@ namespace NTowel42Utils
 
         if ( fCancelButton.second )
         {
-            int x = 0;
-            const bool centered = bool( fDialog->style()->styleHint( QStyle::SH_ProgressDialog_CenterCancelButton, nullptr, fDialog ) );
+            auto x = 0;
+            const auto centered = fDialog->style()->styleHint( QStyle::SH_ProgressDialog_CenterCancelButton, nullptr, fDialog ) != 0;
             if ( centered )
                 x = fDialog->width() / 2 - cancelSize.width() / 2;
             else

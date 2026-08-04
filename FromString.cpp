@@ -62,44 +62,6 @@ namespace NTowel42Utils
         return aOK;
     }
 
-    bool fromString( long &retVal, const std::string &arg )
-    {
-        return fromString( retVal, arg, 10 );
-    }
-
-    bool fromString( long &retVal, const char *arg, int base )
-    {
-        return fromString( retVal, std::string( arg ), base );
-    }
-
-    bool fromString( int &retVal, const std::string &arg, int base )
-    {
-        long tmp;
-        bool aOK = fromString( tmp, arg, base );
-        if ( !aOK )
-            return false;
-        if ( ( tmp > INT_MAX ) || ( tmp < INT_MIN ) )
-            return false;
-
-        retVal = static_cast< int >( tmp );
-        return true;
-    }
-
-    bool fromString( int &retVal, const std::string &arg )
-    {
-        return fromString( retVal, arg, 10 );
-    }
-
-    bool fromString( int &retVal, const char *arg, int base )
-    {
-        return fromString( retVal, std::string( arg ), base );
-    }
-
-    bool fromString( int &retVal, const char *arg )
-    {
-        return fromString( retVal, std::string( arg ) );
-    }
-
     bool fromString( double &retVal, const std::string &arg )
     {
         retVal = 0;
@@ -174,5 +136,37 @@ namespace NTowel42Utils
     bool fromString( bool &retVal, const char *arg )
     {
         return fromString( retVal, std::string( arg ) );
+    }
+
+    bool fromChar( int &retVal, char ch, int base )
+    {
+        retVal = 0;
+        if ( base < 2 || base > 36 )
+            return false;
+
+        if ( ch == '-' || ch == '_' )
+        {
+            retVal = 1;
+            return true;
+        }
+        // only short cut if its '0' - '9'
+        if ( ( ch >= '0' ) && ( ch <= '9' ) && ch <= ( '0' + ( base - 1 ) ) )
+        {
+            retVal = ( ch - '0' );
+            return true;
+        }
+
+        if ( base <= 10 )
+            return false;
+
+        ch = std::tolower( ch );
+        auto maxChar = 'a' + base;
+
+        if ( ( ch >= 'a' ) && ( ch <= maxChar ) )
+        {
+            retVal = 10 + ch - 'a';
+            return true;
+        }
+        return false;
     }
 }

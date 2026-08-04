@@ -1349,7 +1349,7 @@ namespace NTowel42Utils
                 if ( !data.has_value() )
                     fImpl->status = EStatus::eFileWriteError;
                 else
-                    addSymLink( fileInfo.fFilePath, data.value() );
+                    addSymLink( fileInfo.fFilePath, QString::fromUtf8( data.value() ) );
             }
             setCreationPermissions( currPerms );
         }

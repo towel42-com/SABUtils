@@ -56,7 +56,7 @@ namespace
     }
 #endif
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     TEST( TestExcelFuncs, QtTest )
     {
         EXPECT_EQ( QDate( 2026, 1, 1 ), NTowel42Utils::closestWorkDay( QDate( 2026, 1, 1 ) ) );

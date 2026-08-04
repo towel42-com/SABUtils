@@ -43,7 +43,6 @@
 #include <sstream>
 #include <codecvt>
 
-
 #include <cctype>
 #include <optional>
 
@@ -51,7 +50,7 @@
 #include "StringComparisonClasses.h"
 #include "nodiscard.h"
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QString>
 class QRegularExpression;
 #endif
@@ -62,7 +61,7 @@ namespace NTowel42Utils
 {
     namespace NStringUtils
     {
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #if ( QT_VERSION < QT_VERSION_CHECK( 5, 14, 0 ) )
         constexpr QString::SplitBehavior TSkipEmptyParts = QString::SkipEmptyParts;
         constexpr QString::SplitBehavior TKeepEmptyParts = QString::KeepEmptyParts;
@@ -130,7 +129,7 @@ namespace NTowel42Utils
             eCenter
         };
         TOWEL42_UTILS_EXPORT std::string PadString( const std::string &str, size_t max, EPadType padType = EPadType::eCenter, char padChar = ' ' );
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         TOWEL42_UTILS_EXPORT QString PadString( const QString &str, size_t max, EPadType padType = EPadType::eCenter, char padChar = ' ' );
 #endif
         TOWEL42_UTILS_EXPORT void stripLF( char *line );
@@ -187,7 +186,7 @@ namespace NTowel42Utils
         TOWEL42_UTILS_EXPORT std::string stripBlanks( std::string_view inStr );
 
         TOWEL42_UTILS_EXPORT std::string stripQuotes( const std::string &text, const char *quotes = "\"\'" );
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         TOWEL42_UTILS_EXPORT QString stripQuotes( const QString &text, const char *quotes = "\"\'" );
 #endif
         TOWEL42_UTILS_EXPORT std::string stripQuotes( const char *text, const char *quotes = "\"\'" );
@@ -511,7 +510,7 @@ namespace NTowel42Utils
             return converter.from_bytes( tmp );
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         TOWEL42_UTILS_EXPORT QString stripQuotes( const QString &text, char quote );
         TOWEL42_UTILS_EXPORT bool isQuoted( const QString &text, const char *quotes = "\"\'" );
         TOWEL42_UTILS_EXPORT bool isQuoted( const QString &text, char quote );
@@ -538,10 +537,13 @@ namespace NTowel42Utils
         TOWEL42_UTILS_EXPORT bool isValidEmailAddress( const QString &email );
 
         TOWEL42_UTILS_EXPORT QString toCSV( const QStringList &data );
-        TOWEL42_UTILS_EXPORT QString textToIdentifier( const QString &text, bool camelCase );;   // camel case or _ separators, _ will be all lower case
+        TOWEL42_UTILS_EXPORT QString textToIdentifier( const QString &text, bool camelCase );
+        ;   // camel case or _ separators, _ will be all lower case
 #endif
         TOWEL42_UTILS_EXPORT std::wstring replaceDiacriticalCharacters( const std::wstring &str );
         TOWEL42_UTILS_EXPORT bool isDiacriticalCharacter( const wchar_t &ch, std::wstring *ascii = nullptr );
+
+        TOWEL42_UTILS_EXPORT std::wstring toPercentEncoding( const std::wstring &url, const std::wstring &exclude = {}, const std::wstring &include = {}, wchar_t percent ='%' );
     }
 }
 #endif

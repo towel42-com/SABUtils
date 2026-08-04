@@ -25,7 +25,7 @@
 #include "utils.h"
 #include "WindowsError.h"
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QFileInfo>
 #endif
 
@@ -202,7 +202,7 @@ namespace NTowel42Utils
         {
         }
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
         CSIDFileInfo::CSIDFileInfo( const QString &pathName, bool onlyInvalidDACL ) :
             CSIDFileInfo( pathName.toStdWString(), onlyInvalidDACL )
         {

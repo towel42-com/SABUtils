@@ -207,6 +207,41 @@ namespace NTowel42Utils
     {
     }
 
+    bool SVersion::setVersionInfo( const QString &tagName, const QString &createdDate )
+    {
+        fReleaseDate = QDateTime::fromString( createdDate, Qt::ISODate );
+        if ( !fReleaseDate.isValid() )
+            return false;
+
+        auto tag = tagName;
+        if ( tag.startsWith( "v" ) )
+            tag = tag.mid( 1 );
+        auto versionText = tag.split( '.' );
+        std::list< int > version;
+        for ( auto &&ii : versionText )
+        {
+            bool aOK;
+            auto curr = ii.toInt( &aOK );
+            if ( !aOK )
+                return false;
+            version.push_back( curr );
+        }
+
+        auto pos = version.begin();
+        if ( pos == version.end() )
+            return false;
+        fMajor = *pos;
+        pos++;
+        if ( pos == version.end() )
+            return false;
+        fMinor = *pos;
+        pos++;
+        if ( pos == version.end() )
+            return true;
+        fPatch = *pos;
+        return true;
+    }
+
     QString SVersion::toString( bool verbose ) const
     {
         QString retVal;

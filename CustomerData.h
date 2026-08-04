@@ -32,7 +32,7 @@
 #include <string_view>
 #include <tuple>
 
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QString>
     #include <QStringView>
     #include <QStringList>
@@ -44,7 +44,8 @@ namespace NTowel42Utils
     TOWEL42_UTILS_EXPORT std::optional< std::pair< std::string, std::string > > splitByCountryCode( std::string_view phoneNumber );
     TOWEL42_UTILS_EXPORT bool isValidEmail( const std::string &email );
 
-#ifdef TOWEL42_QCORE_SUPPORT
+    TOWEL42_UTILS_EXPORT std::pair< bool, bool > confirmPassword( bool userTypeRequiresPassword, bool isNewUser, const std::string &password, const std::string &confirmPassword );
+#ifdef QT_CORE_LIB
     TOWEL42_UTILS_EXPORT std::optional< QString > fixupPhoneNumber( const QString &phoneNumber );
     TOWEL42_UTILS_EXPORT std::optional< std::pair< QString, QString > > splitByCountryCode( const QString &phoneNumber );
     TOWEL42_UTILS_EXPORT bool isValidEmail( const QString &email );
@@ -52,7 +53,7 @@ namespace NTowel42Utils
     // returns pwOK, confirmPW OK
     TOWEL42_UTILS_EXPORT std::pair< bool, bool > confirmPassword( bool userTypeRequiresPassword, bool isNewUser, const QString &password, const QString &confirmPassword );
 
-    #ifdef TOWEL42_QSQL_SUPPORT
+    #ifdef QT_SQL_LIB
     TOWEL42_UTILS_EXPORT QStringList stateList();
     using TCityStateZip = std::tuple< QString, QString, QString >;
     TOWEL42_UTILS_EXPORT std::optional< TCityStateZip > getCityStateForZip( const QString &zipCode, bool useStateAbbreviation );

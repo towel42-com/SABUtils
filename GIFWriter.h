@@ -1,3 +1,4 @@
+#ifdef TOWEL42_GIFSUPPORT
 // The MIT License( MIT )
 //
 // Copyright( c ) 2026 Towel 42 Development, LLC and Scott Aron Bloom
@@ -141,4 +142,5 @@ namespace NTowel42Utils
         std::unique_ptr< SGIFPalette > fPalette;
     };
 }
+#endif
 #endif

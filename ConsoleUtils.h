@@ -26,7 +26,7 @@
 #include "Towel42UtilsExport.h"
 
 #include <string>
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     #include <QString>
 #endif
 
@@ -60,7 +60,7 @@ namespace NTowel42Utils
 
     // does nothing for linux
     TOWEL42_UTILS_EXPORT bool attachConsole( std::wstring *msg = nullptr );   // returns true if successful
-#ifdef TOWEL42_QCORE_SUPPORT
+#ifdef QT_CORE_LIB
     TOWEL42_UTILS_EXPORT bool attachConsole( QString *msg );   // returns true if successful
 #endif
 }

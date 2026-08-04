@@ -28,130 +28,100 @@ else()
 endif()
 
 IF(WIN32)
-        set( OS_SRCS 
-            ConsoleUtils.cpp 
-            WindowsError.cpp 
-        )
-        set( OS_HEADERS 
-            ConsoleUtils.h 
-            WindowsError.h 
-        )
-ELSE()
-ENDIF()
+    set( OS_SRCS 
+        MoveToTrash_win.cpp 
+        WindowsError.cpp 
+    )
+    set( OS_HEADERS
+        WindowsError.h 
+    )
+    
+else()
+    set( QCORE_SUPPORT_OS_SRCS 
+        MoveToTrash_linux.cpp
+    )
+    set( OS_HEADERS
+    )
+endif()
 
-set(project_SRCS
-    CustomerData.cpp
-    FileSIDInfo.cpp
+set(project_SRCS 
+    ${OS_SRCS}
+#    BackupFile.cpp
+    FileUtils.cpp
+    FileUtils_Remove.cpp
     FromString.cpp
-    GPUDetect.cpp
-    RegExUtils.cpp
+    MoveToTrash.cpp
     StringComparisonClasses.cpp
     StringUtils.cpp
-    VersionInfoData.cpp
-    ${OS_SRCS}
-)
-
-set(qtproject_CPPMOC_SRCS
 )
 
 set(project_H
-    CantorHash.h
-    CustomerData.h
-    EnumUtils.h
-    FileSIDInfo.h
-    FromString.h
-    GPUDetect.h
-    HashUtils.h
-    RegExUtils.h
-    RevertValue.h
-    StringComparisonClasses.h
-    StringUtils.h
-    ${CMAKE_BINARY_DIR}/Towel42UtilsExport.h
-    VersionInfoData.h
-    Towel42UtilsFwd.h
     ${OS_HEADERS}
+    FileUtils.h
+    FromString.h
+    MoveToTrash.h
+    StringUtils.h
+    StringComparisonClasses.h
 )
+unset( OS_HEADERS )
+unset( OS_SRCS )
+if ( Qt6Core_FOUND )
+    set(qtproject_SRCS 
+        BackupFile.cpp
+        FindAllFiles.cpp
+        MoveToTrash.cpp
+        RegExUtils.cpp
+        SystemLoggingDefs.cpp
+    )
 
-set(qtproject_UIS
-)
+    set(project_H
+        BackupFile.h
+        MoveToTrash.h
+        RegExUtils.h
+        SystemLoggingDefs.h
+        SystemLoggingDefs_pri.h
+    )
+endif()
 
-MACRO(CheckForCoreSupport whichLibVAR whichLibName)
-    if ( NOT TOWEL42_QCORE_SUPPORT )
-        if ( ${whichLibVAR} )
-            MESSAGE( WARNING "${whichLibName} Support requires QtCore Support, set TOWEL42_QCORE_SUPPORT to true to prevent this warning" )
-            set( TOWEL42_QCORE_SUPPORT ON )
-            set( TOWEL42_QCORE_SUPPORT ON PARENT_SCOPE )
-        endif()
-    endif()
-ENDMACRO()
-
-MACRO(CheckForWidgetSupport whichLibVAR whichLibName)
-    if ( NOT TOWEL42_QWIDGET_SUPPORT )
-        if ( ${whichLibVAR} )
-            MESSAGE( WARNING "${whichLibName} Support requires QtWidget Support, set TOWEL42_QWIDGET_SUPPORT to true to prevent this warning" )
-            set( TOWEL42_QWIDGET_SUPPORT ON )
-            set( TOWEL42_QWIDGET_SUPPORT ON PARENT_SCOPE )
-        endif()
-    endif()
-ENDMACRO()
-
-CheckForCoreSupport( TOWEL42_BIFSUPPORT "BIF" )
-CheckForCoreSupport( TOWEL42_GIFSUPPORT "GIF" )
-CheckForCoreSupport( TOWEL42_QAXOBJECT_SUPPORT "QAXObject" )
-CheckForCoreSupport( TOWEL42_QCONCURRENT_SUPPORT "QConcurrent" )
-CheckForCoreSupport( TOWEL42_QNETWORK_SUPPORT "QNetwork" )
-CheckForCoreSupport( TOWEL42_QSQL_SUPPORT "QSql" )
-CheckForCoreSupport( TOWEL42_QSVG_SUPPORT "QSvg" )
-CheckForCoreSupport( TOWEL42_QWIDGET_SUPPORT "QWidget" )
-CheckForCoreSupport( TOWEL42_QXMLPATTERNS_SUPPORT "QXmlPatterns" )
-CheckForCoreSupport( TOWEL42_QXML_SUPPORT "QXml" )
-CheckForCoreSupport( TOWEL42_ZIP_SUPPORT "ZIP" )
-CheckForWidgetSupport( TOWEL42_DESIGNERPLUGIN_SUPPORT "Designer Plugins" )
 
 if ( TOWEL42_QCORE_SUPPORT )
-    add_definitions( -DTOWEL42_QCORE_SUPPORT=1)
-    find_package(Qt6 COMPONENTS Core REQUIRED)
     IF(WIN32)
-            set( QT_OS_SRCS 
+            set( QCORE_SUPPORT_OS_SRCS 
                 ForceUnbufferedProcessModifier.cpp 
-                MoveToTrash_win.cpp 
                 SystemInfo_win.cpp 
+                ConsoleUtils.cpp 
             )
-            set( QT_OS_HEADERS 
-                ${OS_HEADERS}
+            set( QCORE_SUPPORT_OS_HEADERS 
                 ForceUnbufferedProcessModifier.h 
+                ConsoleUtils.h 
             )
     ELSE()
-            set( QT_OS_SRCS 
-                ${OS_SRCS}
-                MoveToTrash_linux.cpp
+            set( QCORE_SUPPORT_OS_SRCS 
                 SystemInfo_linux.cpp 
             )
     ENDIF()
 
     set(qtproject_SRCS
         ${qtproject_SRCS}
-        ${QT_OS_SRCS}
+        ${QCORE_SUPPORT_OS_SRCS}
         BackgroundFileCheck.cpp
-        BackupFile.cpp
+        CustomerData.cpp
         ExcelFuncs.cpp
         FileCompare.cpp
-        FileUtils.cpp
-        FileUtils_Remove.cpp
-        FindAllFiles.cpp
+        FileSIDInfo.cpp
+        GPUDetect.cpp
         JsonUtils.cpp
         MD5.cpp
-        MoveToTrash.cpp
         QtUtils.cpp
+        SetupSystemLogging.cpp
         StayAwake.cpp
         SystemInfo.cpp
-        SystemLoggingDefs.cpp
-        SetupSystemLogging.cpp
-        Towel42UtilsResources.cpp
         TimeStamp.cpp
+        Towel42UtilsResources.cpp
         UtilityModels.cpp
-        utils.cpp
+        VersionInfoData.cpp
         WordExp.cpp
+        utils.cpp
     )
 
     set(qtproject_H
@@ -162,25 +132,31 @@ if ( TOWEL42_QCORE_SUPPORT )
     )
     
     set(project_H
-        ${QT_OS_HEADERS}
+        ${CMAKE_BINARY_DIR}/Towel42UtilsExport.h
+        ${QCORE_SUPPORT_OS_HEADERS}
         ${project_H}
         ExcelFuncs.h
         FileCompare.h
-        FileUtils.h
         JsonUtils.h
         MetaUtils.h
-        MoveToTrash.h
         QtHashUtils.h
         QtUtils.h
+        SetupSystemLogging.h
         StayAwake.h   
         SystemInfo.h
-        SystemLoggingDefs.h
-        SystemLoggingDefs_pri.h
-        SetupSystemLogging.h
         TimeStamp.h
         Towel42UtilsResources.h
-        utils.h
+        VersionInfoData.h
         WordExp.h
+        utils.h
+        CantorHash.h
+        CustomerData.h
+        EnumUtils.h
+        FileSIDInfo.h
+        GPUDetect.h
+        HashUtils.h
+        RevertValue.h
+        Towel42UtilsFwd.h
     )
 
     SET( project_pub_DEPS
@@ -191,14 +167,11 @@ if ( TOWEL42_QCORE_SUPPORT )
     set(qtproject_QRC
         resources/Towel42Utils.qrc
     )
-    if ( TOWEL42_QCORE_SUPPORT )
-        file(GLOB qtproject_QRC_SOURCES "resources/*")
-    endif()
+    file(GLOB qtproject_QRC_SOURCES "resources/*")
 endif()
 
-if ( TOWEL42_QWIDGET_SUPPORT )
-    add_definitions( -DTOWEL42_QWIDGET_SUPPORT=1)
-    find_package(Qt6 COMPONENTS Widgets Gui UiPlugin REQUIRED)
+if ( TOWEL42_QWIDGETS_SUPPORT )
+    find_package(Qt6 COMPONENTS Widgets Gui REQUIRED)
     set(qtproject_SRCS
         ${qtproject_SRCS}
         About.cpp
@@ -206,6 +179,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         AutoFetch.cpp
         AutoTabStop.cpp
         AutoWaitCursor.cpp
+        BackgroundFileCheck.cpp
         ButtonEnabler.cpp
         ButtonGroupWDescriptiveText.cpp
         CollapsableGroupBox.cpp
@@ -222,6 +196,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         MenuBarEx.cpp
         ProgressBarProxyStyle.cpp
         QtDumper.cpp
+        QtUtils.cpp
         SetReadOnly.cpp
         SetReadOnlyComboBox.cpp
         SetReadOnlyGroupBox.cpp
@@ -230,9 +205,14 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         SpinBox64.cpp
         SpinBox64U.cpp
         SummaryDateEdit.cpp
+        SetupSystemLogging.cpp
         SetupSystemLoggingDlg.cpp
+        SystemLoggingDefs.cpp
+        TimeStamp.cpp
         uiUtils.cpp
+        utils.cpp
         UtilityViews.cpp
+        VersionInfoData.cpp
         WidgetChanged.cpp
         WidgetEnabler.cpp
     )
@@ -240,6 +220,7 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         ${qtproject_H}
         AutoTabStop.h
         AutoWaitCursor.h
+        BackgroundFileCheck.h
         ButtonEnabler.h
         ButtonGroupWDescriptiveText.h
         CollapsableGroupBox.h
@@ -269,19 +250,25 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         About.h
         AutoFetch.h
         AutoSize.h
-        BackupFile.h
         FileBasedCache.h
         ProgressBarProxyStyle.h
         QtDumper.h
+        QtUtils.h
         SetReadOnly.h
         SpinBox64_StepType.h
         uiUtils.h
+        utils.h
+        SystemLoggingDefs.h
+        SystemLoggingDefs_pri.h
+        SetupSystemLogging.h
+        TimeStamp.h
+        VersionInfoData.h
         WidgetChanged.h
         WidgetUtilsFwd.h
     )
+
     set(qtproject_UIS
         ${qtproject_UIS}
-        DownloadFile.ui
         ScrollMessageBox.ui
         SetupSystemLoggingDlg.ui
     )
@@ -290,16 +277,11 @@ if ( TOWEL42_QWIDGET_SUPPORT )
         ${project_pub_DEPS}
         Qt6::Widgets
         Qt6::Gui
-        Qt6::UiPlugin
     )
 endif()
 
 if ( TOWEL42_BIFSUPPORT )
     find_package(Qt6 COMPONENTS Widgets Gui REQUIRED)
-    if ( NOT TOWEL42_QWIDGET_SUPPORT  )
-        MESSAGE( FATAL_ERROR "BIF Support requires QWidget Support" )
-    endif()
-
     add_definitions( -DTOWEL42_BIFSUPPORT=1)
     set(qtproject_SRCS
         ${qtproject_SRCS}
@@ -321,6 +303,21 @@ if ( TOWEL42_BIFSUPPORT )
         BIFWidget.ui
     )
 
+    if ( TOWEL42_GIFSUPPORT )
+        set(qtproject_SRCS
+            ${qtproject_SRCS}
+            BIFToGIFWriterDlg.cpp
+        )
+        set(qtproject_H
+            ${qtproject_H}
+            BIFToGIFWriterDlg.h
+        )
+        set(qtproject_UIS
+            ${qtproject_UIS}
+            BIFToGIFWriterDlg.ui
+        )
+    endif()
+    
     set(qtproject_QRC
         ${qtproject_QRC}
         BIFPlayerResources/BIFPlayerResources.qrc
@@ -342,42 +339,56 @@ endif()
 
 if ( TOWEL42_GIFSUPPORT )
     find_package(Qt6 COMPONENTS Widgets Gui REQUIRED)
-    if ( NOT TOWEL42_QWIDGET_SUPPORT  )
+    if ( NOT Qt6Widgets_FOUND  )
         MESSAGE( FATAL_ERROR "GIF Support requires QWidget Support" )
     endif()
     
     add_definitions( -DTOWEL42_GIFSUPPORT=1)
     set(qtproject_SRCS
         ${qtproject_SRCS}
+        QtUtils.cpp
         GIFWriter.cpp
-        GIFWriterDlg.cpp
     )
     set(qtproject_H
         ${qtproject_H}
-        GIFWriterDlg.h
     )
     set(project_H
         ${project_H}
+        QtUtils.h
         GIFWriter.h
     )
     set(qtproject_UIS
         ${qtproject_UIS}
-        GIFWriterDlg.ui
     )
     SET( project_pub_DEPS
         ${project_pub_DEPS}
         Qt6::Widgets
         Qt6::Gui
     )
+    
+    if ( TOWEL42_BIFSUPPORT  )
+        set(qtproject_SRCS
+            ${qtproject_SRCS}
+            BIFToGIFWriterDlg.cpp
+        )
+        set(qtproject_H
+            ${qtproject_H}
+            BIFToGIFWriterDlg.h
+        )
+        set(qtproject_UIS
+            ${qtproject_UIS}
+            BIFToGIFWriterDlg.ui
+        )
+    endif()
+
 endif()
 
-if ( TOWEL42_QAXOBJECT_SUPPORT )
-    find_package(Qt6 COMPONENTS AxContainer REQUIRED)
-    add_definitions( -DTOWEL42_QAXOBJECT_SUPPORT=1)
+if ( TOWEL42_VSINSTALLER_SUPPORT )
 
     set(qtproject_SRCS
         ${qtproject_SRCS}
         VSInstallUtils.cpp
+        AutoWaitCursor.cpp
     )
     set(project_H
         ${project_H}
@@ -385,6 +396,7 @@ if ( TOWEL42_QAXOBJECT_SUPPORT )
     )
     set(qtproject_H
         ${qtproject_H}
+        AutoWaitCursor.h
     )
     SET( project_pub_DEPS
         ${project_pub_DEPS}
@@ -393,32 +405,37 @@ if ( TOWEL42_QAXOBJECT_SUPPORT )
 endif()
 
 if ( TOWEL42_QNETWORK_SUPPORT )
-    find_package(Qt6 COMPONENTS Network REQUIRED)
-    add_definitions( -DTOWEL42_QNETWORK_SUPPORT=1)
     set(qtproject_SRCS
         ${qtproject_SRCS}
         DownloadFile.cpp
         GitHubGetVersions.cpp
         ValidateOpenSSL.cpp
+        VersionInfoData.cpp
     )
     set(project_H
         ${project_H}
         ValidateOpenSSL.h
+        VersionInfoData.h
     )
     set(qtproject_H
         ${qtproject_H}
         DownloadFile.h
         GitHubGetVersions.h
     )
+
+    set(qtproject_UIS
+        ${qtproject_UIS}
+        DownloadFile.ui
+    )
+
     SET( project_pub_DEPS
         ${project_pub_DEPS}
         Qt6::Network
+        Qt6::Widgets
     )
 endif()
 
 if ( TOWEL42_QCONCURRENT_SUPPORT )
-    find_package(Qt6 COMPONENTS Concurrent REQUIRED)
-    add_definitions( -DTOWEL42_QCONCURRENT_SUPPORT=1)
     set(qtproject_SRCS
         ${qtproject_SRCS}
         ThreadedProgressDialog.cpp
@@ -433,12 +450,16 @@ if ( TOWEL42_QCONCURRENT_SUPPORT )
     SET( project_pub_DEPS
         ${project_pub_DEPS}
         Qt6::Concurrent
+        Qt6::Widgets
     )
 endif()
 
 IF ( TOWEL42_ZIP_SUPPORT )
     add_definitions( -DTOWEL42_ZIP_SUPPORT=1)
     find_package(Qt6 COMPONENTS Core REQUIRED)
+    
+    find_package(ZLIB REQUIRED PATHS C:/Users/scott.TOWEL42/Dropbox/home/bin/zlib)
+
     set(qtproject_H
         ${qtproject_H}
     )
@@ -456,13 +477,12 @@ IF ( TOWEL42_ZIP_SUPPORT )
     SET( project_pub_DEPS
         ${project_pub_DEPS}
         Qt6::Core
+        ZLIB::ZLIB
     )
     include_directories(${Qt6CorePrivate_INCLUDE_DIRS})
 endif()
 
 if ( TOWEL42_QSQL_SUPPORT )
-    add_definitions( -DTOWEL42_QSQL_SUPPORT=1)
-    find_package(Qt6 COMPONENTS Sql REQUIRED)
     set(qtproject_H
         ${qtproject_H}
     )
@@ -484,8 +504,6 @@ if ( TOWEL42_QSQL_SUPPORT )
 endif()
 
 if ( TOWEL42_QSVG_SUPPORT )
-    find_package(Qt6 COMPONENTS Svg REQUIRED)
-    add_definitions( -DTOWEL42_QSVG_SUPPORT=1)
     set(qtproject_H
         ${qtproject_H}
     )
@@ -505,3 +523,19 @@ if ( TOWEL42_QSVG_SUPPORT )
     )
 endif()
 
+if ( TOWEL42_DESIGNERPLUGIN_SUPPORT )
+    set(qtproject_H
+        ${qtproject_H}
+    )
+
+    SET( project_H    
+        ${project_H}
+    )
+
+    SET( qtproject_SRCS
+        ${qtproject_SRCS}
+    )
+    SET( project_pub_DEPS
+        ${project_pub_DEPS}
+    )
+endif()
